@@ -1,29 +1,51 @@
-plugins {
-    id 'java'
-    id 'war'
-}
+/*
+ * Copyright (c) 2022 by MILOSZ GILGA and FILIP HABRYN
+ * Silesian University of Technology
+ *
+ *  File name: build.gradle.kts
+ *  Last modified: 20/12/2022, 10:35
+ *  Project name: ski-rent-service
+ *
+ * This project was written for the purpose of a subject taken in the study of Computer Science.
+ * This project is not commercial in any way and does not represent a viable business model
+ * of the application. Project created for educational purposes only.
+ */
 
-group 'pl.polsl'
-version '1.0-SNAPSHOT'
+plugins {
+    id("java")
+    id("war")
+}
 
 repositories {
     mavenCentral()
 }
 
-ext {
-    junitVersion = '5.8.2'
+extra.apply {
+    // dependencies versions
+    set("jakkartaApiVersion", "5.0.0")
+    set("junitVersion", "5.9.0")
+    set("lombokVersion", "1.18.24")
+    set("mySqlVersion", "8.0.31")
+    set("hibernateVersion", "6.1.6.Final")
+    set("liquibaseVersion", "4.18.0")
+
+    // webjars
+    set("bootstrapVersion", "5.2.3")
 }
 
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
+java.sourceCompatibility = JavaVersion.VERSION_11
+java.targetCompatibility = JavaVersion.VERSION_11
 
 dependencies {
-    compileOnly('jakarta.servlet:jakarta.servlet-api:5.0.0')
+    implementation("org.webjars:bootstrap:${rootProject.extra.get("bootstrapVersion") as String}")
+    implementation("org.projectlombok:lombok:${rootProject.extra.get("lombokVersion") as String}")
+    implementation("mysql:mysql-connector-java:${rootProject.extra.get("mySqlVersion") as String}")
+    implementation("org.liquibase:liquibase-core:${rootProject.extra.get("liquibaseVersion") as String}")
+    implementation("org.hibernate:hibernate-core:${rootProject.extra.get("hibernateVersion") as String}")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
-}
+    compileOnly("jakarta.servlet:jakarta.servlet-api:${rootProject.extra.get("jakkartaApiVersion") as String}")
 
-test {
-    useJUnitPlatform()
+    annotationProcessor("org.projectlombok:lombok:${rootProject.extra.get("lombokVersion") as String}")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${rootProject.extra.get("junitVersion") as String}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${rootProject.extra.get("junitVersion") as String}")
 }
