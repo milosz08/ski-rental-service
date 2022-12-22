@@ -1,5 +1,6 @@
 # SUoT SkiRental Service
 Simple database project for ski equipment rental company. Created only for learning purposes.
+Created using: Jakkarta EE, EJB, Hibernate, JSP/JSTL and MySQL
 
 # Installation:
 ```
