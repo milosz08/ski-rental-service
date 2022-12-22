@@ -1,12 +1,7 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>JSP - Hello World</title>
-</head>
-<body>
-<h1><%= "Hello JSP!" %></h1>
-<br/>
-<a href="hello-servlet">Hello Servlet</a>
-</body>
-</html>
+<%@ page contentType="text/html" pageEncoding="UTF-8" language="java" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
+
+<t:generic-page>
+    <h1>Witaj na stronie startowej aplikacji</h1>
+    <a class="btn btn-sm btn-primary" href="${pageContext.request.contextPath}/hello-servlet">Przejdź dalej</a>
+</t:generic-page>
