@@ -61,3 +61,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:${rootProject.extra.get("junitVersion") as String}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${rootProject.extra.get("junitVersion") as String}")
 }
+
+tasks.withType<War> {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
