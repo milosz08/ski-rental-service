@@ -14,21 +14,38 @@
 package pl.polsl.skirentservice.domain;
 
 import java.io.*;
+import java.util.List;
 
+import jakarta.ejb.EJB;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
+import jakarta.servlet.ServletException;
+
+import org.hibernate.Session;
+
+import pl.polsl.skirentservice.dto.UserDetailsDto;
+import pl.polsl.skirentservice.core.HibernateFactory;
+
+import static pl.polsl.skirentservice.misc.PageTitle.START_PAGE;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 @WebServlet("/hello-servlet")
 public class HelloServlet extends HttpServlet {
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("text/html");
+    @EJB private HibernateFactory factory;
 
-        final PrintWriter out = response.getWriter();
-        out.println("<html><body>");
-        out.println("<h1>Hello Web!</h1>");
-        out.println("</body></html>");
+    //------------------------------------------------------------------------------------------------------------------
+
+    public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
+        final Session session = factory.open();
+
+        final String query = "SELECT new pl.polsl.skirentservice.dto.UserDetailsDto(u) FROM UserEntity u";
+        final List<UserDetailsDto> allUsers = session.createQuery(query, UserDetailsDto.class).list();
+
+        session.close();
+        req.setAttribute("users", allUsers);
+        req.setAttribute("title", START_PAGE.getName());
+        req.getRequestDispatcher("WEB-INF/pages/owner-dashboard.jsp").forward(req, res);
     }
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <!-- db migrations -->
+    <include file="changelog/2022-12_migrations/aq1_2022-12-22__users-partial-table.sql" relativeToChangelogFile="true"/>
+
+    <!-- db insertions -->
+    <include file="assertions/fd1_filler__default-user-data.sql" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>
