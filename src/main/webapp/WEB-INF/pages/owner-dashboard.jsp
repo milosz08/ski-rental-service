@@ -1,4 +1,4 @@
-<%@ page contentType="text/html" pageEncoding="UTF-8" language="java" %>
+<%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
@@ -17,6 +17,6 @@
             </tr>
         </c:forEach>
     </table>
-    <a class="btn btn-sm btn-primary" href="/">Powrót do strony startowej</a>
+    <a class="btn btn-sm btn-primary" href="${pageContext.request.contextPath}/">Powrót do strony startowej</a>
     <jsp:include page="../partials/owner-footer.jsp" />
 </p:generic-page>
