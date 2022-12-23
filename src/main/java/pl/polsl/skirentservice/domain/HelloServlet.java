@@ -26,7 +26,7 @@ import org.hibernate.Session;
 import pl.polsl.skirentservice.dto.UserDetailsDto;
 import pl.polsl.skirentservice.core.HibernateFactory;
 
-import static pl.polsl.skirentservice.misc.PageTitle.START_PAGE;
+import static pl.polsl.skirentservice.util.PageTitle.HELLO_PAGE;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -45,7 +45,7 @@ public class HelloServlet extends HttpServlet {
 
         session.close();
         req.setAttribute("users", allUsers);
-        req.setAttribute("title", START_PAGE.getName());
+        req.setAttribute("title", HELLO_PAGE.getName());
         req.getRequestDispatcher("WEB-INF/pages/owner-dashboard.jsp").forward(req, res);
     }
 }

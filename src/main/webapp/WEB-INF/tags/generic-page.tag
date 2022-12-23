@@ -1,5 +1,9 @@
-<%@tag description="Overall Page template" pageEncoding="UTF-8" language="java" %>
+<%@ tag import="pl.polsl.skirentservice.util.PageTitle" %>
+<%@ tag description="Overall Page template" pageEncoding="UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<% request.setAttribute("title", PageTitle.START_PAGE.getName()); %>
+<jsp:useBean id="title" type="java.lang.String" scope="request"/>
 
 <!DOCTYPE html>
 <html>

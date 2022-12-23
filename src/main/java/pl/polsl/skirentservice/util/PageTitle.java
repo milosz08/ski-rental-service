@@ -11,7 +11,7 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentservice.misc;
+package pl.polsl.skirentservice.util;
 
 import lombok.*;
 
@@ -20,7 +20,8 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 public enum PageTitle {
-    START_PAGE("Strona startowa");
+    START_PAGE("Witamy"),
+    HELLO_PAGE("Testowy servlet");
 
     //------------------------------------------------------------------------------------------------------------------
 
