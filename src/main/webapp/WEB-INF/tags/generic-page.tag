@@ -15,7 +15,9 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/webjars/bootstrap/5.2.3/css/bootstrap.min.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/static/styles.css">
 
-        <script src="${pageContext.request.contextPath}/webjars/bootstrap/5.2.3/js/bootstrap.min.js"></script>
+        <script lang="javascript" defer src="${pageContext.request.contextPath}/webjars/jquery/3.6.2/dist/jquery.min.js"></script>
+        <script lang="javascript" defer src="${pageContext.request.contextPath}/webjars/popper.js/1.16.1/dist/popper.min.js"></script>
+        <script lang="javascript" defer src="${pageContext.request.contextPath}/webjars/bootstrap/5.2.3/js/bootstrap.min.js"></script>
         <script lang="javascript" defer src="${pageContext.request.contextPath}/static/scripts.js"></script>
     </head>
     <body>

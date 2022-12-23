@@ -36,12 +36,16 @@ extra.apply {
 
     // webjars
     set("bootstrapVersion", "5.2.3")
+    set("popperJsVersion", "1.16.1")
+    set("jqueryVersion", "3.6.2")
 }
 
 java.sourceCompatibility = JavaVersion.VERSION_11
 java.targetCompatibility = JavaVersion.VERSION_11
 
 dependencies {
+    implementation("org.webjars.bower:jquery:${rootProject.extra.get("jqueryVersion") as String}")
+    implementation("org.webjars.npm:popper.js:${rootProject.extra.get("popperJsVersion") as String}")
     implementation("org.webjars:bootstrap:${rootProject.extra.get("bootstrapVersion") as String}")
 
     implementation("org.slf4j:slf4j-api:${rootProject.extra.get("loggerVersion") as String}")
