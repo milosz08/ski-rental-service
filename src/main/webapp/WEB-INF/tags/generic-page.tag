@@ -6,11 +6,14 @@
 <jsp:useBean id="title" type="java.lang.String" scope="request"/>
 
 <!DOCTYPE html>
-<html>
+<html lang="pl">
     <head>
         <meta charset="UTF-8">
-        <c:if test="${empty title}"><title>Witamy | SkiRent System</title></c:if>
-        <c:if test="${not empty title}"><title>${title} | SkiRent System</title></c:if>
+        <title>${title} | SkiRent System</title>
+        <meta name="description" content="Aplikacja do zarządzania zasobami wypożyczalni sprzętu narciarskiego.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="keywords" content="narty, wypożyczalnia, system, java, servlet, jsp">
         <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/static/favicon.ico">
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
