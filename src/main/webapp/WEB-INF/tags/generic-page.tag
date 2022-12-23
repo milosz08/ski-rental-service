@@ -2,14 +2,17 @@
 <%@ tag description="Overall Page template" pageEncoding="UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<% request.setAttribute("title", PageTitle.START_PAGE.getName()); %>
-<jsp:useBean id="title" type="java.lang.String" scope="request"/>
+<%
+    final String title = (String) request.getAttribute("title");
+    request.setAttribute("pageTitle", title != null ? title : PageTitle.START_PAGE.getName());
+%>
+<jsp:useBean id="pageTitle" type="java.lang.String" scope="request"/>
 
 <!DOCTYPE html>
 <html lang="pl">
     <head>
         <meta charset="UTF-8">
-        <title>${title} | SkiRent System</title>
+        <title>${pageTitle} | SkiRent System</title>
         <meta name="description" content="Aplikacja do zarządzania zasobami wypożyczalni sprzętu narciarskiego.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="format-detection" content="telephone=no">
