@@ -2,8 +2,8 @@
  * Copyright (c) 2022 by multiple authors
  * Silesian University of Technology
  *
- *  File name: PageTitle.java
- *  Last modified: 22.12.2022, 17:51
+ *  File name: BannerType.java
+ *  Last modified: 25.12.2022, 03:12
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -19,12 +19,11 @@ import lombok.*;
 
 @Getter
 @AllArgsConstructor
-public enum PageTitle {
-    START_PAGE("Witamy"),
-    LOGIN_PAGE("Logowanie"),
-    HELLO_PAGE("Testowy servlet");
+public enum AlertType {
+    INFO("alert-success"),
+    WARN("alert-warning"),
+    ERROR("alert-danger"),
+    INACTIVE("");
 
-    //------------------------------------------------------------------------------------------------------------------
-
-    private final String name;
+    private final String cssClass;
 }

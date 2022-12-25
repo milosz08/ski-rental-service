@@ -2,8 +2,8 @@
  * Copyright (c) 2022 by multiple authors
  * Silesian University of Technology
  *
- *  File name: PageTitle.java
- *  Last modified: 22.12.2022, 17:51
+ *  File name: FormValueInfoTupleDto.java
+ *  Last modified: 25.12.2022, 01:36
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -11,20 +11,17 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentalservice.util;
+package pl.polsl.skirentalservice.dto;
 
 import lombok.*;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-@Getter
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
-public enum PageTitle {
-    START_PAGE("Witamy"),
-    LOGIN_PAGE("Logowanie"),
-    HELLO_PAGE("Testowy servlet");
-
-    //------------------------------------------------------------------------------------------------------------------
-
-    private final String name;
+public class FormValueInfoTupleDto {
+    private String value;
+    private String errorStyle;
+    private String message;
 }

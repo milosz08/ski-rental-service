@@ -2,8 +2,8 @@
  * Copyright (c) 2022 by multiple authors
  * Silesian University of Technology
  *
- *  File name: PageTitle.java
- *  Last modified: 22.12.2022, 17:51
+ *  File name: LoginFormDto.java
+ *  Last modified: 25.12.2022, 02:38
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -11,20 +11,26 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentalservice.util;
+package pl.polsl.skirentalservice.dto;
 
 import lombok.*;
+import static pl.polsl.skirentalservice.util.AlertType.INACTIVE;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-@Getter
+@Data
+@Builder
 @AllArgsConstructor
-public enum PageTitle {
-    START_PAGE("Witamy"),
-    LOGIN_PAGE("Logowanie"),
-    HELLO_PAGE("Testowy servlet");
+public class LoginFormDto {
+    private AlertTupleDto banner;
+    private FormValueInfoTupleDto login;
+    private FormValueInfoTupleDto password;
 
     //------------------------------------------------------------------------------------------------------------------
 
-    private final String name;
+    public LoginFormDto() {
+        this.banner = new AlertTupleDto(false, "", INACTIVE);
+        this.login = new FormValueInfoTupleDto();
+        this.password = new FormValueInfoTupleDto();
+    }
 }

@@ -21,7 +21,8 @@
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/webjars/bootstrap-icons/1.10.2/font/bootstrap-icons.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/webjars/bootstrap/5.2.3/css/bootstrap.min.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/static/styles.css">
 
