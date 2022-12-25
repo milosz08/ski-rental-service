@@ -1,4 +1,4 @@
-<%@ tag import="pl.polsl.skirentservice.util.PageTitle" %>
+<%@ tag import="pl.polsl.skirentalservice.util.PageTitle" %>
 <%@ tag description="Overall Page template" pageEncoding="UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 

@@ -11,12 +11,12 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentservice.dao;
+package pl.polsl.skirentalservice.dao;
 
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
-import pl.polsl.skirentservice.core.EntityInjector;
+import pl.polsl.skirentalservice.core.EntityInjector;
 
 //----------------------------------------------------------------------------------------------------------------------
 

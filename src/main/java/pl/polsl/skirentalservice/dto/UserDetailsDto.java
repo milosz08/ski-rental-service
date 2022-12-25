@@ -11,10 +11,10 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentservice.dto;
+package pl.polsl.skirentalservice.dto;
 
 import lombok.Data;
-import pl.polsl.skirentservice.dao.UserEntity;
+import pl.polsl.skirentalservice.dao.UserEntity;
 
 //----------------------------------------------------------------------------------------------------------------------
 

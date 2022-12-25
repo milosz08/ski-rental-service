@@ -11,7 +11,7 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentservice.util;
+package pl.polsl.skirentalservice.util;
 
 import lombok.*;
 

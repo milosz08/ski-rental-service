@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
-<jsp:useBean id="users" type="java.util.List<pl.polsl.skirentservice.dto.UserDetailsDto>" scope="request"/>
+<jsp:useBean id="users" type="java.util.List<pl.polsl.skirentalservice.dto.UserDetailsDto>" scope="request"/>
 
 <p:generic-page>
     <jsp:include page="../partials/owner-header.jsp" />

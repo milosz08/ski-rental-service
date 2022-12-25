@@ -11,7 +11,7 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentservice.domain;
+package pl.polsl.skirentalservice.domain;
 
 import java.io.*;
 import java.util.List;
@@ -23,10 +23,10 @@ import jakarta.servlet.ServletException;
 
 import org.hibernate.Session;
 
-import pl.polsl.skirentservice.dto.UserDetailsDto;
-import pl.polsl.skirentservice.core.HibernateFactory;
+import pl.polsl.skirentalservice.dto.UserDetailsDto;
+import pl.polsl.skirentalservice.core.HibernateFactory;
 
-import static pl.polsl.skirentservice.util.PageTitle.HELLO_PAGE;
+import static pl.polsl.skirentalservice.util.PageTitle.HELLO_PAGE;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -40,7 +40,7 @@ public class HelloServlet extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         final Session session = factory.open();
 
-        final String query = "SELECT new pl.polsl.skirentservice.dto.UserDetailsDto(u) FROM UserEntity u";
+        final String query = "SELECT new pl.polsl.skirentalservice.dto.UserDetailsDto(u) FROM UserEntity u";
         final List<UserDetailsDto> allUsers = session.createQuery(query, UserDetailsDto.class).list();
 
         session.close();

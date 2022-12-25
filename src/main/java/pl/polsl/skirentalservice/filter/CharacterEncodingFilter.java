@@ -11,7 +11,7 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentservice.filter;
+package pl.polsl.skirentalservice.filter;
 
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.*;
@@ -31,6 +31,7 @@ public class CharacterEncodingFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
         res.setCharacterEncoding("UTF-8");
         chain.doFilter(req, res);
     }

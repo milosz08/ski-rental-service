@@ -11,7 +11,7 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentservice.core;
+package pl.polsl.skirentalservice.core;
 
 import java.lang.annotation.*;
 
