@@ -1,0 +1,89 @@
+/*
+ * Copyright (c) 2022 by multiple authors
+ * Silesian University of Technology
+ *
+ *  File name: build.gradle.kts
+ *  Last modified: 22.12.2022, 22:24
+ *  Project name: ski-rental-service
+ *
+ * This project was written for the purpose of a subject taken in the study of Computer Science.
+ * This project is not commercial in any way and does not represent a viable business model
+ * of the application. Project created for educational purposes only.
+ */
+
+plugins {
+    id 'java'
+    id 'war'
+    id 'co.uzzu.dotenv.gradle' version '2.0.0'
+}
+
+repositories {
+    mavenCentral()
+}
+
+compileJava.options.encoding = 'UTF-8'
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+ext {
+    // dependencies versions
+    jakkartaApiVersion      = '5.0.0'
+    junitVersion            = '5.9.0'
+    lombokVersion           = '1.18.24'
+    mySqlVersion            = '8.0.31'
+    hibernateVersion        = '6.1.6.Final'
+    liquibaseVersion        = '4.18.0'
+    liquibaseSlf4jVersion   = '4.1.0'
+    jstlVersion             = '3.0.1'
+    ejbVersion              = '4.0.1'
+    loggerVersion           = '2.0.6'
+    reflectionsVersion      = '0.10.2'
+
+    // webjars
+    bootstrapVersion        = '5.2.3'
+    bootstrapIconsVersion   = '1.10.2'
+    popperJsVersion         = '1.16.1'
+    jqueryVersion           = '3.6.2'
+}
+
+java.sourceCompatibility = JavaVersion.VERSION_11
+java.targetCompatibility = JavaVersion.VERSION_11
+
+dependencies {
+    implementation "org.webjars.bower:jquery:${jqueryVersion}"
+    implementation "org.webjars.npm:popper.js:${popperJsVersion}"
+    implementation "org.webjars:bootstrap:${bootstrapVersion}"
+    implementation "org.webjars.npm:bootstrap-icons:${bootstrapIconsVersion}"
+
+    implementation "org.slf4j:slf4j-api:${loggerVersion}"
+    implementation "com.mattbertolini:liquibase-slf4j:${liquibaseSlf4jVersion}"
+    implementation "org.projectlombok:lombok:${lombokVersion}"
+    implementation "org.reflections:reflections:${reflectionsVersion}"
+
+    implementation "mysql:mysql-connector-java:${mySqlVersion}"
+    implementation "org.hibernate:hibernate-core:${hibernateVersion}"
+    implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
+
+    implementation "jakarta.ejb:jakarta.ejb-api:${ejbVersion}"
+    implementation "org.glassfish.web:jakarta.servlet.jsp.jstl:${jstlVersion}"
+    compileOnly "jakarta.servlet:jakarta.servlet-api:${jakkartaApiVersion}"
+
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+}
+
+processResources {
+    filesMatching([ '**/hibernate.cfg.xml' ]) {
+        filter org.apache.tools.ant.filters.ReplaceTokens, tokens: [
+                'db_url': env.DB_URL.value,
+                'db_user': env.DB_USERNAME.value,
+                'db_pass': env.DB_PASSWORD.value,
+        ]
+    }
+}
+
+tasks.war {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

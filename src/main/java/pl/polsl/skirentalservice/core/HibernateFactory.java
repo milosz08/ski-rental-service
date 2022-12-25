@@ -20,7 +20,6 @@ import org.reflections.util.*;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 
-import java.io.*;
 import java.util.*;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
@@ -55,14 +54,9 @@ public class HibernateFactory {
 
     HibernateFactory() {
         try {
-            final Properties authProperties = new Properties();
-            authProperties.load(HibernateFactory.class.getResourceAsStream(DB_AUTH_PROP));
-
-            final Configuration configuration = new Configuration()
-                    .configure(HIBERNATE_CONF)
-                    .addProperties(authProperties);
-
+            final Configuration configuration = new Configuration().configure(HIBERNATE_CONF);
             loadMappedHibernateEntities(configuration);
+
             final ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                     .applySettings(configuration.getProperties()).build();
 
@@ -80,8 +74,6 @@ public class HibernateFactory {
             LOGGER.error("Unable to connect with database. Exception: {}", ex.getMessage());
         } catch (LiquibaseException ex) {
             LOGGER.error("Unable to load Liquibase configuration. Exception: {}", ex.getMessage());
-        } catch (IOException ex) {
-            LOGGER.error("Insert hibernate.properties file in resources/db directory. Exception: {}", ex.getMessage());
         }
     }
 
@@ -89,7 +81,7 @@ public class HibernateFactory {
 
     private void loadMappedHibernateEntities(final Configuration conf) {
         final org.reflections.Configuration configuration = new ConfigurationBuilder()
-                .setUrls(ClasspathHelper.forPackage("pl.polsl.skirentservice"))
+                .setUrls(ClasspathHelper.forPackage("pl.polsl.skirentalservice"))
                 .setScanners(Scanners.TypesAnnotated);
 
         final Reflections reflections = new Reflections(configuration);
