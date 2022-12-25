@@ -9,20 +9,10 @@ Simple enterprise-class application for managing a ski rental company. The softw
 > DISCLAIMER: I realize that the very specification of servlets, JSP pages and monolithic applications is no longer a standard today, but for the purpose of a simple project, it is just fine.
 
 ## Table of content
-* [Application stack](#application-stack)
 * [Clone and install](#clone-and-install)
 * [Prepare runtime configuration](#prepare-runtime-configuration)
+* [Application stack](#application-stack)
 * [Project status](#project-status)
-
-<a name="application-stack"></a>
-## Application stack
-* [Jakarta EE](https://jakarta.ee/release/10/)
-* [EJB (Enterprise JavaBean)](https://www.oracle.com/java/technologies/enterprise-javabeans-technology.html)
-* [JSP/JSTL](https://www.oracle.com/java/technologies/jspt.html)
-* [Bootstrap](https://getbootstrap.com/)
-* [MySQL](https://www.mysql.com/)
-* [Hibernate](https://hibernate.org/)
-* [Liquibase](https://www.liquibase.org/)
 
 <a name="clone-and-install"></a>
 ## Clone and install
@@ -46,6 +36,16 @@ DB_PASSWORD        = xxxxx -> insert here database password
 3. Create new user in Wildfly application server by running `add-user.sh` (for UNIX) or `add-user.bat` (for windows) in `bin` directory in Wildfly application server folder. 
 4. Configure runtime server in your IDE [example for IntellijIDEA](https://medium.com/geekculture/how-to-configure-and-deploy-webapps-with-wildfly-application-server-in-intellij-idea-f104a6c2a0db).
 5. By default, application listen on `127.0.0.1:8080` and Wildfly admin dashboard is available on `127.0.0.1:9990`.
+
+<a name="application-stack"></a>
+## Application stack
+* [Jakarta EE](https://jakarta.ee/release/10/)
+* [EJB (Enterprise JavaBean)](https://www.oracle.com/java/technologies/enterprise-javabeans-technology.html)
+* [JSP/JSTL](https://www.oracle.com/java/technologies/jspt.html)
+* [Bootstrap](https://getbootstrap.com/)
+* [MySQL](https://www.mysql.com/)
+* [Hibernate](https://hibernate.org/)
+* [Liquibase](https://www.liquibase.org/)
 
 <a name="project-status"></a>
 ## Project status
