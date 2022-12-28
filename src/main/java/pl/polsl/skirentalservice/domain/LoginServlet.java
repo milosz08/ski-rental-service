@@ -32,6 +32,7 @@ import pl.polsl.skirentalservice.util.UserRole;
 import pl.polsl.skirentalservice.dao.UserEntity;
 
 import static pl.polsl.skirentalservice.util.PageTitle.LOGIN_PAGE;
+import static pl.polsl.skirentalservice.util.SessionAttribute.LOGOUT_MODAL_VISIBLE;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -47,7 +48,12 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        redirectToLogin(req, res, new AlertTupleDto(), new LoginFormResDto());
+        final HttpSession httpSession = req.getSession();
+        final boolean logoutModalVisible = !Objects.isNull(httpSession.getAttribute(LOGOUT_MODAL_VISIBLE.getName()));
+        if (logoutModalVisible) {
+            httpSession.removeAttribute(LOGOUT_MODAL_VISIBLE.getName());
+        }
+        redirectToLogin(req, res, new AlertTupleDto(), new LoginFormResDto(), logoutModalVisible);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -65,7 +71,7 @@ public class LoginServlet extends HttpServlet {
 
         final AlertTupleDto alert = new AlertTupleDto();
         if (!validator.allFieldsIsValid(reqDto)) {
-            redirectToLogin(req, res, alert, resDto);
+            redirectToLogin(req, res, alert, resDto, false);
             return;
         }
 
@@ -96,7 +102,7 @@ public class LoginServlet extends HttpServlet {
 
         session.close();
         if (redirectToLogin) {
-            redirectToLogin(req, res, alert, resDto);
+            redirectToLogin(req, res, alert, resDto, false);
             return;
         }
         if (UserRole.isSeller(user.getRole())) {
@@ -111,9 +117,10 @@ public class LoginServlet extends HttpServlet {
     //------------------------------------------------------------------------------------------------------------------
 
     private void redirectToLogin(HttpServletRequest req, HttpServletResponse res, AlertTupleDto alert,
-                                 LoginFormResDto resDto) throws ServletException, IOException {
+                                 LoginFormResDto resDto, boolean logoutModalVisible) throws ServletException, IOException {
         req.setAttribute("alertData", alert);
         req.setAttribute("loginData", resDto);
+        req.setAttribute("logoutModalVisible", logoutModalVisible);
         req.setAttribute("title", LOGIN_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(req, res);
     }

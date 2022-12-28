@@ -4,9 +4,29 @@
 
 <jsp:useBean id="loginData" type="pl.polsl.skirentalservice.dto.login.LoginFormResDto" scope="request"/>
 <jsp:useBean id="alertData" type="pl.polsl.skirentalservice.dto.AlertTupleDto" scope="request"/>
+<jsp:useBean id="logoutModalVisible" type="java.lang.Boolean" scope="request"/>
 
 <p:generic-page>
-    <main class="d-flex justify-content-center align-items-center bg-light vh-100">
+    <c:if test="${logoutModalVisible}">
+        <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="false">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="logoutModalLabel">Wylogowano z systemu</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Nastąpiło poprawne wylogowanie z systemu. Aby ponownie przejść do panelu, zaloguj się ponownie
+                        na konto.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij okno</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </c:if>
+    <main class="d-flex justify-content-center align-items-center vh-100">
         <div class="container-sm mx-2 media-small-size-box">
             <c:if test="${alertData.active}">
                 <div class="alert ${alertData.type.cssClass} alert-dismissible mb-3 fade show" role="alert">

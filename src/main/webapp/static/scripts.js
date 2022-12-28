@@ -41,6 +41,17 @@ const passVisibilityUI = {
     },
 };
 
+const showLogoutModalOnLoad = {
+    modalElm: document.getElementById('logoutModal'),
+
+    showModalInvoker: function() {
+        if (this.modalElm === null) return;
+        const myModal = new bootstrap.Modal(this.modalElm, {});
+        myModal.show();
+    },
+};
+
 window.addEventListener('load', function() {
+    showLogoutModalOnLoad.showModalInvoker();
     passVisibilityUI.pswVisibilityInvoker();
 });
