@@ -14,19 +14,23 @@
 package pl.polsl.skirentalservice.filter;
 
 import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
-import jakarta.servlet.http.HttpFilter;
 
 import java.io.IOException;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 @WebFilter(urlPatterns = "/*", initParams = @WebInitParam(name = "mood", value = "awake"))
-public class CharacterEncodingFilter extends HttpFilter {
+public class AllRoutesFilter extends HttpFilter {
 
     @Override
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws ServletException, IOException {
+    public void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
+            throws ServletException,IOException {
         req.setCharacterEncoding("UTF-8");
+        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        res.setHeader("Pragma", "no-cache");
+        res.setDateHeader("Expires", 0);
         res.setCharacterEncoding("UTF-8");
         chain.doFilter(req, res);
     }

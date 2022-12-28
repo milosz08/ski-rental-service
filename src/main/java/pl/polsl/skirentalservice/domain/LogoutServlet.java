@@ -39,7 +39,7 @@ public class LogoutServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
         final HttpSession httpSession = req.getSession();
         final var detailsDto = (LoggedUserDetailsDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
-        if (!Objects.isNull(detailsDto) && !httpSession.isNew()) {
+        if (!Objects.isNull(detailsDto)) {
             httpSession.removeAttribute(LOGGED_USER_DETAILS.getName());
             httpSession.setAttribute(LOGOUT_MODAL_VISIBLE.getName(), true);
             LOGGER.info("Successful logout from user account. Account data: {}", detailsDto);
