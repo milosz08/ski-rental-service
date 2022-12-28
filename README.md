@@ -8,7 +8,7 @@ Simple enterprise-class application for managing a ski rental company. The softw
 
 See live application at: [skirental.miloszgilga.pl](https://skirental.miloszgilga.pl/)<br>
 
-> DISCLAIMER: I realize that the very specification of servlets, JSP pages and monolithic applications is no longer a standard today, but for the purpose of a simple project, it is just fine.
+> DISCLAIMER: I realize that the specification of servlets, JSP pages and monolithic applications is no longer a standard today, but for the purpose of a simple project, it is just fine.
 
 ## Table of content
 * [Clone and install](#clone-and-install)
