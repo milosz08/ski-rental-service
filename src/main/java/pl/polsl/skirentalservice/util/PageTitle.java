@@ -23,7 +23,7 @@ public enum PageTitle {
     NOT_FOUND_4O4("404"),
     LOGIN_PAGE("Logowanie"),
     OWNER_DASHBOARD_PAGE("Panel właściciela"),
-    SELLER_DASHBOARD_PAGE("Panel sprzedawcy");
+    SELLER_DASHBOARD_PAGE("Panel pracownika");
 
     //------------------------------------------------------------------------------------------------------------------
 

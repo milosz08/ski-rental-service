@@ -29,6 +29,6 @@ public class OwnerDashboardServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         req.setAttribute("title", OWNER_DASHBOARD_PAGE.getName());
-        req.getRequestDispatcher("/WEB-INF/pages/owner-dashboard.jsp").forward(req, res);
+        req.getRequestDispatcher("/WEB-INF/pages/owner/owner-dashboard.jsp").forward(req, res);
     }
 }

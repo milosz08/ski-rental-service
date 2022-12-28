@@ -29,6 +29,6 @@ public class SellerDashboardServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         req.setAttribute("title", SELLER_DASHBOARD_PAGE.getName());
-        req.getRequestDispatcher("/WEB-INF/pages/seller-dashboard.jsp").forward(req, res);
+        req.getRequestDispatcher("/WEB-INF/pages/seller/seller-dashboard.jsp").forward(req, res);
     }
 }
