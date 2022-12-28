@@ -1,0 +1,6 @@
+-- liquibase formatted sql
+-- changeset milosz08:aq3
+
+ALTER TABLE user_addresses
+ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL AFTER user_id,
+ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL ON UPDATE CURRENT_TIMESTAMP AFTER created_at;

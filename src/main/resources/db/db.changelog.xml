@@ -5,9 +5,13 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
 
     <!-- db migrations -->
-    <include file="changelog/2022-12_migrations/aq1_2022-12-22__users-partial-table.sql" relativeToChangelogFile="true"/>
+    <include file="changelog/2022-12_migrations/aq1_2022-12-28__users-with-address-table.sql" relativeToChangelogFile="true"/>
+    <include file="changelog/2022-12_migrations/aq2_2022-12-28__split-user-phone-number.sql" relativeToChangelogFile="true"/>
+    <include file="changelog/2022-12_migrations/aq3_2022-12-28__add-autidable-data-to-user-address.sql" relativeToChangelogFile="true"/>
 
     <!-- db insertions -->
-    <include file="assertions/fd1_filler__default-user-data.sql" relativeToChangelogFile="true"/>
+    <include file="assertions/fd1_filler__user-roles-data.sql" relativeToChangelogFile="true"/>
+    <include file="assertions/fd2_filler__default-users-extended-data.sql" relativeToChangelogFile="true"/>
+    <include file="assertions/fd3_filler__add-phone-area-separate-column.sql" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
