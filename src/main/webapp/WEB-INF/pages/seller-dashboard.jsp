@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
-<p:owner-wrapper>
-    <div>To jest strona główna panelu właściciela.</div>
+<p:seller-wrapper>
+    <div>To jest strona główna panelu sprzedawcy/pracownika.</div>
     <a class="btn btn-sm btn-primary" href="${pageContext.request.contextPath}/">Powrót do strony startowej</a>
-</p:owner-wrapper>
+</p:seller-wrapper>

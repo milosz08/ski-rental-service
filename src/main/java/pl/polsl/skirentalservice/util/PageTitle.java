@@ -22,7 +22,8 @@ import lombok.*;
 public enum PageTitle {
     START_PAGE("Witamy"),
     LOGIN_PAGE("Logowanie"),
-    HELLO_PAGE("Testowy servlet");
+    OWNER_DASHBOARD_PAGE("Panel właściciela"),
+    SELLER_DASHBOARD_PAGE("Panel sprzedawcy");
 
     //------------------------------------------------------------------------------------------------------------------
 
