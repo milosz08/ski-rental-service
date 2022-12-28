@@ -91,7 +91,7 @@ public class LoginServlet extends HttpServlet {
                 LOGGER.warn("Attempt to login with invalid credentials. User: {}", user);
             } else {
                 final HttpSession httpSession = req.getSession();
-                httpSession.setAttribute("logged_user_details", new LoggedUserDetails(user));
+                httpSession.setAttribute("logged_user_details", new LoggedUserDetailsDto(user));
             }
         } else {
             alert.setActive(true);

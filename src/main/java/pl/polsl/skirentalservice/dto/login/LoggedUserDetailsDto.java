@@ -20,7 +20,7 @@ import pl.polsl.skirentalservice.dao.UserEntity;
 //----------------------------------------------------------------------------------------------------------------------
 
 @Data
-public class LoggedUserDetails {
+public class LoggedUserDetailsDto {
     private String login;
     private String fullName;
     private String roleName;
@@ -28,10 +28,22 @@ public class LoggedUserDetails {
 
     //------------------------------------------------------------------------------------------------------------------
 
-    public LoggedUserDetails(UserEntity user) {
+    public LoggedUserDetailsDto(UserEntity user) {
         this.login = user.getLogin();
         this.fullName = user.getFirstName() + " " + user.getLastName();
         this.roleName = user.getRole().getRoleName();
         this.roleAlias = user.getRole().getAlias();
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+
+    @Override
+    public String toString() {
+        return "{" +
+                "login='" + login + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", roleName='" + roleName + '\'' +
+                ", roleAlias=" + roleAlias +
+                '}';
     }
 }
