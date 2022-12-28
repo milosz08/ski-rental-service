@@ -4,7 +4,7 @@
 [![Generic badge](https://img.shields.io/badge/Web%20Server-Wildfly/JBOSS%20-brown.svg)](https://www.wildfly.org/)&nbsp;&nbsp;
 [![Generic badge](https://img.shields.io/badge/Packaging-WAR-yellow.svg)](https://en.wikipedia.org/wiki/WAR_(file_format))&nbsp;&nbsp;
 <br><br>
-Simple enterprise-class application for managing a ski rental company. The software is closed (only people in the enterprise can use it). The project was made for a subject in college. Created only for learning purposes. Jakarta EE and EJB specifications were used in the development. This application can be run on an application server that supports Jakarta EE and EJB, such as JBOSS/Wildfly or GlassFish.
+Simple enterprise-class application for managing a ski rental company. The software is closed (only people in the enterprise can use it). This project was made for a subject in college programming course. Created only for learning purposes. Jakarta EE and EJB specifications were used in the development. This application can be run on an application server that supports Jakarta EE and EJB, such as JBOSS/Wildfly or GlassFish.
 
 See live application at: [skirental.miloszgilga.pl](https://skirental.miloszgilga.pl/)<br>
 
