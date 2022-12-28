@@ -28,17 +28,19 @@ tasks.withType(JavaCompile) {
 
 ext {
     // dependencies versions
-    jakkartaApiVersion      = '5.0.0'
-    junitVersion            = '5.9.0'
-    lombokVersion           = '1.18.24'
-    mySqlVersion            = '8.0.31'
-    hibernateVersion        = '6.1.6.Final'
-    liquibaseVersion        = '4.18.0'
-    liquibaseSlf4jVersion   = '4.1.0'
-    jstlVersion             = '3.0.1'
-    ejbVersion              = '4.0.1'
-    loggerVersion           = '2.0.6'
-    reflectionsVersion      = '0.10.2'
+    jakkartaApiVersion          = '5.0.0'
+    junitVersion                = '5.9.0'
+    lombokVersion               = '1.18.24'
+    mySqlVersion                = '8.0.31'
+    hibernateVersion            = '6.1.6.Final'
+    hibernateValidatorVersion   = '8.0.0.Final'
+    liquibaseVersion            = '4.18.0'
+    liquibaseSlf4jVersion       = '4.1.0'
+    jstlVersion                 = '3.0.1'
+    ejbVersion                  = '4.0.1'
+    loggerVersion               = '2.0.6'
+    reflectionsVersion          = '0.10.2'
+    bcryptVersion               = '0.9.0'
 
     // webjars
     bootstrapVersion            = '5.2.3'
@@ -60,9 +62,11 @@ dependencies {
     implementation "com.mattbertolini:liquibase-slf4j:${liquibaseSlf4jVersion}"
     implementation "org.projectlombok:lombok:${lombokVersion}"
     implementation "org.reflections:reflections:${reflectionsVersion}"
+    implementation "at.favre.lib:bcrypt:${bcryptVersion}"
 
     implementation "mysql:mysql-connector-java:${mySqlVersion}"
     implementation "org.hibernate:hibernate-core:${hibernateVersion}"
+    implementation "org.hibernate.validator:hibernate-validator:${hibernateValidatorVersion}"
     implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
 
     implementation "jakarta.ejb:jakarta.ejb-api:${ejbVersion}"
