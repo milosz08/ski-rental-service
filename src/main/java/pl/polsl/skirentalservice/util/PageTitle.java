@@ -20,7 +20,7 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 public enum PageTitle {
-    START_PAGE("Witamy"),
+    NOT_FOUND_4O4("404"),
     LOGIN_PAGE("Logowanie"),
     OWNER_DASHBOARD_PAGE("Panel właściciela"),
     SELLER_DASHBOARD_PAGE("Panel sprzedawcy");
