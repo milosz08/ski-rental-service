@@ -14,6 +14,7 @@
 package pl.polsl.skirentalservice.domain;
 
 import org.slf4j.*;
+import org.hibernate.Session;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 
 import jakarta.ejb.EJB;
@@ -24,7 +25,6 @@ import jakarta.servlet.annotation.WebServlet;
 import java.util.Objects;
 import java.io.IOException;
 
-import org.hibernate.Session;
 import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.dto.login.*;
