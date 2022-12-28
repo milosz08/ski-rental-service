@@ -24,4 +24,10 @@ public class FormValueInfoTupleDto {
     private String value;
     private String errorStyle;
     private String message;
+
+    //------------------------------------------------------------------------------------------------------------------
+
+    public FormValueInfoTupleDto(String value) {
+        this.value = value;
+    }
 }

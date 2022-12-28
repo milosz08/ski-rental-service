@@ -2,14 +2,15 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
-<jsp:useBean id="loginData" type="pl.polsl.skirentalservice.dto.LoginFormDto" scope="request"/>
+<jsp:useBean id="loginData" type="pl.polsl.skirentalservice.dto.login.LoginFormResDto" scope="request"/>
+<jsp:useBean id="alertData" type="pl.polsl.skirentalservice.dto.AlertTupleDto" scope="request"/>
 
 <p:generic-page>
     <main class="d-flex justify-content-center align-items-center bg-light vh-100">
         <div class="container-sm mx-2 media-small-size-box">
-            <c:if test="${loginData.banner.active}">
-                <div class="alert ${loginData.banner.type.cssClass} alert-dismissible mb-3 fade show" role="alert">
-                    ${loginData.banner.message}
+            <c:if test="${alertData.active}">
+                <div class="alert ${alertData.type.cssClass} alert-dismissible mb-3 fade show" role="alert">
+                    ${alertData.message}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             </c:if>

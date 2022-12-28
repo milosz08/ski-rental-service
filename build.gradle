@@ -41,10 +41,10 @@ ext {
     reflectionsVersion      = '0.10.2'
 
     // webjars
-    bootstrapVersion        = '5.2.3'
-    bootstrapIconsVersion   = '1.10.2'
-    popperJsVersion         = '1.16.1'
-    jqueryVersion           = '3.6.2'
+    bootstrapVersion            = '5.2.3'
+    bootstrapIconsVersion       = '1.10.2'
+    popperJsVersion             = '1.16.1'
+    jqueryVersion               = '3.6.2'
 }
 
 java.sourceCompatibility = JavaVersion.VERSION_11

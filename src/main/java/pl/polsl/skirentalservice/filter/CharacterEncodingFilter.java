@@ -15,30 +15,19 @@ package pl.polsl.skirentalservice.filter;
 
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.*;
+import jakarta.servlet.http.HttpFilter;
 
 import java.io.IOException;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 @WebFilter(urlPatterns = "/*", initParams = @WebInitParam(name = "mood", value = "awake"))
-public class CharacterEncodingFilter implements Filter {
-
-    @Override
-    public void init(FilterConfig config) {
-    }
-
-    //------------------------------------------------------------------------------------------------------------------
+public class CharacterEncodingFilter extends HttpFilter {
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
         res.setCharacterEncoding("UTF-8");
         chain.doFilter(req, res);
-    }
-
-    //------------------------------------------------------------------------------------------------------------------
-
-    @Override
-    public void destroy() {
     }
 }

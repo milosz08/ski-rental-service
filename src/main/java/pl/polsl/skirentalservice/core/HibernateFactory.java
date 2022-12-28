@@ -40,7 +40,7 @@ import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
 //----------------------------------------------------------------------------------------------------------------------
 
 @Startup
-@Singleton
+@Singleton(name = "HibernateFactoryBean")
 public class HibernateFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HibernateFactory.class);

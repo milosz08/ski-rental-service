@@ -22,8 +22,7 @@ import lombok.*;
 public enum AlertType {
     INFO("alert-success"),
     WARN("alert-warning"),
-    ERROR("alert-danger"),
-    INACTIVE("");
+    ERROR("alert-danger");
 
     private final String cssClass;
 }

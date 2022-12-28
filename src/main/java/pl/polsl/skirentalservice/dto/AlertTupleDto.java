@@ -16,6 +16,8 @@ package pl.polsl.skirentalservice.dto;
 import lombok.*;
 import pl.polsl.skirentalservice.util.AlertType;
 
+import static pl.polsl.skirentalservice.util.AlertType.ERROR;
+
 //----------------------------------------------------------------------------------------------------------------------
 
 @Data
@@ -24,4 +26,10 @@ public class AlertTupleDto {
     private boolean active;
     private String message;
     private AlertType type;
+
+    public AlertTupleDto() {
+        this.active = false;
+        this.message = "";
+        this.type = ERROR;
+    }
 }

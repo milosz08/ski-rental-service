@@ -5,7 +5,7 @@
          version="5.0">
     <display-name>ski-rental-service</display-name>
     <session-config>
-        <session-timeout>20</session-timeout>
+        <session-timeout>25</session-timeout>
     </session-config>
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
