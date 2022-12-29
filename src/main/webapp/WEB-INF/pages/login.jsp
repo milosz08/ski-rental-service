@@ -2,12 +2,12 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
-<jsp:useBean id="loginData" type="pl.polsl.skirentalservice.dto.login.LoginFormResDto" scope="request"/>
-<jsp:useBean id="alertData" type="pl.polsl.skirentalservice.dto.AlertTupleDto" scope="request"/>
-<jsp:useBean id="logoutModalVisible" type="java.lang.Boolean" scope="request"/>
+<jsp:useBean id="loginData" class="pl.polsl.skirentalservice.dto.login.LoginFormResDto" scope="request"/>
+<jsp:useBean id="alertData" class="pl.polsl.skirentalservice.dto.AlertTupleDto" scope="request"/>
+<jsp:useBean id="logoutModal" class="pl.polsl.skirentalservice.dto.logout.LogoutModalDto" scope="request"/>
 
 <p:generic-page.wrapper>
-    <c:if test="${logoutModalVisible}">
+    <c:if test="${logoutModal.visible}">
         <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="false">
             <div class="modal-dialog">
                 <div class="modal-content">

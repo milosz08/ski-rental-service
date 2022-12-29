@@ -53,7 +53,9 @@ public class LoginServlet extends HttpServlet {
         if (logoutModalVisible) {
             httpSession.removeAttribute(LOGOUT_MODAL_VISIBLE.getName());
         }
-        redirectToLogin(req, res, new AlertTupleDto(), new LoginFormResDto(), logoutModalVisible);
+        req.setAttribute("logoutModal", new LogoutModalDto(logoutModalVisible));
+        req.setAttribute("title", LOGIN_PAGE.getName());
+        req.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(req, res);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -68,13 +70,11 @@ public class LoginServlet extends HttpServlet {
                 .login(validator.validateField(reqDto, "login", login))
                 .password(validator.validateField(reqDto, "password"))
                 .build();
-
-        final AlertTupleDto alert = new AlertTupleDto();
         if (!validator.allFieldsIsValid(reqDto)) {
-            redirectToLogin(req, res, alert, resDto, false);
+            redirectToLogin(req, res, resDto);
             return;
         }
-
+        final AlertTupleDto alert = new AlertTupleDto();
         final Session session = database.open();
         final Transaction transaction = session.beginTransaction();
 
@@ -126,11 +126,9 @@ public class LoginServlet extends HttpServlet {
 
     //------------------------------------------------------------------------------------------------------------------
 
-    private void redirectToLogin(HttpServletRequest req, HttpServletResponse res, AlertTupleDto alert,
-                                 LoginFormResDto resDto, boolean logoutModalVisible) throws ServletException, IOException {
-        req.setAttribute("alertData", alert);
+    private void redirectToLogin(HttpServletRequest req, HttpServletResponse res, LoginFormResDto resDto)
+            throws ServletException, IOException {
         req.setAttribute("loginData", resDto);
-        req.setAttribute("logoutModalVisible", logoutModalVisible);
         req.setAttribute("title", LOGIN_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(req, res);
     }
