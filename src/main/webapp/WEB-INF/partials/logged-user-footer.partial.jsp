@@ -16,7 +16,8 @@
                     <p class="my-0">
                         Zalogowano na konto:
                         <span class="text-dark">
-                            ${loggedUserDetails.fullName} (${loggedUserDetails.login}#${loggedUserDetails.id})
+                            ${loggedUserDetails.fullName} (${loggedUserDetails.gender.alias})
+                            (${loggedUserDetails.login}#${loggedUserDetails.id})
                         </span>
                     </p>
                     <p class="my-0">

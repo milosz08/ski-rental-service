@@ -15,8 +15,6 @@ package pl.polsl.skirentalservice.util;
 
 import lombok.*;
 
-import pl.polsl.skirentalservice.dao.RoleEntity;
-
 //----------------------------------------------------------------------------------------------------------------------
 
 @Getter
@@ -33,13 +31,13 @@ public enum UserRole {
 
     //------------------------------------------------------------------------------------------------------------------
 
-    public static boolean isSeller(RoleEntity role) {
-        return role.getAlias().equals(SELLER.alias);
+    public static boolean isSeller(Character alias) {
+        return alias.equals(SELLER.alias);
     }
 
     //------------------------------------------------------------------------------------------------------------------
 
-    public static boolean isOwner(RoleEntity role) {
-        return role.getAlias().equals(OWNER.alias);
+    public static boolean isOwner(Character alias) {
+        return alias.equals(OWNER.alias);
     }
 }

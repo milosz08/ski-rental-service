@@ -49,9 +49,9 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final HttpSession httpSession = req.getSession();
-        final boolean logoutModalVisible = !Objects.isNull(httpSession.getAttribute(LOGOUT_MODAL_VISIBLE.getName()));
+        final boolean logoutModalVisible = !Objects.isNull(httpSession.getAttribute(LOGOUT_MODAL.getName()));
         if (logoutModalVisible) {
-            httpSession.removeAttribute(LOGOUT_MODAL_VISIBLE.getName());
+            httpSession.removeAttribute(LOGOUT_MODAL.getName());
         }
         req.setAttribute("logoutModal", new LogoutModalDto(logoutModalVisible));
         req.setAttribute("title", LOGIN_PAGE.getName());
