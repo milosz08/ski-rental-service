@@ -18,9 +18,6 @@ import lombok.NoArgsConstructor;
 
 import pl.polsl.skirentalservice.core.*;
 
-import static jakarta.persistence.CascadeType.*;
-import static jakarta.persistence.FetchType.LAZY;
-
 //----------------------------------------------------------------------------------------------------------------------
 
 @Entity
@@ -31,9 +28,6 @@ public class RoleEntity extends AuditableEntity {
 
     @Column(name = "role_name")     private String roleName;
     @Column(name = "alias")         private Character alias;
-
-    @OneToOne(fetch = LAZY, cascade = { PERSIST, MERGE }, mappedBy = "role")
-    private UserEntity user;
 
     //------------------------------------------------------------------------------------------------------------------
 
@@ -53,11 +47,13 @@ public class RoleEntity extends AuditableEntity {
         this.alias = alias;
     }
 
-    UserEntity getUser() {
-        return user;
-    }
+    //------------------------------------------------------------------------------------------------------------------
 
-    void setUser(UserEntity user) {
-        this.user = user;
+    @Override
+    public String toString() {
+        return "{" +
+                "roleName='" + roleName + '\'' +
+                ", alias=" + alias +
+                '}';
     }
 }

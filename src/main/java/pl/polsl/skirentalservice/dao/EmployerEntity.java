@@ -2,8 +2,8 @@
  * Copyright (c) 2022 by multiple authors
  * Silesian University of Technology
  *
- *  File name: UserEntity.java
- *  Last modified: 22.12.2022, 20:37
+ *  File name: EmployerEntity.java
+ *  Last modified: 29/12/2022, 20:43
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 
 import pl.polsl.skirentalservice.core.*;
 
-import java.util.Set;
+import java.time.LocalDate;
 
 import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.FetchType.LAZY;
@@ -27,22 +27,22 @@ import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @EntityInjector
-@Table(name = "users")
+@Table(name = "employeers")
 @NoArgsConstructor
-public class UserEntity extends AuditableEntity {
+public class EmployerEntity extends AuditableEntity {
 
     @Column(name = "login")             private String login;
     @Column(name = "password")          private String password;
-    @Column(name = "first_name")        private String firstName;
-    @Column(name = "last_name")         private String lastName;
-    @Column(name = "pesel")             private String pesel;
-    @Column(name = "phone_area_code")   private Integer phoneAreaCode;
-    @Column(name = "phone_number")      private String phoneNumber;
-    @Column(name = "email_address")     private String emailAddress;
+    @Column(name = "hired_date")        private LocalDate hiredDate;
     @Column(name = "image_url")         private String imageUrl;
 
-    @OneToMany(fetch = LAZY, cascade = { PERSIST, REMOVE }, mappedBy = "user")
-    private Set<AddressEntity> addresses;
+    @OneToOne(fetch = LAZY, cascade = { PERSIST, MERGE })
+    @JoinColumn(name = "user_details_id", referencedColumnName = "id")
+    private UserDetailsEntity userDetails;
+
+    @OneToOne(fetch = LAZY, cascade = { PERSIST, MERGE })
+    @JoinColumn(name = "location_address_id", referencedColumnName = "id")
+    private LocationAddressEntity locationAddress;
 
     @OneToOne(fetch = LAZY, cascade = { PERSIST, MERGE })
     @JoinColumn(name = "role_id", referencedColumnName = "id")
@@ -66,52 +66,12 @@ public class UserEntity extends AuditableEntity {
         this.password = password;
     }
 
-    public String getFirstName() {
-        return firstName;
+    LocalDate getHiredDate() {
+        return hiredDate;
     }
 
-    void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    String getPesel() {
-        return pesel;
-    }
-
-    void setPesel(String pesel) {
-        this.pesel = pesel;
-    }
-
-    Integer getPhoneAreaCode() {
-        return phoneAreaCode;
-    }
-
-    void setPhoneAreaCode(Integer phoneAreaCode) {
-        this.phoneAreaCode = phoneAreaCode;
-    }
-
-    String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    String getEmailAddress() {
-        return emailAddress;
-    }
-
-    void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
+    void setHiredDate(LocalDate hiredDate) {
+        this.hiredDate = hiredDate;
     }
 
     public String getImageUrl() {
@@ -122,12 +82,20 @@ public class UserEntity extends AuditableEntity {
         this.imageUrl = imageUrl;
     }
 
-    Set<AddressEntity> getAddresses() {
-        return addresses;
+    public UserDetailsEntity getUserDetails() {
+        return userDetails;
     }
 
-    void setAddresses(Set<AddressEntity> address) {
-        this.addresses = address;
+    void setUserDetails(UserDetailsEntity userDetails) {
+        this.userDetails = userDetails;
+    }
+
+    LocationAddressEntity getLocationAddress() {
+        return locationAddress;
+    }
+
+    void setLocationAddress(LocationAddressEntity locationAddress) {
+        this.locationAddress = locationAddress;
     }
 
     public RoleEntity getRole() {
@@ -144,13 +112,11 @@ public class UserEntity extends AuditableEntity {
     public String toString() {
         return "{" +
                 "login='" + login + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", pesel='" + pesel + '\'' +
-                ", phoneAreaCode=" + phoneAreaCode +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", emailAddress='" + emailAddress + '\'' +
+                ", hiredDate=" + hiredDate +
                 ", imageUrl='" + imageUrl + '\'' +
+                ", userDetails=" + userDetails +
+                ", locationAddress=" + locationAddress +
+                ", role=" + role +
                 '}';
     }
 }

@@ -2,8 +2,8 @@
  * Copyright (c) 2022 by multiple authors
  * Silesian University of Technology
  *
- *  File name: AddressEntity.java
- *  Last modified: 28/12/2022, 00:09
+ *  File name: LocationAddressEntity.java
+ *  Last modified: 29/12/2022, 20:44
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -18,6 +18,8 @@ import lombok.NoArgsConstructor;
 
 import pl.polsl.skirentalservice.core.*;
 
+import java.util.Set;
+
 import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -25,9 +27,9 @@ import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @EntityInjector
-@Table(name = "user_addresses")
+@Table(name = "location_addresses")
 @NoArgsConstructor
-public class AddressEntity extends AuditableEntity {
+public class LocationAddressEntity extends AuditableEntity {
 
     @Column(name = "street")        private String street;
     @Column(name = "building_no")   private String buildingNo;
@@ -35,9 +37,8 @@ public class AddressEntity extends AuditableEntity {
     @Column(name = "city")          private String city;
     @Column(name = "postal_code")   private String postalCode;
 
-    @ManyToOne(fetch = LAZY, cascade = { PERSIST, REMOVE })
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private UserEntity user;
+    @OneToMany(fetch = LAZY, cascade = { PERSIST, MERGE }, mappedBy = "locationAddress")
+    private Set<CustomerEntity> customers;
 
     //------------------------------------------------------------------------------------------------------------------
 
@@ -81,11 +82,24 @@ public class AddressEntity extends AuditableEntity {
         this.postalCode = postalCode;
     }
 
-    UserEntity getUser() {
-        return user;
+    Set<CustomerEntity> getCustomers() {
+        return customers;
     }
 
-    void setUser(UserEntity user) {
-        this.user = user;
+    void setCustomers(Set<CustomerEntity> customers) {
+        this.customers = customers;
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+
+    @Override
+    public String toString() {
+        return "{" +
+                "street='" + street + '\'' +
+                ", buildingNo='" + buildingNo + '\'' +
+                ", apartmentNo='" + apartmentNo + '\'' +
+                ", city='" + city + '\'' +
+                ", postalCode='" + postalCode + '\'' +
+                '}';
     }
 }
