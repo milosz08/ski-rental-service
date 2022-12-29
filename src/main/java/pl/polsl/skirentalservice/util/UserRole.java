@@ -24,7 +24,7 @@ import pl.polsl.skirentalservice.dao.RoleEntity;
 public enum UserRole {
     USER("użytkownik", 'U'),
     SELLER("pracownik", 'P'),
-    OWNER("właściciel", 'W');
+    OWNER("kierownik", 'K');
 
     //------------------------------------------------------------------------------------------------------------------
 

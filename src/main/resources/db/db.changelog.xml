@@ -13,5 +13,6 @@
     <include file="assertions/fd1_filler__user-roles-data.sql" relativeToChangelogFile="true"/>
     <include file="assertions/fd2_filler__default-users-extended-data.sql" relativeToChangelogFile="true"/>
     <include file="assertions/fd3_filler__add-phone-area-separate-column.sql" relativeToChangelogFile="true"/>
+    <include file="assertions/fd4_filler__change-the-highest-rank.sql" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
