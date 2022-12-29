@@ -36,7 +36,11 @@ public class LoggedUserDetailsDto {
         this.fullName = user.getFirstName() + " " + user.getLastName();
         this.roleName = user.getRole().getRoleName();
         this.roleAlias = user.getRole().getAlias();
-        this.imageUrlPath = Objects.isNull(user.getImageUrl()) ? "static/default-profile-image.svg" : user.getImageUrl();
+        if (Objects.isNull(user.getImageUrl())) {
+            this.imageUrlPath = "static/images/default-profile-image.svg";
+        } else {
+            this.imageUrlPath = user.getImageUrl();
+        }
     }
 
     //------------------------------------------------------------------------------------------------------------------
