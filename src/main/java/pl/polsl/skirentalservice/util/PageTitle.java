@@ -22,8 +22,14 @@ import lombok.*;
 public enum PageTitle {
     NOT_FOUND_4O4("404"),
     LOGIN_PAGE("Logowanie"),
-    OWNER_DASHBOARD_PAGE("Panel właściciela"),
-    SELLER_DASHBOARD_PAGE("Panel pracownika");
+
+    OWNER_DASHBOARD_PAGE("Panel kierownika"),
+    OWNER_PROFILE_PAGE("Konto kierownika"),
+    OWNER_SETTINGS_PAGE("Ustawienia konta kierownika"),
+
+    SELLER_DASHBOARD_PAGE("Panel pracownika"),
+    SELLER_PROFILE_PAGE("Konto pracownika"),
+    SELLER_SETTINGS_PAGE("Ustawienia konta pracownika");
 
     //------------------------------------------------------------------------------------------------------------------
 

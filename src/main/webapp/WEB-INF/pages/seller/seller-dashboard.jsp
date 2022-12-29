@@ -3,5 +3,10 @@
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
 <p:generic-seller.wrapper>
-    <div>To jest strona główna panelu sprzedawcy/pracownika.</div>
+    <h1 class="fs-2 fw-normal text-dark mb-2">Panel główny</h1>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active" aria-current="page">Panel główny</li>
+        </ol>
+    </nav>
 </p:generic-seller.wrapper>
