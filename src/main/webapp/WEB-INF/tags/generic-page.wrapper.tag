@@ -1,10 +1,8 @@
 <%@ tag description="Overall Page template" pageEncoding="UTF-8" language="java" %>
+<%@ tag import="static pl.polsl.skirentalservice.util.Utils.generateDefPageTitle" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<%
-    final String title = (String) request.getAttribute("title");
-    request.setAttribute("pageTitle", title != null ? title + " | SkiRent System" : "SkiRent System");
-%>
+<% generateDefPageTitle(request); %>
 <jsp:useBean id="pageTitle" type="java.lang.String" scope="request"/>
 
 <!DOCTYPE html>
