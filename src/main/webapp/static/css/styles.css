@@ -1,0 +1,70 @@
+/*
+ * Copyright (c) 2022 by multiple authors
+ * Silesian University of Technology
+ *
+ *  File name: styles.css
+ *  Last modified: 29/12/2022, 03:03
+ *  Project name: ski-rental-service
+ *
+ * This project was written for the purpose of a subject taken in the study of Computer Science.
+ * This project is not commercial in any way and does not represent a viable business model
+ * of the application. Project created for educational purposes only.
+ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Roboto", sans-serif;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+.media-small-size-box {
+    max-width: 440px;
+}
+
+.the-biggest-font-size {
+    font-size: 5rem;
+}
+
+.simple-transition {
+    transition: .3s;
+}
+
+.left-nav {
+    width: 280px;
+    transform: translateX(-280px);
+}
+
+.left-nav.left-nav-active {
+    transform: translateX(0);
+}
+
+.top-bar {
+    height: 50px;
+    margin-left: 280px;
+}
+
+.top-bar-active {
+    margin-left: 0;
+}
+
+.content-with-footer {
+    margin-top: 50px;
+    margin-left: 0;
+}
+
+.content-with-footer-active {
+    margin-left: -280px;
+}
+
+.btn-hover-dark:hover {
+    background-color: var(--bs-gray-dark);
+}
+
+.btn-hover-dark[aria-expanded="true"] .chewron-icon {
+    transform: rotate(90deg);
+}

@@ -31,7 +31,7 @@ public abstract class AuditableEntity {
 
     //------------------------------------------------------------------------------------------------------------------
 
-    Long getId() {
+    public Long getId() {
         return id;
     }
 

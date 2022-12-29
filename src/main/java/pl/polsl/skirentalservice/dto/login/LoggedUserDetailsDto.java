@@ -23,6 +23,7 @@ import pl.polsl.skirentalservice.dao.UserEntity;
 @Data
 @NoArgsConstructor
 public class LoggedUserDetailsDto {
+    private Long id;
     private String login;
     private String fullName;
     private String roleName;
@@ -32,6 +33,7 @@ public class LoggedUserDetailsDto {
     //------------------------------------------------------------------------------------------------------------------
 
     public LoggedUserDetailsDto(UserEntity user) {
+        this.id = user.getId();
         this.login = user.getLogin();
         this.fullName = user.getFirstName() + " " + user.getLastName();
         this.roleName = user.getRole().getRoleName();
@@ -48,7 +50,8 @@ public class LoggedUserDetailsDto {
     @Override
     public String toString() {
         return "{" +
-                "login='" + login + '\'' +
+                "id=" + id +
+                ", login='" + login + '\'' +
                 ", fullName='" + fullName + '\'' +
                 ", roleName='" + roleName + '\'' +
                 ", imageUrlPath='" + imageUrlPath + '\'' +
