@@ -39,6 +39,7 @@ public class UserEntity extends AuditableEntity {
     @Column(name = "phone_area_code")   private Integer phoneAreaCode;
     @Column(name = "phone_number")      private String phoneNumber;
     @Column(name = "email_address")     private String emailAddress;
+    @Column(name = "image_url")         private String imageUrl;
 
     @OneToMany(fetch = LAZY, cascade = { PERSIST, REMOVE }, mappedBy = "user")
     private Set<AddressEntity> addresses;
@@ -113,6 +114,14 @@ public class UserEntity extends AuditableEntity {
         this.emailAddress = emailAddress;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     Set<AddressEntity> getAddresses() {
         return addresses;
     }
@@ -141,6 +150,7 @@ public class UserEntity extends AuditableEntity {
                 ", phoneAreaCode=" + phoneAreaCode +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", emailAddress='" + emailAddress + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
                 '}';
     }
 }

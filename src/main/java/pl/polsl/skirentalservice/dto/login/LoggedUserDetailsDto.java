@@ -13,17 +13,20 @@
 
 package pl.polsl.skirentalservice.dto.login;
 
-import lombok.Data;
+import lombok.*;
+import java.util.Objects;
 
 import pl.polsl.skirentalservice.dao.UserEntity;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 @Data
+@NoArgsConstructor
 public class LoggedUserDetailsDto {
     private String login;
     private String fullName;
     private String roleName;
+    private String imageUrlPath;
     private Character roleAlias;
 
     //------------------------------------------------------------------------------------------------------------------
@@ -33,6 +36,7 @@ public class LoggedUserDetailsDto {
         this.fullName = user.getFirstName() + " " + user.getLastName();
         this.roleName = user.getRole().getRoleName();
         this.roleAlias = user.getRole().getAlias();
+        this.imageUrlPath = Objects.isNull(user.getImageUrl()) ? "static/default-profile-image.svg" : user.getImageUrl();
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -43,6 +47,7 @@ public class LoggedUserDetailsDto {
                 "login='" + login + '\'' +
                 ", fullName='" + fullName + '\'' +
                 ", roleName='" + roleName + '\'' +
+                ", imageUrlPath='" + imageUrlPath + '\'' +
                 ", roleAlias=" + roleAlias +
                 '}';
     }
