@@ -2,7 +2,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
-<p:owner-wrapper>
-    <div>To jest strona główna panelu właściciela.</div>
-    <a class="btn btn-sm btn-primary" href="${pageContext.request.contextPath}/logout">Wyloguj</a>
-</p:owner-wrapper>
+<p:generic-owner.wrapper>
+    <div>To jest strona główna panelu kierownika.</div>
+</p:generic-owner.wrapper>

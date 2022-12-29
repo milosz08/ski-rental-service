@@ -24,13 +24,12 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/webjars/bootstrap-icons/1.10.2/font/bootstrap-icons.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/webjars/bootstrap/5.2.3/css/bootstrap.min.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/static/styles.css">
-
-        <script lang="javascript" defer src="${pageContext.request.contextPath}/webjars/jquery/3.6.2/dist/jquery.min.js"></script>
-        <script lang="javascript" defer src="${pageContext.request.contextPath}/webjars/popper.js/1.16.1/dist/popper.min.js"></script>
-        <script lang="javascript" defer src="${pageContext.request.contextPath}/webjars/bootstrap/5.2.3/js/bootstrap.min.js"></script>
-        <script lang="javascript" defer src="${pageContext.request.contextPath}/static/scripts.js"></script>
     </head>
     <body class="bg-light">
         <jsp:doBody/>
+        <script lang="javascript" src="${pageContext.request.contextPath}/webjars/jquery/3.6.2/dist/jquery.min.js"></script>
+        <script lang="javascript" src="${pageContext.request.contextPath}/webjars/popper.js/1.16.1/dist/umd/popper.min.js"></script>
+        <script lang="javascript" src="${pageContext.request.contextPath}/webjars/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+        <script lang="javascript" src="${pageContext.request.contextPath}/static/scripts.js"></script>
     </body>
 </html>

@@ -20,8 +20,8 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 public enum SessionAttribute {
-    LOGGED_USER_DETAILS("logged_user_details"),
-    LOGOUT_MODAL_VISIBLE("logout_modal_visible");
+    LOGGED_USER_DETAILS("loggedUserDetails"),
+    LOGOUT_MODAL_VISIBLE("logoutModalVisible");
 
     private final String name;
 }

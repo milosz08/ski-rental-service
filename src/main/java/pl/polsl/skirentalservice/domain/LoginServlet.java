@@ -31,8 +31,8 @@ import pl.polsl.skirentalservice.dto.login.*;
 import pl.polsl.skirentalservice.util.UserRole;
 import pl.polsl.skirentalservice.dao.UserEntity;
 
+import static pl.polsl.skirentalservice.util.SessionAttribute.*;
 import static pl.polsl.skirentalservice.util.PageTitle.LOGIN_PAGE;
-import static pl.polsl.skirentalservice.util.SessionAttribute.LOGOUT_MODAL_VISIBLE;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -91,7 +91,7 @@ public class LoginServlet extends HttpServlet {
                 LOGGER.warn("Attempt to login with invalid credentials. User: {}", user);
             } else {
                 final HttpSession httpSession = req.getSession();
-                httpSession.setAttribute("logged_user_details", new LoggedUserDetailsDto(user));
+                httpSession.setAttribute(LOGGED_USER_DETAILS.getName(), new LoggedUserDetailsDto(user));
             }
         } else {
             alert.setActive(true);

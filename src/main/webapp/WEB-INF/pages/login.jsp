@@ -6,7 +6,7 @@
 <jsp:useBean id="alertData" type="pl.polsl.skirentalservice.dto.AlertTupleDto" scope="request"/>
 <jsp:useBean id="logoutModalVisible" type="java.lang.Boolean" scope="request"/>
 
-<p:generic-page>
+<p:generic-page.wrapper>
     <c:if test="${logoutModalVisible}">
         <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="false">
             <div class="modal-dialog">
@@ -20,14 +20,14 @@
                         na konto.
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij okno</button>
+                        <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Zamknij okno</button>
                     </div>
                 </div>
             </div>
         </div>
     </c:if>
     <main class="d-flex justify-content-center align-items-center vh-100">
-        <div class="container-sm mx-2 media-small-size-box">
+        <div class="container-sm mx-2 px-0 media-small-size-box">
             <c:if test="${alertData.active}">
                 <div class="alert ${alertData.type.cssClass} alert-dismissible mb-3 fade show" role="alert">
                     ${alertData.message}
@@ -35,7 +35,8 @@
                 </div>
             </c:if>
             <form action="" method="post" class="card p-4" novalidate>
-                <h1 class="fs-4 mb-4 fw-normal text-secondary text-center">Logowanie do systemu</h1>
+                <h1 class="fs-4 mb-2 fw-normal text-secondary text-center">Logowanie do systemu</h1>
+                <hr class="mb-4">
                 <div class="mb-3">
                     <label for="login" class="form-label mb-1 text-secondary">Login/email</label>
                     <input type="text" class="form-control ${loginData.login.errorStyle}" name="login" id="login"
@@ -53,10 +54,10 @@
                         <div class="invalid-feedback">${loginData.password.message}</div>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-dark">
                     Zaloguj <i class="bi bi-arrow-right ms-2"></i>
                 </button>
             </form>
         </div>
     </main>
-</p:generic-page>
+</p:generic-page.wrapper>

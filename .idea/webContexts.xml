@@ -7,7 +7,13 @@
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/pages/test-view.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/pages" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/partials/owner-footer.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/partials" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/partials/owner-header.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/partials" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/tags/generic-owner.wrapper.tag" value="file://$PROJECT_DIR$/src/main/webapp" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/tags/generic-page.tag" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/tags" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/tags/generic-seller.wrapper.tag" value="file://$PROJECT_DIR$/src/main/webapp" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/tags/owner-wrapper.tag" value="file://$PROJECT_DIR$/src/main/webapp" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/tags/owner-wrapper.wrapper.tag" value="file://$PROJECT_DIR$/src/main/webapp" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/tags/seller-wrapper.tag" value="file://$PROJECT_DIR$/src/main/webapp" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/tags/seller-wrapper.wrapper.tag" value="file://$PROJECT_DIR$/src/main/webapp" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/index.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
       </map>
     </option>
