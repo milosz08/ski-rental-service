@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
-<jsp:useBean id="loggedUserDetails" type="pl.polsl.skirentalservice.dto.login.LoggedUserDetailsDto" scope="session"/>
+<jsp:useBean id="loggedUserDetails" type="pl.polsl.skirentalservice.dto.login.LoggedUserDataDto" scope="session"/>
 
 <p:generic-page.wrapper>
     <div class="container-fluid d-flex flex-column vh-100">

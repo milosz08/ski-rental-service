@@ -2,8 +2,8 @@
  * Copyright (c) 2022 by multiple authors
  * Silesian University of Technology
  *
- *  File name: LoggedUserDetails.java
- *  Last modified: 28/12/2022, 03:40
+ *  File name: LoginFetchDto.java
+ *  Last modified: 29/12/2022, 22:10
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -16,32 +16,34 @@ package pl.polsl.skirentalservice.dto.login;
 import lombok.*;
 import java.util.Objects;
 
-import pl.polsl.skirentalservice.dao.UserEntity;
+import pl.polsl.skirentalservice.util.Gender;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 @Data
-@NoArgsConstructor
-public class LoggedUserDetailsDto {
+public class LoggedUserDataDto {
     private Long id;
     private String login;
     private String fullName;
+    private String imageUrl;
     private String roleName;
-    private String imageUrlPath;
     private Character roleAlias;
+    private Gender gender;
 
     //------------------------------------------------------------------------------------------------------------------
 
-    public LoggedUserDetailsDto(UserEntity user) {
-        this.id = user.getId();
-        this.login = user.getLogin();
-        this.fullName = user.getFirstName() + " " + user.getLastName();
-        this.roleName = user.getRole().getRoleName();
-        this.roleAlias = user.getRole().getAlias();
-        if (Objects.isNull(user.getImageUrl())) {
-            this.imageUrlPath = "static/images/default-profile-image.svg";
+    public LoggedUserDataDto(Long id, String login, String fullName, String imageUrl, String roleName,
+                             Character roleAlias, Gender gender) {
+        this.id = id;
+        this.login = login;
+        this.fullName = fullName;
+        this.roleName = roleName;
+        this.roleAlias = roleAlias;
+        this.gender = gender;
+        if (Objects.isNull(imageUrl)) {
+            this.imageUrl = "static/images/default-profile-image.svg";
         } else {
-            this.imageUrlPath = user.getImageUrl();
+            this.imageUrl = imageUrl;
         }
     }
 
@@ -52,10 +54,11 @@ public class LoggedUserDetailsDto {
         return "{" +
                 "id=" + id +
                 ", login='" + login + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
                 ", fullName='" + fullName + '\'' +
                 ", roleName='" + roleName + '\'' +
-                ", imageUrlPath='" + imageUrlPath + '\'' +
                 ", roleAlias=" + roleAlias +
+                ", gender=" + gender +
                 '}';
     }
 }

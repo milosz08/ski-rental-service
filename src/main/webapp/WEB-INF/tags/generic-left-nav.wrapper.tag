@@ -1,7 +1,7 @@
 <%@ tag description="Logged user left navigation template" pageEncoding="UTF-8" language="java" %>
 <%@ attribute name="requestPath" required="true" %>
 
-<jsp:useBean id="loggedUserDetails" type="pl.polsl.skirentalservice.dto.login.LoggedUserDetailsDto" scope="session"/>
+<jsp:useBean id="loggedUserDetails" type="pl.polsl.skirentalservice.dto.login.LoggedUserDataDto" scope="session"/>
 
 <nav id="left-nav" class="col-3 px-0 bg-dark text-white left-nav simple-transition left-nav-active">
     <div class="sticky-top p-3 d-flex flex-column min-vh-100">

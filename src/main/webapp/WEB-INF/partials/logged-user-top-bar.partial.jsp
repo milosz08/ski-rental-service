@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 
-<jsp:useBean id="loggedUserDetails" type="pl.polsl.skirentalservice.dto.login.LoggedUserDetailsDto" scope="session"/>
+<jsp:useBean id="loggedUserDetails" type="pl.polsl.skirentalservice.dto.login.LoggedUserDataDto" scope="session"/>
 
 <header id="top-bar" class="d-flex navbar fixed-top bg-white top-bar simple-transition">
     <button id="nav-toggler" class="btn ms-3 p-1 d-flex align-items-center">
@@ -11,7 +11,7 @@
     <div class="dropdown">
         <button class="d-flex align-items-center border-0 text-dark bg-transparent dropdown-toggle me-4"
                 data-bs-toggle="dropdown" aria-expanded="false">
-            <img src="${pageContext.request.contextPath}/${loggedUserDetails.imageUrlPath}" alt=""
+            <img src="${pageContext.request.contextPath}/${loggedUserDetails.imageUrl}" alt=""
                  width="32" height="32" class="rounded-circle me-2">
             <span class="mx-1 d-none d-sm-block">${loggedUserDetails.fullName}</span>
         </button>

@@ -19,10 +19,11 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.annotation.WebServlet;
 
-import pl.polsl.skirentalservice.dto.login.LoggedUserDetailsDto;
-
 import java.util.Objects;
 import java.io.IOException;
+
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import pl.polsl.skirentalservice.dto.logout.LogoutModalDto;
 
 import static pl.polsl.skirentalservice.util.SessionAttribute.*;
 
@@ -38,10 +39,10 @@ public class LogoutServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
         final HttpSession httpSession = req.getSession();
-        final var detailsDto = (LoggedUserDetailsDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
+        final var detailsDto = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
         if (!Objects.isNull(detailsDto)) {
             httpSession.removeAttribute(LOGGED_USER_DETAILS.getName());
-            httpSession.setAttribute(LOGOUT_MODAL_VISIBLE.getName(), true);
+            httpSession.setAttribute(LOGOUT_MODAL.getName(), new LogoutModalDto(true));
             LOGGER.info("Successful logout from user account. Account data: {}", detailsDto);
         }
         res.sendRedirect("/login");
