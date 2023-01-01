@@ -13,8 +13,8 @@
 
 package pl.polsl.skirentalservice.util;
 
-import java.util.Objects;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -27,5 +27,13 @@ public class Utils {
     public static void generateDefPageTitle(HttpServletRequest req) {
         final String title = (String) req.getAttribute("title");
         req.setAttribute("pageTitle", !Objects.isNull(title) ? title + " | " + DEF_TITLE : DEF_TITLE);
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+
+    public static String getBaseReqPath(HttpServletRequest req) {
+        final boolean isHttp = req.getScheme().equals("http") && req.getServerPort() == 80;
+        final boolean isHttps = req.getScheme().equals("https") && req.getServerPort() == 443;
+        return req.getScheme() + "://" + req.getServerName() + (isHttp || isHttps ? "" : ":" + req.getServerPort());
     }
 }
