@@ -18,6 +18,8 @@ import jakarta.validation.constraints.*;
 
 import pl.polsl.skirentalservice.core.IReqValidatePojo;
 
+import static pl.polsl.skirentalservice.util.Regex.*;
+
 //----------------------------------------------------------------------------------------------------------------------
 
 @Data
@@ -25,12 +27,12 @@ import pl.polsl.skirentalservice.core.IReqValidatePojo;
 @AllArgsConstructor
 public class LoginFormReqDto implements IReqValidatePojo {
 
-    @NotEmpty(message = "Pole loginu nie może być puste.")
-    @Pattern(regexp = "^[a-z0-9]{5,20}$", message = "Nieprawidłowa wartość/wartości w polu login.")
-    private String login;
+    @NotEmpty(message = "Pole loginu/adresu email nie może być puste.")
+    @Pattern(regexp = LOGIN_EMAIL, message = "Nieprawidłowa wartość/wartości w polu login.")
+    private String loginOrEmail;
 
     @NotEmpty(message = "Pole hasła nie może być puste.")
-    @Pattern(regexp = "^[a-zA-Z0-9@#$%&*]{8,30}$", message = "Nieprawidłowa wartość/wartości w polu hasło.")
+    @Pattern(regexp = PASSWORD_AVLB, message = "Nieprawidłowa wartość/wartości w polu hasło.")
     private String password;
 
     //------------------------------------------------------------------------------------------------------------------
