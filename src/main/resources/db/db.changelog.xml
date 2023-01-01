@@ -6,17 +6,14 @@
 
     <include file="changelog/2022-12_migrations/aq1_2022-12-28__users-with-address-table.sql" relativeToChangelogFile="true"/>
     <include file="assertions/fd1_filler__user-roles-data.sql" relativeToChangelogFile="true"/>
-
     <include file="changelog/2022-12_migrations/aq2_2022-12-28__split-user-phone-number.sql" relativeToChangelogFile="true"/>
     <include file="assertions/fd2_filler__default-users-extended-data.sql" relativeToChangelogFile="true"/>
-
     <include file="changelog/2022-12_migrations/aq3_2022-12-28__add-autidable-data-to-user-address.sql" relativeToChangelogFile="true"/>
     <include file="assertions/fd3_filler__add-phone-area-separate-column.sql" relativeToChangelogFile="true"/>
-
     <include file="changelog/2022-12_migrations/aq4_2022-12-28__add-user-image-column.sql" relativeToChangelogFile="true"/>
     <include file="assertions/fd4_filler__change-the-highest-rank.sql" relativeToChangelogFile="true"/>
-
     <include file="changelog/2022-12_migrations/aq5_2022-12-29__split-employeers-and-users.sql" relativeToChangelogFile="true"/>
     <include file="assertions/fd5_filler__default-employeers-and-single-user.sql" relativeToChangelogFile="true"/>
+    <include file="changelog/2022-12_migrations/aq6_2022-12-31__add-ota-token-table.sql" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

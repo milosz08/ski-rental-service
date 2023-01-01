@@ -1,0 +1,26 @@
+-- liquibase formatted sql
+-- changeset milosz08:aq6
+
+CREATE TABLE IF NOT EXISTS ota_tokens
+(
+    id BIGINT NOT NULL UNIQUE AUTO_INCREMENT,
+    ota_token VARCHAR(10) NOT NULL UNIQUE,
+    expired_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP + INTERVAL 10 MINUTE),
+    is_used BIT NOT NULL DEFAULT 0,
+    employer_id BIGINT,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL ON UPDATE CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (id),
+    FOREIGN KEY (employer_id) REFERENCES employeers(id) ON UPDATE SET NULL ON DELETE SET NULL,
+
+    INDEX (id, ota_token)
+)
+ENGINE=InnoDB COLLATE=utf16_polish_ci;
+
+
+CREATE EVENT IF NOT EXISTS remove_expired_ota_token
+    ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 24 HOUR
+    DO
+    DELETE FROM ota_tokens WHERE expired_at < NOW() AND is_used = 0
