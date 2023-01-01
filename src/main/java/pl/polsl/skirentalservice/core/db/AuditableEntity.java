@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 by multiple authors
+ * Copyright (c) 2023 by multiple authors
  * Silesian University of Technology
  *
  *  File name: AuditableEntity.java
@@ -26,9 +26,10 @@ import java.util.Date;
 public abstract class AuditableEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")            private Long id;
-    @Column(name = "created_at")    private Date createdAt;
-    @Column(name = "updated_at")    private Date updatedAt;
+    @Column(name = "ID")                                                private Long id;
+
+    @Column(name = "created_at", insertable = false, updatable = false) private Date createdAt;
+    @Column(name = "updated_at", insertable = false, updatable = false) private Date updatedAt;
 
     //------------------------------------------------------------------------------------------------------------------
 

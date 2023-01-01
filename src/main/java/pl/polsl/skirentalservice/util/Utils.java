@@ -20,7 +20,7 @@ import java.util.Objects;
 
 public class Utils {
 
-    private static final String DEF_TITLE = "SkiRent System";
+    public static final String DEF_TITLE = "SkiRent System";
 
     //------------------------------------------------------------------------------------------------------------------
 
