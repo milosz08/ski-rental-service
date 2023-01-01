@@ -23,13 +23,23 @@ import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
 @Builder
 @AllArgsConstructor
 public class LoginFormResDto {
-    private FormValueInfoTupleDto login;
+    private FormValueInfoTupleDto loginOrEmail;
     private FormValueInfoTupleDto password;
 
     //------------------------------------------------------------------------------------------------------------------
 
     public LoginFormResDto() {
-        this.login = new FormValueInfoTupleDto();
+        this.loginOrEmail = new FormValueInfoTupleDto();
         this.password = new FormValueInfoTupleDto();
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+
+    @Override
+    public String toString() {
+        return '{' +
+                "loginOrEmail=" + loginOrEmail +
+                ", password=" + password +
+                '}';
     }
 }

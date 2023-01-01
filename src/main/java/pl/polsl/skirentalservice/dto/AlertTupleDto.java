@@ -26,10 +26,16 @@ public class AlertTupleDto {
     private boolean active;
     private String message;
     private AlertType type;
+    private boolean disableContent;
+
+    //------------------------------------------------------------------------------------------------------------------
+
+    public AlertTupleDto(boolean active) {
+        this();
+        this.active = active;
+    }
 
     public AlertTupleDto() {
-        this.active = false;
-        this.message = "";
         this.type = ERROR;
     }
 }

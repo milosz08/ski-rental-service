@@ -3,7 +3,7 @@
  * Silesian University of Technology
  *
  *  File name: LogoutServlet.java
- *  Last modified: 28/12/2022, 05:31
+ *  Last modified: 31/12/2022, 17:16
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.

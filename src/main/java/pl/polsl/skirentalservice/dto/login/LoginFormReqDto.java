@@ -16,8 +16,6 @@ package pl.polsl.skirentalservice.dto.login;
 import lombok.*;
 import jakarta.validation.constraints.*;
 
-import java.io.Serializable;
-
 import pl.polsl.skirentalservice.core.IReqValidatePojo;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -25,8 +23,7 @@ import pl.polsl.skirentalservice.core.IReqValidatePojo;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginFormReqDto implements Serializable, IReqValidatePojo {
-    private static final long serialVersionUID = 1L;
+public class LoginFormReqDto implements IReqValidatePojo {
 
     @NotEmpty(message = "Pole loginu nie może być puste.")
     @Pattern(regexp = "^[a-z0-9]{5,20}$", message = "Nieprawidłowa wartość/wartości w polu login.")
@@ -40,8 +37,8 @@ public class LoginFormReqDto implements Serializable, IReqValidatePojo {
 
     @Override
     public String toString() {
-        return "{" +
-                "login='" + login + '\'' +
+        return '{' +
+                "loginOrEmail='" + loginOrEmail + '\'' +
                 ", password='" + password + '\'' +
                 '}';
     }

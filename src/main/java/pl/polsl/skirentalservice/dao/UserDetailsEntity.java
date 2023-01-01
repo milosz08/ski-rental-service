@@ -16,7 +16,7 @@ package pl.polsl.skirentalservice.dao;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
-import pl.polsl.skirentalservice.core.*;
+import pl.polsl.skirentalservice.core.db.*;
 import pl.polsl.skirentalservice.util.Gender;
 
 import java.time.LocalDate;
@@ -108,7 +108,7 @@ public class UserDetailsEntity extends AuditableEntity {
 
     @Override
     public String toString() {
-        return "{" +
+        return '{' +
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", pesel='" + pesel + '\'' +

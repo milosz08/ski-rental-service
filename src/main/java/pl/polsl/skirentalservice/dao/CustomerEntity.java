@@ -16,7 +16,7 @@ package pl.polsl.skirentalservice.dao;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
-import pl.polsl.skirentalservice.core.*;
+import pl.polsl.skirentalservice.core.db.*;
 
 import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.FetchType.LAZY;
@@ -61,7 +61,7 @@ public class CustomerEntity extends AuditableEntity {
 
     @Override
     public String toString() {
-        return "{" +
+        return '{' +
                 "userDetails=" + userDetails +
                 ", address=" + locationAddress +
                 '}';

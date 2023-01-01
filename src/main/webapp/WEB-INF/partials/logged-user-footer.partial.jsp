@@ -21,7 +21,7 @@
                         </span>
                     </p>
                     <p class="my-0">
-                        Sesja aktywna. Przydział praw: <span class="text-dark">
+                        Przydział praw: <span class="text-dark">
                         ${loggedUserDetails.roleName} (${loggedUserDetails.roleAlias})
                         <a class="text-dark" href="${pageContext.request.contextPath}/logout">(Wyloguj)</a>
                     </span>

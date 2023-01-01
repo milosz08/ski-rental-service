@@ -20,8 +20,10 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 public enum PageTitle {
-    NOT_FOUND_4O4("404"),
+    NOT_FOUND_4O4_PAGE("404"),
     LOGIN_PAGE("Logowanie"),
+    FORGOT_PASSWORD_REQUEST_PAGE("Resetuj hasło"),
+    CHANGE_FORGOTTEN_PASSWORD_PAGE("Zmień hasło"),
 
     OWNER_DASHBOARD_PAGE("Panel kierownika"),
     OWNER_PROFILE_PAGE("Konto kierownika"),

@@ -24,7 +24,7 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/boostrap-normalizer.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/styles.css">
     </head>
-    <body class="bg-light">
+    <body class="bg-light d-flex flex-column vh-100">
         <jsp:doBody/>
         <script lang="javascript" src="${pageContext.request.contextPath}/webjars/jquery/3.6.2/dist/jquery.min.js"></script>
         <script lang="javascript" src="${pageContext.request.contextPath}/webjars/popper.js/1.16.1/dist/umd/popper.min.js"></script>

@@ -51,7 +51,7 @@ public class LoggedUserDataDto {
 
     @Override
     public String toString() {
-        return "{" +
+        return '{' +
                 "id=" + id +
                 ", login='" + login + '\'' +
                 ", imageUrl='" + imageUrl + '\'' +

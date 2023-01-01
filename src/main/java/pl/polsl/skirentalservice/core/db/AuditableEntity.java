@@ -3,7 +3,7 @@
  * Silesian University of Technology
  *
  *  File name: AuditableEntity.java
- *  Last modified: 25/12/2022, 02:38
+ *  Last modified: 01/01/2023, 05:13
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -11,11 +11,12 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentalservice.core;
+package pl.polsl.skirentalservice.core.db;
 
-import java.util.Date;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
+
+import java.util.Date;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -53,5 +54,16 @@ public abstract class AuditableEntity {
 
     void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+
+    @Override
+    public String toString() {
+        return '{' +
+                "id=" + id +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }

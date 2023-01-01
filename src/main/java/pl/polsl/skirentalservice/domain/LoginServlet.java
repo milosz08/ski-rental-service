@@ -3,7 +3,7 @@
  * Silesian University of Technology
  *
  *  File name: LoginServlet.java
- *  Last modified: 25.12.2022, 02:37
+ *  Last modified: 31/12/2022, 17:16
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -29,6 +29,7 @@ import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.dto.login.*;
 import pl.polsl.skirentalservice.util.UserRole;
+import pl.polsl.skirentalservice.core.db.HibernateFactory;
 import pl.polsl.skirentalservice.dto.logout.LogoutModalDto;
 
 import static pl.polsl.skirentalservice.util.SessionAttribute.*;
@@ -62,25 +63,28 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final String login = req.getParameter("login");
+        final String loginOrEmail = req.getParameter("loginOrEmail");
         final String password = req.getParameter("password");
 
-        final LoginFormReqDto reqDto = new LoginFormReqDto(login, password);
+        final LoginFormReqDto reqDto = new LoginFormReqDto(loginOrEmail, password);
         final LoginFormResDto resDto = LoginFormResDto.builder()
-                .login(validator.validateField(reqDto, "login", login))
+                .loginOrEmail(validator.validateField(reqDto, "loginOrEmail", loginOrEmail))
                 .password(validator.validateField(reqDto, "password"))
                 .build();
         if (!validator.allFieldsIsValid(reqDto)) {
-            redirectToLogin(req, res, resDto);
+            selfRedirect(req, res, resDto);
             return;
         }
         final AlertTupleDto alert = new AlertTupleDto();
         final Session session = database.open();
         final Transaction transaction = session.beginTransaction();
 
-        final String jpqlFindEmployer = "SELECT e.password FROM EmployerEntity e WHERE e.login = :login";
+        final String jpqlFindEmployer =
+                "SELECT e.password FROM EmployerEntity e " +
+                "INNER JOIN e.userDetails d " +
+                "WHERE e.login = :loginOrEmail OR d.emailAddress = :loginOrEmail";
         final String employerPassword = session.createQuery(jpqlFindEmployer, String.class)
-                .setParameter("login", login)
+                .setParameter("loginOrEmail", loginOrEmail)
                 .getSingleResultOrNull();
 
         LoggedUserDataDto employer = null;
@@ -93,14 +97,14 @@ public class LoginServlet extends HttpServlet {
             } else {
                 final String jpqlSelectEmployer =
                         "SELECT new pl.polsl.skirentalservice.dto.login.LoggedUserDataDto(" +
-                            "e.id, e.login, CONCAT(e.userDetails.firstName, ' ', e.userDetails.lastName), " +
-                            "e.imageUrl, e.role.roleName, e.role.alias, e.userDetails.gender" +
+                            "e.id, e.login, CONCAT(d.firstName, ' ', d.lastName), e.imageUrl, r.roleName, " +
+                            "e.role.alias, d.gender" +
                         ") FROM EmployerEntity e " +
-                        "INNER JOIN e.role " +
+                        "INNER JOIN e.role r " +
                         "INNER JOIN e.userDetails d " +
-                        "WHERE e.login = :login";
+                        "WHERE e.login = :loginOrEmail OR d.emailAddress = :loginOrEmail";
                 employer = session.createQuery(jpqlSelectEmployer, LoggedUserDataDto.class)
-                        .setParameter("login", login)
+                        .setParameter("loginOrEmail", loginOrEmail)
                         .getSingleResultOrNull();
                 final HttpSession httpSession = req.getSession();
                 httpSession.setAttribute(LOGGED_USER_DETAILS.getName(), employer);
@@ -115,7 +119,7 @@ public class LoginServlet extends HttpServlet {
 
         if (Objects.isNull(employer)) {
             req.setAttribute("alertData", alert);
-            redirectToLogin(req, res, resDto);
+            selfRedirect(req, res, resDto);
             return;
         }
 
@@ -126,7 +130,7 @@ public class LoginServlet extends HttpServlet {
 
     //------------------------------------------------------------------------------------------------------------------
 
-    private void redirectToLogin(HttpServletRequest req, HttpServletResponse res, LoginFormResDto resDto)
+    private void selfRedirect(HttpServletRequest req, HttpServletResponse res, LoginFormResDto resDto)
             throws ServletException, IOException {
         req.setAttribute("loginData", resDto);
         req.setAttribute("title", LOGIN_PAGE.getName());

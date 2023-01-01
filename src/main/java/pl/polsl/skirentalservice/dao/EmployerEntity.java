@@ -16,7 +16,7 @@ package pl.polsl.skirentalservice.dao;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
-import pl.polsl.skirentalservice.core.*;
+import pl.polsl.skirentalservice.core.db.*;
 
 import java.time.LocalDate;
 
@@ -62,7 +62,7 @@ public class EmployerEntity extends AuditableEntity {
         return password;
     }
 
-    void setPassword(String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -110,7 +110,7 @@ public class EmployerEntity extends AuditableEntity {
 
     @Override
     public String toString() {
-        return "{" +
+        return '{' +
                 "login='" + login + '\'' +
                 ", hiredDate=" + hiredDate +
                 ", imageUrl='" + imageUrl + '\'' +

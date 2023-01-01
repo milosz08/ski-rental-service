@@ -98,3 +98,4 @@ CREATE TABLE customers_addresses_binding
 
     INDEX (customer_id, location_address_id)
 )
+ENGINE=InnoDB COLLATE=utf16_polish_ci;

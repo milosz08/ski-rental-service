@@ -24,5 +24,7 @@ public enum AlertType {
     WARN("alert-warning"),
     ERROR("alert-danger");
 
+    //------------------------------------------------------------------------------------------------------------------
+
     private final String cssClass;
 }

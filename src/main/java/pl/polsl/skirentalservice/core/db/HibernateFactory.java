@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2022 by multiple authors
+ * Copyright (c) 2023 by multiple authors
  * Silesian University of Technology
  *
  *  File name: HibernateFactory.java
- *  Last modified: 22.12.2022, 21:45
+ *  Last modified: 27/12/2022, 22:48
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -11,7 +11,7 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentalservice.core;
+package pl.polsl.skirentalservice.core.db;
 
 import org.slf4j.*;
 import jakarta.ejb.*;

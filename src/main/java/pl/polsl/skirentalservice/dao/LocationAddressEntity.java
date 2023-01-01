@@ -16,7 +16,7 @@ package pl.polsl.skirentalservice.dao;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
-import pl.polsl.skirentalservice.core.*;
+import pl.polsl.skirentalservice.core.db.*;
 
 import java.util.Set;
 
@@ -94,7 +94,7 @@ public class LocationAddressEntity extends AuditableEntity {
 
     @Override
     public String toString() {
-        return "{" +
+        return '{' +
                 "street='" + street + '\'' +
                 ", buildingNo='" + buildingNo + '\'' +
                 ", apartmentNo='" + apartmentNo + '\'' +
