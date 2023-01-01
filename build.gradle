@@ -28,7 +28,10 @@ tasks.withType(JavaCompile).configureEach {
 
 ext {
     // dependencies versions
-    jakkartaApiVersion          = '5.0.0'
+    jakartaApiVersion           = '5.0.0'
+    jakartaMailApiVersion       = '2.1.0'
+    jakartaJAXBVersion          = '4.0.0'
+    jaxbRuntimeVersion          = '4.0.1'
     junitVersion                = '5.9.0'
     lombokVersion               = '1.18.24'
     mySqlVersion                = '8.0.31'
@@ -41,6 +44,7 @@ ext {
     loggerVersion               = '2.0.6'
     reflectionsVersion          = '0.10.2'
     bcryptVersion               = '0.9.0'
+    freemarkerVersion           = '2.3.31'
 
     // webjars
     bootstrapVersion            = '5.2.3'
@@ -63,6 +67,7 @@ dependencies {
     implementation "org.projectlombok:lombok:${lombokVersion}"
     implementation "org.reflections:reflections:${reflectionsVersion}"
     implementation "at.favre.lib:bcrypt:${bcryptVersion}"
+    implementation "org.freemarker:freemarker:${freemarkerVersion}"
 
     implementation "mysql:mysql-connector-java:${mySqlVersion}"
     implementation "org.hibernate:hibernate-core:${hibernateVersion}"
@@ -71,7 +76,10 @@ dependencies {
 
     implementation "jakarta.ejb:jakarta.ejb-api:${ejbVersion}"
     implementation "org.glassfish.web:jakarta.servlet.jsp.jstl:${jstlVersion}"
-    compileOnly "jakarta.servlet:jakarta.servlet-api:${jakkartaApiVersion}"
+    implementation "jakarta.xml.bind:jakarta.xml.bind-api:${jakartaJAXBVersion}"
+    implementation "org.glassfish.jaxb:jaxb-runtime:${jaxbRuntimeVersion}"
+    implementation "jakarta.mail:jakarta.mail-api:${jakartaMailApiVersion}"
+    compileOnly "jakarta.servlet:jakarta.servlet-api:${jakartaApiVersion}"
 
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"

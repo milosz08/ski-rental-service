@@ -28,9 +28,14 @@ $ git clone https://github.com/Milosz08/SUoT_SkiRental_Service ski-rental-servic
 ## Prepare runtime configuration
 1. Before you run the application, create `.env` file in ROOT context of project and filled with database connection details:
 ```properties
-DB_URL             = jdbc:[dbType]://[dbHost]:[dbPort]/[dbName]
-DB_USERNAME        = xxxxx -> insert here database username 
-DB_PASSWORD        = xxxxx -> insert here database password
+# database credentials
+DB_URL              = jdbc:[dbType]://[dbHost]:[dbPort]/[dbName]
+DB_USERNAME         = xxxxx -> insert here database username 
+DB_PASSWORD         = xxxxx -> insert here database password
+# mail server account credentials
+SMTP_HOST           = xxxxx -> insert here SMTP mail server address
+SMTP_USER           = xxxxx -> ex. noreply@example.pl
+SMTP_PASS           = xxxxx -> insert here SMTP mail server password
 ```
 2. To start application, download Wildfly/JBOSS application server from here:
 * [download for Windows/x86](https://github.com/wildfly/wildfly/releases/download/27.0.1.Final/wildfly-27.0.1.Final.zip)
