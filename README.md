@@ -26,7 +26,7 @@ $ git clone https://github.com/Milosz08/SUoT_SkiRental_Service ski-rental-servic
 
 <a name="prepare-runtime-configuration"></a>
 ## Prepare runtime configuration
-1. Before you run the application, create `.env` file in ROOT context of project and filled with database connection details:
+1. Before you run the application, create `.env` file in ROOT context of project and filled with database and SMTP server connection details:
 ```properties
 # database credentials
 DB_URL              = jdbc:[dbType]://[dbHost]:[dbPort]/[dbName]
