@@ -57,7 +57,12 @@
                 <button type="submit" class="btn btn-dark">
                     Zaloguj <i class="bi bi-arrow-right ms-2"></i>
                 </button>
+                <hr class="mb-3">
+                <a class="link-dark text-center" href="${pageContext.request.contextPath}/forgot-password-request">
+                    Zapomniałem/am hasła
+                </a>
             </form>
         </div>
     </main>
+    <jsp:include page="../partials/non-logged-footer.partial.jsp"/>
 </p:generic-page.wrapper>
