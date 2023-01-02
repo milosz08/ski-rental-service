@@ -54,6 +54,11 @@ public class LoginServlet extends HttpServlet {
         if (logoutModalVisible) {
             httpSession.removeAttribute(LOGOUT_MODAL.getName());
         }
+        final AlertTupleDto alert = (AlertTupleDto) httpSession.getAttribute(CHANGE_PASSWORD_ALERT.getName());
+        if (!Objects.isNull(alert)) {
+            req.setAttribute("alertData", alert);
+            httpSession.removeAttribute(CHANGE_PASSWORD_ALERT.getName());
+        }
         req.setAttribute("logoutModal", new LogoutModalDto(logoutModalVisible));
         req.setAttribute("title", LOGIN_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(req, res);

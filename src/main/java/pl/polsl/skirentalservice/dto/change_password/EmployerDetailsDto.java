@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2022 by multiple authors
+ * Copyright (c) 2023 by multiple authors
  * Silesian University of Technology
  *
- *  File name: SessionAttribute.java
- *  Last modified: 28/12/2022, 07:05
+ *  File name: EmployerDetailsDto.java
+ *  Last modified: 01/01/2023, 01:10
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -11,20 +11,29 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentalservice.util;
+package pl.polsl.skirentalservice.dto.change_password;
 
 import lombok.*;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-@Getter
+@Data
 @AllArgsConstructor
-public enum SessionAttribute {
-    LOGGED_USER_DETAILS("loggedUserDetails"),
-    CHANGE_PASSWORD_ALERT("changePasswordAlert"),
-    LOGOUT_MODAL("logoutModal");
+public class EmployerDetailsDto {
+    private Long id;
+    private String login;
+    private String fullName;
+    private String emailAddress;
 
     //------------------------------------------------------------------------------------------------------------------
 
-    private final String name;
+    @Override
+    public String toString() {
+        return '{' +
+                "id=" + id +
+                ", login='" + login + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", emailAddress='" + emailAddress + '\'' +
+                '}';
+    }
 }
