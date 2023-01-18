@@ -1,12 +1,6 @@
 -- liquibase formatted sql
 -- changeset milosz08:aq5
 
-DROP TABLE user_addresses;
-DROP TABLE users;
-
-
-ALTER TABLE roles MODIFY COLUMN id BIGINT NOT NULL UNIQUE AUTO_INCREMENT;
-
 
 CREATE TABLE IF NOT EXISTS user_details
 (
