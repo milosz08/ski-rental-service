@@ -19,12 +19,13 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/webjars/bootstrap-icons/1.10.2/font/bootstrap-icons.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/webjars/bootstrap/5.2.3/css/bootstrap.min.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/boostrap-normalizer.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/styles.css">
     </head>
-    <body class="bg-light d-flex flex-column vh-100">
+    <body class="d-flex flex-column bg-light min-vh-100">
         <jsp:doBody/>
         <script lang="javascript" src="${pageContext.request.contextPath}/webjars/jquery/3.6.2/dist/jquery.min.js"></script>
         <script lang="javascript" src="${pageContext.request.contextPath}/webjars/popper.js/1.16.1/dist/umd/popper.min.js"></script>

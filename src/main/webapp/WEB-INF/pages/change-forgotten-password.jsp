@@ -7,7 +7,7 @@
 <jsp:useBean id="employerData" class="pl.polsl.skirentalservice.dto.change_password.ChangePasswordEmployerDetailsDto" scope="request"/>
 
 <p:generic-page.wrapper>
-    <main class="d-flex justify-content-center align-items-center flex-fill">
+    <main class="d-flex justify-content-center align-items-center flex-fill my-3">
         <div class="container-sm mx-2 px-0 media-small-size-box">
             <c:if test="${alertData.active}">
                 <div class="alert ${alertData.type.cssClass} alert-dismissible mb-3 fade show" role="alert">
@@ -27,7 +27,7 @@
                         <label for="password" class="form-label mb-1 text-secondary">Nowe hasło:</label>
                         <div class="input-group has-validation">
                             <input type="password" class="form-control ${changePassData.password.errorStyle}"
-                                   name="password" id="password" value="${changePassData.password.value}">
+                                name="password" id="password" value="${changePassData.password.value}">
                             <button type="button" class="input-group-text password-input-toggler">
                                 <i class="bi bi-eye-fill"></i>
                             </button>
@@ -38,7 +38,7 @@
                         <label for="passwordRepeat" class="form-label mb-1 text-secondary">Powtórz nowe hasło:</label>
                         <div class="input-group has-validation">
                             <input type="password" class="form-control ${changePassData.passwordRepeat.errorStyle}"
-                                   name="passwordRepeat" id="passwordRepeat" value="${changePassData.passwordRepeat.value}">
+                                name="passwordRepeat" id="passwordRepeat" value="${changePassData.passwordRepeat.value}">
                             <button type="button" class="input-group-text password-input-toggler">
                                 <i class="bi bi-eye-fill"></i>
                             </button>

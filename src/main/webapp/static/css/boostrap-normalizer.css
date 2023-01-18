@@ -11,11 +11,26 @@
  * of the application. Project created for educational purposes only.
  */
 
-.form-control:focus {
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+.form-control:focus,
+.pagination > li > .page-link:focus {
     border-color: var(--bs-gray-dark);
     box-shadow: none;
 }
 
 .dropdown-menu .dropdown-item:active {
     background-color: var(--bs-gray-dark);
+}
+
+.pagination > li > .page-link,
+.pagination > li > .page-link:focus,
+.pagination > li > .page-link:hover {
+    color: var(--bs-gray-dark);
+}
+
+.pagination > li.active > .page-link {
+    color: var(--bs-light);
+    background: var(--bs-gray-dark);
+    border-color: var(--bs-gray-dark);
 }

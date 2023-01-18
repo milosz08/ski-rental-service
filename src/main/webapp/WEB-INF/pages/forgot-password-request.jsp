@@ -6,7 +6,7 @@
 <jsp:useBean id="resetPassData" class="pl.polsl.skirentalservice.dto.change_password.RequestToChangePasswordResDto" scope="request"/>
 
 <p:generic-page.wrapper>
-    <main class="d-flex justify-content-center align-items-center flex-fill">
+    <main class="d-flex justify-content-center align-items-center flex-fill my-3">
         <div class="container-sm mx-2 px-0 media-small-size-box">
             <c:if test="${alertData.active}">
                 <div class="alert ${alertData.type.cssClass} alert-dismissible mb-3 fade show" role="alert">
@@ -25,7 +25,7 @@
                 <div class="mb-3">
                     <label for="loginOrEmail" class="form-label mb-1 text-secondary">Login/adres email:</label>
                     <input type="text" class="form-control ${resetPassData.loginOrEmail.errorStyle}" name="loginOrEmail"
-                           id="loginOrEmail" value="${resetPassData.loginOrEmail.value}">
+                        id="loginOrEmail" value="${resetPassData.loginOrEmail.value}">
                     <div class="invalid-feedback">${resetPassData.loginOrEmail.message}</div>
                 </div>
                 <button type="submit" class="btn btn-dark">

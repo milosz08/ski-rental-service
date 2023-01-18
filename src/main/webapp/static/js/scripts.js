@@ -11,6 +11,8 @@
  * of the application. Project created for educational purposes only.
  */
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 function showHidePassword(selector) {
     $(selector).toArray().forEach(function (el) {
         const input = $(el).parent().find('>:first-child');
@@ -32,12 +34,31 @@ function showHidePassword(selector) {
     });
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 function showModal(selector) {
     const modal = document.getElementById(selector);
     if (modal !== null) new bootstrap.Modal(modal, {}).show();
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function disableResize() {
+    let resizeTimer;
+    $(window).on('resize', function() {
+        $('body').addClass('disable-animations');
+        if ($(document).width() > 576) $('[data-bs-dismiss="offcanvas"]').click();
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            $('body').removeClass('disable-animations');
+        }, 400);
+    });
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 function onLoad() {
+
     showModal('logoutModal');
     showHidePassword('.password-input-toggler');
 
@@ -45,11 +66,13 @@ function onLoad() {
         new bootstrap.Tooltip(el);
     });
 
-    $('#nav-toggler').on('click', function() {
-        $('#left-nav').toggleClass('left-nav-active');
-        $('#top-bar').toggleClass('top-bar-active');
-        $('#content-with-footer').toggleClass('content-with-footer-active');
+    $('#nav-toggle-button').on('click', function() {
+        $('#left-nav-wrapper').toggleClass('left-nav-wrapper-active');
+        $('#main-wrapper').toggleClass('main-wrapper-active');
     });
 }
+disableResize();
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 $(window).on('load', onLoad);
