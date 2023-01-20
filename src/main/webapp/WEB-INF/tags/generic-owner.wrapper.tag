@@ -23,7 +23,7 @@
                         </a>
                     </li>
                     <li class="mb-1">
-                        <a href="${pageContext.request.contextPath}/owner/employers/add-employer"
+                        <a href="${pageContext.request.contextPath}/owner/add-employer"
                             class="text-white-50 d-inline-flex align-items-center py-1 ps-2
                                 text-decoration-none rounded btn-hover-dark w-100 fw-light">
                             <span class="material-symbols-outlined fs-6 me-2">add</span>Dodaj pracownika
@@ -33,13 +33,13 @@
             </li>
         </p:generic-left-nav.wrapper>
         <div id="main-wrapper" class="d-flex flex-column flex-fill main-wrapper main-wrapper-active simple-transition">
-            <jsp:include page="../../partials/logged-user-top-bar.partial.jsp">
+            <jsp:include page="/WEB-INF/partials/logged-user-top-bar.partial.jsp">
                 <jsp:param name="requestPath" value="owner"/>
             </jsp:include>
             <main class="p-3 p-sm-4 flex-grow-1">
                 <jsp:doBody/>
             </main>
-            <jsp:include page="../../partials/logged-user-footer.partial.jsp"/>
+            <jsp:include page="/WEB-INF/partials/logged-user-footer.partial.jsp"/>
         </div>
     </div>
 </p:generic-page.wrapper>

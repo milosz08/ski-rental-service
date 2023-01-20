@@ -17,7 +17,7 @@ import lombok.*;
 
 import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Data
 @Builder
@@ -26,20 +26,20 @@ public class ChangeForgottenPasswordResDto {
     private FormValueInfoTupleDto password;
     private FormValueInfoTupleDto passwordRepeat;
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public ChangeForgottenPasswordResDto() {
         this.password = new FormValueInfoTupleDto();
         this.passwordRepeat = new FormValueInfoTupleDto();
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public String toString() {
         return '{' +
-                "password=" + password +
-                ", passwordRepeat=" + passwordRepeat +
-                '}';
+            "password=" + password +
+            ", passwordRepeat=" + passwordRepeat +
+            '}';
     }
 }

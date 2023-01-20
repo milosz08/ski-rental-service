@@ -20,7 +20,7 @@ import pl.polsl.skirentalservice.core.IReqValidatePojo;
 
 import static pl.polsl.skirentalservice.util.Regex.PASSWORD_REQ;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Data
 @AllArgsConstructor
@@ -39,8 +39,8 @@ public class ChangeForgottenPasswordReqDto implements IReqValidatePojo {
     @Override
     public String toString() {
         return '{' +
-                "password='" + password + '\'' +
-                ", passwordRepeat='" + passwordRepeat + '\'' +
-                '}';
+            "password='" + password + '\'' +
+            ", passwordRepeat='" + passwordRepeat + '\'' +
+            '}';
     }
 }

@@ -21,7 +21,7 @@ import java.io.IOException;
 
 import static pl.polsl.skirentalservice.util.PageTitle.OWNER_SETTINGS_PAGE;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @WebServlet("/owner/settings")
 public class OwnerSettingsServlet extends HttpServlet {

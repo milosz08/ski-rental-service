@@ -33,13 +33,13 @@ import static freemarker.template.Configuration.VERSION_2_3_22;
 import static pl.polsl.skirentalservice.util.Utils.DEF_TITLE;
 import static pl.polsl.skirentalservice.core.mail.JakartaMailAuthenticator.findProperty;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Startup
-@Singleton(name = "MailFactoryBean")
-public class MailFactory {
+@Singleton(name = "MailSocketFactoryBean")
+public class MailSocketBean {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MailFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MailSocketBean.class);
 
     private static final DateFormat DF = new SimpleDateFormat("yyyy-MM-dd, kk:mm:ss", new Locale("pl"));
     private static final String MAIL_CFG = "/mail/mail.cfg.xml";
@@ -49,23 +49,23 @@ public class MailFactory {
     private Configuration freemarkerConfig;
     private List<JAXBProperty> configProperties;
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    MailFactory() {
+    MailSocketBean() {
         try {
             freemarkerConfig = new Configuration(VERSION_2_3_22);
-            freemarkerConfig.setClassForTemplateLoading(MailFactory.class, FREEMARKER_PATH);
+            freemarkerConfig.setClassForTemplateLoading(MailSocketBean.class, FREEMARKER_PATH);
             LOGGER.info("Successful loaded freemarker template engine cache path. Cache path: {}", FREEMARKER_PATH);
 
             final JAXBContext jaxbContext = JAXBContext.newInstance(JAXBMailConfig.class);
             final var config = (JAXBMailConfig) jaxbContext.createUnmarshaller()
-                    .unmarshal(getClass().getResource(MAIL_CFG));
+                .unmarshal(getClass().getResource(MAIL_CFG));
             configProperties = config.getProperties();
 
             final Properties properties = new Properties();
             final List<JAXBProperty> withoutCredentials = config.getProperties().stream()
-                    .filter(p -> !p.getName().equals("mail.smtp.user") && !p.getName().equals("mail.smtp.pass"))
-                    .collect(Collectors.toList());
+                .filter(p -> !p.getName().equals("mail.smtp.user") && !p.getName().equals("mail.smtp.pass"))
+                .collect(Collectors.toList());
 
             for (final JAXBProperty property : withoutCredentials) {
                 properties.put(property.getName(), property.getValue());
@@ -78,13 +78,13 @@ public class MailFactory {
         }
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void sendMessage(String sendTo, MailRequestPayload payload) throws MessagingException {
         sendMessage(List.of(sendTo), payload);
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void sendMessage(List<String> sendTo, MailRequestPayload payload) throws MessagingException {
         try {
@@ -131,4 +131,12 @@ public class MailFactory {
             LOGGER.error("Unable to process freemarker template. Exception: {}", ex.getMessage());
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public String getDomain() {
+        return "@" + configProperties.stream().filter(p -> p.getName()
+            .equals("mail.smtp.domain")).findFirst().map(JAXBProperty::getValue).orElse("localhost");
+    }
+
 }

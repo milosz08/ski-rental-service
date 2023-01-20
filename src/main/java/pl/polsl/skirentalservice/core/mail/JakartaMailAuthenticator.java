@@ -18,32 +18,32 @@ import java.util.List;
 
 import pl.polsl.skirentalservice.core.JAXBProperty;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class JakartaMailAuthenticator extends Authenticator {
 
     private final String username;
     private final String password;
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     JakartaMailAuthenticator(List<JAXBProperty> mappedProperties) {
         this.username = findProperty(mappedProperties, "mail.smtp.user");
         this.password = findProperty(mappedProperties, "mail.smtp.pass");
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected PasswordAuthentication getPasswordAuthentication() {
         return new PasswordAuthentication(username, password);
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     static String findProperty(List<JAXBProperty> mappedProperties, String propertyName) {
         return mappedProperties.stream().filter(p -> p.getName().equals(propertyName))
-                .findFirst()
-                .orElse(new JAXBProperty(propertyName)).getValue();
+            .findFirst()
+            .orElse(new JAXBProperty(propertyName)).getValue();
     }
 }

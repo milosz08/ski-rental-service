@@ -24,11 +24,11 @@
                 <hr class="mb-4">
                 <div class="mb-3">
                     <label for="loginOrEmail" class="form-label mb-1 text-secondary">Login/adres email:</label>
-                    <input type="text" class="form-control ${resetPassData.loginOrEmail.errorStyle}" name="loginOrEmail"
-                        id="loginOrEmail" value="${resetPassData.loginOrEmail.value}">
+                    <input type="text" class="form-control form-control-sm ${resetPassData.loginOrEmail.errorStyle}"
+                        id="loginOrEmail" value="${resetPassData.loginOrEmail.value}" name="loginOrEmail">
                     <div class="invalid-feedback">${resetPassData.loginOrEmail.message}</div>
                 </div>
-                <button type="submit" class="btn btn-dark">
+                <button type="submit" class="btn btn-dark btn-sm">
                     Resetuj hasło <i class="bi bi-arrow-right ms-2"></i>
                 </button>
             </form>

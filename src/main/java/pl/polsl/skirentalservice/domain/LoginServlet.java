@@ -22,30 +22,28 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
-import java.util.Objects;
 import java.io.IOException;
 
 import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.dto.login.*;
-import pl.polsl.skirentalservice.util.UserRole;
-import pl.polsl.skirentalservice.core.db.HibernateFactory;
+import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.dto.logout.LogoutModalDto;
 
 import static pl.polsl.skirentalservice.util.SessionAttribute.*;
 import static pl.polsl.skirentalservice.util.PageTitle.LOGIN_PAGE;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoginServlet.class);
 
-    @EJB private HibernateFactory database;
-    @EJB private ValidatorFactory validator;
+    @EJB private HibernateBean database;
+    @EJB private ValidatorBean validator;
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -64,7 +62,7 @@ public class LoginServlet extends HttpServlet {
         req.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(req, res);
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -85,29 +83,30 @@ public class LoginServlet extends HttpServlet {
         final Transaction transaction = session.beginTransaction();
 
         final String jpqlFindEmployer =
-                "SELECT e.password FROM EmployerEntity e " +
-                "INNER JOIN e.userDetails d " +
-                "WHERE e.login = :loginOrEmail OR d.emailAddress = :loginOrEmail";
+            "SELECT e.password FROM EmployerEntity e " +
+            "INNER JOIN e.userDetails d " +
+            "WHERE e.login = :loginOrEmail OR d.emailAddress = :loginOrEmail";
         final String employerPassword = session.createQuery(jpqlFindEmployer, String.class)
                 .setParameter("loginOrEmail", loginOrEmail)
                 .getSingleResultOrNull();
 
         LoggedUserDataDto employer = null;
-        if (!Objects.isNull(employerPassword)) {
-            final BCrypt.Result result = BCrypt.verifyer().verify(password.toCharArray(), employerPassword);
+        if (!isNull(employerPassword)) {
+            final BCrypt.Result result = BCrypt.verifyer().verify(reqDto.getPassword().toCharArray(), employerPassword);
             if (!result.verified) {
                 alert.setActive(true);
                 alert.setMessage("Nieprawidłowe hasło. Spróbuj ponownie podając inne hasło.");
                 LOGGER.warn("Attempt to login with invalid credentials. Credentials data: {}", reqDto);
             } else {
                 final String jpqlSelectEmployer =
-                        "SELECT new pl.polsl.skirentalservice.dto.login.LoggedUserDataDto(" +
-                            "e.id, e.login, CONCAT(d.firstName, ' ', d.lastName), e.imageUrl, r.roleName, " +
-                            "e.role.alias, d.gender" +
-                        ") FROM EmployerEntity e " +
-                        "INNER JOIN e.role r " +
-                        "INNER JOIN e.userDetails d " +
-                        "WHERE e.login = :loginOrEmail OR d.emailAddress = :loginOrEmail";
+                    "SELECT new pl.polsl.skirentalservice.dto.login.LoggedUserDataDto(" +
+                        "e.id, e.login, CONCAT(d.firstName, ' ', d.lastName)," +
+                        "IFNULL(e.imageUrl, 'static/images/default-profile-image.svg'), r.roleName, " +
+                        "e.role.alias, e.role.roleEng, d.gender" +
+                    ") FROM EmployerEntity e " +
+                    "INNER JOIN e.role r " +
+                    "INNER JOIN e.userDetails d " +
+                    "WHERE e.login = :loginOrEmail OR d.emailAddress = :loginOrEmail";
                 employer = session.createQuery(jpqlSelectEmployer, LoggedUserDataDto.class)
                         .setParameter("loginOrEmail", loginOrEmail)
                         .getSingleResultOrNull();
@@ -122,21 +121,19 @@ public class LoginServlet extends HttpServlet {
         transaction.commit();
         session.close();
 
-        if (Objects.isNull(employer)) {
+        if (isNull(employer)) {
             req.setAttribute("alertData", alert);
             selfRedirect(req, res, resDto);
             return;
         }
-
-        String roleType = UserRole.isSeller(employer.getRoleAlias()) ? "seller" : "owner";
-        LOGGER.info("Successful logged on {} account. Account data: {}", roleType, employer);
-        res.sendRedirect("/" + roleType + "/dashboard");
+        LOGGER.info("Successful logged on {} account. Account data: {}", employer.getRoleEng(), employer);
+        res.sendRedirect("/" + employer.getRoleEng() + "/dashboard");
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private void selfRedirect(HttpServletRequest req, HttpServletResponse res, LoginFormResDto resDto)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         req.setAttribute("loginData", resDto);
         req.setAttribute("title", LOGIN_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(req, res);

@@ -20,7 +20,7 @@ import pl.polsl.skirentalservice.core.IReqValidatePojo;
 
 import static pl.polsl.skirentalservice.util.Regex.*;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Data
 @NoArgsConstructor
@@ -40,8 +40,8 @@ public class LoginFormReqDto implements IReqValidatePojo {
     @Override
     public String toString() {
         return '{' +
-                "loginOrEmail='" + loginOrEmail + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+            "loginOrEmail='" + loginOrEmail + '\'' +
+            ", password='" + password + '\'' +
+            '}';
     }
 }

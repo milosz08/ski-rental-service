@@ -21,7 +21,7 @@ import pl.polsl.skirentalservice.core.db.*;
 import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.FetchType.LAZY;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Entity
 @EntityInjector
@@ -35,11 +35,11 @@ public class CustomerEntity extends AuditableEntity {
 
     @ManyToOne(fetch = LAZY, cascade = { PERSIST, MERGE })
     @JoinTable(name = "customers_addresses_binding",
-            joinColumns = { @JoinColumn(name = "customer_id") },
-            inverseJoinColumns = { @JoinColumn(name = "location_address_id") })
+        joinColumns = { @JoinColumn(name = "customer_id") },
+        inverseJoinColumns = { @JoinColumn(name = "location_address_id") })
     private LocationAddressEntity locationAddress;
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     UserDetailsEntity getUserDetails() {
         return userDetails;
@@ -57,13 +57,13 @@ public class CustomerEntity extends AuditableEntity {
         this.locationAddress = locationAddress;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public String toString() {
         return '{' +
-                "userDetails=" + userDetails +
-                ", address=" + locationAddress +
-                '}';
+            "userDetails=" + userDetails +
+            ", address=" + locationAddress +
+            '}';
     }
 }

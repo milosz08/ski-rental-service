@@ -17,29 +17,28 @@ import lombok.*;
 
 import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Data
-@Builder
-@AllArgsConstructor
+@NoArgsConstructor
 public class LoginFormResDto {
     private FormValueInfoTupleDto loginOrEmail;
     private FormValueInfoTupleDto password;
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public LoginFormResDto() {
         this.loginOrEmail = new FormValueInfoTupleDto();
         this.password = new FormValueInfoTupleDto();
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public String toString() {
         return '{' +
-                "loginOrEmail=" + loginOrEmail +
-                ", password=" + password +
-                '}';
+            "loginOrEmail=" + loginOrEmail +
+            ", password=" + password +
+            '}';
     }
 }

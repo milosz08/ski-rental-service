@@ -21,7 +21,7 @@ import java.io.IOException;
 
 import static pl.polsl.skirentalservice.util.PageTitle.NOT_FOUND_4O4_PAGE;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @WebServlet("/404")
 public class NotFoundServlet extends HttpServlet {

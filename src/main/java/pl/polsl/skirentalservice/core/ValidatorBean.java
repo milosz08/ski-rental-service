@@ -20,28 +20,22 @@ import java.util.Set;
 
 import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Startup
 @Singleton(name = "HibernateValidatorFactoryBean")
-public class ValidatorFactory {
+public class ValidatorBean {
 
     private final Validator validator;
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ValidatorFactory() {
+    ValidatorBean() {
         final jakarta.validation.ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
         this.validator = validatorFactory.getValidator();
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-
-    public <T extends IReqValidatePojo> FormValueInfoTupleDto validateField(T req, String field) {
-        return validateField(req, field, "");
-    }
-
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public <T extends IReqValidatePojo> FormValueInfoTupleDto validateField(T req, String field, String value) {
         final Set<ConstraintViolation<T>> constraints = validator.validateProperty(req, field);
@@ -53,14 +47,14 @@ public class ValidatorFactory {
         return resDto;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public <T extends IReqValidatePojo> boolean allFieldsIsValid(T req) {
+    public <T extends IReqValidatePojo> boolean someFieldsAreInvalid(T req) {
         final Set<ConstraintViolation<T>> constraints = validator.validate(req);
-        return constraints.isEmpty();
+        return !constraints.isEmpty();
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public Validator getValidator() {
         return validator;

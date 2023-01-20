@@ -18,20 +18,21 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @EntityInjector
 @MappedSuperclass
 @NoArgsConstructor
 public abstract class AuditableEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")                                                private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")                                                    private Long id;
 
-    @Column(name = "created_at", insertable = false, updatable = false) private Date createdAt;
-    @Column(name = "updated_at", insertable = false, updatable = false) private Date updatedAt;
+    @Column(name = "created_at", insertable = false, updatable = false)     private Date createdAt;
+    @Column(name = "updated_at", insertable = false, updatable = false)     private Date updatedAt;
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public Long getId() {
         return id;
@@ -57,14 +58,14 @@ public abstract class AuditableEntity {
         this.updatedAt = updatedAt;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public String toString() {
         return '{' +
-                "id=" + id +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
+            "id=" + id +
+            ", createdAt=" + createdAt +
+            ", updatedAt=" + updatedAt +
+            '}';
     }
 }

@@ -16,7 +16,7 @@ package pl.polsl.skirentalservice.core.mail;
 import lombok.*;
 import java.util.*;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Data
 @Builder
@@ -27,15 +27,15 @@ public class MailRequestPayload {
     private Map<String, String> templateVars;
     private Set<String> attachmentsPaths;
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public String toString() {
         return "{" +
-                "subject='" + subject + '\'' +
-                ", templateName='" + templateName + '\'' +
-                ", templateVars=" + templateVars +
-                ", attachmentsPaths=" + attachmentsPaths +
-                '}';
+            "subject='" + subject + '\'' +
+            ", templateName='" + templateName + '\'' +
+            ", templateVars=" + templateVars +
+            ", attachmentsPaths=" + attachmentsPaths +
+            '}';
     }
 }

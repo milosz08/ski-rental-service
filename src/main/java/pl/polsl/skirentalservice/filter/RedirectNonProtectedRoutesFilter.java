@@ -25,7 +25,7 @@ import java.io.IOException;
 import static pl.polsl.skirentalservice.util.UserRole.OWNER;
 import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @WebFilter(urlPatterns = { "/login", "/forgot-password-request", "/change-forgotten-password/*" },
         initParams = @WebInitParam(name = "mood", value = "awake"))
@@ -33,7 +33,7 @@ public class RedirectNonProtectedRoutesFilter extends HttpFilter {
 
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
-            throws IOException, ServletException {
+        throws IOException, ServletException {
         final HttpSession httpSession = req.getSession();
         final var loggedUserDetailsDto = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
         if (!Objects.isNull(loggedUserDetailsDto)) {

@@ -37,28 +37,28 @@ import org.hibernate.service.ServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Startup
 @Singleton(name = "HibernateFactoryBean")
-public class HibernateFactory {
+public class HibernateBean {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HibernateFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HibernateBean.class);
     private static final String LIQUIBASE_CONF = "db/db.changelog.xml";
     private static final String HIBERNATE_CONF = "db/hibernate.cfg.xml";
     private static final String DB_AUTH_PROP = "/db/hibernate.properties";
 
     private SessionFactory sessionFactory;
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    HibernateFactory() {
+    HibernateBean() {
         try {
             final Configuration configuration = new Configuration().configure(HIBERNATE_CONF);
             loadMappedHibernateEntities(configuration);
 
             final ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
-                    .applySettings(configuration.getProperties()).build();
+                .applySettings(configuration.getProperties()).build();
 
             final MetadataSources sources = new MetadataSources(serviceRegistry);
             final ConnectionProvider provider = sources.getServiceRegistry().getService(ConnectionProvider.class);
@@ -77,12 +77,12 @@ public class HibernateFactory {
         }
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private void loadMappedHibernateEntities(final Configuration conf) {
         final org.reflections.Configuration configuration = new ConfigurationBuilder()
-                .setUrls(ClasspathHelper.forPackage("pl.polsl.skirentalservice"))
-                .setScanners(Scanners.TypesAnnotated);
+            .setUrls(ClasspathHelper.forPackage("pl.polsl.skirentalservice"))
+            .setScanners(Scanners.TypesAnnotated);
 
         final Reflections reflections = new Reflections(configuration);
         final Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(EntityInjector.class);
@@ -93,7 +93,7 @@ public class HibernateFactory {
         LOGGER.info("Successful loaded Hibernate entities: [ {} ]", entities);
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public Session open() {
         return sessionFactory.openSession();

@@ -22,14 +22,14 @@ public class Utils {
 
     public static final String DEF_TITLE = "SkiRent System";
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public static void generateDefPageTitle(HttpServletRequest req) {
         final String title = (String) req.getAttribute("title");
-        req.setAttribute("pageTitle", !Objects.isNull(title) ? title + " | " + DEF_TITLE : DEF_TITLE);
+        req.setAttribute("pageTitle", !isNull(title) ? title + " | " + DEF_TITLE : DEF_TITLE);
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public static String getBaseReqPath(HttpServletRequest req) {
         final boolean isHttp = req.getScheme().equals("http") && req.getServerPort() == 80;

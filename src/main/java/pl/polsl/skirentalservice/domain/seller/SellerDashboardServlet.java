@@ -21,7 +21,7 @@ import java.io.IOException;
 
 import static pl.polsl.skirentalservice.util.PageTitle.SELLER_DASHBOARD_PAGE;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @WebServlet("/seller/dashboard")
 public class SellerDashboardServlet extends HttpServlet {

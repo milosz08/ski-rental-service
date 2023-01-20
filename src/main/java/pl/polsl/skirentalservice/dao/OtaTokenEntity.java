@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.FetchType.LAZY;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Entity
 @EntityInjector
@@ -39,14 +39,14 @@ public class OtaTokenEntity extends AuditableEntity {
     @JoinColumn(name = "employer_id", referencedColumnName = "id")
     private EmployerEntity employer;
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public OtaTokenEntity(String otaToken, EmployerEntity employer) {
         this.otaToken = otaToken;
         this.employer = employer;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     String getOtaToken() {
         return otaToken;
@@ -80,15 +80,15 @@ public class OtaTokenEntity extends AuditableEntity {
         this.employer = employer;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public String toString() {
         return '{' +
-                "otaToken='" + otaToken + '\'' +
-                ", expiredDate=" + expiredDate +
-                ", isUsed=" + isUsed +
-                ", employer=" + employer +
-                '}';
+            "otaToken='" + otaToken + '\'' +
+            ", expiredDate=" + expiredDate +
+            ", isUsed=" + isUsed +
+            ", employer=" + employer +
+            '}';
     }
 }

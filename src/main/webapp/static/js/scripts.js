@@ -47,7 +47,7 @@ function disableResize() {
     let resizeTimer;
     $(window).on('resize', function() {
         $('body').addClass('disable-animations');
-        if ($(document).width() > 576) $('[data-bs-dismiss="offcanvas"]').click();
+        if ($(document).width() > 992) $('[data-bs-dismiss="offcanvas"]').click();
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => {
             $('body').removeClass('disable-animations');

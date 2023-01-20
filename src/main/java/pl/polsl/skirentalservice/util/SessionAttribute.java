@@ -15,16 +15,16 @@ package pl.polsl.skirentalservice.util;
 
 import lombok.*;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Getter
 @AllArgsConstructor
 public enum SessionAttribute {
+    EMPLOYERS_LIST_SEARCH_BAR("employers-list-search-bar"),
     LOGGED_USER_DETAILS("loggedUserDetails"),
-    CHANGE_PASSWORD_ALERT("changePasswordAlert"),
     LOGOUT_MODAL("logoutModal");
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private final String name;
 }

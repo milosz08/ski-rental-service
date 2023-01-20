@@ -3,12 +3,12 @@
 <jsp:useBean id="loggedUserDetails" type="pl.polsl.skirentalservice.dto.login.LoggedUserDataDto" scope="session"/>
 
 <header class="d-flex navbar bg-white sticky-top bg-white">
-    <button id="nav-toggle-button" class="btn ms-2 p-1 px-2 d-flex align-items-center d-sm-block d-none">
+    <button id="nav-toggle-button" class="btn ms-2 p-1 px-2 d-flex align-items-center d-lg-block d-none">
         <span data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Pokaż/schowaj menu" type="button">
             <i class="bi bi-list text-dark fs-4 lh-sm"></i>
         </span>
     </button>
-    <button class="btn ms-2 p-1 px-2 d-flex align-items-center d-sm-none d-block" type="button" data-bs-toggle="offcanvas"
+    <button class="btn ms-2 p-1 px-2 d-flex align-items-center d-lg-none d-block" type="button" data-bs-toggle="offcanvas"
             data-bs-target="#nav-mobile">
         <span data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Pokaż/schowaj menu" type="button">
             <i class="bi bi-list text-dark fs-4 lh-sm"></i>

@@ -19,14 +19,14 @@ import jakarta.servlet.annotation.*;
 
 import java.io.IOException;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @WebFilter(urlPatterns = { "/seller/*", "/owner/*", "/login" }, initParams = @WebInitParam(name = "mood", value = "awake"))
 public class NoCacheProxyFilter extends HttpFilter {
 
     @Override
     public void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
         res.setHeader("Pragma", "no-cache");
         res.setDateHeader("Expires", 0);

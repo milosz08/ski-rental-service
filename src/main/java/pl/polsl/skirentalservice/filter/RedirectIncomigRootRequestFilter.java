@@ -19,7 +19,7 @@ import jakarta.servlet.annotation.*;
 
 import java.io.IOException;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @WebFilter(urlPatterns = "/", initParams = @WebInitParam(name = "mood", value = "awake"))
 public class RedirectIncomigRootRequestFilter extends HttpFilter {

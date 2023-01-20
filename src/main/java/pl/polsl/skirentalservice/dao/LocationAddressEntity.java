@@ -13,8 +13,8 @@
 
 package pl.polsl.skirentalservice.dao;
 
+import lombok.*;
 import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
 
 import pl.polsl.skirentalservice.core.db.*;
 
@@ -23,7 +23,7 @@ import java.util.Set;
 import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.FetchType.LAZY;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Entity
 @EntityInjector
@@ -32,45 +32,45 @@ import static jakarta.persistence.FetchType.LAZY;
 public class LocationAddressEntity extends AuditableEntity {
 
     @Column(name = "street")        private String street;
-    @Column(name = "building_no")   private String buildingNo;
-    @Column(name = "apartment_no")  private String apartmentNo;
+    @Column(name = "building_no")   private String buildingNr;
+    @Column(name = "apartment_no")  private String apartmentNr;
     @Column(name = "city")          private String city;
     @Column(name = "postal_code")   private String postalCode;
 
     @OneToMany(fetch = LAZY, cascade = { PERSIST, MERGE }, mappedBy = "locationAddress")
     private Set<CustomerEntity> customers;
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     String getStreet() {
         return street;
     }
 
-    void setStreet(String street) {
+    public void setStreet(String street) {
         this.street = street;
     }
 
-    String getBuildingNo() {
-        return buildingNo;
+    String getBuildingNr() {
+        return buildingNr;
     }
 
-    void setBuildingNo(String buildingNo) {
-        this.buildingNo = buildingNo;
+    public void setBuildingNr(String buildingNr) {
+        this.buildingNr = buildingNr;
     }
 
-    String getApartmentNo() {
-        return apartmentNo;
+    String getApartmentNr() {
+        return apartmentNr;
     }
 
-    void setApartmentNo(String apartmentNo) {
-        this.apartmentNo = apartmentNo;
+    public void setApartmentNr(String apartmentNr) {
+        this.apartmentNr = apartmentNr;
     }
 
     String getCity() {
         return city;
     }
 
-    void setCity(String city) {
+    public void setCity(String city) {
         this.city = city;
     }
 
@@ -78,7 +78,7 @@ public class LocationAddressEntity extends AuditableEntity {
         return postalCode;
     }
 
-    void setPostalCode(String postalCode) {
+    public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
     }
 
@@ -90,16 +90,16 @@ public class LocationAddressEntity extends AuditableEntity {
         this.customers = customers;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public String toString() {
         return '{' +
-                "street='" + street + '\'' +
-                ", buildingNo='" + buildingNo + '\'' +
-                ", apartmentNo='" + apartmentNo + '\'' +
-                ", city='" + city + '\'' +
-                ", postalCode='" + postalCode + '\'' +
-                '}';
+            "street='" + street + '\'' +
+            ", buildingNo='" + buildingNr + '\'' +
+            ", apartmentNo='" + apartmentNr + '\'' +
+            ", city='" + city + '\'' +
+            ", postalCode='" + postalCode + '\'' +
+            '}';
     }
 }

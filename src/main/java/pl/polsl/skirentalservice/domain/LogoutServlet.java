@@ -23,18 +23,17 @@ import java.util.Objects;
 import java.io.IOException;
 
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
-import pl.polsl.skirentalservice.dto.logout.LogoutModalDto;
 
 import static pl.polsl.skirentalservice.util.SessionAttribute.*;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @WebServlet("/logout")
 public class LogoutServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LogoutServlet.class);
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {

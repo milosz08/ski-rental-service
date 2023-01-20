@@ -2,8 +2,8 @@
  * Copyright (c) 2023 by multiple authors
  * Silesian University of Technology
  *
- *  File name: EntityInjector.java
- *  Last modified: 25/12/2022, 02:38
+ *  File name: SessionAlert.java
+ *  Last modified: 17/01/2023, 21:46
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -11,16 +11,19 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentalservice.core.db;
+package pl.polsl.skirentalservice.util;
 
-import java.lang.annotation.*;
-
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import lombok.*;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@Retention(RUNTIME)
-@Target(TYPE)
-public @interface EntityInjector {
+@Getter
+@AllArgsConstructor
+public enum SessionAlert {
+    LOGIN_PAGE_ALERT("login-page-alert"),
+    EMPLOYERS_PAGE_ALERT("employers-page-alert");
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    private final String name;
 }

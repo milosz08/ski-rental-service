@@ -14,44 +14,25 @@
 package pl.polsl.skirentalservice.dto.change_password;
 
 import lombok.*;
-import java.util.Objects;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Data
+@AllArgsConstructor
 public class ChangePasswordEmployerDetailsDto {
     private Long id;
     private Long tokenId;
     private String fullName;
     private String imageUrl;
-
-    //------------------------------------------------------------------------------------------------------------------
-
-    public ChangePasswordEmployerDetailsDto(Long id, Long tokenId, String fullName, String imageUrl) {
-        this.id = id;
-        this.tokenId = tokenId;
-        this.fullName = fullName;
-        if (Objects.isNull(imageUrl)) {
-            this.imageUrl = "static/images/default-profile-image.svg";
-        } else {
-            this.imageUrl = imageUrl;
-        }
-    }
-
-    //------------------------------------------------------------------------------------------------------------------
-
-    public ChangePasswordEmployerDetailsDto() {
-        this.imageUrl = "static/images/default-profile-image.svg";
-    }
-
-    //------------------------------------------------------------------------------------------------------------------
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public String toString() {
         return '{' +
-                "id=" + id +
-                ", fullName='" + fullName + '\'' +
-                ", imageUrl='" + imageUrl + '\'' +
-                '}';
+            "id=" + id +
+            ", fullName='" + fullName + '\'' +
+            ", imageUrl='" + imageUrl + '\'' +
+            '}';
     }
 }

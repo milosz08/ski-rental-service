@@ -13,17 +13,17 @@
 
 package pl.polsl.skirentalservice.dao;
 
+import lombok.*;
 import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
-
-import pl.polsl.skirentalservice.core.db.*;
 
 import java.time.LocalDate;
+
+import pl.polsl.skirentalservice.core.db.*;
 
 import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.FetchType.LAZY;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Entity
 @EntityInjector
@@ -36,11 +36,11 @@ public class EmployerEntity extends AuditableEntity {
     @Column(name = "hired_date")        private LocalDate hiredDate;
     @Column(name = "image_url")         private String imageUrl;
 
-    @OneToOne(fetch = LAZY, cascade = { PERSIST, MERGE })
+    @OneToOne(fetch = LAZY, cascade = { PERSIST, MERGE, REMOVE })
     @JoinColumn(name = "user_details_id", referencedColumnName = "id")
     private UserDetailsEntity userDetails;
 
-    @OneToOne(fetch = LAZY, cascade = { PERSIST, MERGE })
+    @OneToOne(fetch = LAZY, cascade = { PERSIST, MERGE, REMOVE })
     @JoinColumn(name = "location_address_id", referencedColumnName = "id")
     private LocationAddressEntity locationAddress;
 
@@ -48,17 +48,17 @@ public class EmployerEntity extends AuditableEntity {
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     private RoleEntity role;
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public String getLogin() {
+    String getLogin() {
         return login;
     }
 
-    void setLogin(String login) {
+    public void setLogin(String login) {
         this.login = login;
     }
 
-    public String getPassword() {
+    String getPassword() {
         return password;
     }
 
@@ -70,11 +70,11 @@ public class EmployerEntity extends AuditableEntity {
         return hiredDate;
     }
 
-    void setHiredDate(LocalDate hiredDate) {
+    public void setHiredDate(LocalDate hiredDate) {
         this.hiredDate = hiredDate;
     }
 
-    public String getImageUrl() {
+    String getImageUrl() {
         return imageUrl;
     }
 
@@ -86,23 +86,23 @@ public class EmployerEntity extends AuditableEntity {
         return userDetails;
     }
 
-    void setUserDetails(UserDetailsEntity userDetails) {
+    public void setUserDetails(UserDetailsEntity userDetails) {
         this.userDetails = userDetails;
     }
 
-    LocationAddressEntity getLocationAddress() {
+    public LocationAddressEntity getLocationAddress() {
         return locationAddress;
     }
 
-    void setLocationAddress(LocationAddressEntity locationAddress) {
+    public void setLocationAddress(LocationAddressEntity locationAddress) {
         this.locationAddress = locationAddress;
     }
 
-    public RoleEntity getRole() {
+    RoleEntity getRole() {
         return role;
     }
 
-    void setRole(RoleEntity role) {
+    public void setRole(RoleEntity role) {
         this.role = role;
     }
 
@@ -110,13 +110,14 @@ public class EmployerEntity extends AuditableEntity {
 
     @Override
     public String toString() {
-        return '{' +
-                "login='" + login + '\'' +
-                ", hiredDate=" + hiredDate +
-                ", imageUrl='" + imageUrl + '\'' +
-                ", userDetails=" + userDetails +
-                ", locationAddress=" + locationAddress +
-                ", role=" + role +
-                '}';
+        return "{" +
+            "login='" + login + '\'' +
+            ", password='" + password + '\'' +
+            ", hiredDate=" + hiredDate +
+            ", imageUrl='" + imageUrl + '\'' +
+            ", isBlocked='" + isBlocked + '\'' +
+            ", firstAccess=" + firstAccess +
+            ", role=" + role +
+            '}';
     }
 }

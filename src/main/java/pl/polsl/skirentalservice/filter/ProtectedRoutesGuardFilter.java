@@ -22,14 +22,14 @@ import java.io.IOException;
 
 import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @WebFilter(urlPatterns = { "/seller/*", "/owner/*" }, initParams = @WebInitParam(name = "mood", value = "awake"))
 public class ProtectedRoutesGuardFilter extends HttpFilter {
 
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
-            throws IOException, ServletException {
+        throws IOException, ServletException {
         final HttpSession httpSession = req.getSession();
         if (Objects.isNull(httpSession.getAttribute(LOGGED_USER_DETAILS.getName()))) {
             res.sendRedirect("/login");

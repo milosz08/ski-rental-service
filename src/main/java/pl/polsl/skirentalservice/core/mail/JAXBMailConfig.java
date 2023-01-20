@@ -21,7 +21,7 @@ import pl.polsl.skirentalservice.core.JAXBProperty;
 
 import static jakarta.xml.bind.annotation.XmlAccessType.FIELD;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @NoArgsConstructor
 @XmlAccessorType(FIELD)
@@ -30,7 +30,7 @@ class JAXBMailConfig {
 
     @XmlElement(name = "property") private List<JAXBProperty> properties = new ArrayList<>();
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     List<JAXBProperty> getProperties() {
         return properties;

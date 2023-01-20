@@ -20,14 +20,14 @@ import jakarta.servlet.annotation.*;
 import java.util.Objects;
 import java.io.IOException;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @WebFilter(urlPatterns = "/change-forgotten-password/*", initParams = @WebInitParam(name = "mood", value = "awake"))
 public class NonOtaAttributeRedirectFilter extends HttpFilter {
 
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
-            throws IOException, ServletException {
+        throws IOException, ServletException {
         final String token = req.getParameter("token");
         if (Objects.isNull(token)) {
             res.sendRedirect("/forgot-password-request");

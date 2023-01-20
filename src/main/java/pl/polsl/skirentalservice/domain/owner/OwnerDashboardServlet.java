@@ -21,7 +21,7 @@ import java.io.IOException;
 
 import static pl.polsl.skirentalservice.util.PageTitle.OWNER_DASHBOARD_PAGE;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @WebServlet("/owner/dashboard")
 public class OwnerDashboardServlet extends HttpServlet {

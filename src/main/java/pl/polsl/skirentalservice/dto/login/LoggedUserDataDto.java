@@ -14,13 +14,12 @@
 package pl.polsl.skirentalservice.dto.login;
 
 import lombok.*;
-import java.util.Objects;
-
 import pl.polsl.skirentalservice.util.Gender;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Data
+@AllArgsConstructor
 public class LoggedUserDataDto {
     private Long id;
     private String login;
@@ -28,6 +27,7 @@ public class LoggedUserDataDto {
     private String imageUrl;
     private String roleName;
     private Character roleAlias;
+    private String roleEng;
     private Gender gender;
 
     //------------------------------------------------------------------------------------------------------------------
@@ -51,14 +51,15 @@ public class LoggedUserDataDto {
 
     @Override
     public String toString() {
-        return '{' +
-                "id=" + id +
-                ", login='" + login + '\'' +
-                ", imageUrl='" + imageUrl + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", roleName='" + roleName + '\'' +
-                ", roleAlias=" + roleAlias +
-                ", gender=" + gender +
-                '}';
+        return "{" +
+            "id=" + id +
+            ", login='" + login + '\'' +
+            ", fullName='" + fullName + '\'' +
+            ", imageUrl='" + imageUrl + '\'' +
+            ", roleName='" + roleName + '\'' +
+            ", roleAlias=" + roleAlias +
+            ", roleEng='" + roleEng + '\'' +
+            ", gender=" + gender +
+            '}';
     }
 }

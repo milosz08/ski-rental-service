@@ -63,7 +63,7 @@
         </div>
     </div>
 </div>
-<nav class="bg-dark text-light left-nav-wrapper d-lg-block d-none left-nav-wrapper-active simple-transition"
+<nav class="bg-dark text-light left-nav-wrapper d-lg-block d-none left-nav-wrapper-active simple-transition flex-shrink-0"
     id="left-nav-wrapper">
     <div class="sticky-top p-3 d-flex flex-column min-vh-100">
         <div class="mb-3">

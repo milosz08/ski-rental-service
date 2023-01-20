@@ -25,8 +25,8 @@
                     <hr class="mb-4">
                     <div class="mb-4">
                         <label for="password" class="form-label mb-1 text-secondary">Nowe hasło:</label>
-                        <div class="input-group has-validation">
-                            <input type="password" class="form-control ${changePassData.password.errorStyle}"
+                        <div class="input-group input-group-sm has-validation">
+                            <input type="password" class="form-control form-control-sm ${changePassData.password.errorStyle}"
                                 name="password" id="password" value="${changePassData.password.value}">
                             <button type="button" class="input-group-text password-input-toggler">
                                 <i class="bi bi-eye-fill"></i>
@@ -36,8 +36,8 @@
                     </div>
                     <div class="mb-3">
                         <label for="passwordRepeat" class="form-label mb-1 text-secondary">Powtórz nowe hasło:</label>
-                        <div class="input-group has-validation">
-                            <input type="password" class="form-control ${changePassData.passwordRepeat.errorStyle}"
+                        <div class="input-group input-group-sm has-validation">
+                            <input type="password" class="form-control form-control-sm ${changePassData.passwordRepeat.errorStyle}"
                                 name="passwordRepeat" id="passwordRepeat" value="${changePassData.passwordRepeat.value}">
                             <button type="button" class="input-group-text password-input-toggler">
                                 <i class="bi bi-eye-fill"></i>
@@ -55,7 +55,7 @@
                             <li>przynajmniej jeden znak specjalny: #?!@$%^&*</li>
                         </ul>
                     </div>
-                    <button type="submit" class="btn btn-dark">
+                    <button type="submit" class="btn btn-dark btn-sm">
                         Zmień hasło <i class="bi bi-arrow-right ms-2"></i>
                     </button>
                 </form>

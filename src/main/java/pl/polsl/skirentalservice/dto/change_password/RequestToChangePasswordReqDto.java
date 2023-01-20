@@ -20,7 +20,7 @@ import pl.polsl.skirentalservice.core.IReqValidatePojo;
 
 import static pl.polsl.skirentalservice.util.Regex.LOGIN_EMAIL;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Data
 @AllArgsConstructor
@@ -35,7 +35,7 @@ public class RequestToChangePasswordReqDto implements IReqValidatePojo {
     @Override
     public String toString() {
         return '{' +
-                "loginOrEmail='" + loginOrEmail + '\'' +
-                '}';
+            "loginOrEmail='" + loginOrEmail + '\'' +
+            '}';
     }
 }

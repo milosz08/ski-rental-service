@@ -13,9 +13,10 @@
 
 package pl.polsl.skirentalservice.util;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 public class Regex {
+    public static final String LOGIN_CHANGE_EMAIL = "^[a-z0-9]{5,80}$";
     public static final String LOGIN_EMAIL = "^[a-z0-9@.]{5,80}$";
     public static final String PASSWORD_REQ = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*]).{8,}$";
     public static final String PASSWORD_AVLB = "^[a-zA-Z0-9#?!@$%^&*]{8,}$";

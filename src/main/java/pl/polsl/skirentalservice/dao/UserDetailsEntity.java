@@ -13,15 +13,15 @@
 
 package pl.polsl.skirentalservice.dao;
 
+import lombok.*;
 import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 
 import pl.polsl.skirentalservice.core.db.*;
 import pl.polsl.skirentalservice.util.Gender;
 
-import java.time.LocalDate;
-
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Entity
 @EntityInjector
@@ -32,27 +32,29 @@ public class UserDetailsEntity extends AuditableEntity {
     @Column(name = "first_name")        private String firstName;
     @Column(name = "last_name")         private String lastName;
     @Column(name = "pesel")             private String pesel;
-    @Column(name = "phone_area_code")   private Integer phoneAreaCode;
     @Column(name = "phone_number")      private String phoneNumber;
     @Column(name = "email_address")     private String emailAddress;
     @Column(name = "born_date")         private LocalDate bornDate;
     @Column(name = "gender")            private Gender gender;
 
-    //------------------------------------------------------------------------------------------------------------------
+    @Column(name = "phone_area_code", insertable = false, updatable = false)
+    private Integer phoneAreaCode;
 
-    public String getFirstName() {
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    String getFirstName() {
         return firstName;
     }
 
-    void setFirstName(String firstName) {
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
-    public String getLastName() {
+    String getLastName() {
         return lastName;
     }
 
-    void setLastName(String lastName) {
+    public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
@@ -60,7 +62,7 @@ public class UserDetailsEntity extends AuditableEntity {
         return pesel;
     }
 
-    void setPesel(String pesel) {
+    public void setPesel(String pesel) {
         this.pesel = pesel;
     }
 
@@ -76,15 +78,15 @@ public class UserDetailsEntity extends AuditableEntity {
         return phoneNumber;
     }
 
-    void setPhoneNumber(String phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
-    String getEmailAddress() {
+    public String getEmailAddress() {
         return emailAddress;
     }
 
-    void setEmailAddress(String emailAddress) {
+    public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
     }
 
@@ -92,7 +94,7 @@ public class UserDetailsEntity extends AuditableEntity {
         return bornDate;
     }
 
-    void setBornDate(LocalDate bornDate) {
+    public void setBornDate(LocalDate bornDate) {
         this.bornDate = bornDate;
     }
 
@@ -100,23 +102,23 @@ public class UserDetailsEntity extends AuditableEntity {
         return gender;
     }
 
-    void setGender(Gender gender) {
+    public void setGender(Gender gender) {
         this.gender = gender;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public String toString() {
         return '{' +
-                "firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", pesel='" + pesel + '\'' +
-                ", phoneAreaCode=" + phoneAreaCode +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", emailAddress='" + emailAddress + '\'' +
-                ", bornDate=" + bornDate +
-                ", gender=" + gender +
-                '}';
+            "firstName='" + firstName + '\'' +
+            ", lastName='" + lastName + '\'' +
+            ", pesel='" + pesel + '\'' +
+            ", phoneAreaCode=" + phoneAreaCode +
+            ", phoneNumber='" + phoneNumber + '\'' +
+            ", emailAddress='" + emailAddress + '\'' +
+            ", bornDate=" + bornDate +
+            ", gender=" + gender +
+            '}';
     }
 }

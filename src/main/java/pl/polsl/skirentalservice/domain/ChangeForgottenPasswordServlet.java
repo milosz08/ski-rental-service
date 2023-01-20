@@ -34,7 +34,7 @@ import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.util.PageTitle.CHANGE_FORGOTTEN_PASSWORD_PAGE;
 import static pl.polsl.skirentalservice.util.SessionAttribute.CHANGE_PASSWORD_ALERT;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @WebServlet("/change-forgotten-password")
 public class ChangeForgottenPasswordServlet extends HttpServlet {
@@ -44,7 +44,7 @@ public class ChangeForgottenPasswordServlet extends HttpServlet {
     @EJB private HibernateFactory database;
     @EJB private ValidatorFactory validator;
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -52,7 +52,7 @@ public class ChangeForgottenPasswordServlet extends HttpServlet {
         selfRedirect(req, res, alert, validateTokenParameter(req, alert));
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -105,7 +105,7 @@ public class ChangeForgottenPasswordServlet extends HttpServlet {
         res.sendRedirect("/login");
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private void selfRedirect(HttpServletRequest req, HttpServletResponse res, AlertTupleDto alert,
                               ChangePasswordEmployerDetailsDto employer) throws ServletException, IOException {
@@ -115,14 +115,14 @@ public class ChangeForgottenPasswordServlet extends HttpServlet {
         req.getRequestDispatcher("/WEB-INF/pages/change-forgotten-password.jsp").forward(req, res);
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private void selfRedirect(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         req.setAttribute("title", CHANGE_FORGOTTEN_PASSWORD_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/change-forgotten-password.jsp").forward(req, res);
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private ChangePasswordEmployerDetailsDto validateTokenParameter(HttpServletRequest req, AlertTupleDto alert) {
         final String token = req.getParameter("token");

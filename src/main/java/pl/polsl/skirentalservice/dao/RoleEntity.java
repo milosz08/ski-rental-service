@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 
 import pl.polsl.skirentalservice.core.db.*;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Entity
 @EntityInjector
@@ -29,7 +29,7 @@ public class RoleEntity extends AuditableEntity {
     @Column(name = "role_name")     private String roleName;
     @Column(name = "alias")         private Character alias;
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public String getRoleName() {
         return roleName;
@@ -51,9 +51,10 @@ public class RoleEntity extends AuditableEntity {
 
     @Override
     public String toString() {
-        return '{' +
-                "roleName='" + roleName + '\'' +
-                ", alias=" + alias +
-                '}';
+        return "{" +
+            "roleName='" + roleName + '\'' +
+            ", alias=" + alias +
+            ", roleEng='" + roleEng + '\'' +
+            '}';
     }
 }

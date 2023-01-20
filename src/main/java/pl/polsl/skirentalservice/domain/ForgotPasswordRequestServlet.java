@@ -32,14 +32,14 @@ import pl.polsl.skirentalservice.dao.*;
 import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.core.mail.*;
 import pl.polsl.skirentalservice.dto.change_password.*;
-import pl.polsl.skirentalservice.core.db.HibernateFactory;
+import pl.polsl.skirentalservice.core.db.HibernateBean;
 
 import static java.time.ZoneId.systemDefault;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.util.Utils.getBaseReqPath;
 import static pl.polsl.skirentalservice.util.PageTitle.FORGOT_PASSWORD_REQUEST_PAGE;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @WebServlet("/forgot-password-request")
 public class ForgotPasswordRequestServlet extends HttpServlet {
@@ -47,18 +47,18 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(ForgotPasswordRequestServlet.class);
     private static final DateFormat DF = new SimpleDateFormat("yyyy-MM-dd, kk:mm:ss", new Locale("pl"));
 
-    @EJB private MailFactory mail;
-    @EJB private HibernateFactory database;
-    @EJB private ValidatorFactory validator;
+    @EJB private MailSocketBean mail;
+    @EJB private HibernateBean database;
+    @EJB private ValidatorBean validator;
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         selfRedirect(req, res, null);
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -78,9 +78,9 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
         final Transaction transaction = session.beginTransaction();
 
         final String jpqlFindEmployer =
-                "SELECT COUNT(*) > 0 FROM EmployerEntity e " +
-                "INNER JOIN e.userDetails d " +
-                "WHERE e.login = :loginOrEmail OR d.emailAddress = :loginOrEmail";
+            "SELECT COUNT(*) > 0 FROM EmployerEntity e " +
+            "INNER JOIN e.userDetails d " +
+            "WHERE e.login = :loginOrEmail OR d.emailAddress = :loginOrEmail";
         final boolean employerExist = session.createQuery(jpqlFindEmployer, Boolean.class)
                 .setParameter("loginOrEmail", loginOrEmail)
                 .getSingleResult();
@@ -90,16 +90,16 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
             LOGGER.warn("Attempt to change password for non existing account. Login data: {}", reqDto);
         } else {
             final String jpqlEmployerDetails =
-                    "SELECT new pl.polsl.skirentalservice.dto.change_password.EmployerDetailsDto(" +
-                            "e.id, e.login, CONCAT(d.firstName, ' ', d.lastName), d.emailAddress " +
-                            ") FROM EmployerEntity e " +
-                            "INNER JOIN e.userDetails d " +
-                            "WHERE e.login = :loginOrEmail OR d.emailAddress = :loginOrEmail";
+                "SELECT new pl.polsl.skirentalservice.dto.change_password.EmployerDetailsDto(" +
+                    "e.id, e.login, CONCAT(d.firstName, ' ', d.lastName), d.emailAddress " +
+                ") FROM EmployerEntity e " +
+                "INNER JOIN e.userDetails d " +
+                "WHERE e.login = :loginOrEmail OR d.emailAddress = :loginOrEmail";
             final var employer = session.createQuery(jpqlEmployerDetails, EmployerDetailsDto.class)
                     .setParameter("loginOrEmail", loginOrEmail)
                     .getSingleResultOrNull();
 
-            final String token = OtaToken.generate();
+            final String token = RandomStringUtils.randomAlphanumeric(10);
             final EmployerEntity employerEntity = session.getReference(EmployerEntity.class, employer.getId());
             final OtaTokenEntity otaToken = new OtaTokenEntity(token, employerEntity);
             session.persist(otaToken);
@@ -112,10 +112,10 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
             templateVars.put("baseServletPath", getBaseReqPath(req));
 
             final MailRequestPayload payload = MailRequestPayload.builder()
-                    .subject("SkiRent Service | Zmiana hasła dla użytkownika " + employer.getFullName())
-                    .templateName("change-password.template.ftl")
-                    .templateVars(templateVars)
-                    .build();
+                .subject("SkiRent Service | Zmiana hasła dla użytkownika " + employer.getFullName())
+                .templateName("change-password.template.ftl")
+                .templateVars(templateVars)
+                .build();
             try {
                 mail.sendMessage(employer.getEmailAddress(), payload);
                 alert.setType(INFO);
@@ -134,10 +134,10 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
         selfRedirect(req, res, resDto);
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private void selfRedirect(HttpServletRequest req, HttpServletResponse res, RequestToChangePasswordResDto resDto)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         req.setAttribute("resetPassData", resDto);
         req.setAttribute("title", FORGOT_PASSWORD_REQUEST_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/forgot-password-request.jsp").forward(req, res);

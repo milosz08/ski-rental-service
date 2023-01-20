@@ -20,7 +20,7 @@
                         na konto.
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Zamknij okno</button>
+                        <button type="button" class="btn btn-dark btn-sm" data-bs-dismiss="modal">Zamknij okno</button>
                     </div>
                 </div>
             </div>
@@ -39,22 +39,22 @@
                 <hr class="mb-4">
                 <div class="mb-3">
                     <label for="loginOrEmail" class="form-label mb-1 text-secondary">Login/adres email:</label>
-                    <input type="text" class="form-control ${loginData.loginOrEmail.errorStyle}" name="loginOrEmail"
-                        id="loginOrEmail" value="${loginData.loginOrEmail.value}">
+                    <input type="text" class="form-control form-control-sm ${loginData.loginOrEmail.errorStyle}"
+                        id="loginOrEmail" value="${loginData.loginOrEmail.value}" name="loginOrEmail">
                     <div class="invalid-feedback">${loginData.loginOrEmail.message}</div>
                 </div>
                 <div class="mb-4">
                     <label for="password" class="form-label mb-1 text-secondary">Hasło:</label>
-                    <div class="input-group has-validation">
-                        <input type="password" class="form-control ${loginData.password.errorStyle}" name="password"
-                            id="password">
+                    <div class="input-group input-group-sm has-validation">
+                        <input type="password" class="form-control form-control-sm ${loginData.password.errorStyle}"
+                            id="password" name="password">
                         <button type="button" class="input-group-text password-input-toggler">
                             <i class="bi bi-eye-fill"></i>
                         </button>
                         <div class="invalid-feedback">${loginData.password.message}</div>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-dark">
+                <button type="submit" class="btn btn-dark btn-sm">
                     Zaloguj <i class="bi bi-arrow-right ms-2"></i>
                 </button>
                 <hr class="mb-3">

@@ -21,7 +21,7 @@ import java.io.IOException;
 
 import static pl.polsl.skirentalservice.util.PageTitle.OWNER_PROFILE_PAGE;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////s
 
 @WebServlet("/owner/profile")
 public class OwnerProfileServlet extends HttpServlet {

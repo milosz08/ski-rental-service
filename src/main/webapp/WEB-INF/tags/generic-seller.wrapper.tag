@@ -12,13 +12,13 @@
             </li>
         </p:generic-left-nav.wrapper>
         <div class="d-flex flex-column flex-fill">
-            <jsp:include page="../../partials/logged-user-top-bar.partial.jsp">
+            <jsp:include page="/WEB-INF/partials/logged-user-top-bar.partial.jsp">
                 <jsp:param name="requestPath" value="owner"/>
             </jsp:include>
             <main class="p-3 p-sm-4 flex-grow-1">
                 <jsp:doBody/>
             </main>
-            <jsp:include page="../../partials/logged-user-footer.partial.jsp"/>
+            <jsp:include page="/WEB-INF/partials/logged-user-footer.partial.jsp"/>
         </div>
     </div>
 </p:generic-page.wrapper>
