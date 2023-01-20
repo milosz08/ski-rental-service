@@ -6,8 +6,6 @@
 <br><br>
 Simple enterprise-class application for managing a ski rental company. The software is closed (only people in the enterprise can use it). This project was made for a subject in college programming course. Created only for learning purposes. Jakarta EE and EJB specifications were used in the development. This application can be run on an application server that supports Jakarta EE and EJB, such as JBOSS/Wildfly or GlassFish.
 
-See live application at: [skirental.miloszgilga.pl](https://skirental.miloszgilga.pl/)<br>
-
 > DISCLAIMER: I realize that the specification of servlets, JSP pages and monolithic applications is no longer a standard today, but for the purpose of a simple project, it is just fine.
 
 ## Table of content
