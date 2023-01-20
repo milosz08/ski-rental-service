@@ -15,22 +15,22 @@ package pl.polsl.skirentalservice.dto.change_password;
 
 import lombok.*;
 
+import pl.polsl.skirentalservice.core.ValidatorBean;
 import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Data
-@Builder
-@AllArgsConstructor
+@NoArgsConstructor
 public class ChangeForgottenPasswordResDto {
     private FormValueInfoTupleDto password;
     private FormValueInfoTupleDto passwordRepeat;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public ChangeForgottenPasswordResDto() {
-        this.password = new FormValueInfoTupleDto();
-        this.passwordRepeat = new FormValueInfoTupleDto();
+    public ChangeForgottenPasswordResDto(ValidatorBean validator, ChangeForgottenPasswordReqDto reqDto) {
+        this.password = validator.validateField(reqDto, "password", reqDto.getPassword());
+        this.passwordRepeat = validator.validateField(reqDto, "passwordRepeat", reqDto.getPasswordRepeat());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

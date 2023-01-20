@@ -15,9 +15,11 @@ package pl.polsl.skirentalservice.dto.change_password;
 
 import lombok.*;
 import jakarta.validation.constraints.*;
+import jakarta.servlet.http.HttpServletRequest;
 
 import pl.polsl.skirentalservice.core.IReqValidatePojo;
 
+import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 import static pl.polsl.skirentalservice.util.Regex.LOGIN_EMAIL;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -30,7 +32,13 @@ public class RequestToChangePasswordReqDto implements IReqValidatePojo {
     @Pattern(regexp = LOGIN_EMAIL, message = "Nieprawidłowa wartość/wartości w polu login.")
     private String loginOrEmail;
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public RequestToChangePasswordReqDto(HttpServletRequest req) {
+        this.loginOrEmail = trimToEmpty(req.getParameter("loginOrEmail"));
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public String toString() {

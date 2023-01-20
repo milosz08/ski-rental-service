@@ -15,10 +15,12 @@ package pl.polsl.skirentalservice.dto.login;
 
 import lombok.*;
 import jakarta.validation.constraints.*;
+import jakarta.servlet.http.HttpServletRequest;
 
 import pl.polsl.skirentalservice.core.IReqValidatePojo;
 
 import static pl.polsl.skirentalservice.util.Regex.*;
+import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -35,7 +37,14 @@ public class LoginFormReqDto implements IReqValidatePojo {
     @Pattern(regexp = PASSWORD_AVLB, message = "Nieprawidłowa wartość/wartości w polu hasło.")
     private String password;
 
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public LoginFormReqDto(HttpServletRequest req) {
+        this.loginOrEmail = trimToEmpty(req.getParameter("loginOrEmail"));
+        this.password = trimToEmpty(req.getParameter("password"));
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public String toString() {

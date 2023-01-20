@@ -30,24 +30,7 @@ public class LoggedUserDataDto {
     private String roleEng;
     private Gender gender;
 
-    //------------------------------------------------------------------------------------------------------------------
-
-    public LoggedUserDataDto(Long id, String login, String fullName, String imageUrl, String roleName,
-                             Character roleAlias, Gender gender) {
-        this.id = id;
-        this.login = login;
-        this.fullName = fullName;
-        this.roleName = roleName;
-        this.roleAlias = roleAlias;
-        this.gender = gender;
-        if (Objects.isNull(imageUrl)) {
-            this.imageUrl = "static/images/default-profile-image.svg";
-        } else {
-            this.imageUrl = imageUrl;
-        }
-    }
-
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public String toString() {

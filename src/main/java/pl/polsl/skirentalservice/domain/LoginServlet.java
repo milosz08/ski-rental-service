@@ -47,17 +47,8 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final HttpSession httpSession = req.getSession();
-        final boolean logoutModalVisible = !Objects.isNull(httpSession.getAttribute(LOGOUT_MODAL.getName()));
-        if (logoutModalVisible) {
-            httpSession.removeAttribute(LOGOUT_MODAL.getName());
-        }
-        final AlertTupleDto alert = (AlertTupleDto) httpSession.getAttribute(CHANGE_PASSWORD_ALERT.getName());
-        if (!Objects.isNull(alert)) {
-            req.setAttribute("alertData", alert);
-            httpSession.removeAttribute(CHANGE_PASSWORD_ALERT.getName());
-        }
-        req.setAttribute("logoutModal", new LogoutModalDto(logoutModalVisible));
+        req.setAttribute("alertData", Utils.getAndDestroySessionAlert(req, LOGIN_PAGE_ALERT));
+        req.setAttribute("logoutModal", new LogoutModalDto(Utils.getAndDestroySessionBool(req, LOGOUT_MODAL)));
         req.setAttribute("title", LOGIN_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(req, res);
     }
@@ -66,15 +57,9 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final String loginOrEmail = req.getParameter("loginOrEmail");
-        final String password = req.getParameter("password");
-
-        final LoginFormReqDto reqDto = new LoginFormReqDto(loginOrEmail, password);
-        final LoginFormResDto resDto = LoginFormResDto.builder()
-                .loginOrEmail(validator.validateField(reqDto, "loginOrEmail", loginOrEmail))
-                .password(validator.validateField(reqDto, "password"))
-                .build();
-        if (!validator.allFieldsIsValid(reqDto)) {
+        final LoginFormReqDto reqDto = new LoginFormReqDto(req);
+        final LoginFormResDto resDto = new LoginFormResDto(validator, reqDto);
+        if (validator.someFieldsAreInvalid(reqDto)) {
             selfRedirect(req, res, resDto);
             return;
         }
