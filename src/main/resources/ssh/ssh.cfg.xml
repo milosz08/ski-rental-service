@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ssh-configuration>
+    <properties>
+        <ssh-host>@ssh_host@</ssh-host>
+        <ssh-login>@ssh_login@</ssh-login>
+        <ssh-rsa>/ssh/id_rsa</ssh-rsa>
+        <ssh-knownHosts>/ssh/known_hosts.dat</ssh-knownHosts>
+    </properties>
+    <command-performer-class>pl.polsl.skirentalservice.core.ssh.ExecCommandPerformer</command-performer-class>
+    <commands>
+        <create-mailbox-command>
+            echo "['--json', 'mail', 'account', 'add', '${email}', '${password}']" | nc -U /var/run/devil2.sock
+        </create-mailbox-command>
+        <update-mailbox-command>
+            echo "['--json', 'mail', 'passwd', '${email}', '${newPassword}']" | nc -U /var/run/devil2.sock
+        </update-mailbox-command>
+        <delete-mailbox-command>
+            echo "['--json', 'mail', 'account', 'del', '${email}']" | nc -U /var/run/devil2.sock
+        </delete-mailbox-command>
+        <set-mailbox-capacity-command>
+            devil mail quota ${email} 5M
+        </set-mailbox-capacity-command>
+    </commands>
+</ssh-configuration>
