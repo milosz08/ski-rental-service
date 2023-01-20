@@ -96,6 +96,14 @@ in `src/main/resources/ssh/ssh.cfg.xml`
 
 <a name="intellij-configuration"></a>
 ## Intellij configuration
+Java Virtual Machine initial arguments:
+```
+-Duser.language=pl
+-Duser.country=PL
+-Dfile.encoding=UTF8
+--illegal-access=warn
+--add-opens java.base/com.sun.net.ssl.internal.ssl=ALL-UNNAMED
+```
 <img src="https://cdn.miloszgilga.pl/github-projects-static-resources/ski-rent-service/config1.png" width="100%">
 <img src="https://cdn.miloszgilga.pl/github-projects-static-resources/ski-rent-service/config2.png" width="100%">
 <img src="https://cdn.miloszgilga.pl/github-projects-static-resources/ski-rent-service/config3.png" width="100%">
