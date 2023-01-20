@@ -22,6 +22,7 @@ import jakarta.servlet.annotation.WebServlet;
 import java.util.Objects;
 import java.io.IOException;
 
+import pl.polsl.skirentalservice.dto.logout.LogoutModalDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 
 import static pl.polsl.skirentalservice.util.SessionAttribute.*;

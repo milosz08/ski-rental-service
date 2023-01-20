@@ -1,19 +1,16 @@
 -- liquibase formatted sql
--- changeset milosz08:fd2
+-- changeset milosz08:fd1
 
-SET FOREIGN_KEY_CHECKS = 0;
-TRUNCATE TABLE roles;
-SET FOREIGN_KEY_CHECKS = 1;
-
-INSERT INTO roles (role_name, alias) VALUES
-('pracownik', 'P'),
-('kierownik', 'K');
+INSERT INTO roles (role_name, alias, role_eng) VALUES
+('pracownik', 'P', 'seller'),
+('kierownik', 'K', 'owner'),
+('użytkownik', 'U', 'user');
 
 
-INSERT INTO user_details(first_name, last_name, pesel, phone_area_code, phone_number, email_address, born_date, gender) VALUES
-('Anna', 'Nowak', '65052859767', 48, '454304821', 'annnow@ski.miloszgilga.pl', '1980-12-25', 1),
-('Andrzej', 'Andrzejewski', '68102023253', 49, '212063998', 'andand@ski.miloszgilga.pl', '1972-05-12', 0),
-('Jan', 'Kowalski', '66051043845', 323, '450370403', 'jankow@ski.miloszgilga.pl', '1965-01-18', 0);
+INSERT INTO user_details(first_name, last_name, pesel, phone_number, email_address, born_date, gender) VALUES
+('Anna', 'Nowak', '65052859767', '454304821', 'annnow321@ski.miloszgilga.pl', '1980-12-25', 1),
+('Andrzej', 'Andrzejewski', '68102023253', '212063998', 'andand456@ski.miloszgilga.pl', '1972-05-12', 0),
+('Jan', 'Kowalski', '66051043845', '450370403', 'jan.kowalski@ski.miloszgilga.pl', '1965-01-18', 0);
 
 
 INSERT INTO location_addresses (street, building_no, apartment_no, city, postal_code) VALUES

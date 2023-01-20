@@ -35,6 +35,8 @@ public class EmployerEntity extends AuditableEntity {
     @Column(name = "password")          private String password;
     @Column(name = "hired_date")        private LocalDate hiredDate;
     @Column(name = "image_url")         private String imageUrl;
+    @Column(name = "first_access")      private Boolean firstAccess;
+    @Column(name = "is_blocked")        private Boolean isBlocked;
 
     @OneToOne(fetch = LAZY, cascade = { PERSIST, MERGE, REMOVE })
     @JoinColumn(name = "user_details_id", referencedColumnName = "id")
@@ -106,7 +108,23 @@ public class EmployerEntity extends AuditableEntity {
         this.role = role;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    Boolean getBlocksd() {
+        return isBlocked;
+    }
+
+    void isBlocked(Boolean isBlocked) {
+        this.isBlocked = isBlocked;
+    }
+
+    Boolean getFirstAccess() {
+        return firstAccess;
+    }
+
+    void setFirstAccess(Boolean firstAccess) {
+        this.firstAccess = firstAccess;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public String toString() {

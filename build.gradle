@@ -45,6 +45,12 @@ ext {
     reflectionsVersion          = '0.10.2'
     bcryptVersion               = '0.9.0'
     freemarkerVersion           = '2.3.31'
+    apacheCommonsVersion        = '1.10.0'
+    modelMapperVersion          = '3.1.1'
+    sshjVersion                 = '0.34.0'
+    commonsCodecVersion         = '1.15'
+    commonsValidatorVersion     = '1.7'
+    apacheCommonsLang3Version   = '3.12.0'
 
     // webjars
     bootstrapVersion            = '5.2.3'
@@ -68,6 +74,12 @@ dependencies {
     implementation "org.reflections:reflections:${reflectionsVersion}"
     implementation "at.favre.lib:bcrypt:${bcryptVersion}"
     implementation "org.freemarker:freemarker:${freemarkerVersion}"
+    implementation "org.apache.commons:commons-text:${apacheCommonsVersion}"
+    implementation "org.apache.commons:commons-lang3:${apacheCommonsLang3Version}"
+    implementation "org.modelmapper:modelmapper:${modelMapperVersion}"
+    implementation "com.hierynomus:sshj:${sshjVersion}"
+    implementation "commons-codec:commons-codec:${commonsCodecVersion}"
+    implementation "commons-validator:commons-validator:${commonsValidatorVersion}"
 
     implementation "mysql:mysql-connector-java:${mySqlVersion}"
     implementation "org.hibernate:hibernate-core:${hibernateVersion}"
@@ -92,11 +104,15 @@ tasks.register('copyRsa', Copy) {
 }
 
 processResources {
-    filesMatching([ '**/hibernate.cfg.xml', '**/mail.cfg.xml' ]) {
+    filesMatching('**/hibernate.cfg.xml') {
         filter org.apache.tools.ant.filters.ReplaceTokens, tokens: [
                 'db_url': env.DB_URL.value,
                 'db_user': env.DB_USERNAME.value,
                 'db_pass': env.DB_PASSWORD.value,
+        ]
+    }
+    filesMatching('**/mail.cfg.xml') {
+        filter org.apache.tools.ant.filters.ReplaceTokens, tokens: [
                 'smtp_host': env.SMTP_HOST.value,
                 'smtp_user': env.SMTP_USER.value,
                 'smtp_pass': env.SMTP_PASS.value,

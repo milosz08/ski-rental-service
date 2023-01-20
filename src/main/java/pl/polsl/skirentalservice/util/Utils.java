@@ -13,8 +13,13 @@
 
 package pl.polsl.skirentalservice.util;
 
-import jakarta.servlet.http.HttpServletRequest;
-import java.util.Objects;
+import jakarta.servlet.http.*;
+import org.apache.commons.lang3.*;
+import at.favre.lib.crypto.bcrypt.BCrypt;
+
+import pl.polsl.skirentalservice.dto.AlertTupleDto;
+
+import static java.util.Objects.isNull;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -35,5 +40,38 @@ public class Utils {
         final boolean isHttp = req.getScheme().equals("http") && req.getServerPort() == 80;
         final boolean isHttps = req.getScheme().equals("https") && req.getServerPort() == 443;
         return req.getScheme() + "://" + req.getServerName() + (isHttp || isHttps ? "" : ":" + req.getServerPort());
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static AlertTupleDto getAndDestroySessionAlert(HttpServletRequest req, SessionAlert sessionAlert) {
+        final HttpSession httpSession = req.getSession();
+        final AlertTupleDto alert = (AlertTupleDto) httpSession.getAttribute(sessionAlert.getName());
+        if (isNull(alert)) return new AlertTupleDto();
+        httpSession.removeAttribute(sessionAlert.getName());
+        return alert;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static boolean getAndDestroySessionBool(HttpServletRequest req, SessionAttribute attribute) {
+        final HttpSession httpSession = req.getSession();
+        final Object attrFromSession = httpSession.getAttribute(attribute.getName());
+        if (isNull(attrFromSession)) return false;
+        httpSession.removeAttribute(attribute.getName());
+        return true;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static String loginGenerator(String firstName, String lastName) {
+        final String withoutAccents = StringUtils.stripAccents(firstName.substring(0, 3) + lastName.substring(0, 3));
+        return withoutAccents + RandomStringUtils.randomNumeric(3);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static String generateHash(String preCoded) {
+        return BCrypt.withDefaults().hashToString(10, preCoded.toCharArray());
     }
 }

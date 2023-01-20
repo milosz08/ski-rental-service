@@ -1,5 +1,5 @@
 -- liquibase formatted sql
--- changeset milosz08:aq6
+-- changeset milosz08:aq3
 
 CREATE TABLE IF NOT EXISTS ota_tokens
 (

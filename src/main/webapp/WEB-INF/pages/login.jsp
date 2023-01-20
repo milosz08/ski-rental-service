@@ -11,10 +11,6 @@
         <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="false">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="logoutModalLabel">Wylogowano z systemu</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
                     <div class="modal-body">
                         Nastąpiło poprawne wylogowanie z systemu. Aby ponownie przejść do panelu, zaloguj się ponownie
                         na konto.

@@ -1,5 +1,5 @@
 -- liquibase formatted sql
--- changeset milosz08:aq5
+-- changeset milosz08:aq2
 
 
 CREATE TABLE IF NOT EXISTS user_details
@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS customers
 ENGINE=InnoDB COLLATE=utf16_polish_ci;
 
 
-CREATE TABLE customers_addresses_binding
+CREATE TABLE IF NOT EXISTS customers_addresses_binding
 (
     customer_id BIGINT UNIQUE,
     location_address_id BIGINT,

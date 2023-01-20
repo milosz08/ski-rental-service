@@ -20,9 +20,9 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 public enum UserRole {
-    USER("użytkownik", 'U'),
-    SELLER("pracownik", 'P'),
-    OWNER("kierownik", 'K');
+    USER("użytkownik", 'U', "user"),
+    SELLER("pracownik", 'P', "seller"),
+    OWNER("kierownik", 'K', "owner");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

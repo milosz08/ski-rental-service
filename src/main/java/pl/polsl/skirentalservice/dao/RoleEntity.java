@@ -28,6 +28,7 @@ public class RoleEntity extends AuditableEntity {
 
     @Column(name = "role_name")     private String roleName;
     @Column(name = "alias")         private Character alias;
+    @Column(name = "role_eng")      private String roleEng;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -47,7 +48,15 @@ public class RoleEntity extends AuditableEntity {
         this.alias = alias;
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    String getRoleEng() {
+        return roleEng;
+    }
+
+    void setRoleEng(String roleEng) {
+        this.roleEng = roleEng;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public String toString() {

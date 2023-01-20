@@ -27,6 +27,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import pl.polsl.skirentalservice.core.JAXBProperty;
+import pl.polsl.skirentalservice.exception.UnableToSendEmailException;
 
 import static freemarker.template.Configuration.VERSION_2_3_22;
 
@@ -80,13 +81,13 @@ public class MailSocketBean {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public void sendMessage(String sendTo, MailRequestPayload payload) throws MessagingException {
+    public void sendMessage(String sendTo, MailRequestPayload payload) {
         sendMessage(List.of(sendTo), payload);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public void sendMessage(List<String> sendTo, MailRequestPayload payload) throws MessagingException {
+    public void sendMessage(List<String> sendTo, MailRequestPayload payload) {
         try {
             final Message message = new MimeMessage(mailSession);
             final Template bodyTemplate = freemarkerConfig.getTemplate(payload.getTemplateName());
@@ -129,6 +130,8 @@ public class MailSocketBean {
             LOGGER.error("Unable to load freemarker template. Template name: {}", payload.getTemplateName());
         } catch (TemplateException ex) {
             LOGGER.error("Unable to process freemarker template. Exception: {}", ex.getMessage());
+        } catch (MessagingException ex) {
+            throw new UnableToSendEmailException(String.join(", ", sendTo), payload);
         }
     }
 
@@ -138,5 +141,4 @@ public class MailSocketBean {
         return "@" + configProperties.stream().filter(p -> p.getName()
             .equals("mail.smtp.domain")).findFirst().map(JAXBProperty::getValue).orElse("localhost");
     }
-
 }
