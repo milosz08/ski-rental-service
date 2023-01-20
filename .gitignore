@@ -15,3 +15,6 @@ out/
 !**/src/test/**/out/
 .DS_Store
 .env
+id_rsa
+id_rsa.pub
+known_hosts.dat

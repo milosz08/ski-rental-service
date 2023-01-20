@@ -86,6 +86,11 @@ dependencies {
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
 }
 
+tasks.register('copyRsa', Copy) {
+    from layout.projectDirectory.files([ 'id_rsa', 'known_hosts.dat' ])
+    into layout.buildDirectory.dir("resources/main/ssh")
+}
+
 processResources {
     filesMatching([ '**/hibernate.cfg.xml', '**/mail.cfg.xml' ]) {
         filter org.apache.tools.ant.filters.ReplaceTokens, tokens: [
@@ -95,6 +100,12 @@ processResources {
                 'smtp_host': env.SMTP_HOST.value,
                 'smtp_user': env.SMTP_USER.value,
                 'smtp_pass': env.SMTP_PASS.value,
+        ]
+    }
+    filesMatching('**/ssh.cfg.xml' ) {
+        filter org.apache.tools.ant.filters.ReplaceTokens, tokens: [
+                'ssh_host': env.SSH_HOST.value,
+                'ssh_login': env.SSH_LOGIN.value,
         ]
     }
 }
