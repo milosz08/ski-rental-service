@@ -19,6 +19,7 @@ import at.favre.lib.crypto.bcrypt.BCrypt;
 
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 
+import static java.util.Locale.ENGLISH;
 import static java.util.Objects.isNull;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -66,7 +67,7 @@ public class Utils {
 
     public static String loginGenerator(String firstName, String lastName) {
         final String withoutAccents = StringUtils.stripAccents(firstName.substring(0, 3) + lastName.substring(0, 3));
-        return withoutAccents + RandomStringUtils.randomNumeric(3);
+        return withoutAccents.toLowerCase(ENGLISH) + RandomStringUtils.randomNumeric(3);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

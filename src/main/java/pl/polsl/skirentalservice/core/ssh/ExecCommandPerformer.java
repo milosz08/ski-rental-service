@@ -63,7 +63,7 @@ public class ExecCommandPerformer implements IExecCommandPerformer {
 
     @Override
     public void deleteMailbox(String email) {
-        final String command = commands.getUpdateMailboxCommand();
+        final String command = commands.getDeleteMailboxCommand();
         final Map<String, String> entries = new HashMap<>();
         entries.put("email", email);
         final String deleteCommandExec = sshSocket.replaceConcurrentCommandEntries(entries, command);
