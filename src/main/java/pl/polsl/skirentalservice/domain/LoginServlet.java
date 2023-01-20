@@ -26,12 +26,16 @@ import java.io.IOException;
 
 import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.core.*;
+import pl.polsl.skirentalservice.util.*;
 import pl.polsl.skirentalservice.dto.login.*;
+import pl.polsl.skirentalservice.exception.*;
 import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.dto.logout.LogoutModalDto;
 
+import static java.util.Objects.isNull;
 import static pl.polsl.skirentalservice.util.SessionAttribute.*;
 import static pl.polsl.skirentalservice.util.PageTitle.LOGIN_PAGE;
+import static pl.polsl.skirentalservice.util.SessionAlert.LOGIN_PAGE_ALERT;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -64,25 +68,23 @@ public class LoginServlet extends HttpServlet {
             return;
         }
         final AlertTupleDto alert = new AlertTupleDto();
-        final Session session = database.open();
-        final Transaction transaction = session.beginTransaction();
+        final HttpSession httpSession = req.getSession();
+        try (final Session session = database.open()) {
+            try {
+                session.beginTransaction();
 
-        final String jpqlFindEmployer =
-            "SELECT e.password FROM EmployerEntity e " +
-            "INNER JOIN e.userDetails d " +
-            "WHERE e.login = :loginOrEmail OR d.emailAddress = :loginOrEmail";
-        final String employerPassword = session.createQuery(jpqlFindEmployer, String.class)
-                .setParameter("loginOrEmail", loginOrEmail)
-                .getSingleResultOrNull();
+                final String jpqlFindEmployer =
+                    "SELECT e.password FROM EmployerEntity e " +
+                    "INNER JOIN e.userDetails d " +
+                    "WHERE e.login = :loginOrEmail OR d.emailAddress = :loginOrEmail";
+                final String employerPassword = session.createQuery(jpqlFindEmployer, String.class)
+                    .setParameter("loginOrEmail", reqDto.getLoginOrEmail())
+                    .getSingleResultOrNull();
 
-        LoggedUserDataDto employer = null;
-        if (!isNull(employerPassword)) {
-            final BCrypt.Result result = BCrypt.verifyer().verify(reqDto.getPassword().toCharArray(), employerPassword);
-            if (!result.verified) {
-                alert.setActive(true);
-                alert.setMessage("Nieprawidłowe hasło. Spróbuj ponownie podając inne hasło.");
-                LOGGER.warn("Attempt to login with invalid credentials. Credentials data: {}", reqDto);
-            } else {
+                if (isNull(employerPassword)) throw new UserNotFoundException(reqDto);
+                final BCrypt.Result result = BCrypt.verifyer().verify(reqDto.getPassword().toCharArray(), employerPassword);
+                if (!result.verified) throw new InvalidCredentialsException(reqDto);
+
                 final String jpqlSelectEmployer =
                     "SELECT new pl.polsl.skirentalservice.dto.login.LoggedUserDataDto(" +
                         "e.id, e.login, CONCAT(d.firstName, ' ', d.lastName)," +
@@ -92,27 +94,24 @@ public class LoginServlet extends HttpServlet {
                     "INNER JOIN e.role r " +
                     "INNER JOIN e.userDetails d " +
                     "WHERE e.login = :loginOrEmail OR d.emailAddress = :loginOrEmail";
-                employer = session.createQuery(jpqlSelectEmployer, LoggedUserDataDto.class)
-                        .setParameter("loginOrEmail", loginOrEmail)
-                        .getSingleResultOrNull();
-                final HttpSession httpSession = req.getSession();
-                httpSession.setAttribute(LOGGED_USER_DETAILS.getName(), employer);
-            }
-        } else {
-            alert.setActive(true);
-            alert.setMessage("Użytkownik z podanymi danymi logowania nie istnieje w systemie.");
-            LOGGER.warn("Attempt to login on non existing account. Login data: {}", reqDto);
-        }
-        transaction.commit();
-        session.close();
+                final LoggedUserDataDto employer = session.createQuery(jpqlSelectEmployer, LoggedUserDataDto.class)
+                    .setParameter("loginOrEmail", reqDto.getLoginOrEmail())
+                    .getSingleResultOrNull();
 
-        if (isNull(employer)) {
+                session.getTransaction().commit();
+                httpSession.setAttribute(LOGGED_USER_DETAILS.getName(), employer);
+                LOGGER.info("Successful logged on {} account. Account data: {}", employer.getRoleEng(), employer);
+                res.sendRedirect("/" + employer.getRoleEng() + "/dashboard");
+            } catch (RuntimeException ex) {
+                if (session.getTransaction().isActive()) session.getTransaction().rollback();
+                throw ex;
+            }
+        } catch (RuntimeException ex) {
+            alert.setActive(true);
+            alert.setMessage(ex.getMessage());
             req.setAttribute("alertData", alert);
             selfRedirect(req, res, resDto);
-            return;
         }
-        LOGGER.info("Successful logged on {} account. Account data: {}", employer.getRoleEng(), employer);
-        res.sendRedirect("/" + employer.getRoleEng() + "/dashboard");
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
