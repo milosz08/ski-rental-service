@@ -76,20 +76,19 @@ in `src/main/resources/ssh/ssh.cfg.xml`
         <ssh-rsa>/ssh/id_rsa</ssh-rsa>
         <ssh-knownHosts>/ssh/known_hosts.dat</ssh-knownHosts>
     </properties>
-    <command-performer-class>pl.polsl.skirentalservice.core.ssh.ExecCommandPerformer</command-performer-class>
     <commands>
-        <create-mailbox-command>
+        <command executableFor="create-mailbox">
             <!-- insert here command from your SSH server available to create mailbox with email and password properties -->
-        </create-mailbox-command>
-        <update-mailbox-command>
+        </command>
+        <command executableFor="update-mailbox-password">
             <!-- insert here command from your SSH server available to update mailbox with email and newPassword properties -->
-        </update-mailbox-command>
-        <delete-mailbox-command>
+        </command>
+        <command executableFor="delete-mailbox">
             <!-- insert here command from your SSH server available to delete mailbox with email propery -->
-        </delete-mailbox-command>
-        <set-mailbox-capacity-command>
+        </command>
+        <command executableFor="set-mailbox-capacity">
             <!-- insert here command from your SSH server available to set maximal mailbox space with email propery -->
-        </set-mailbox-capacity-command>
+        </command>
     </commands>
 </ssh-configuration>
 ```
