@@ -7,19 +7,18 @@
         <ssh-rsa>/ssh/id_rsa</ssh-rsa>
         <ssh-knownHosts>/ssh/known_hosts.dat</ssh-knownHosts>
     </properties>
-    <command-performer-class>pl.polsl.skirentalservice.core.ssh.ExecCommandPerformer</command-performer-class>
     <commands>
-        <create-mailbox-command>
+        <command executableFor="create-mailbox">
             echo "['--json', 'mail', 'account', 'add', '${email}', '${password}']" | nc -U /var/run/devil2.sock
-        </create-mailbox-command>
-        <update-mailbox-command>
+        </command>
+        <command executableFor="update-mailbox-password">
             echo "['--json', 'mail', 'passwd', '${email}', '${newPassword}']" | nc -U /var/run/devil2.sock
-        </update-mailbox-command>
-        <delete-mailbox-command>
+        </command>
+        <command executableFor="delete-mailbox">
             echo "['--json', 'mail', 'account', 'del', '${email}']" | nc -U /var/run/devil2.sock
-        </delete-mailbox-command>
-        <set-mailbox-capacity-command>
-            devil mail quota ${email} 5M
-        </set-mailbox-capacity-command>
+        </command>
+        <command executableFor="set-mailbox-capacity">
+            echo "['--json', 'mail', 'quota', '${email}', '5M' ]" | nc -U /var/run/devil2.sock
+        </command>
     </commands>
 </ssh-configuration>

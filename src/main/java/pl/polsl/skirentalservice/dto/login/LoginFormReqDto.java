@@ -25,8 +25,6 @@ import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class LoginFormReqDto implements IReqValidatePojo {
 
     @NotEmpty(message = "Pole loginu/adresu email nie może być puste.")

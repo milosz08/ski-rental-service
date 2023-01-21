@@ -22,7 +22,7 @@ import lombok.*;
 public enum SessionAttribute {
     EMPLOYERS_LIST_SEARCH_BAR("employers-list-search-bar"),
     LOGGED_USER_DETAILS("loggedUserDetails"),
-    LOGOUT_MODAL("logoutModal");
+    LOGOUT_MODAL("logout-modal");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

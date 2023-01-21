@@ -25,7 +25,6 @@ import static pl.polsl.skirentalservice.util.Regex.PASSWORD_REQ;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Data
-@AllArgsConstructor
 public class ChangeForgottenPasswordReqDto implements IReqValidatePojo {
 
     @NotEmpty(message = "Pole hasła nie może być puste.")

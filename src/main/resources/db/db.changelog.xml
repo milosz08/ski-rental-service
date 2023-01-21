@@ -7,7 +7,8 @@
     <include file="changelog/2022-12_migrations/aq1_2022-12-28__users-with-address-table.sql" relativeToChangelogFile="true"/>
     <include file="changelog/2022-12_migrations/aq2_2022-12-29__split-employeers-and-users.sql" relativeToChangelogFile="true"/>
     <include file="changelog/2022-12_migrations/aq3_2022-12-31__add-ota-token-table.sql" relativeToChangelogFile="true"/>
-    <include file="changelog/2022-12_migrations/aq4_2023-01-19__change-phone-code-and-email-cred.sql" relativeToChangelogFile="true"/>
+
+    <include file="changelog/2023-01_migrations/aq4_2023-01-19__change-phone-code-and-email-cred.sql" relativeToChangelogFile="true"/>
 
     <include file="assertions/fd1_filler__default-employers.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

@@ -31,12 +31,12 @@ import static jakarta.persistence.FetchType.LAZY;
 @NoArgsConstructor
 public class EmployerEntity extends AuditableEntity {
 
-    @Column(name = "login")             private String login;
-    @Column(name = "password")          private String password;
-    @Column(name = "hired_date")        private LocalDate hiredDate;
-    @Column(name = "image_url")         private String imageUrl;
-    @Column(name = "first_access")      private Boolean firstAccess;
-    @Column(name = "is_blocked")        private Boolean isBlocked;
+    @Column(name = "login")                                 private String login;
+    @Column(name = "password")                              private String password;
+    @Column(name = "hired_date")                            private LocalDate hiredDate;
+    @Column(name = "image_url")                             private String imageUrl;
+    @Column(name = "first_access", insertable = false)      private Boolean firstAccess;
+    @Column(name = "is_blocked", insertable = false)        private Boolean isBlocked;
 
     @OneToOne(fetch = LAZY, cascade = { PERSIST, MERGE, REMOVE })
     @JoinColumn(name = "user_details_id", referencedColumnName = "id")

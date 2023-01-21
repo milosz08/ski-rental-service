@@ -12,6 +12,6 @@
             <h1 class="the-biggest-font-size lh-1 mb-0">404</h1>
             <p class="text-secondary fs-3 mb-0 fw-light">Nie znaleziono</p>
         </div>
-        <a class="btn btn-primary" href="${pageContext.request.contextPath}/">Przejdź do strony głównej</a>
+        <a class="btn btn-dark" href="${pageContext.request.contextPath}/">Przejdź do strony głównej</a>
     </main>
 </p:generic-page.wrapper>

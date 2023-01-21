@@ -3,7 +3,7 @@
  * Silesian University of Technology
  *
  *  File name: JAXBSshCommands.java
- *  Last modified: 19/01/2023, 18:17
+ *  Last modified: 21/01/2023, 09:27
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -13,67 +13,38 @@
 
 package pl.polsl.skirentalservice.core.ssh;
 
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-
 import jakarta.xml.bind.annotation.*;
-import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import pl.polsl.skirentalservice.core.JAXBNormalizerAdapter;
+import java.util.*;
 
 import static jakarta.xml.bind.annotation.XmlAccessType.FIELD;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@AllArgsConstructor
 @NoArgsConstructor
 @XmlAccessorType(FIELD)
 @XmlRootElement(name = "commands")
 public class JAXBSshCommands {
 
-    @XmlElement(name = "create-mailbox-command")
-    @XmlJavaTypeAdapter(JAXBNormalizerAdapter.class) private String createMailboxCommand;
-
-    @XmlElement(name = "update-mailbox-command")
-    @XmlJavaTypeAdapter(JAXBNormalizerAdapter.class) private String updateMailboxCommand;
-
-    @XmlElement(name = "delete-mailbox-command")
-    @XmlJavaTypeAdapter(JAXBNormalizerAdapter.class) private String deleteMailboxCommand;
-
-    @XmlElement(name = "set-mailbox-capacity-command")
-    @XmlJavaTypeAdapter(JAXBNormalizerAdapter.class) private String setMailboxCapacityCommand;
+    @XmlElement(name = "command") private List<JAXBSshCommand> commands = new ArrayList<>();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public String getCreateMailboxCommand() {
-        return createMailboxCommand;
+    List<JAXBSshCommand> getCommands() {
+        return commands;
     }
 
-    void setCreateMailboxCommand(String createMailboxCommand) {
-        this.createMailboxCommand = createMailboxCommand;
+    void setCommands(List<JAXBSshCommand> commands) {
+        this.commands = commands;
     }
 
-    public String getUpdateMailboxCommand() {
-        return updateMailboxCommand;
-    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    void setUpdateMailboxCommand(String updateMailboxCommand) {
-        this.updateMailboxCommand = updateMailboxCommand;
-    }
-
-    public String getDeleteMailboxCommand() {
-        return deleteMailboxCommand;
-    }
-
-    void setDeleteMailboxCommand(String deleteMailboxCommand) {
-        this.deleteMailboxCommand = deleteMailboxCommand;
-    }
-
-    public String getSetMailboxCapacityCommand() {
-        return setMailboxCapacityCommand;
-    }
-
-    void setSetMailboxCapacityCommand(String setMailboxCapacityCommand) {
-        this.setMailboxCapacityCommand = setMailboxCapacityCommand;
+    @Override
+    public String toString() {
+        return "{" +
+            "commands=" + commands +
+            '}';
     }
 }

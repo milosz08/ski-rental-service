@@ -51,8 +51,11 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        final HttpSession httpSession = req.getSession();
+        boolean modalVisible = !isNull(httpSession.getAttribute(LOGOUT_MODAL.name()));
+        if (modalVisible) httpSession.removeAttribute(LOGOUT_MODAL.name());
+        req.setAttribute("logoutModal", new LogoutModalDto(modalVisible));
         req.setAttribute("alertData", Utils.getAndDestroySessionAlert(req, LOGIN_PAGE_ALERT));
-        req.setAttribute("logoutModal", new LogoutModalDto(Utils.getAndDestroySessionBool(req, LOGOUT_MODAL)));
         req.setAttribute("title", LOGIN_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(req, res);
     }
@@ -89,7 +92,7 @@ public class LoginServlet extends HttpServlet {
                     "SELECT new pl.polsl.skirentalservice.dto.login.LoggedUserDataDto(" +
                         "e.id, e.login, CONCAT(d.firstName, ' ', d.lastName)," +
                         "IFNULL(e.imageUrl, 'static/images/default-profile-image.svg'), r.roleName, " +
-                        "e.role.alias, e.role.roleEng, d.gender" +
+                        "e.role.alias, e.role.roleEng, d.gender, d.emailAddress, e.firstAccess" +
                     ") FROM EmployerEntity e " +
                     "INNER JOIN e.role r " +
                     "INNER JOIN e.userDetails d " +
@@ -101,9 +104,16 @@ public class LoginServlet extends HttpServlet {
                 session.getTransaction().commit();
                 httpSession.setAttribute(LOGGED_USER_DETAILS.getName(), employer);
                 LOGGER.info("Successful logged on {} account. Account data: {}", employer.getRoleEng(), employer);
+                if (employer.getIsFirstAccess() && employer.getRoleAlias().equals(UserRole.SELLER.getAlias())) {
+                    res.sendRedirect("/first-access");
+                    return;
+                }
                 res.sendRedirect("/" + employer.getRoleEng() + "/dashboard");
             } catch (RuntimeException ex) {
-                if (session.getTransaction().isActive()) session.getTransaction().rollback();
+                if (session.getTransaction().isActive()) {
+                    LOGGER.error("Some issues appears. Transaction rollback and revert previous state...");
+                    session.getTransaction().rollback();
+                }
                 throw ex;
             }
         } catch (RuntimeException ex) {

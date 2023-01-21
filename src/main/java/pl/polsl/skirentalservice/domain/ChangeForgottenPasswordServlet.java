@@ -101,7 +101,10 @@ public class ChangeForgottenPasswordServlet extends HttpServlet {
                 httpSession.setAttribute(LOGIN_PAGE_ALERT.getName(), alert);
                 res.sendRedirect("/login");
             } catch (RuntimeException ex) {
-                if (session.getTransaction().isActive()) session.getTransaction().rollback();
+                if (session.getTransaction().isActive()) {
+                    LOGGER.error("Some issues appears. Transaction rollback and revert previous state...");
+                    session.getTransaction().rollback();
+                }
                 throw ex;
             }
         } catch (RuntimeException ex) {

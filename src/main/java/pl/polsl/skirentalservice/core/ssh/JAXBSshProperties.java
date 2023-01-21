@@ -32,7 +32,7 @@ public class JAXBSshProperties {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public String getSshHost() {
+    String getSshHost() {
         return sshHost;
     }
 
@@ -40,7 +40,7 @@ public class JAXBSshProperties {
         this.sshHost = sshHost;
     }
 
-    public String getSshLogin() {
+    String getSshLogin() {
         return sshLogin;
     }
 
@@ -48,7 +48,7 @@ public class JAXBSshProperties {
         this.sshLogin = sshLogin;
     }
 
-    public String getSshRsa() {
+    String getSshRsa() {
         return sshRsa;
     }
 
@@ -56,7 +56,7 @@ public class JAXBSshProperties {
         this.sshRsa = sshRsa;
     }
 
-    public String getSshKnownHosts() {
+    String getSshKnownHosts() {
         return sshKnownHosts;
     }
 
@@ -69,10 +69,10 @@ public class JAXBSshProperties {
     @Override
     public String toString() {
         return "{" +
-                "sshHost='" + sshHost + '\'' +
-                ", sshLogin='" + sshLogin + '\'' +
-                ", sshRsa='" + sshRsa + '\'' +
-                ", sshKnownHosts='" + sshKnownHosts + '\'' +
-                '}';
+            "sshHost='" + sshHost + '\'' +
+            ", sshLogin='" + sshLogin + '\'' +
+            ", sshRsa='" + sshRsa + '\'' +
+            ", sshKnownHosts='" + sshKnownHosts + '\'' +
+            '}';
     }
 }

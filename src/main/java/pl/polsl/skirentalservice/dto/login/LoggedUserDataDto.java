@@ -29,6 +29,8 @@ public class LoggedUserDataDto {
     private Character roleAlias;
     private String roleEng;
     private Gender gender;
+    private String emailAddress;
+    private Boolean isFirstAccess;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -43,6 +45,8 @@ public class LoggedUserDataDto {
             ", roleAlias=" + roleAlias +
             ", roleEng='" + roleEng + '\'' +
             ", gender=" + gender +
+            ", emailAddress='" + emailAddress + '\'' +
+            ", isFirstAccess='" + isFirstAccess + '\'' +
             '}';
     }
 }

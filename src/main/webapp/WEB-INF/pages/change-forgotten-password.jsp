@@ -62,5 +62,5 @@
             </c:if>
         </div>
     </main>
-    <jsp:include page="../partials/non-logged-footer.partial.jsp"/>
+    <jsp:include page="/WEB-INF/partials/non-logged-footer.partial.jsp"/>
 </p:generic-page.wrapper>

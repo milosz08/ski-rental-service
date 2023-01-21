@@ -24,7 +24,6 @@ import jakarta.servlet.annotation.WebServlet;
 import java.util.*;
 import java.text.*;
 import java.io.IOException;
-import java.time.LocalDateTime;
 
 import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.dao.*;
@@ -34,12 +33,10 @@ import pl.polsl.skirentalservice.dto.change_password.*;
 import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.exception.UserNotFoundException;
 
-import static java.time.ZoneId.systemDefault;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
-import static pl.polsl.skirentalservice.util.Utils.getBaseReqPath;
 import static pl.polsl.skirentalservice.util.PageTitle.FORGOT_PASSWORD_REQUEST_PAGE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -114,7 +111,7 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
                     .templateVars(templateVars)
                     .build();
 
-                mail.sendMessage(employer.getEmailAddress(), payload);
+                mailSocket.sendMessage(employer.getEmailAddress(), payload, req);
                 alert.setType(INFO);
                 alert.setMessage(
                     "Na adres email <strong>" + employer.getEmailAddress() + "</strong> został przesłany link aktywacyjny."
@@ -122,7 +119,10 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
                 resDto.getLoginOrEmail().setValue(EMPTY);
                 session.getTransaction().commit();
             } catch (RuntimeException ex) {
-                if (session.getTransaction().isActive()) session.getTransaction().rollback();
+                if (session.getTransaction().isActive()) {
+                    LOGGER.error("Some issues appears. Transaction rollback and revert previous state...");
+                    session.getTransaction().rollback();
+                }
                 throw ex;
             }
         } catch (RuntimeException ex) {

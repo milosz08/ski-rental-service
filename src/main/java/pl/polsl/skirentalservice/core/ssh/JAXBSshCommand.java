@@ -2,8 +2,8 @@
  * Copyright (c) 2023 by multiple authors
  * Silesian University of Technology
  *
- *  File name: JAXBSshConfig.java
- *  Last modified: 19/01/2023, 12:34
+ *  File name: JAXBSshCommand.java
+ *  Last modified: 21/01/2023, 07:02
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -14,7 +14,9 @@
 package pl.polsl.skirentalservice.core.ssh;
 
 import lombok.NoArgsConstructor;
+
 import jakarta.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.adapters.*;
 
 import static jakarta.xml.bind.annotation.XmlAccessType.FIELD;
 
@@ -22,28 +24,28 @@ import static jakarta.xml.bind.annotation.XmlAccessType.FIELD;
 
 @NoArgsConstructor
 @XmlAccessorType(FIELD)
-@XmlRootElement(name = "ssh-configuration")
-public class JAXBSshConfig {
+@XmlRootElement(name = "command")
+public class JAXBSshCommand {
 
-    @XmlElement(name = "properties")    private JAXBSshProperties properties;
-    @XmlElement(name = "commands")      private JAXBSshCommands commands;
+    @XmlAttribute(name = "executableFor")                           private String executableFor;
+    @XmlValue @XmlJavaTypeAdapter(NormalizedStringAdapter.class)    private String execScript;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    JAXBSshProperties getProperties() {
-        return properties;
+    String getExecutableFor() {
+        return executableFor;
     }
 
-    void setProperties(JAXBSshProperties properties) {
-        this.properties = properties;
+    void setExecutableFor(String executableFor) {
+        this.executableFor = executableFor;
     }
 
-    JAXBSshCommands getCommands() {
-        return commands;
+    String getExecScript() {
+        return execScript;
     }
 
-    void setCommands(JAXBSshCommands commands) {
-        this.commands = commands;
+    void setExecScript(String execScript) {
+        this.execScript = execScript;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,8 +53,8 @@ public class JAXBSshConfig {
     @Override
     public String toString() {
         return "{" +
-            "properties=" + properties +
-            ", commands=" + commands +
+            "executableFor='" + executableFor + '\'' +
+            ", execScript='" + execScript + '\'' +
             '}';
     }
 }

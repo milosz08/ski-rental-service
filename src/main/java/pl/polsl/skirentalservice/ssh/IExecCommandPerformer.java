@@ -2,8 +2,8 @@
  * Copyright (c) 2023 by multiple authors
  * Silesian University of Technology
  *
- *  File name: IExecuteCommand.java
- *  Last modified: 19/01/2023, 18:28
+ *  File name: IExecCommandPerformer.java
+ *  Last modified: 21/01/2023, 07:44
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -11,12 +11,14 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentalservice.core.ssh;
+package pl.polsl.skirentalservice.ssh;
+
+import pl.polsl.skirentalservice.core.ssh.CommandPerformException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 public interface IExecCommandPerformer {
-    void createMailbox(String email, String password);
-    void updateMailbox(String email, String newPassword);
-    void deleteMailbox(String email);
+    void createMailbox(String email, String password) throws CommandPerformException;
+    void updateMailboxPassword(String email, String newPassword) throws CommandPerformException;
+    void deleteMailbox(String email) throws CommandPerformException;
 }

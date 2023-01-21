@@ -25,7 +25,6 @@ import static pl.polsl.skirentalservice.util.Regex.LOGIN_EMAIL;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Data
-@AllArgsConstructor
 public class RequestToChangePasswordReqDto implements IReqValidatePojo {
 
     @NotEmpty(message = "Pole loginu/adresu email nie może być puste.")
