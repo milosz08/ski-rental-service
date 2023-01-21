@@ -22,17 +22,19 @@ import java.util.*;
 @Builder
 @AllArgsConstructor
 public class MailRequestPayload {
+    private String messageResponder;
     private String subject;
     private String templateName;
-    private Map<String, String> templateVars;
+    private Map<String, Object> templateVars;
     private Set<String> attachmentsPaths;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public String toString() {
-        return "{" +
-            "subject='" + subject + '\'' +
+        return "MailRequestPayload{" +
+            "messageResoponder='" + messageResponder + '\'' +
+            ", subject='" + subject + '\'' +
             ", templateName='" + templateName + '\'' +
             ", templateVars=" + templateVars +
             ", attachmentsPaths=" + attachmentsPaths +

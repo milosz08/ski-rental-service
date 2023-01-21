@@ -47,9 +47,9 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(ForgotPasswordRequestServlet.class);
     private static final DateFormat DF = new SimpleDateFormat("yyyy-MM-dd, kk:mm:ss", new Locale("pl"));
 
-    @EJB private MailSocketBean mail;
     @EJB private HibernateBean database;
     @EJB private ValidatorBean validator;
+    @EJB private MailSocketBean mailSocket;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -98,14 +98,11 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
                 final OtaTokenEntity otaToken = new OtaTokenEntity(token, employerEntity);
                 session.persist(otaToken);
 
-                final Map<String, String> templateVars = new HashMap<>();
-                final Date expiredAt = Date.from(LocalDateTime.now().plusMinutes(10).atZone(systemDefault()).toInstant());
-                templateVars.put("fullName", employer.getFullName());
+                final Map<String, Object> templateVars = new HashMap<>();
                 templateVars.put("token", token);
-                templateVars.put("expiredToken", DF.format(expiredAt));
-                templateVars.put("baseServletPath", getBaseReqPath(req));
 
                 final MailRequestPayload payload = MailRequestPayload.builder()
+                    .messageResponder(employer.getFullName())
                     .subject("SkiRent Service | Zmiana hasła dla użytkownika " + employer.getFullName())
                     .templateName("change-password.template.ftl")
                     .templateVars(templateVars)
