@@ -29,6 +29,10 @@ public enum PageTitle {
     OWNER_DASHBOARD_PAGE("Panel kierownika"),
     OWNER_PROFILE_PAGE("Konto kierownika"),
     OWNER_SETTINGS_PAGE("Ustawienia konta kierownika"),
+    OWNER_EMPLOYERS_PAGE("Lista pracowników"),
+    OWNER_EMPLOYER_DETAILS_PAGE("Szczegóły pracownika"),
+    OWNER_ADD_EMPLOYER_PAGE("Dodaj pracownika"),
+    OWNER_EDIT_EMPLOYER_PAGE("Edytuj pracownika"),
 
     SELLER_DASHBOARD_PAGE("Panel pracownika"),
     SELLER_PROFILE_PAGE("Konto pracownika"),
