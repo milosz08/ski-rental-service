@@ -2,8 +2,8 @@
  * Copyright (c) 2023 by multiple authors
  * Silesian University of Technology
  *
- *  File name: SessionAlert.java
- *  Last modified: 17/01/2023, 21:46
+ *  File name: PasswordMismatchException.java
+ *  Last modified: 21/01/2023, 16:18
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -11,20 +11,14 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentalservice.util;
-
-import lombok.*;
+package pl.polsl.skirentalservice.exception;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@Getter
-@AllArgsConstructor
-public enum SessionAlert {
-    LOGIN_PAGE_ALERT("login-page-alert"),
-    EMPLOYERS_PAGE_ALERT("employers-page-alert"),
-    SELLER_DASHBOARD_PAGE_ALERT("owner-dashboard-page-alert");
+public class PasswordMismatchException extends RuntimeException {
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private final String name;
+    public PasswordMismatchException(String firstField, String secondField) {
+        super("Hasła w polach <strong>" + firstField + "</strong> oraz <strong>" + secondField + "</strong> " +
+            "muszą być takie same.");
+    }
 }

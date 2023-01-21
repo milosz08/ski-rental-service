@@ -19,7 +19,9 @@ import jakarta.servlet.annotation.WebServlet;
 
 import java.io.IOException;
 
+import static pl.polsl.skirentalservice.util.Utils.getAndDestroySessionAlert;
 import static pl.polsl.skirentalservice.util.PageTitle.SELLER_DASHBOARD_PAGE;
+import static pl.polsl.skirentalservice.util.SessionAlert.SELLER_DASHBOARD_PAGE_ALERT;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -28,6 +30,7 @@ public class SellerDashboardServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        req.setAttribute("alertData", getAndDestroySessionAlert(req, SELLER_DASHBOARD_PAGE_ALERT));
         req.setAttribute("title", SELLER_DASHBOARD_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/seller/seller-dashboard.jsp").forward(req, res);
     }
