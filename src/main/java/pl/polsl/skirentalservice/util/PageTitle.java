@@ -36,7 +36,11 @@ public enum PageTitle {
 
     SELLER_DASHBOARD_PAGE("Panel pracownika"),
     SELLER_PROFILE_PAGE("Konto pracownika"),
-    SELLER_SETTINGS_PAGE("Ustawienia konta pracownika");
+    SELLER_SETTINGS_PAGE("Ustawienia konta pracownika"),
+    SELLER_CUSTOMERS_PAGE("Lista klientów"),
+    SELLER_CUSTOMER_DETAILS_PAGE("Szczegóły klienta"),
+    SELLER_ADD_CUSTOMER_PAGE("Dodaj klienta"),
+    SELLER_EDIT_CUSTOMER_PAGE("Edytuj klienta");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
