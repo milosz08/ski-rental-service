@@ -27,6 +27,7 @@ import java.io.IOException;
 import pl.polsl.skirentalservice.util.*;
 import pl.polsl.skirentalservice.sorter.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.search_filter.*;
 import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.dto.pagination.PaginationDto;
 import pl.polsl.skirentalservice.dto.employer.EmployerRecordResDto;
@@ -46,7 +47,9 @@ import static pl.polsl.skirentalservice.util.SessionAttribute.EMPLOYERS_LIST_SEA
 public class OwnerEmployersServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerEmployersServlet.class);
+
     private final Map<String, ServletSorterField> sorterFieldMap = new HashMap<>();
+    private final List<SearchBySelectColumn> searchBy = new ArrayList<>();
 
     @EJB private HibernateBean database;
 
@@ -59,6 +62,10 @@ public class OwnerEmployersServlet extends HttpServlet {
         sorterFieldMap.put("hired-date", new ServletSorterField("e.hiredDate "));
         sorterFieldMap.put("email", new ServletSorterField("d.emailAddress "));
         sorterFieldMap.put("gender", new ServletSorterField("d.gender "));
+        searchBy.add(new SearchBySelectColumn(true, "fullName", "Imieniu i nazwisku", "CONCAT(d.firstName, ' ', d.lastName)"));
+        searchBy.add(new SearchBySelectColumn("pesel", "Numerze PESEL", "d.pesel"));
+        searchBy.add(new SearchBySelectColumn("emailAddress", "Adresie email", "d.emailAddress"));
+        searchBy.add(new SearchBySelectColumn("phoneNumber", "Numerze telefonu", "d.phoneNumber"));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -66,8 +73,8 @@ public class OwnerEmployersServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final AlertTupleDto alert = Utils.getAndDestroySessionAlert(req, EMPLOYERS_PAGE_ALERT);
-        final String searhText = (String) req.getSession().getAttribute(EMPLOYERS_LIST_SEARCH_BAR.getName());
-        final String searchByFullName = requireNonNullElse(searhText, "");
+        final var searchFilter = (SearchFilterDto) req.getSession().getAttribute(EMPLOYERS_LIST_SEARCH_BAR.getName());
+        final var searchByFullName = requireNonNullElse(searchFilter, new SearchFilterDto(searchBy));
         if (findPageableEmployer(req, alert, searchByFullName, false)) {
             res.sendRedirect("/owner/employers");
             return;
@@ -80,8 +87,7 @@ public class OwnerEmployersServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final AlertTupleDto alert = new AlertTupleDto();
-        final String searchByFullName = req.getParameter("search-bar");
-        if (findPageableEmployer(req, alert, searchByFullName, true)) {
+        if (findPageableEmployer(req, alert, new SearchFilterDto(req, searchBy), true)) {
             res.sendRedirect("/owner/employers");
             return;
         }
@@ -90,7 +96,7 @@ public class OwnerEmployersServlet extends HttpServlet {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private boolean findPageableEmployer(HttpServletRequest req, AlertTupleDto alert, String search, boolean isPost) {
+    private boolean findPageableEmployer(HttpServletRequest req, AlertTupleDto alert, SearchFilterDto filter, boolean isPost) {
         final int page = toInt(requireNonNullElse(req.getParameter("page"), "1"), 1);
         final int total = toInt(requireNonNullElse(req.getParameter("total"), "10"), 10);
 
@@ -123,11 +129,11 @@ public class OwnerEmployersServlet extends HttpServlet {
                         "SUBSTRING(d.phoneNumber, 4, 3), ' ', SUBSTRING(d.phoneNumber, 7, 3)), d.gender" +
                     ") FROM EmployerEntity e " +
                     "INNER JOIN e.userDetails d INNER JOIN e.role r " +
-                    "WHERE e.id <> 2 AND CONCAT(d.firstName, ' ', d.lastName) LIKE :search " +
+                    "WHERE e.id <> 2 AND " + filter.getSearchColumn() + " LIKE :search " +
                     "ORDER BY " + jpqlSorterFragment;
                 final List<EmployerRecordResDto> employersList = session
                     .createQuery(jpqlFindAllEmployers, EmployerRecordResDto.class)
-                    .setParameter("search", "%" + search + "%")
+                    .setParameter("search", "%" + filter.getSearchText() + "%")
                     .setFirstResult((page - 1) * total)
                     .setMaxResults(total)
                     .getResultList();
@@ -139,9 +145,8 @@ public class OwnerEmployersServlet extends HttpServlet {
                 }
                 session.getTransaction().commit();
                 req.setAttribute("pagesData", pagination);
-                req.setAttribute("searchBarData", search);
                 req.setAttribute("employersData", employersList);
-                httpSession.setAttribute(EMPLOYERS_LIST_SEARCH_BAR.getName(), search);
+                httpSession.setAttribute(EMPLOYERS_LIST_SEARCH_BAR.getName(), filter);
             } catch (RuntimeException ex) {
                 if (session.getTransaction().isActive()) {
                     LOGGER.error("Some issues appears. Transaction rollback and revert previous state...");
@@ -156,6 +161,7 @@ public class OwnerEmployersServlet extends HttpServlet {
         }
         req.setAttribute("title", OWNER_EMPLOYERS_PAGE.getName());
         req.setAttribute("sorterData", sorterFieldMap);
+        req.setAttribute("filterData", filter);
         req.setAttribute("alertData", alert);
         return false;
     }

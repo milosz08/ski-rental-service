@@ -3,7 +3,7 @@
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<jsp:useBean id="searchBarData" class="java.lang.String" scope="request"/>
+<jsp:useBean id="filterData" class="pl.polsl.skirentalservice.dto.search_filter.SearchFilterDto" scope="request"/>
 <jsp:useBean id="sorterData" type="java.util.Map<java.lang.String, pl.polsl.skirentalservice.sorter.ServletSorterField>" scope="request"/>
 <jsp:useBean id="alertData" class="pl.polsl.skirentalservice.dto.AlertTupleDto" scope="request"/>
 <jsp:useBean id="employersData" type="java.util.List<pl.polsl.skirentalservice.dto.employer.EmployerRecordResDto>" scope="request"/>
@@ -23,9 +23,16 @@
         <div class="row mb-3 mx-0">
             <div class="col-md-6 px-0 mb-2">
                 <div class="hstack">
-                    <label for="search-bar"></label>
-                    <input type="search" class="form-control form-control-sm search-max-width" name="search-bar"
-                        placeholder="Szukaj po imieniu i nazwisku" id="search-bar" value="${searchBarData}">
+                    <label for="searchBar"></label>
+                    <input type="search" class="form-control form-control-sm search-max-width" name="searchText"
+                        placeholder="Szukaj po:" id="searchBar" value="${filterData.searchText}">
+                    <label for="searchBy">
+                        <select class="form-select form-select-sm fit-content ms-2" name="searchBy" id="searchBy">
+                            <c:forEach items="${filterData.searchBy}" var="searchItem">
+                                <option value="${searchItem.value}" ${searchItem.isSelected}>${searchItem.text}</option>
+                            </c:forEach>
+                        </select>
+                    </label>
                     <button type="submit" class="btn btn-dark btn-sm ms-2">
                         <i class="bi bi-search"></i>
                     </button>

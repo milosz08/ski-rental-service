@@ -73,6 +73,10 @@
     width: 1%;
 }
 
+.fit-content {
+    width: auto;
+}
+
 .search-max-width {
     max-width: 350px;
 }
