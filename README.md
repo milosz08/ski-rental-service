@@ -12,7 +12,6 @@ Simple enterprise-class application for managing a ski rental company. The softw
 * [Clone and install](#clone-and-install)
 * [Prepare runtime configuration](#prepare-runtime-configuration)
 * [Manage Mailboxes via SSH](#manage-mailboxes-via-ssh)
-* [Intellij Configuration](#intellij-configuration)
 * [Application stack](#application-stack)
 * [Project status](#project-status)
 
@@ -92,20 +91,6 @@ in `src/main/resources/ssh/ssh.cfg.xml`
     </commands>
 </ssh-configuration>
 ```
-
-<a name="intellij-configuration"></a>
-## Intellij configuration
-Java Virtual Machine initial arguments:
-```
--Duser.language=pl
--Duser.country=PL
--Dfile.encoding=UTF8
---illegal-access=warn
---add-opens java.base/com.sun.net.ssl.internal.ssl=ALL-UNNAMED
-```
-<img src="https://cdn.miloszgilga.pl/github-projects-static-resources/ski-rent-service/config1.png" width="100%">
-<img src="https://cdn.miloszgilga.pl/github-projects-static-resources/ski-rent-service/config2.png" width="100%">
-<img src="https://cdn.miloszgilga.pl/github-projects-static-resources/ski-rent-service/config3.png" width="100%">
 
 <a name="application-stack"></a>
 ## Application stack
