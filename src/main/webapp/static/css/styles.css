@@ -93,6 +93,11 @@ th {
     white-space: nowrap;
 }
 
+.table-fixed-width {
+    table-layout: fixed;
+    width: 100%;
+}
+
 /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 @media only screen and (max-width: 992px) {

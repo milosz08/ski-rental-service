@@ -56,8 +56,18 @@ public class OwnerEmployerDetailsServlet extends HttpServlet {
 
                 final String jpqlFindEmployerDetails =
                     "SELECT new pl.polsl.skirentalservice.dto.employer.EmployerDetailsResDto(" +
-                        "CONCAT(d.firstName, ' ', d.lastName)" +
-                    ") FROM EmployerEntity e INNER JOIN e.userDetails d WHERE e.id = :uid";
+                        "e.id, CONCAT(d.firstName, ' ', d.lastName), e.login, d.emailAddress, CAST(d.bornDate AS string)," +
+                        "CAST(e.hiredDate AS string), d.pesel, CONCAT('+', d.phoneAreaCode, ' '," +
+                        "SUBSTRING(d.phoneNumber, 1, 3), ' ', SUBSTRING(d.phoneNumber, 4, 3), ' '," +
+                        "SUBSTRING(d.phoneNumber, 7, 3)), YEAR(NOW()) - YEAR(d.bornDate)," +
+                        "YEAR(NOW()) - YEAR(e.hiredDate), d.gender, CONCAT(a.postalCode, ' ', a.city)," +
+                        "CAST(IF(e.firstAccess, 'nieaktywowane', 'aktywowane') AS string)," +
+                        "CAST(IF(e.firstAccess, 'text-danger', 'text-success') AS string)," +
+                        "CAST(IF(e.isBlocked, 'zablokowane', 'brak blokady') AS string)," +
+                        "CAST(IF(e.isBlocked, 'text-danger', 'text-success') AS string)," +
+                        "CONCAT('ul. ', a.street, ' ', a.buildingNr, IF(a.apartmentNr, CONCAT('/', a.apartmentNr), ''))" +
+                    ") FROM EmployerEntity e INNER JOIN e.userDetails d INNER JOIN e.locationAddress a " +
+                    "WHERE e.id = :uid";
                 final EmployerDetailsResDto employerDetails = session
                     .createQuery(jpqlFindEmployerDetails, EmployerDetailsResDto.class)
                     .setParameter("uid", userId)
