@@ -69,7 +69,7 @@ public class SellerEditCustomerServlet extends HttpServlet {
                         "d.firstName, d.lastName, d.pesel," +
                         "CONCAT(SUBSTRING(d.phoneNumber, 1, 3), ' ', SUBSTRING(d.phoneNumber, 4, 3), ' '," +
                         "SUBSTRING(d.phoneNumber, 7, 3))," +
-                        "d.bornDate, d.emailAddress, a.street," +
+                        "CAST(d.bornDate AS string), d.emailAddress, a.street," +
                         "a.buildingNr, a.apartmentNr, a.city, a.postalCode, d.gender" +
                     ") FROM CustomerEntity c " +
                     "INNER JOIN c.userDetails d INNER JOIN c.locationAddress a " +

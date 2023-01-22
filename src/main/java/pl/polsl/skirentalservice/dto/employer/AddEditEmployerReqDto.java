@@ -105,11 +105,6 @@ public class AddEditEmployerReqDto implements IReqValidatePojo {
         this.gender = findByAlias(requireNonNullElse(req.getParameter("gender"), "M"));
     }
 
-    public AddEditEmployerReqDto(String fn, String ln, String p, String pn, LocalDate bd, LocalDate hd, String s,
-                                 String bn, String an, String c, String pc, Gender g) {
-        this(fn, ln, p, pn, bd.toString(), hd.toString(), s, bn, an, c, pc, g);
-    }
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public LocalDate getParsedBornDate() {

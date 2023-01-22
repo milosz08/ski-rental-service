@@ -67,8 +67,8 @@ public class OwnerEditEmployerServlet extends HttpServlet {
                     "SELECT new pl.polsl.skirentalservice.dto.employer.AddEditEmployerReqDto(" +
                         "d.firstName, d.lastName, d.pesel," +
                         "CONCAT(SUBSTRING(d.phoneNumber, 1, 3), ' ', SUBSTRING(d.phoneNumber, 4, 3), ' '," +
-                        "SUBSTRING(d.phoneNumber, 7, 3)), d.bornDate, e.hiredDate, a.street, a.buildingNr," +
-                        "a.apartmentNr, a.city, a.postalCode, d.gender" +
+                        "SUBSTRING(d.phoneNumber, 7, 3)), CAST(d.bornDate AS string), CAST(e.hiredDate AS string)," +
+                        "a.street, a.buildingNr, a.apartmentNr, a.city, a.postalCode, d.gender" +
                     ") FROM EmployerEntity e " +
                     "INNER JOIN e.userDetails d " +
                     "INNER JOIN e.locationAddress a " +

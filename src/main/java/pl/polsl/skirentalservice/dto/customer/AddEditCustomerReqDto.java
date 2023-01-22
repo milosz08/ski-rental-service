@@ -104,11 +104,6 @@ public class AddEditCustomerReqDto implements IReqValidatePojo {
         this.gender = findByAlias(requireNonNullElse(req.getParameter("gender"), "M"));
     }
 
-    public AddEditCustomerReqDto(String fn, String ln, String p, String pn, LocalDate bd, String e, String s, String bn,
-                                 String an, String c, String pc, Gender g) {
-        this(fn, ln, p, pn, bd.toString(), e, s, bn, an, c, pc, g);
-    }
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public LocalDate getParsedBornDate() {
