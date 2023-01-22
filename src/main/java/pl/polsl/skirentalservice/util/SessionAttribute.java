@@ -20,7 +20,11 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 public enum SessionAttribute {
-    EMPLOYERS_LIST_SEARCH_BAR("employers-list-search-bar"),
+    EMPLOYERS_LIST_SORTER("employers-list-sorter"),
+    EMPLOYERS_LIST_FILTER("employers-list-filter"),
+    CUSTOMERS_LIST_SORTER("customers-list-sorter"),
+    CUSTOMERS_LIST_FILTER("customers-list-filter"),
+
     LOGGED_USER_DETAILS("loggedUserDetails"),
     LOGOUT_MODAL("logout-modal");
 

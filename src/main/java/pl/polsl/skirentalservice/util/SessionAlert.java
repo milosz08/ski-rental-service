@@ -21,8 +21,9 @@ import lombok.*;
 @AllArgsConstructor
 public enum SessionAlert {
     LOGIN_PAGE_ALERT("login-page-alert"),
-    EMPLOYERS_PAGE_ALERT("employers-page-alert"),
-    SELLER_DASHBOARD_PAGE_ALERT("owner-dashboard-page-alert");
+    OWNER_EMPLOYERS_PAGE_ALERT("employers-page-alert"),
+    SELLER_DASHBOARD_PAGE_ALERT("owner-dashboard-page-alert"),
+    SELLER_CUSTOMERS_PAGE_ALERT("seller-customers-page-alert");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

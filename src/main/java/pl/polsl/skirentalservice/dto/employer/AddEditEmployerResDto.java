@@ -18,6 +18,7 @@ import lombok.*;
 import java.util.*;
 
 import pl.polsl.skirentalservice.dto.*;
+import pl.polsl.skirentalservice.util.Gender;
 import pl.polsl.skirentalservice.core.ValidatorBean;
 
 import static pl.polsl.skirentalservice.util.Gender.*;
@@ -38,7 +39,7 @@ public class AddEditEmployerResDto {
     private FormValueInfoTupleDto apartmentNr;
     private FormValueInfoTupleDto city;
     private FormValueInfoTupleDto postalCode;
-    private Set<FormSelectTupleDto> genders = Set.of(MALE.convertToTuple(MALE), FEMALE.convertToTuple(FEMALE));
+    private List<FormSelectTupleDto> genders = Gender.getGenders();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -47,14 +48,14 @@ public class AddEditEmployerResDto {
         this.lastName = validator.validateField(reqDto, "lastName", reqDto.getLastName());
         this.pesel = validator.validateField(reqDto, "pesel", reqDto.getPesel());
         this.phoneNumber = validator.validateField(reqDto, "phoneNumber", reqDto.getPhoneNumber());
-        this.bornDate = validator.validateField(reqDto, "bornDate", reqDto.getBornDate().toString());
-        this.hiredDate = validator.validateField(reqDto, "hiredDate", reqDto.getHiredDate().toString());
+        this.bornDate = validator.validateField(reqDto, "bornDate", reqDto.getBornDate());
+        this.hiredDate = validator.validateField(reqDto, "hiredDate", reqDto.getHiredDate());
         this.street = validator.validateField(reqDto, "street", reqDto.getStreet());
         this.buildingNr = validator.validateField(reqDto, "buildingNr", reqDto.getBuildingNr());
         this.apartmentNr = validator.validateField(reqDto, "apartmentNr", reqDto.getApartmentNr());
         this.city = validator.validateField(reqDto, "city", reqDto.getCity());
         this.postalCode = validator.validateField(reqDto, "postalCode", reqDto.getPostalCode());
-        this.genders = Set.of(MALE.convertToTuple(reqDto.getGender()), FEMALE.convertToTuple(reqDto.getGender()));
+        this.genders = List.of(MALE.convertToTuple(reqDto.getGender()), FEMALE.convertToTuple(reqDto.getGender()));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

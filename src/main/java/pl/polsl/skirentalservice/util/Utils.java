@@ -24,17 +24,6 @@ import static java.util.Objects.isNull;
 
 public class Utils {
 
-    public static final String DEF_TITLE = "SkiRent System";
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public static void generateDefPageTitle(HttpServletRequest req) {
-        final String title = (String) req.getAttribute("title");
-        req.setAttribute("pageTitle", !isNull(title) ? title + " | " + DEF_TITLE : DEF_TITLE);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     public static AlertTupleDto getAndDestroySessionAlert(HttpServletRequest req, SessionAlert sessionAlert) {
         final HttpSession httpSession = req.getSession();
         final AlertTupleDto alert = (AlertTupleDto) httpSession.getAttribute(sessionAlert.getName());
@@ -47,5 +36,11 @@ public class Utils {
 
     public static String generateHash(String preCoded) {
         return BCrypt.withDefaults().hashToString(10, preCoded.toCharArray());
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static boolean invalidPassword(String hash, String decoded) {
+        return !BCrypt.verifyer().verify(hash.toCharArray(), decoded).verified;
     }
 }

@@ -23,18 +23,21 @@ import jakarta.servlet.annotation.WebServlet;
 
 import java.io.IOException;
 
-import pl.polsl.skirentalservice.dao.*;
 import pl.polsl.skirentalservice.dto.*;
-import pl.polsl.skirentalservice.exception.*;
+import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.dto.employer.*;
 import pl.polsl.skirentalservice.dao.EmployerEntity;
 import pl.polsl.skirentalservice.core.ValidatorBean;
 import pl.polsl.skirentalservice.core.db.HibernateBean;
 
 import static java.util.Objects.isNull;
+
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
+import static pl.polsl.skirentalservice.util.UserRole.SELLER;
+import static pl.polsl.skirentalservice.exception.NotFoundException.*;
+import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
+import static pl.polsl.skirentalservice.util.SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT;
 import static pl.polsl.skirentalservice.util.PageTitle.OWNER_EDIT_EMPLOYER_PAGE;
-import static pl.polsl.skirentalservice.util.SessionAlert.EMPLOYERS_PAGE_ALERT;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -45,6 +48,8 @@ public class OwnerEditEmployerServlet extends HttpServlet {
 
     @EJB private HibernateBean database;
     @EJB private ValidatorBean validator;
+    @EJB private ModelMapperBean modelMapper;
+    @EJB private ConfigBean config;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -56,7 +61,7 @@ public class OwnerEditEmployerServlet extends HttpServlet {
 
         try (final Session session = database.open()) {
             try {
-                session.getTransaction().begin();
+                session.beginTransaction();
 
                 final String jpqlFindEmployerBaseId =
                     "SELECT new pl.polsl.skirentalservice.dto.employer.AddEditEmployerReqDto(" +
@@ -75,10 +80,7 @@ public class OwnerEditEmployerServlet extends HttpServlet {
                 if (isNull(employerDetails)) throw new UserNotFoundException(userId);
 
                 session.getTransaction().commit();
-                req.setAttribute("addEditEmployerData", new AddEditEmployerResDto(validator, employerDetails));
-                req.setAttribute("addEditText", "Edytuj");
-                req.setAttribute("title", OWNER_EDIT_EMPLOYER_PAGE.getName());
-                req.getRequestDispatcher("/WEB-INF/pages/owner/employer/owner-add-edit-employer.jsp").forward(req, res);
+                selfRedirect(req, res, new AddEditEmployerResDto(validator, employerDetails));
             } catch (RuntimeException ex) {
                 if (session.getTransaction().isActive()) {
                     LOGGER.error("Some issues appears. Transaction rollback and revert previous state...");
@@ -88,7 +90,7 @@ public class OwnerEditEmployerServlet extends HttpServlet {
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
-            httpSession.setAttribute(EMPLOYERS_PAGE_ALERT.getName(), alert);
+            httpSession.setAttribute(OWNER_EMPLOYERS_PAGE_ALERT.getName(), alert);
             res.sendRedirect("/owner/employers");
         }
     }
@@ -103,58 +105,47 @@ public class OwnerEditEmployerServlet extends HttpServlet {
         final AddEditEmployerReqDto reqDto = new AddEditEmployerReqDto(req);
         final AddEditEmployerResDto resDto = new AddEditEmployerResDto(validator, reqDto);
         if (validator.someFieldsAreInvalid(reqDto)) {
-            selfRedirect(req, res, resDto, null);
+            selfRedirect(req, res, resDto);
             return;
         }
         final HttpSession httpSession = req.getSession();
         try (final Session session = database.open()) {
+            reqDto.validateDates(config);
             try {
-                session.getTransaction().begin();
+                session.beginTransaction();
 
                 final EmployerEntity updatableEmployer = session.get(EmployerEntity.class, userId);
                 if (isNull(updatableEmployer)) throw new UserNotFoundException(userId);
-                if (reqDto.getBornDate().isAfter(reqDto.getHiredDate())) {
-                    throw new EmployerBornHiredDateCollationException();
-                }
+
                 final String jpqlFindPesel =
                     "SELECT COUNT(e.id) > 0 FROM EmployerEntity e INNER JOIN e.userDetails d " +
-                        "WHERE d.pesel = :pesel AND e.id <> :employeId";
+                    "WHERE d.pesel = :pesel AND e.id <> :uid";
                 final Boolean peselExist = session.createQuery(jpqlFindPesel, Boolean.class)
                     .setParameter("pesel", reqDto.getPesel())
-                    .setParameter("employeId", updatableEmployer.getId())
+                    .setParameter("uid", updatableEmployer.getId())
                     .getSingleResult();
-                if (peselExist) throw new PeselAlreadyExistException(reqDto.getPesel());
+                if (peselExist) throw new PeselAlreadyExistException(reqDto.getPesel(), SELLER);
 
                 final String jpqlFindPhoneNumber =
-                    "SELECT COUNT(e.id) > 0 FROM EmployerEntity e " +
-                        "INNER JOIN e.userDetails d WHERE d.phoneNumber = :phoneNumber AND e.id <> :employeId";
+                    "SELECT COUNT(e.id) > 0 FROM EmployerEntity e INNER JOIN e.userDetails d " +
+                    "WHERE d.phoneNumber = :phoneNumber AND e.id <> :uid";
                 final Boolean phoneNumberExist = session.createQuery(jpqlFindPhoneNumber, Boolean.class)
                     .setParameter("phoneNumber", reqDto.getPhoneNumber())
-                    .setParameter("employeId", updatableEmployer.getId())
+                    .setParameter("uid", updatableEmployer.getId())
                     .getSingleResult();
-                if (phoneNumberExist) throw new PhoneNumberAlreadyExistException(reqDto.getPhoneNumber());
+                if (phoneNumberExist) throw new PhoneNumberAlreadyExistException(reqDto.getPhoneNumber(), SELLER);
 
-                final UserDetailsEntity userDetails = updatableEmployer.getUserDetails();
-                userDetails.setFirstName(reqDto.getFirstName());
-                userDetails.setLastName(reqDto.getLastName());
-                userDetails.setPesel(reqDto.getPesel());
-                userDetails.setPhoneNumber(reqDto.getPhoneNumber());
-                userDetails.setBornDate(reqDto.getBornDate());
-                userDetails.setGender(reqDto.getGender());
+                modelMapper.onUpdateNullableTransactTurnOn();
+                modelMapper.shallowCopy(reqDto, updatableEmployer.getUserDetails());
+                modelMapper.shallowCopy(reqDto, updatableEmployer.getLocationAddress());
+                modelMapper.shallowCopy(reqDto, updatableEmployer);
+                modelMapper.onUpdateNullableTransactTurnOff();
 
-                final LocationAddressEntity locationAddress = updatableEmployer.getLocationAddress();
-                locationAddress.setStreet(reqDto.getStreet());
-                locationAddress.setBuildingNr(reqDto.getBuildingNr());
-                locationAddress.setApartmentNr(reqDto.getApartmentNr());
-                locationAddress.setCity(reqDto.getCity());
-                locationAddress.setPostalCode(reqDto.getPostalCode());
-
-                updatableEmployer.setHiredDate(reqDto.getHiredDate());
                 session.getTransaction().commit();
 
                 alert.setType(INFO);
-                httpSession.setAttribute(EMPLOYERS_PAGE_ALERT.getName(), alert);
-                LOGGER.info("Employer with id: {} was successfuly updated. Data: {}", userId, updatableEmployer);
+                httpSession.setAttribute(OWNER_EMPLOYERS_PAGE_ALERT.getName(), alert);
+                LOGGER.info("Employer with id: {} was successfuly updated. Data: {}", userId, reqDto);
                 alert.setMessage(
                     "Dane pracownika z ID <strong>#" + userId + "</strong> zostały pomyślnie zaktualizowane."
                 );
@@ -169,21 +160,21 @@ public class OwnerEditEmployerServlet extends HttpServlet {
         } catch (UserNotFoundException ex) {
             alert.setMessage(ex.getMessage());
             LOGGER.error("Unable to update employer with id: {}. Cause: {}", userId, ex.getMessage());
-            httpSession.setAttribute(EMPLOYERS_PAGE_ALERT.getName(), alert);
+            httpSession.setAttribute(OWNER_EMPLOYERS_PAGE_ALERT.getName(), alert);
             res.sendRedirect("/owner/employers");
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
-            selfRedirect(req, res, resDto, alert);
+            req.setAttribute("alertData", alert);
+            selfRedirect(req, res, resDto);
         }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private void selfRedirect(HttpServletRequest req, HttpServletResponse res, AddEditEmployerResDto resDto,
-                              AlertTupleDto alert) throws ServletException, IOException {
+    private void selfRedirect(HttpServletRequest req, HttpServletResponse res, AddEditEmployerResDto resDto)
+        throws ServletException, IOException {
         req.setAttribute("addEditEmployerData", resDto);
         req.setAttribute("addEditText", "Edytuj");
-        req.setAttribute("alertData", alert);
         req.setAttribute("title", OWNER_EDIT_EMPLOYER_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/owner/employer/owner-add-edit-employer.jsp").forward(req, res);
     }

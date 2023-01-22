@@ -2,8 +2,8 @@
  * Copyright (c) 2023 by multiple authors
  * Silesian University of Technology
  *
- *  File name: ConfigBean.java
- *  Last modified: 21/01/2023, 03:39
+ *  File name: FilterColumn.java
+ *  Last modified: 22/01/2023, 16:06
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -11,29 +11,26 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentalservice.core;
+package pl.polsl.skirentalservice.paging.filter;
 
 import lombok.Getter;
-import jakarta.ejb.*;
 
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Getter
-@Startup
-@Singleton(name = "ConfigFactoryBean")
-public class ConfigBean {
-
-    private final String systemVersion;
-    private final int circaDateYears;
-    private final String defPageTitle;
+public class FilterColumn extends FormSelectTupleDto {
+    private final String columnName;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ConfigBean() {
-        this.systemVersion = defaultIfEmpty(getClass().getPackage().getImplementationVersion(), "DEVELOPMENT");
-        this.circaDateYears = 18;
-        this.defPageTitle = "SkiRent System";
+    public FilterColumn(String value, String text, String columnName) {
+        this(false, value, text, columnName);
+    }
+
+    public FilterColumn(boolean isSelected, String value, String text, String columnName) {
+        super(isSelected, value, text);
+        this.columnName = columnName;
     }
 }

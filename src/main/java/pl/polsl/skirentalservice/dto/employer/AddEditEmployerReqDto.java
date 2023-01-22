@@ -22,6 +22,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.util.Gender;
 import pl.polsl.skirentalservice.core.IReqValidatePojo;
 
@@ -99,12 +100,10 @@ public class AddEditEmployerReqDto implements IReqValidatePojo {
         this.street = trimToEmpty(req.getParameter("street"));
         this.buildingNr = trimToEmpty(req.getParameter("buildingNr"));
         this.apartmentNr = trimToNull(req.getParameter("apartmentNr"));
-        this.city = requireNonNullElse(req.getParameter("city"), "");
+        this.city = trimToNull(req.getParameter("city"));
         this.postalCode = trimToNull(req.getParameter("postalCode"));
         this.gender = findByAlias(requireNonNullElse(req.getParameter("gender"), "M"));
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public AddEditEmployerReqDto(String fn, String ln, String p, String pn, LocalDate bd, LocalDate hd, String s,
                                  String bn, String an, String c, String pc, Gender g) {
@@ -113,17 +112,13 @@ public class AddEditEmployerReqDto implements IReqValidatePojo {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public LocalDate getBornDate() {
+    public LocalDate getParsedBornDate() {
         return parse(bornDate, formatter);
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public LocalDate getHiredDate() {
+    public LocalDate getParsedHiredDate() {
         return parse(hiredDate, formatter);
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public String getFullAddress() {
         return joinWith(" ", "ul.", street, buildingNr, isBlank(apartmentNr) ? "" : "/" + apartmentNr, postalCode, city);

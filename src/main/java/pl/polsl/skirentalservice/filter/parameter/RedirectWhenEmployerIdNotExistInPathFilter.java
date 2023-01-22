@@ -2,8 +2,8 @@
  * Copyright (c) 2023 by multiple authors
  * Silesian University of Technology
  *
- *  File name: NonOtaAttributeRedirectFilter.java
- *  Last modified: 01/01/2023, 00:29
+ *  File name: RedirectWhenEmployerIdNotExistInPathFilter.java
+ *  Last modified: 22/01/2023, 10:46
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -11,26 +11,29 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentalservice.filter;
+package pl.polsl.skirentalservice.filter.parameter;
 
-import jakarta.servlet.*;
 import jakarta.servlet.http.*;
+import jakarta.servlet.FilterChain;
 import jakarta.servlet.annotation.*;
+import jakarta.servlet.ServletException;
 
-import java.util.Objects;
 import java.io.IOException;
+
+import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@WebFilter(urlPatterns = "/change-forgotten-password/*", initParams = @WebInitParam(name = "mood", value = "awake"))
-public class NonOtaAttributeRedirectFilter extends HttpFilter {
+@WebFilter(urlPatterns = { "/owner/edit-employer/*", "/owner/delete-employer/*", "/owner/employer-details/*" },
+        initParams = @WebInitParam(name = "mood", value = "awake"))
+public class RedirectWhenEmployerIdNotExistInPathFilter extends HttpFilter {
 
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
         throws IOException, ServletException {
-        final String token = req.getParameter("token");
-        if (Objects.isNull(token)) {
-            res.sendRedirect("/forgot-password-request");
+        final String userId = req.getParameter("id");
+        if (!isNumeric(userId)) {
+            res.sendRedirect("/owner/employers");
             return;
         }
         chain.doFilter(req, res);

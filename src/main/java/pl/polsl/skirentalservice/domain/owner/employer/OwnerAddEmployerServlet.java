@@ -29,7 +29,6 @@ import pl.polsl.skirentalservice.ssh.*;
 import pl.polsl.skirentalservice.util.*;
 import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.core.ssh.*;
-import pl.polsl.skirentalservice.exception.*;
 import pl.polsl.skirentalservice.core.mail.*;
 import pl.polsl.skirentalservice.dto.employer.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
@@ -42,8 +41,11 @@ import static org.apache.commons.lang3.StringUtils.*;
 import static org.apache.commons.lang3.RandomStringUtils.*;
 
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
+import static pl.polsl.skirentalservice.util.UserRole.SELLER;
+import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
 import static pl.polsl.skirentalservice.util.PageTitle.OWNER_ADD_EMPLOYER_PAGE;
 import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
+import static pl.polsl.skirentalservice.util.SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -57,14 +59,13 @@ public class OwnerAddEmployerServlet extends HttpServlet {
     @EJB private ModelMapperBean mapper;
     @EJB private MailSocketBean mailSocket;
     @EJB private SshSocketBean sshSocket;
+    @EJB private ConfigBean config;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        req.setAttribute("title", OWNER_ADD_EMPLOYER_PAGE.getName());
-        req.setAttribute("addEditText", "Dodaj");
-        req.getRequestDispatcher("/WEB-INF/pages/owner/employer/owner-add-edit-employer.jsp").forward(req, res);
+        selfRedirect(req, res);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,13 +76,14 @@ public class OwnerAddEmployerServlet extends HttpServlet {
         final AddEditEmployerReqDto reqDto = new AddEditEmployerReqDto(req);
         final AddEditEmployerResDto resDto = new AddEditEmployerResDto(validator, reqDto);
         if (validator.someFieldsAreInvalid(reqDto)) {
-            selfRedirect(req, res, resDto, null);
+            req.setAttribute("addEditCustomerData", resDto);
+            selfRedirect(req, res);
             return;
         }
         final HttpSession httpSession = req.getSession();
         final IExecCommandPerformer commandPerformer = new ExecCommandPerformer(sshSocket);
         try (final Session session = database.open()) {
-            if (reqDto.getBornDate().isAfter(reqDto.getHiredDate())) throw new EmployerBornHiredDateCollationException();
+            reqDto.validateDates(config);
             String email = "";
             try {
                 session.getTransaction().begin();
@@ -90,14 +92,14 @@ public class OwnerAddEmployerServlet extends HttpServlet {
                     "SELECT COUNT(e.id) > 0 FROM EmployerEntity e INNER JOIN e.userDetails d WHERE d.pesel = :pesel";
                 final Boolean peselExist = session.createQuery(jpqlFindPesel, Boolean.class)
                     .setParameter("pesel", reqDto.getPesel()).getSingleResult();
-                if (peselExist) throw new PeselAlreadyExistException(reqDto.getPesel());
+                if (peselExist) throw new PeselAlreadyExistException(reqDto.getPesel(), SELLER);
 
                 final String jpqlFindPhoneNumber =
                     "SELECT COUNT(e.id) > 0 FROM EmployerEntity e " +
                     "INNER JOIN e.userDetails d WHERE d.phoneNumber = :phoneNumber";
                 final Boolean phoneNumberExist = session.createQuery(jpqlFindPhoneNumber, Boolean.class)
                     .setParameter("phoneNumber", reqDto.getPhoneNumber()).getSingleResult();
-                if (phoneNumberExist) throw new PhoneNumberAlreadyExistException(reqDto.getPhoneNumber());
+                if (phoneNumberExist) throw new PhoneNumberAlreadyExistException(reqDto.getPhoneNumber(), SELLER);
 
                 final RoleEntity role = session.get(RoleEntity.class, 1);
                 if (isNull(role)) throw new RuntimeException("Podana rola nie istnieje w systemie.");
@@ -121,21 +123,20 @@ public class OwnerAddEmployerServlet extends HttpServlet {
                 final String passowordDecoded = Utils.generateHash(passwordRaw);
 
                 final UserDetailsEntity userDetails = mapper.map(reqDto, UserDetailsEntity.class);
-                userDetails.setBornDate(reqDto.getBornDate());
+                userDetails.setBornDate(reqDto.getParsedBornDate());
                 userDetails.setEmailAddress(email);
                 final LocationAddressEntity locationAddress = mapper.map(reqDto, LocationAddressEntity.class);
                 locationAddress.setApartmentNr(trimToNull(reqDto.getApartmentNr()));
-
-                final EmployerEntity employer = new EmployerEntity();
-                employer.setLogin(login);
-                employer.setPassword(passowordDecoded);
-                employer.setHiredDate(reqDto.getHiredDate());
-                employer.setLocationAddress(locationAddress);
-                employer.setUserDetails(userDetails);
-                employer.setRole(role);
+                final EmployerEntity employer = EmployerEntity.builder()
+                    .login(login)
+                    .password(passowordDecoded)
+                    .hiredDate(reqDto.getParsedHiredDate())
+                    .locationAddress(locationAddress)
+                    .userDetails(userDetails)
+                    .role(role)
+                    .build();
 
                 commandPerformer.createMailbox(email, mailPassword);
-
                 final var adminDetails = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
                 final var employerMailDetails = new AddEmployerMailPayload(reqDto, email, mailPassword);
 
@@ -164,7 +165,7 @@ public class OwnerAddEmployerServlet extends HttpServlet {
                     "w przysłanej na Twój adres email wiadomości."
                 );
                 alert.setType(INFO);
-                httpSession.setAttribute(SessionAlert.EMPLOYERS_PAGE_ALERT.getName(), alert);
+                httpSession.setAttribute(OWNER_EMPLOYERS_PAGE_ALERT.getName(), alert);
                 res.sendRedirect("/owner/employers");
             } catch (RuntimeException ex) {
                 if (session.getTransaction().isActive()) {
@@ -176,18 +177,17 @@ public class OwnerAddEmployerServlet extends HttpServlet {
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
+            req.setAttribute("alertData", alert);
+            req.setAttribute("addEditCustomerData", resDto);
             LOGGER.error("Unable to create employer. Cause: {}", ex.getMessage());
-            selfRedirect(req, res, resDto, alert);
+            selfRedirect(req, res);
         }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private void selfRedirect(HttpServletRequest req, HttpServletResponse res, AddEditEmployerResDto resDto,
-                              AlertTupleDto alert) throws ServletException, IOException {
-        req.setAttribute("addEditEmployerData", resDto);
+    private void selfRedirect(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         req.setAttribute("addEditText", "Dodaj");
-        req.setAttribute("alertData", alert);
         req.setAttribute("title", OWNER_ADD_EMPLOYER_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/owner/employer/owner-add-edit-employer.jsp").forward(req, res);
     }

@@ -14,7 +14,7 @@
 package pl.polsl.skirentalservice.util;
 
 import lombok.*;
-import java.util.Arrays;
+import java.util.*;
 
 import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
 
@@ -43,5 +43,14 @@ public enum Gender {
         return Arrays.stream(Gender.values()).filter(g -> g.alias == alias.charAt(0))
                 .findFirst()
                 .orElse(Gender.MALE);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static List<FormSelectTupleDto> getGenders() {
+        return List.of(
+            new FormSelectTupleDto(true, String.valueOf(MALE.alias), MALE.name),
+            new FormSelectTupleDto(false, String.valueOf(FEMALE.alias), FEMALE.name)
+        );
     }
 }

@@ -31,12 +31,12 @@ import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.core.mail.*;
 import pl.polsl.skirentalservice.dto.change_password.*;
 import pl.polsl.skirentalservice.core.db.HibernateBean;
-import pl.polsl.skirentalservice.exception.UserNotFoundException;
-
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
+import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 import static pl.polsl.skirentalservice.util.PageTitle.FORGOT_PASSWORD_REQUEST_PAGE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81,7 +81,7 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
                 final boolean employerExist = session.createQuery(jpqlFindEmployer, Boolean.class)
                     .setParameter("loginOrEmail", reqDto.getLoginOrEmail())
                     .getSingleResult();
-                if (!employerExist) throw new UserNotFoundException(reqDto);
+                if (!employerExist) throw new UserNotFoundException(reqDto, LOGGER);
 
                 final String jpqlEmployerDetails =
                     "SELECT new pl.polsl.skirentalservice.dto.change_password.EmployerDetailsDto(" +

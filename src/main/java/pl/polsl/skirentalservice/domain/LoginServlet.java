@@ -15,7 +15,6 @@ package pl.polsl.skirentalservice.domain;
 
 import org.slf4j.*;
 import org.hibernate.*;
-import at.favre.lib.crypto.bcrypt.BCrypt;
 
 import jakarta.ejb.EJB;
 import jakarta.servlet.http.*;
@@ -28,13 +27,17 @@ import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.util.*;
 import pl.polsl.skirentalservice.dto.login.*;
-import pl.polsl.skirentalservice.exception.*;
 import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.dto.logout.LogoutModalDto;
 
 import static java.util.Objects.isNull;
+
+import static pl.polsl.skirentalservice.util.AlertType.WARN;
 import static pl.polsl.skirentalservice.util.SessionAttribute.*;
 import static pl.polsl.skirentalservice.util.PageTitle.LOGIN_PAGE;
+import static pl.polsl.skirentalservice.util.Utils.invalidPassword;
+import static pl.polsl.skirentalservice.exception.NotFoundException.*;
+import static pl.polsl.skirentalservice.exception.CredentialException.*;
 import static pl.polsl.skirentalservice.util.SessionAlert.LOGIN_PAGE_ALERT;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -64,29 +67,33 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        final AlertTupleDto alert = new AlertTupleDto(true);
+        final HttpSession httpSession = req.getSession();
+
         final LoginFormReqDto reqDto = new LoginFormReqDto(req);
         final LoginFormResDto resDto = new LoginFormResDto(validator, reqDto);
         if (validator.someFieldsAreInvalid(reqDto)) {
             selfRedirect(req, res, resDto);
             return;
         }
-        final AlertTupleDto alert = new AlertTupleDto();
-        final HttpSession httpSession = req.getSession();
         try (final Session session = database.open()) {
             try {
                 session.beginTransaction();
 
                 final String jpqlFindEmployer =
-                    "SELECT e.password FROM EmployerEntity e " +
+                    "SELECT new pl.polsl.skirentalservice.dto.login.PrependLoginDto(e.password, e.isBlocked) " +
+                    "FROM EmployerEntity e " +
                     "INNER JOIN e.userDetails d " +
                     "WHERE e.login = :loginOrEmail OR d.emailAddress = :loginOrEmail";
-                final String employerPassword = session.createQuery(jpqlFindEmployer, String.class)
+                final PrependLoginDto prependLogin = session.createQuery(jpqlFindEmployer, PrependLoginDto.class)
                     .setParameter("loginOrEmail", reqDto.getLoginOrEmail())
                     .getSingleResultOrNull();
 
-                if (isNull(employerPassword)) throw new UserNotFoundException(reqDto);
-                final BCrypt.Result result = BCrypt.verifyer().verify(reqDto.getPassword().toCharArray(), employerPassword);
-                if (!result.verified) throw new InvalidCredentialsException(reqDto);
+                if (isNull(prependLogin)) throw new UserNotFoundException(reqDto, LOGGER);
+                if (prependLogin.getIsBlocked()) throw new AccountTemporaryBlockedException();
+                if (invalidPassword(reqDto.getPassword(), prependLogin.getPassword())) {
+                    throw new InvalidCredentialsException(reqDto, LOGGER);
+                }
 
                 final String jpqlSelectEmployer =
                     "SELECT new pl.polsl.skirentalservice.dto.login.LoggedUserDataDto(" +
@@ -116,8 +123,12 @@ public class LoginServlet extends HttpServlet {
                 }
                 throw ex;
             }
+        } catch (AccountTemporaryBlockedException ex) {
+            alert.setType(WARN);
+            alert.setMessage(ex.getMessage());
+            req.setAttribute("alertData", alert);
+            selfRedirect(req, res, resDto);
         } catch (RuntimeException ex) {
-            alert.setActive(true);
             alert.setMessage(ex.getMessage());
             req.setAttribute("alertData", alert);
             selfRedirect(req, res, resDto);

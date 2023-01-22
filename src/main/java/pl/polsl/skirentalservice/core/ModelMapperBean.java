@@ -15,7 +15,7 @@ package pl.polsl.skirentalservice.core;
 
 import jakarta.ejb.*;
 
-import org.modelmapper.ModelMapper;
+import org.modelmapper.*;
 import org.modelmapper.convention.*;
 import org.modelmapper.config.Configuration;
 
@@ -43,5 +43,19 @@ public class ModelMapperBean {
 
     public <T> T map(Object from, Class<T> to) {
         return modelMapper.map(from, to);
+    }
+
+    public void shallowCopy(Object from, Object to) {
+        modelMapper.map(from, to);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void onUpdateNullableTransactTurnOn() {
+        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
+    }
+
+    public void onUpdateNullableTransactTurnOff() {
+        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNull());
     }
 }

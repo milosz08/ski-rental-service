@@ -2,8 +2,8 @@
  * Copyright (c) 2023 by multiple authors
  * Silesian University of Technology
  *
- *  File name: SearchBySelectColumn.java
- *  Last modified: 22/01/2023, 03:54
+ *  File name: FilterDataDto.java
+ *  Last modified: 22/01/2023, 16:06
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -11,26 +11,25 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentalservice.dto.search_filter;
+package pl.polsl.skirentalservice.paging.filter;
 
-import lombok.Getter;
-
-import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
+import lombok.*;
+import java.util.List;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@Getter
-public class SearchBySelectColumn extends FormSelectTupleDto {
-    private final String columnName;
+@Data
+@AllArgsConstructor
+public class FilterDataDto {
+    private String searchText;
+    private String searchColumn;
+    private List<FilterColumn> searchBy;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public SearchBySelectColumn(String value, String text, String columnName) {
-        this(false, value, text, columnName);
-    }
-
-    public SearchBySelectColumn(boolean isSelected, String value, String text, String columnName) {
-        super(isSelected, value, text);
-        this.columnName = columnName;
+    public FilterDataDto(List<FilterColumn> searchBy) {
+        this.searchText = "";
+        this.searchBy = searchBy;
+        this.searchColumn = searchBy.get(0).getColumnName();
     }
 }

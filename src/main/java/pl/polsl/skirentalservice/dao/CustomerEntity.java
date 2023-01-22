@@ -41,7 +41,14 @@ public class CustomerEntity extends AuditableEntity {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    UserDetailsEntity getUserDetails() {
+    public CustomerEntity(UserDetailsEntity userDetails, LocationAddressEntity locationAddress) {
+        this.userDetails = userDetails;
+        this.locationAddress = locationAddress;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public UserDetailsEntity getUserDetails() {
         return userDetails;
     }
 
@@ -49,7 +56,7 @@ public class CustomerEntity extends AuditableEntity {
         this.userDetails = userDetails;
     }
 
-    LocationAddressEntity getLocationAddress() {
+    public LocationAddressEntity getLocationAddress() {
         return locationAddress;
     }
 

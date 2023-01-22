@@ -27,7 +27,7 @@ import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.change_password.*;
 import pl.polsl.skirentalservice.core.db.HibernateBean;
-import pl.polsl.skirentalservice.exception.OtaTokenNotFoundException;
+import pl.polsl.skirentalservice.exception.CredentialException.*;
 
 import static java.util.Objects.isNull;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
@@ -140,7 +140,7 @@ public class ChangeForgottenPasswordServlet extends HttpServlet {
         final var details = session.createQuery(jpqlFindToken, ChangePasswordEmployerDetailsDto.class)
                 .setParameter("token", token)
                 .getSingleResultOrNull();
-        if (isNull(details)) throw new OtaTokenNotFoundException(req, token);
+        if (isNull(details)) throw new OtaTokenNotFoundException(req, token, LOGGER);
         return details;
     }
 }

@@ -81,8 +81,16 @@
     max-width: 350px;
 }
 
+.micro-font {
+    font-size: .9em;
+}
+
 .max-width-fit {
     max-width: fit-content !important;
+}
+
+th {
+    white-space: nowrap;
 }
 
 /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/

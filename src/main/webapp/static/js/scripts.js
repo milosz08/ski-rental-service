@@ -61,6 +61,7 @@ function onLoad() {
 
     showModal('logoutModal');
     showHidePassword('.password-input-toggler');
+    disableResize();
 
     $('[data-bs-toggle="tooltip"]').toArray().forEach(function(el) {
         new bootstrap.Tooltip(el);
@@ -71,7 +72,6 @@ function onLoad() {
         $('#main-wrapper').toggleClass('main-wrapper-active');
     });
 }
-disableResize();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

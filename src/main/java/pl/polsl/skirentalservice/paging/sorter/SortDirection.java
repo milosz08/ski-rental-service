@@ -2,8 +2,8 @@
  * Copyright (c) 2023 by multiple authors
  * Silesian University of Technology
  *
- *  File name: ServletSorterField.java
- *  Last modified: 21/01/2023, 16:18
+ *  File name: SortDirection.java
+ *  Last modified: 22/01/2023, 16:05
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -11,29 +11,20 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentalservice.sorter;
+package pl.polsl.skirentalservice.paging.sorter;
 
 import lombok.*;
 
-import static pl.polsl.skirentalservice.sorter.SortDirection.*;
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@Data
 @Getter
-@Setter
-public class ServletSorterField {
-    private SortDirection direction;
-    private String chevronBts;
-    private boolean isActive;
-    private String jpql;
+@AllArgsConstructor
+public enum SortDirection {
+    IDLE("IDLE"),
+    ASC("ASC"),
+    DESC("DESC");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public ServletSorterField(String jpql) {
-        this.jpql = jpql;
-        this.direction = ASC;
-        this.isActive = false;
-        this.chevronBts = "";
-    }
+    private final String dir;
 }

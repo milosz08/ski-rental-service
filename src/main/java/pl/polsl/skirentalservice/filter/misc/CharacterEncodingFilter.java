@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2022 by multiple authors
+ * Copyright (c) 2023 by multiple authors
  * Silesian University of Technology
  *
  *  File name: CharacterEncodingFilter.java
- *  Last modified: 22.12.2022, 17:46
+ *  Last modified: 20/01/2023, 05:16
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -11,7 +11,7 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentalservice.filter;
+package pl.polsl.skirentalservice.filter.misc;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;

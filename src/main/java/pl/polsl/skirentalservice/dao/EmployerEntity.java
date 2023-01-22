@@ -27,7 +27,9 @@ import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @EntityInjector
+@Builder
 @Table(name = "employeers")
+@AllArgsConstructor
 @NoArgsConstructor
 public class EmployerEntity extends AuditableEntity {
 
@@ -52,11 +54,19 @@ public class EmployerEntity extends AuditableEntity {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    public EmployerEntity(LocalDate hiredDate, UserDetailsEntity userDetails, LocationAddressEntity locationAddress) {
+        this.hiredDate = hiredDate;
+        this.userDetails = userDetails;
+        this.locationAddress = locationAddress;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     String getLogin() {
         return login;
     }
 
-    public void setLogin(String login) {
+    void setLogin(String login) {
         this.login = login;
     }
 
@@ -64,7 +74,7 @@ public class EmployerEntity extends AuditableEntity {
         return password;
     }
 
-    public void setPassword(String password) {
+    void setPassword(String password) {
         this.password = password;
     }
 
@@ -88,7 +98,7 @@ public class EmployerEntity extends AuditableEntity {
         return userDetails;
     }
 
-    public void setUserDetails(UserDetailsEntity userDetails) {
+    void setUserDetails(UserDetailsEntity userDetails) {
         this.userDetails = userDetails;
     }
 
@@ -96,7 +106,7 @@ public class EmployerEntity extends AuditableEntity {
         return locationAddress;
     }
 
-    public void setLocationAddress(LocationAddressEntity locationAddress) {
+    void setLocationAddress(LocationAddressEntity locationAddress) {
         this.locationAddress = locationAddress;
     }
 
@@ -104,7 +114,7 @@ public class EmployerEntity extends AuditableEntity {
         return role;
     }
 
-    public void setRole(RoleEntity role) {
+    void setRole(RoleEntity role) {
         this.role = role;
     }
 
@@ -122,6 +132,10 @@ public class EmployerEntity extends AuditableEntity {
 
     void setFirstAccess(Boolean firstAccess) {
         this.firstAccess = firstAccess;
+    }
+
+    public String getEmailAddress() {
+        return userDetails.getEmailAddress();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

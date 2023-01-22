@@ -30,12 +30,11 @@ import java.util.stream.Collectors;
 
 import pl.polsl.skirentalservice.core.ConfigBean;
 import pl.polsl.skirentalservice.core.JAXBProperty;
-import pl.polsl.skirentalservice.exception.UnableToSendEmailException;
 
 import static java.time.Instant.now;
 import static freemarker.template.Configuration.VERSION_2_3_22;
 
-import static pl.polsl.skirentalservice.util.Utils.DEF_TITLE;
+import static pl.polsl.skirentalservice.exception.ServletException.*;
 import static pl.polsl.skirentalservice.core.mail.JakartaMailAuthenticator.findProperty;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -107,11 +106,12 @@ public class MailSocketBean {
             addtlnPayloadProps.put("systemVersion", config.getSystemVersion());
             bodyTemplate.process(addtlnPayloadProps, outWriter);
 
-            Address[] sendToAddresses = new Address[sendTo.size()];
+            final Address[] sendToAddresses = new Address[sendTo.size()];
             for (int i = 0; i < sendToAddresses.length; i++) {
                 sendToAddresses[i] = new InternetAddress(sendTo.get(i));
             }
-            message.setFrom(new InternetAddress(findProperty(configProperties, "mail.smtp.user"), DEF_TITLE));
+            message.setFrom(new InternetAddress(findProperty(configProperties, "mail.smtp.user"),
+                config.getDefPageTitle()));
             message.setRecipients(Message.RecipientType.TO, sendToAddresses);
 
             if (!Objects.isNull(payload.getAttachmentsPaths())) {
@@ -137,20 +137,21 @@ public class MailSocketBean {
             LOGGER.info("Successful send email message to the following recipent/s: {}", sendTo);
         } catch (IOException ex) {
             LOGGER.error("Unable to load freemarker template. Template name: {}", payload.getTemplateName());
-            throw new UnableToSendEmailException(String.join(", ", sendTo), payload);
+            throw new UnableToSendEmailException(String.join(", ", sendTo), payload, LOGGER);
         } catch (TemplateException ex) {
             LOGGER.error("Unable to process freemarker template. Exception: {}", ex.getMessage());
-            throw new UnableToSendEmailException(String.join(", ", sendTo), payload);
+            throw new UnableToSendEmailException(String.join(", ", sendTo), payload, LOGGER);
         } catch (MessagingException | RuntimeException ex) {
-            throw new UnableToSendEmailException(String.join(", ", sendTo), payload);
+            throw new UnableToSendEmailException(String.join(", ", sendTo), payload, LOGGER);
         }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public String getDomain() {
-        return "@" + configProperties.stream().filter(p -> p.getName()
-            .equals("mail.smtp.domain")).findFirst().map(JAXBProperty::getValue).orElse("localhost");
+        return "@" + configProperties.stream()
+            .filter(p -> p.getName().equals("mail.smtp.domain"))
+            .findFirst().map(JAXBProperty::getValue).orElse("localhost");
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

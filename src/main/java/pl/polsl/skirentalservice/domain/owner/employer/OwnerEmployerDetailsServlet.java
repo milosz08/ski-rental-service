@@ -25,11 +25,12 @@ import java.io.IOException;
 
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.core.db.HibernateBean;
-import pl.polsl.skirentalservice.exception.UserNotFoundException;
 import pl.polsl.skirentalservice.dto.employer.EmployerDetailsResDto;
 
 import static java.util.Objects.isNull;
-import static pl.polsl.skirentalservice.util.SessionAlert.EMPLOYERS_PAGE_ALERT;
+
+import static pl.polsl.skirentalservice.exception.NotFoundException.*;
+import static pl.polsl.skirentalservice.util.SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT;
 import static pl.polsl.skirentalservice.util.PageTitle.OWNER_EMPLOYER_DETAILS_PAGE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -76,7 +77,7 @@ public class OwnerEmployerDetailsServlet extends HttpServlet {
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
-            httpSession.setAttribute(EMPLOYERS_PAGE_ALERT.getName(), alert);
+            httpSession.setAttribute(OWNER_EMPLOYERS_PAGE_ALERT.getName(), alert);
             res.sendRedirect("/owner/employers");
         }
     }

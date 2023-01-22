@@ -66,6 +66,9 @@ public class HibernateBean {
 
             final Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(jdbcConnection);
             final Liquibase liquibase = new Liquibase(LIQUIBASE_CONF, new ClassLoaderResourceAccessor(), database);
+
+            liquibase.getDatabase().setDatabaseChangeLogTableName("_liquibase_changelog");
+            liquibase.getDatabase().setDatabaseChangeLogLockTableName("_liquibase_changelog_lock");
             liquibase.update();
 
             sessionFactory = configuration.buildSessionFactory(serviceRegistry);

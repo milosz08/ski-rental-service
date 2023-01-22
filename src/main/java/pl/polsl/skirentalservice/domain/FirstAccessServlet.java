@@ -29,7 +29,7 @@ import pl.polsl.skirentalservice.dto.first_access.*;
 import pl.polsl.skirentalservice.core.ssh.SshSocketBean;
 import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
-import pl.polsl.skirentalservice.exception.PasswordMismatchException;
+import pl.polsl.skirentalservice.exception.CredentialException.*;
 
 import java.io.IOException;
 

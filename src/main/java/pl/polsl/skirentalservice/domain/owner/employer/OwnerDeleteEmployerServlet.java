@@ -21,7 +21,6 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
-import java.util.Objects;
 import java.io.IOException;
 
 import pl.polsl.skirentalservice.ssh.*;
@@ -29,10 +28,12 @@ import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dao.EmployerEntity;
 import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.core.ssh.SshSocketBean;
-import pl.polsl.skirentalservice.exception.UserNotFoundException;
+
+import static java.util.Objects.isNull;
 
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
-import static pl.polsl.skirentalservice.util.SessionAlert.EMPLOYERS_PAGE_ALERT;
+import static pl.polsl.skirentalservice.exception.NotFoundException.*;
+import static pl.polsl.skirentalservice.util.SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -57,16 +58,18 @@ public class OwnerDeleteEmployerServlet extends HttpServlet {
                 session.getTransaction().begin();
 
                 final String jpqlFindEmployer =
-                    "SELECT e FROM EmployerEntity e " +
-                    "INNER JOIN e.role r INNER JOIN e.userDetails d WHERE e.id = :employerId AND r.id <> 2";
+                    "SELECT e FROM EmployerEntity e INNER JOIN e.role r " +
+                    "INNER JOIN e.userDetails d WHERE e.id = :employerId AND r.id <> 2";
                 final EmployerEntity deletingEmployer = session.createQuery(jpqlFindEmployer, EmployerEntity.class)
                     .setParameter("employerId", userId)
                     .getSingleResultOrNull();
-                if (Objects.isNull(deletingEmployer)) throw new UserNotFoundException(userId);
+                if (isNull(deletingEmployer)) throw new UserNotFoundException(userId);
 
                 final IExecCommandPerformer commandPerformer = new ExecCommandPerformer(sshSocket);
-                commandPerformer.deleteMailbox(deletingEmployer.getUserDetails().getEmailAddress());
+                commandPerformer.deleteMailbox(deletingEmployer.getEmailAddress());
                 session.remove(deletingEmployer);
+
+                // TODO: dodatkowe sprawdzanie, czy pracownik nie ma w tym czasie stworzonych przez siebie rezerwacji sprzętu
 
                 alert.setType(INFO);
                 alert.setMessage(
@@ -86,7 +89,7 @@ public class OwnerDeleteEmployerServlet extends HttpServlet {
             alert.setMessage(ex.getMessage());
             LOGGER.error("Unable to remove employer with id: {}. Cause: {}", userId, ex.getMessage());
         }
-        httpSession.setAttribute(EMPLOYERS_PAGE_ALERT.getName(), alert);
+        httpSession.setAttribute(OWNER_EMPLOYERS_PAGE_ALERT.getName(), alert);
         res.sendRedirect("/owner/employers");
     }
 }

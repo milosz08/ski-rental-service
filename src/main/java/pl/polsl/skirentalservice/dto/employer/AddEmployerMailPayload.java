@@ -36,8 +36,8 @@ public class AddEmployerMailPayload {
         this.fullName = reqDto.getFirstName() + " " + reqDto.getLastName();
         this.pesel = reqDto.getPesel();
         this.phoneNumber = "+48" + reqDto.getPhoneNumber();
-        this.bornDate = reqDto.getHiredDate().toString();
-        this.hiredDate = reqDto.getHiredDate().toString();
+        this.bornDate = reqDto.getBornDate();
+        this.hiredDate = reqDto.getHiredDate();
         this.address = reqDto.getFullAddress();
         this.gender = reqDto.getGender().getName();
         this.emailAddress = emailAddress;
