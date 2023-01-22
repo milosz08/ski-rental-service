@@ -3,7 +3,7 @@
  * Silesian University of Technology
  *
  *  File name: PaginationPage.java
- *  Last modified: 21/01/2023, 16:18
+ *  Last modified: 21/01/2023, 16:20
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -11,7 +11,7 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentalservice.dto.pagination;
+package pl.polsl.skirentalservice.paging.pagination;
 
 import lombok.*;
 
