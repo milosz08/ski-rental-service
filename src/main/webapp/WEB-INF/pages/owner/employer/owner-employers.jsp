@@ -3,10 +3,10 @@
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<jsp:useBean id="filterData" class="pl.polsl.skirentalservice.dto.search_filter.SearchFilterDto" scope="request"/>
-<jsp:useBean id="sorterData" type="java.util.Map<java.lang.String, pl.polsl.skirentalservice.sorter.ServletSorterField>" scope="request"/>
 <jsp:useBean id="alertData" class="pl.polsl.skirentalservice.dto.AlertTupleDto" scope="request"/>
+<jsp:useBean id="filterData" class="pl.polsl.skirentalservice.paging.filter.FilterDataDto" scope="request"/>
 <jsp:useBean id="employersData" type="java.util.List<pl.polsl.skirentalservice.dto.employer.EmployerRecordResDto>" scope="request"/>
+<jsp:useBean id="sorterData" type="java.util.Map<java.lang.String, pl.polsl.skirentalservice.paging.sorter.ServletSorterField>" scope="request"/>
 
 <p:generic-owner.wrapper>
     <h1 class="fs-2 fw-normal text-dark mb-2">Lista pracowników</h1>
@@ -48,74 +48,84 @@
         </div>
         <c:if test="${alertData.active}">
             <div class="alert ${alertData.type.cssClass} alert-dismissible mb-3 fade show" role="alert">
-                    ${alertData.message}
+                ${alertData.message}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         </c:if>
-        <c:if test="${!alertData.disableContent}">
+        <c:if test="${empty employersData}">
+            <div class="alert alert-warning">
+                Nie znaleziono żadnych pracowników w systemie. Aby dodać nowego pracownika, kliknij w przycisk "Dodaj
+                pracownika" lub w <a href="${pageContext.request.contextPath}/owner/add-employer" class="alert-link">
+                ten link</a>.
+            </div>
+        </c:if>
+        <c:if test="${not empty employersData}">
             <div class="table-responsive">
-                <table class="table table-striped table-sm table-hover">
+                <table class="table table-bordered table-striped table-sm table-hover">
                     <thead>
                     <tr>
-                        <th scope="col">Lp.</th>
                         <th scope="col">
-                            <input type="hidden" name="sort-dir['full-name']" value="${sorterData.get("full-name").direction.dir}">
-                            <button class="border-0 bg-transparent fw-bold" name="sort-by" type="submit" value="full-name">
+                            <button class="border-0 bg-transparent fw-bold" name="sortBy" type="submit" value="identity">
+                                ID
+                                <i class="bi bi-arrow-${sorterData.get("identity").chevronBts} ms-1 micro-font"></i>
+                            </button>
+                        </th>
+                        <th scope="col">
+                            <button class="border-0 bg-transparent fw-bold" name="sortBy" type="submit" value="fullName">
                                 Imię i nazwisko
-                                <c:if test="${sorterData.get('full-name').active}">
-                                    <i class="bi bi-arrow-${sorterData.get("full-name").chevronBts}-short fs-5"></i>
-                                </c:if>
+                                <i class="bi bi-arrow-${sorterData.get("fullName").chevronBts} ms-1 micro-font"></i>
                             </button>
                         </th>
                         <th scope="col">
-                            <input type="hidden" name="sort-dir['hired-date']" value="${sorterData.get("hired-date").direction.dir}">
-                            <button class="border-0 bg-transparent fw-bold" name="sort-by" type="submit" value="hired-date">
+                            <button class="border-0 bg-transparent fw-bold" name="sortBy" type="submit" value="pesel">
+                                Nr PESEL
+                                <i class="bi bi-arrow-${sorterData.get("pesel").chevronBts} ms-1 micro-font"></i>
+                            </button>
+                        </th>
+                        <th scope="col" class="d-none d-lg-table-cell">
+                            <button class="border-0 bg-transparent fw-bold" name="sortBy" type="submit" value="hiredDate">
                                 Data zatrudnienia
-                                <c:if test="${sorterData.get('hired-date').active}">
-                                    <i class="bi bi-arrow-${sorterData.get("hired-date").chevronBts}-short fs-5"></i>
-                                </c:if>
+                                <i class="bi bi-arrow-${sorterData.get("hiredDate").chevronBts} ms-1 micro-font"></i>
                             </button>
                         </th>
-                        <th scope="col">PESEL</th>
-                        <th scope="col">
-                            <input type="hidden" name="sort-dir['email']" value="${sorterData.get("email").direction.dir}">
-                            <button class="border-0 bg-transparent fw-bold" name="sort-by" type="submit" value="email">
+                        <th scope="col" class="d-none d-lg-table-cell">
+                            <button class="border-0 bg-transparent fw-bold" name="sortBy" type="submit" value="email">
                                 Adres email
-                                <c:if test="${sorterData.get('email').active}">
-                                    <i class="bi bi-arrow-${sorterData.get("email").chevronBts}-short fs-5"></i>
-                                </c:if>
+                                <i class="bi bi-arrow-${sorterData.get("email").chevronBts} ms-1 micro-font"></i>
                             </button>
                         </th>
-                        <th scope="col">Nr telefonu</th>
-                        <th scope="col">
-                            <input type="hidden" name="sort-dir['gender']" value="${sorterData.get("gender").direction.dir}">
-                            <button class="border-0 bg-transparent fw-bold" name="sort-by" type="submit" value="gender">
+                        <th scope="col" class="d-none d-lg-table-cell">
+                            <button class="border-0 bg-transparent fw-bold" name="sortBy" type="submit" value="phoneNumber">
+                                Nr telefonu
+                                <i class="bi bi-arrow-${sorterData.get("phoneNumber").chevronBts} ms-1 micro-font"></i>
+                            </button>
+                        </th>
+                        <th scope="col" class="d-none d-lg-table-cell">
+                            <button class="border-0 bg-transparent fw-bold" name="sortBy" type="submit" value="gender">
                                 Płeć
-                                <c:if test="${sorterData.get('gender').active}">
-                                    <i class="bi bi-arrow-${sorterData.get("gender").chevronBts}-short fs-5"></i>
-                                </c:if>
+                                <i class="bi bi-arrow-${sorterData.get("gender").chevronBts} ms-1 micro-font"></i>
                             </button>
                         </th>
                         <th scope="col" class="fit">Akcja</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <c:forEach items="${employersData}" var="employer" varStatus="loop">
+                    <c:forEach items="${employersData}" var="employer">
                         <tr>
-                            <td class="align-middle">${loop.index + 1}</td>
+                            <td class="align-middle">${employer.id}</td>
                             <td class="align-middle">${employer.fullName}</td>
-                            <td class="align-middle">
+                            <td class="align-middle">${employer.pesel}</td>
+                            <td class="align-middle d-none d-lg-table-cell">
                                 <fmt:parseDate value="${employer.hiredDate}" pattern="yyyy-MM-dd" var="parsedDate" type="date"/>
                                 <fmt:formatDate value="${parsedDate}" type="date" pattern="dd.MM.yyyy"/>
                             </td>
-                            <td class="align-middle">${employer.pesel}</td>
-                            <td class="align-middle">
+                            <td class="align-middle d-none d-lg-table-cell">
                                 <a class="text-dark" href="mailto:${employer.email}">${employer.email}</a>
                             </td>
-                            <td class="align-middle">
+                            <td class="align-middle d-none d-lg-table-cell">
                                 <a class="text-dark" href="tel:${employer.phoneNumber}">${employer.phoneNumber}</a>
                             </td>
-                            <td class="align-middle">${employer.gender.name}</td>
+                            <td class="align-middle d-none d-lg-table-cell">${employer.gender.name}</td>
                             <td class="align-middle fit">
                                 <button type="button" class="btn btn-sm btn-danger me-1" data-bs-toggle="modal"
                                     data-bs-target="#deleteEmployer${employer.id}">
@@ -138,9 +148,10 @@
                             tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
-                                    <div class="modal-body">
+                                    <div class="modal-body lh-sm">
                                         Czy na pewno chcesz usunąć pracownika <strong>${employer.fullName}</strong>?
-                                        Operacji nie można cofnąć.
+                                        Operacji nie można cofnąć. Można usunąć tylko tych pracowników, który w danej
+                                        chwili nie obsługują żadnego wypożyczenia w systemie.
                                     </div>
                                     <div class="modal-footer">
                                         <a href="${pageContext.request.contextPath}/owner/delete-employer?id=${employer.id}"

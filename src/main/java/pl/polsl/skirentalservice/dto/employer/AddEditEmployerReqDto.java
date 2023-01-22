@@ -24,7 +24,7 @@ import java.time.format.DateTimeFormatter;
 
 import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.util.Gender;
-import pl.polsl.skirentalservice.core.IReqValidatePojo;
+import pl.polsl.skirentalservice.exception.DateException;
 
 import static java.time.LocalDate.parse;
 import static java.util.Objects.requireNonNullElse;
@@ -122,6 +122,20 @@ public class AddEditEmployerReqDto implements IReqValidatePojo {
 
     public String getFullAddress() {
         return joinWith(" ", "ul.", street, buildingNr, isBlank(apartmentNr) ? "" : "/" + apartmentNr, postalCode, city);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void validateDates(ConfigBean config) {
+        if (getParsedBornDate().isAfter(LocalDate.now().minusYears(config.getCircaDateYears()))) {
+            throw new DateException.DateInFutureException("data urodzenia", config.getCircaDateYears());
+        }
+        if (getParsedHiredDate().isAfter(LocalDate.now())) {
+            throw new DateException.DateInFutureException("data zatrudnienia");
+        }
+        if (getParsedBornDate().isAfter(getParsedHiredDate())) {
+            throw new DateException.BornAfterHiredDateException();
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
