@@ -18,11 +18,6 @@ import jakarta.persistence.*;
 
 import pl.polsl.skirentalservice.core.db.*;
 
-import java.util.Set;
-
-import static jakarta.persistence.CascadeType.*;
-import static jakarta.persistence.FetchType.LAZY;
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Entity
@@ -36,9 +31,6 @@ public class LocationAddressEntity extends AuditableEntity {
     @Column(name = "apartment_no")  private String apartmentNr;
     @Column(name = "city")          private String city;
     @Column(name = "postal_code")   private String postalCode;
-
-    @OneToMany(fetch = LAZY, cascade = { PERSIST, MERGE }, mappedBy = "locationAddress")
-    private Set<CustomerEntity> customers;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -80,14 +72,6 @@ public class LocationAddressEntity extends AuditableEntity {
 
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
-    }
-
-    Set<CustomerEntity> getCustomers() {
-        return customers;
-    }
-
-    void setCustomers(Set<CustomerEntity> customers) {
-        this.customers = customers;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

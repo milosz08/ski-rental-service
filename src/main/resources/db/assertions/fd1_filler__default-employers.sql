@@ -24,9 +24,5 @@ INSERT INTO employeers (login, password, hired_date, role_id, user_details_id, l
 ('andand456', '$2a$10$Aw9Zr09KmE22wgcmUPqeY.3/80burYO2BZkAqeLmxHiFc6bHNE5p2', '2001-10-12', 2, 2, 2);
 
 
-INSERT INTO customers (user_details_id) VALUES
-(3);
-
-
-INSERT INTO customers_addresses_binding (customer_id, location_address_id) VALUES
-(1, 3)
+INSERT INTO customers (user_details_id, location_address_id) VALUES
+(3, 3);

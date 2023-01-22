@@ -29,14 +29,12 @@ import static jakarta.persistence.FetchType.LAZY;
 @NoArgsConstructor
 public class CustomerEntity extends AuditableEntity {
 
-    @OneToOne(fetch = LAZY, cascade = { PERSIST, MERGE })
+    @OneToOne(fetch = LAZY, cascade = { PERSIST, MERGE, REMOVE })
     @JoinColumn(name = "user_details_id", referencedColumnName = "id")
     private UserDetailsEntity userDetails;
 
-    @ManyToOne(fetch = LAZY, cascade = { PERSIST, MERGE })
-    @JoinTable(name = "customers_addresses_binding",
-        joinColumns = { @JoinColumn(name = "customer_id") },
-        inverseJoinColumns = { @JoinColumn(name = "location_address_id") })
+    @OneToOne(fetch = LAZY, cascade = { PERSIST, MERGE, REMOVE })
+    @JoinColumn(name = "location_address_id", referencedColumnName = "id")
     private LocationAddressEntity locationAddress;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
