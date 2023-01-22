@@ -14,6 +14,7 @@
 package pl.polsl.skirentalservice.domain.seller.customer;
 
 import org.slf4j.*;
+import org.hibernate.Session;
 
 import jakarta.ejb.EJB;
 import jakarta.servlet.http.*;
@@ -26,6 +27,9 @@ import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.core.mail.MailSocketBean;
 
 import java.io.IOException;
+
+import static pl.polsl.skirentalservice.util.AlertType.INFO;
+import static pl.polsl.skirentalservice.util.SessionAlert.SELLER_CUSTOMERS_PAGE_ALERT;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -41,7 +45,33 @@ public class SellerDeleteCustomerServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        final String userId = req.getParameter("id");
         final AlertTupleDto alert = new AlertTupleDto(true);
+
+        final HttpSession httpSession = req.getSession();
+        try (final Session session = database.open()) {
+            try {
+                session.beginTransaction();
+
+                // TODO: sprawdzanie, czy klient nie ma aktywnych wypożyczeń przedmiotów, jeśli tak rzucenie wyjątku
+                // TODO: usuwanie klienta z systemu, hibernate (relacja kaskadowa, zamówienie NONE)
+
+                session.getTransaction().commit();
+                alert.setType(INFO);
+                alert.setMessage("Pomyślnie usunięto klienta z ID <strong>#" + userId + "</strong> z systemu.");
+                LOGGER.info("Customer with id: {} was succesfuly removed from system.", userId);
+            } catch (RuntimeException ex) {
+                if (session.getTransaction().isActive()) {
+                    LOGGER.error("Some issues appears. Transaction rollback and revert previous state...");
+                    session.getTransaction().rollback();
+                }
+                throw ex;
+            }
+        } catch (RuntimeException ex) {
+            alert.setMessage(ex.getMessage());
+            LOGGER.error("Unable to remove customer with id: {}. Cause: {}", userId, ex.getMessage());
+        }
+        httpSession.setAttribute(SELLER_CUSTOMERS_PAGE_ALERT.getName(), alert);
         res.sendRedirect("/seller/customers");
     }
 }
