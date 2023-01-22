@@ -110,10 +110,10 @@
                             <td class="align-middle">${customer.fullName}</td>
                             <td class="align-middle">${customer.pesel}</td>
                             <td class="align-middle d-none d-lg-table-cell">
-                                <a class="text-dark" href="mailto:${customer.email}">${customer.email}</a>
+                                <a href="mailto:${customer.email}">${customer.email}</a>
                             </td>
                             <td class="align-middle d-none d-lg-table-cell">
-                                <a class="text-dark" href="tel:${customer.phoneNumber}">${customer.phoneNumber}</a>
+                                <a href="tel:${customer.phoneNumber}">${customer.phoneNumber}</a>
                             </td>
                             <td class="align-middle d-none d-lg-table-cell">${customer.address}</td>
                             <td class="align-middle fit">
@@ -129,8 +129,13 @@
                                     Szczegóły
                                 </a>
                                 <a href="${pageContext.request.contextPath}/seller/edit-customer?id=${customer.id}"
-                                    class="btn btn-sm btn-outline-dark">
+                                    class="btn btn-sm btn-outline-dark me-1">
                                     Edytuj
+                                </a>
+                                <a href="${pageContext.request.contextPath}/seller/create-reservation?id=${customer.id}"
+                                    class="btn btn-sm btn-success" type="button" data-bs-toggle="tooltip"
+                                    data-bs-placement="top" data-bs-title="Stwórz nowe wypożyczenie">
+                                    <i class="bi bi-cart-plus"></i>
                                 </a>
                             </td>
                         </tr>

@@ -120,10 +120,10 @@
                                 <fmt:formatDate value="${parsedDate}" type="date" pattern="dd.MM.yyyy"/>
                             </td>
                             <td class="align-middle d-none d-lg-table-cell">
-                                <a class="text-dark" href="mailto:${employer.email}">${employer.email}</a>
+                                <a href="mailto:${employer.email}">${employer.email}</a>
                             </td>
                             <td class="align-middle d-none d-lg-table-cell">
-                                <a class="text-dark" href="tel:${employer.phoneNumber}">${employer.phoneNumber}</a>
+                                <a href="tel:${employer.phoneNumber}">${employer.phoneNumber}</a>
                             </td>
                             <td class="align-middle d-none d-lg-table-cell">${employer.gender.name}</td>
                             <td class="align-middle fit">
