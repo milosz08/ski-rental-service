@@ -1,4 +1,5 @@
 <%@ tag description="Owner panel wrapper template" pageEncoding="UTF-8" language="java" %>
+<%@ tag trimDirectiveWhitespaces="true"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
@@ -10,7 +11,7 @@
             <li class="mb-1">
                 <button data-bs-toggle="collapse" data-bs-target="#employers-collapse" aria-expanded="false"
                     class="btn d-flex justify-content-between text-white-50 fw-light btn-hover-dark
-                        rounded border-0 collapsed w-100 text-start lh-sm">
+                    rounded border-0 collapsed w-100 text-start lh-sm">
                     Pracownicy
                     <i class="d-inline-flex align-self-center bi bi-chevron-right chewron-icon simple-transition"></i>
                 </button>

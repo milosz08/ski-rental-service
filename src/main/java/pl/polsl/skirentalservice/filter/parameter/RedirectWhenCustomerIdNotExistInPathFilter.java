@@ -24,8 +24,11 @@ import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@WebFilter(urlPatterns = { "/seller/edit-customer/*", "/seller/delete-customer/*", "/seller/customer-details/*" },
-        initParams = @WebInitParam(name = "mood", value = "awake"))
+@WebFilter(urlPatterns = {
+    "/seller/edit-customer/*",
+    "/seller/delete-customer/*",
+    "/seller/customer-details/*",
+}, initParams = @WebInitParam(name = "mood", value = "awake"))
 public class RedirectWhenCustomerIdNotExistInPathFilter extends HttpFilter {
 
     @Override

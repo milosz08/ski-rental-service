@@ -25,6 +25,11 @@
     transition: none !important;
 }
 
+.modal-medium-size {
+    max-width: 600px;
+    width: 100%;
+}
+
 .media-small-size-box {
     max-width: 440px;
 }

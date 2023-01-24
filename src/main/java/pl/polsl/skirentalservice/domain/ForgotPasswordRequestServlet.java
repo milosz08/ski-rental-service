@@ -26,7 +26,7 @@ import java.text.*;
 import java.io.IOException;
 
 import pl.polsl.skirentalservice.dto.*;
-import pl.polsl.skirentalservice.dao.*;
+import pl.polsl.skirentalservice.entity.*;
 import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.core.mail.*;
 import pl.polsl.skirentalservice.dto.change_password.*;

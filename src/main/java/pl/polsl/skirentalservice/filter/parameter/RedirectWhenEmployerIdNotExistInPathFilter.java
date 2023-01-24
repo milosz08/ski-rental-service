@@ -24,8 +24,11 @@ import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@WebFilter(urlPatterns = { "/owner/edit-employer/*", "/owner/delete-employer/*", "/owner/employer-details/*" },
-        initParams = @WebInitParam(name = "mood", value = "awake"))
+@WebFilter(urlPatterns = {
+    "/owner/edit-employer/*",
+    "/owner/delete-employer/*",
+    "/owner/employer-details/*",
+}, initParams = @WebInitParam(name = "mood", value = "awake"))
 public class RedirectWhenEmployerIdNotExistInPathFilter extends HttpFilter {
 
     @Override

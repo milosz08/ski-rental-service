@@ -57,9 +57,18 @@ function disableResize() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+function tiggeredOpenModalImmediately(modalId) {
+    if (document.getElementById(modalId).dataset.equipmentTypeModalEnable === 'open') {
+        showModal(modalId);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 function onLoad() {
 
     showModal('logoutModal');
+
     showHidePassword('.password-input-toggler');
     disableResize();
 
@@ -72,6 +81,8 @@ function onLoad() {
         $('#main-wrapper').toggleClass('main-wrapper-active');
     });
 }
+
+tiggeredOpenModalImmediately('equipmentTypeModal');
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -21,8 +21,8 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
-import pl.polsl.skirentalservice.dao.*;
 import pl.polsl.skirentalservice.core.*;
+import pl.polsl.skirentalservice.entity.*;
 import pl.polsl.skirentalservice.dto.customer.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.core.ValidatorBean;

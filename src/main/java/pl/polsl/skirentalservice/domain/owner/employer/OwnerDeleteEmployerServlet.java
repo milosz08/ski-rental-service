@@ -25,7 +25,7 @@ import java.io.IOException;
 
 import pl.polsl.skirentalservice.ssh.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.dao.EmployerEntity;
+import pl.polsl.skirentalservice.entity.EmployerEntity;
 import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.core.ssh.SshSocketBean;
 

@@ -1,4 +1,5 @@
 <%@ tag description="Logged user left navigation template" pageEncoding="UTF-8" language="java" %>
+<%@ tag trimDirectiveWhitespaces="true"%>
 <%@ attribute name="requestPath" required="true" %>
 
 <jsp:useBean id="loggedUserDetails" type="pl.polsl.skirentalservice.dto.login.LoggedUserDataDto" scope="session"/>

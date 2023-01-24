@@ -26,9 +26,9 @@ import java.io.IOException;
 import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.dto.employer.*;
-import pl.polsl.skirentalservice.dao.EmployerEntity;
 import pl.polsl.skirentalservice.core.ValidatorBean;
 import pl.polsl.skirentalservice.core.db.HibernateBean;
+import pl.polsl.skirentalservice.entity.EmployerEntity;
 
 import static java.util.Objects.isNull;
 

@@ -11,7 +11,7 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentalservice.dao;
+package pl.polsl.skirentalservice.entity;
 
 import lombok.*;
 import jakarta.persistence.*;

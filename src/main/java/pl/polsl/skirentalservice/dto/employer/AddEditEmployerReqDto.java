@@ -27,7 +27,6 @@ import pl.polsl.skirentalservice.util.Gender;
 import pl.polsl.skirentalservice.exception.DateException;
 
 import static java.time.LocalDate.parse;
-import static java.util.Objects.requireNonNullElse;
 import static org.apache.commons.lang3.StringUtils.*;
 
 import static pl.polsl.skirentalservice.util.Regex.*;
@@ -100,9 +99,9 @@ public class AddEditEmployerReqDto implements IReqValidatePojo {
         this.street = trimToEmpty(req.getParameter("street"));
         this.buildingNr = trimToEmpty(req.getParameter("buildingNr"));
         this.apartmentNr = trimToNull(req.getParameter("apartmentNr"));
-        this.city = trimToNull(req.getParameter("city"));
-        this.postalCode = trimToNull(req.getParameter("postalCode"));
-        this.gender = findByAlias(requireNonNullElse(req.getParameter("gender"), "M"));
+        this.city = trimToEmpty(req.getParameter("city"));
+        this.postalCode = trimToEmpty(req.getParameter("postalCode"));
+        this.gender = findByAlias(req.getParameter("gender"));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

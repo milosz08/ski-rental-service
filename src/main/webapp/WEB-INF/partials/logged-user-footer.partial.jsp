@@ -1,5 +1,6 @@
-<%@ page import="java.time.LocalDateTime" %>
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page trimDirectiveWhitespaces="true"%>
+<%@ page import="java.time.LocalDateTime" %>
 
 <jsp:useBean id="loggedUserDetails" type="pl.polsl.skirentalservice.dto.login.LoggedUserDataDto" scope="session"/>
 

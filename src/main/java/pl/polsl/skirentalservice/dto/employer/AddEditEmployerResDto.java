@@ -55,7 +55,7 @@ public class AddEditEmployerResDto {
         this.apartmentNr = validator.validateField(reqDto, "apartmentNr", reqDto.getApartmentNr());
         this.city = validator.validateField(reqDto, "city", reqDto.getCity());
         this.postalCode = validator.validateField(reqDto, "postalCode", reqDto.getPostalCode());
-        this.genders = List.of(MALE.convertToTuple(reqDto.getGender()), FEMALE.convertToTuple(reqDto.getGender()));
+        this.genders = getSelectedGender(reqDto.getGender());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

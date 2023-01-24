@@ -24,10 +24,10 @@ import jakarta.servlet.annotation.WebServlet;
 import java.util.Map;
 import java.io.IOException;
 
-import pl.polsl.skirentalservice.dao.*;
 import pl.polsl.skirentalservice.ssh.*;
 import pl.polsl.skirentalservice.util.*;
 import pl.polsl.skirentalservice.core.*;
+import pl.polsl.skirentalservice.entity.*;
 import pl.polsl.skirentalservice.core.ssh.*;
 import pl.polsl.skirentalservice.core.mail.*;
 import pl.polsl.skirentalservice.dto.employer.*;
@@ -86,7 +86,7 @@ public class OwnerAddEmployerServlet extends HttpServlet {
             reqDto.validateDates(config);
             String email = "";
             try {
-                session.getTransaction().begin();
+                session.beginTransaction();
 
                 final String jpqlFindPesel =
                     "SELECT COUNT(e.id) > 0 FROM EmployerEntity e INNER JOIN e.userDetails d WHERE d.pesel = :pesel";

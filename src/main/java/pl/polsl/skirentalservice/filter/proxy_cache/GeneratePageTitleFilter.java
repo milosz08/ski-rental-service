@@ -11,7 +11,7 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentalservice.filter.misc;
+package pl.polsl.skirentalservice.filter.proxy_cache;
 
 import jakarta.ejb.EJB;
 import jakarta.servlet.http.*;
