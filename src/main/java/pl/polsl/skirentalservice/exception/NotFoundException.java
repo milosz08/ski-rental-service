@@ -37,4 +37,12 @@ public class NotFoundException {
             logger.warn("Attempt to login on non existing account. Login data: {}", reqDto);
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class EquipmentTypeNotFoundException extends RuntimeException {
+        public EquipmentTypeNotFoundException() {
+            super("Wybrany typ sprzętu narciarskiego nie istnieje w systemie.");
+        }
+    }
 }

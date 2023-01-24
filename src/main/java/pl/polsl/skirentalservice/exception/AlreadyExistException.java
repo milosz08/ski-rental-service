@@ -43,4 +43,13 @@ public class AlreadyExistException {
                 "już w systemie.");
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class EquipmentTypeAlreadyExistException extends RuntimeException {
+        public EquipmentTypeAlreadyExistException() {
+            super("Wybrany typ sprzętu narciarskiego do dodania istnieje już w systemie. Spróbuj dodać inny sprzęt, " +
+                "bądź wybierz z listy dostępnych.");
+        }
+    }
 }

@@ -17,10 +17,11 @@ import jakarta.servlet.http.*;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.attribute.AttributeModalResDto;
 
 import static java.util.Objects.isNull;
 
-//----------------------------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 public class Utils {
 
@@ -30,6 +31,16 @@ public class Utils {
         if (isNull(alert)) return new AlertTupleDto();
         httpSession.removeAttribute(sessionAlert.getName());
         return alert;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static AttributeModalResDto getAndDestroySessionModalData(HttpServletRequest req, SessionAttribute attribute) {
+        final HttpSession httpSession = req.getSession();
+        final AttributeModalResDto attr = (AttributeModalResDto) httpSession.getAttribute(attribute.getName());
+        if (isNull(attr)) return new AttributeModalResDto();
+        httpSession.removeAttribute(attribute.getName());
+        return attr;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
