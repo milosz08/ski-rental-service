@@ -58,7 +58,6 @@ SSH_LOGIN           = xxxxx -> SSH login
 ```
 $ ./gradlew run copyRsa            # move private key and known_hosts.dat file into build/resources directory
 $ ./gradlew run processResources   # replacement values from .env file into xml configuration files
-$ ./gradlew run                    # run application
 ```
 7. By default, application listen on `127.0.0.1:8080` and Wildfly admin dashboard is available on `127.0.0.1:9990`.
 
