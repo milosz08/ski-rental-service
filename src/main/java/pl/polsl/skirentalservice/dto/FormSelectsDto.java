@@ -2,8 +2,8 @@
  * Copyright (c) 2023 by multiple authors
  * Silesian University of Technology
  *
- *  File name: FormSelectTupleDto.java
- *  Last modified: 21/01/2023, 16:18
+ *  File name: FormSelectsDto.java
+ *  Last modified: 24/01/2023, 15:42
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -14,27 +14,23 @@
 package pl.polsl.skirentalservice.dto;
 
 import lombok.*;
+import java.util.*;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Data
-public class FormSelectTupleDto {
-    private String value;
-    private String text;
-    private String isSelected;
+public class FormSelectsDto {
+    private List<FormSelectTupleDto> selects;
+    private String selected;
+    private String errorStyle;
+    private String message;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public FormSelectTupleDto(boolean isSelected, String value, String text) {
-        this.value = value;
-        this.text = text;
-        this.isSelected = isSelected ? "selected" : "";
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public FormSelectTupleDto(String value, String text) {
-        this.value = value;
-        this.text = text;
+    public FormSelectsDto() {
+        this.selects = new ArrayList<>();
+        this.selected = "none";
+        this.errorStyle = "";
+        this.message = "";
     }
 }

@@ -16,8 +16,11 @@ package pl.polsl.skirentalservice.core;
 import jakarta.ejb.*;
 import jakarta.validation.*;
 
+import java.util.List;
 import java.util.Set;
 
+import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
+import pl.polsl.skirentalservice.dto.FormSelectsDto;
 import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -40,11 +43,25 @@ public class ValidatorBean {
     public <T extends IReqValidatePojo> FormValueInfoTupleDto validateField(T req, String field, String value) {
         final Set<ConstraintViolation<T>> constraints = validator.validateProperty(req, field);
         final FormValueInfoTupleDto resDto = new FormValueInfoTupleDto(value);
-        for (ConstraintViolation<T> constraint : constraints) {
+        for (final ConstraintViolation<T> constraint : constraints) {
             resDto.setErrorStyle("is-invalid");
             resDto.setMessage(constraint.getMessage());
         }
         return resDto;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public <T extends IReqValidatePojo> FormSelectsDto validateSelectField(
+        T req, String field, FormSelectsDto selectsDto, String selected
+    ) {
+        final Set<ConstraintViolation<T>> constraints = validator.validateProperty(req, field);
+        for (final ConstraintViolation<T> constraint : constraints) {
+            selectsDto.setErrorStyle("is-invalid");
+            selectsDto.setMessage(constraint.getMessage());
+        }
+        selectsDto.setSelected(selected);
+        return selectsDto;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

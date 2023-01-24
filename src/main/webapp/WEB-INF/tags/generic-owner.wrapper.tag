@@ -32,6 +32,30 @@
                     </li>
                 </ul>
             </li>
+            <li class="mb-1">
+                <button data-bs-toggle="collapse" data-bs-target="#equipment-collapse" aria-expanded="false"
+                    class="btn d-flex justify-content-between text-white-50 fw-light btn-hover-dark
+                    rounded border-0 collapsed w-100 text-start lh-sm">
+                    Sprzęt narciarski
+                    <i class="d-inline-flex align-self-center bi bi-chevron-right chewron-icon simple-transition"></i>
+                </button>
+                <ul class="collapse ms-3 mt-1 btn-toggle-nav list-unstyled fw-normal pb-1 small" id="equipment-collapse">
+                    <li class="mb-1">
+                        <a href="${pageContext.request.contextPath}/owner/equipments"
+                            class="text-white-50 d-inline-flex align-items-center py-1 ps-2
+                            text-decoration-none rounded btn-hover-dark w-100 fw-light">
+                            <span class="material-symbols-outlined fs-6 me-2">downhill_skiing</span>Lista sprzętów narciarskich
+                        </a>
+                    </li>
+                    <li class="mb-1">
+                        <a href="${pageContext.request.contextPath}/owner/add-equipment"
+                            class="text-white-50 d-inline-flex align-items-center py-1 ps-2
+                            text-decoration-none rounded btn-hover-dark w-100 fw-light">
+                            <span class="material-symbols-outlined fs-6 me-2">add</span>Dodaj sprzęt narciarski
+                        </a>
+                    </li>
+                </ul>
+            </li>
         </p:generic-left-nav.wrapper>
         <div id="main-wrapper" class="d-flex flex-column flex-fill main-wrapper main-wrapper-active simple-transition">
             <jsp:include page="/WEB-INF/partials/logged-user-top-bar.partial.jsp">

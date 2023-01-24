@@ -22,6 +22,7 @@ import lombok.*;
 public enum SessionAlert {
     LOGIN_PAGE_ALERT("login-page-alert"),
     OWNER_EMPLOYERS_PAGE_ALERT("employers-page-alert"),
+    OWNER_ADD_EQUIPMENT_PAGE_ALERT("owner-add-equipment-page-alert"),
     SELLER_DASHBOARD_PAGE_ALERT("owner-dashboard-page-alert"),
     SELLER_CUSTOMERS_PAGE_ALERT("seller-customers-page-alert");
 

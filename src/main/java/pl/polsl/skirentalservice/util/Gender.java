@@ -23,6 +23,7 @@ import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
 @Getter
 @AllArgsConstructor
 public enum Gender {
+    UNISEX("unisex", 'U'),
     MALE("mężczyzna", 'M'),
     FEMALE("kobieta", 'K');
 
@@ -52,5 +53,25 @@ public enum Gender {
             new FormSelectTupleDto(true, String.valueOf(MALE.alias), MALE.name),
             new FormSelectTupleDto(false, String.valueOf(FEMALE.alias), FEMALE.name)
         );
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static List<FormSelectTupleDto> getSelectedGender(Gender gender) {
+        return List.of(MALE.convertToTuple(gender), FEMALE.convertToTuple(gender));
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static List<FormSelectTupleDto> getSelectedGenderWithUnisex(Gender gender) {
+        return List.of(MALE.convertToTuple(gender), FEMALE.convertToTuple(gender), UNISEX.convertToTuple(gender));
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static List<FormSelectTupleDto> getGendersWithUnisex() {
+        final List<FormSelectTupleDto> genders = new ArrayList<>(getGenders());
+        genders.add(new FormSelectTupleDto(false, String.valueOf(UNISEX.alias), UNISEX.name));
+        return genders;
     }
 }
