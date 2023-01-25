@@ -53,19 +53,19 @@ public class AddEditEquipmentResDto {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void insertTypesSelects(List<FormSelectTupleDto> selects) {
-        selects.add(0, new FormSelectTupleDto(true, "none", "wybierz lub dodaj typ..."));
+        selects.add(0, new FormSelectTupleDto(true, "none", "wybierz typ..."));
         types.getSelects().addAll(selects);
         setSelectedField(types);
     }
 
     public void insertBrandsSelects(List<FormSelectTupleDto> selects) {
-        selects.add(0, new FormSelectTupleDto(true, "none", "wybierz lub dodaj markę..."));
+        selects.add(0, new FormSelectTupleDto(true, "none", "wybierz markę..."));
         brands.getSelects().addAll(selects);
         setSelectedField(brands);
     }
 
     public void insertColorsSelects(List<FormSelectTupleDto> selects) {
-        selects.add(0, new FormSelectTupleDto(true, "none", "wybierz lub dodaj kolor..."));
+        selects.add(0, new FormSelectTupleDto(true, "none", "wybierz kolor..."));
         colors.getSelects().addAll(selects);
         setSelectedField(colors);
     }

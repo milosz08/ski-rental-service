@@ -22,7 +22,7 @@
     </nav>
     <hr/>
     <c:if test="${alertData.active}">
-        <div class="alert ${alertData.type.cssClass} alert-dismissible mb-3 fade show" role="alert">
+        <div class="alert ${alertData.type.cssClass} alert-dismissible mb-3 fade show lh-sm" role="alert">
                 ${alertData.message}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
@@ -68,7 +68,8 @@
                                             <option value="${brand.value}" ${brand.isSelected}>${brand.text}</option>
                                         </c:forEach>
                                     </select>
-                                    <button type="button" class="btn btn-sm btn-dark ms-2 rounded-1">
+                                    <button type="button" data-bs-toggle="modal" data-bs-target="#equipmentBrandModal"
+                                        class="btn btn-sm btn-dark ms-2 rounded-1">
                                         <i class="bi bi-plus-lg"></i>
                                     </button>
                                     <div class="invalid-feedback lh-sm">${addEditEquipmentData.brands.message}</div>
@@ -117,7 +118,8 @@
                                             <option value="${color.value}" ${color.isSelected}>${color.text}</option>
                                         </c:forEach>
                                     </select>
-                                    <button class="btn btn-sm btn-dark ms-2 rounded-1">
+                                    <button type="button" data-bs-toggle="modal" data-bs-target="#equipmentColorModal"
+                                        class="btn btn-sm btn-dark ms-2 rounded-1">
                                         <i class="bi bi-plus-lg"></i>
                                     </button>
                                     <div class="invalid-feedback lh-sm">${addEditEquipmentData.colors.message}</div>

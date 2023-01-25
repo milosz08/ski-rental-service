@@ -26,7 +26,7 @@
     <main class="d-flex justify-content-center align-items-center flex-fill my-3">
         <div class="container-sm mx-2 px-0 media-small-size-box">
             <c:if test="${alertData.active}">
-                <div class="alert ${alertData.type.cssClass} alert-dismissible mb-3 fade show" role="alert">
+                <div class="alert ${alertData.type.cssClass} alert-dismissible mb-3 fade show lh-sm" role="alert">
                     ${alertData.message}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>

@@ -22,7 +22,7 @@
     </nav>
     <hr/>
     <c:if test="${addEditText.equals('Dodaj')}">
-        <div class="alert alert-primary" role="alert">
+        <div class="alert alert-primary lh-sm" role="alert">
             Przy tworzeniu pracownika login, adres email i hasło do konta jest generowanie automatycznie przez system.
             Tworzona jest również skrzynka pocztowa pracownika z domeną <strong>@ski.miloszgilga.pl</strong>. Do tak
             stworzonego konta przychodzi wiadomość email z hasłem wygenerowanym przez system, które pracownik przy
@@ -30,7 +30,7 @@
         </div>
     </c:if>
     <c:if test="${alertData.active}">
-        <div class="alert ${alertData.type.cssClass} alert-dismissible mb-3 fade show" role="alert">
+        <div class="alert ${alertData.type.cssClass} alert-dismissible mb-3 fade show lh-sm" role="alert">
             ${alertData.message}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>

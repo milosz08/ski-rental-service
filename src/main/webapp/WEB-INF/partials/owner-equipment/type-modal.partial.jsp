@@ -15,7 +15,7 @@
             </div>
             <div class="modal-body px-0 pb-0">
                 <c:if test="${equipmentTypeModalData.alert.active}">
-                    <div class="alert mx-3 ${equipmentTypeModalData.alert.type.cssClass} alert-dismissible mb-3 fade show" role="alert">
+                    <div class="alert mx-3 ${equipmentTypeModalData.alert.type.cssClass} alert-dismissible mb-3 fade show lh-sm" role="alert">
                         ${equipmentTypeModalData.alert.message}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
@@ -44,8 +44,7 @@
                             <div class="input-group has-validation input-group-sm">
                                 <input type="text" id="equipmentType" name="name" placeholder="np. Narty"
                                     class="form-control form-control-sm ${equipmentTypeModalData.name.errorStyle}"
-                                    value="${equipmentTypeModalData.name.value}"
-                                    minlength="5" maxlength="50">
+                                    value="${equipmentTypeModalData.name.value}" minlength="5" maxlength="50">
                                 <button type="submit" class="btn btn-dark btn-sm">Dodaj</button>
                                 <div class="invalid-feedback">${equipmentTypeModalData.name.message}</div>
                             </div>

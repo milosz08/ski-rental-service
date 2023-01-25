@@ -22,7 +22,7 @@
     </nav>
     <hr/>
     <c:if test="${alertData.active}">
-        <div class="alert ${alertData.type.cssClass} alert-dismissible mb-3 fade show" role="alert">
+        <div class="alert ${alertData.type.cssClass} alert-dismissible mb-3 fade show lh-sm" role="alert">
             ${alertData.message}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
