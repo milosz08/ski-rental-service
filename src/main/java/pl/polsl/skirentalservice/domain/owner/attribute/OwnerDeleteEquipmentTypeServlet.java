@@ -32,6 +32,7 @@ import static java.util.Objects.isNull;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 import static pl.polsl.skirentalservice.util.SessionAttribute.EQUIPMENT_TYPES_MODAL_DATA;
+import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -76,11 +77,7 @@ public class OwnerDeleteEquipmentTypeServlet extends HttpServlet {
                 );
                 session.getTransaction().commit();
             } catch (RuntimeException ex) {
-                if (session.getTransaction().isActive()) {
-                    LOGGER.error("Some issues appears. Transaction rollback and revert previous state...");
-                    session.getTransaction().rollback();
-                }
-                throw ex;
+                onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setActive(true);

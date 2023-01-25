@@ -42,6 +42,7 @@ import static org.apache.commons.lang3.RandomStringUtils.*;
 
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.util.UserRole.SELLER;
+import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
 import static pl.polsl.skirentalservice.util.PageTitle.OWNER_ADD_EMPLOYER_PAGE;
 import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
@@ -168,12 +169,8 @@ public class OwnerAddEmployerServlet extends HttpServlet {
                 httpSession.setAttribute(OWNER_EMPLOYERS_PAGE_ALERT.getName(), alert);
                 res.sendRedirect("/owner/employers");
             } catch (RuntimeException ex) {
-                if (session.getTransaction().isActive()) {
-                    LOGGER.error("Some issues appears. Transaction rollback and revert previous state...");
-                    session.getTransaction().rollback();
-                }
                 if (!isEmpty(email)) commandPerformer.deleteMailbox(email);
-                throw ex;
+                onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());

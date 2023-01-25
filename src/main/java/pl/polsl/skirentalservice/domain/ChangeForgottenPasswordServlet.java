@@ -32,6 +32,7 @@ import pl.polsl.skirentalservice.exception.CredentialException.*;
 import static java.util.Objects.isNull;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.util.Utils.generateHash;
+import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
 import static pl.polsl.skirentalservice.util.SessionAlert.LOGIN_PAGE_ALERT;
 import static pl.polsl.skirentalservice.util.PageTitle.CHANGE_FORGOTTEN_PASSWORD_PAGE;
 
@@ -101,11 +102,7 @@ public class ChangeForgottenPasswordServlet extends HttpServlet {
                 httpSession.setAttribute(LOGIN_PAGE_ALERT.getName(), alert);
                 res.sendRedirect("/login");
             } catch (RuntimeException ex) {
-                if (session.getTransaction().isActive()) {
-                    LOGGER.error("Some issues appears. Transaction rollback and revert previous state...");
-                    session.getTransaction().rollback();
-                }
-                throw ex;
+                onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setDisableContent(true);

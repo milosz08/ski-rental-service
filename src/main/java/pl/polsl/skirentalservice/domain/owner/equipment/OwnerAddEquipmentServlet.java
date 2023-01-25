@@ -84,11 +84,7 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
 
                 session.getTransaction().commit();
             } catch (RuntimeException ex) {
-                if (session.getTransaction().isActive()) {
-                    LOGGER.error("Some issues appears. Transaction rollback and revert previous state...");
-                    session.getTransaction().rollback();
-                }
-                throw ex;
+                onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             if (!(ex instanceof InvalidFieldsExistsException)) {
@@ -125,11 +121,7 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
 
                 session.getTransaction().commit();
             } catch (RuntimeException ex) {
-                if (session.getTransaction().isActive()) {
-                    LOGGER.error("Some issues appears. Transaction rollback and revert previous state...");
-                    session.getTransaction().rollback();
-                }
-                throw ex;
+                onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());

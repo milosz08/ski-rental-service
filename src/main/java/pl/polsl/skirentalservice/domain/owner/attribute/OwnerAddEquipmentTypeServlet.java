@@ -85,11 +85,7 @@ public class OwnerAddEquipmentTypeServlet extends HttpServlet {
                 httpSession.setAttribute(OWNER_ADD_EQUIPMENT_PAGE_ALERT.getName(), successAlert);
                 session.getTransaction().commit();
             } catch (RuntimeException ex) {
-                if (session.getTransaction().isActive()) {
-                    LOGGER.error("Some issues appears. Transaction rollback and revert previous state...");
-                    session.getTransaction().rollback();
-                }
-                throw ex;
+                onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             failureAlert.setActive(true);

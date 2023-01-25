@@ -35,6 +35,7 @@ import static java.util.Objects.isNull;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.util.UserRole.SELLER;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
+import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
 import static pl.polsl.skirentalservice.util.SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT;
 import static pl.polsl.skirentalservice.util.PageTitle.OWNER_EDIT_EMPLOYER_PAGE;
@@ -82,11 +83,7 @@ public class OwnerEditEmployerServlet extends HttpServlet {
                 session.getTransaction().commit();
                 selfRedirect(req, res, new AddEditEmployerResDto(validator, employerDetails));
             } catch (RuntimeException ex) {
-                if (session.getTransaction().isActive()) {
-                    LOGGER.error("Some issues appears. Transaction rollback and revert previous state...");
-                    session.getTransaction().rollback();
-                }
-                throw ex;
+                onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
@@ -151,11 +148,7 @@ public class OwnerEditEmployerServlet extends HttpServlet {
                 );
                 res.sendRedirect("/owner/employers");
             } catch (RuntimeException ex) {
-                if (session.getTransaction().isActive()) {
-                    LOGGER.error("Some issues appears. Transaction rollback and revert previous state...");
-                    session.getTransaction().rollback();
-                }
-                throw ex;
+                onHibernateException(session, LOGGER, ex);
             }
         } catch (UserNotFoundException ex) {
             alert.setMessage(ex.getMessage());

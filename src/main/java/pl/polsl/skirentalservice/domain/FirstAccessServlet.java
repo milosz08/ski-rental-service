@@ -36,6 +36,7 @@ import java.io.IOException;
 import static java.util.Objects.isNull;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.util.Utils.generateHash;
+import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
 import static pl.polsl.skirentalservice.util.PageTitle.FIRST_ACCESS_PAGE;
 import static pl.polsl.skirentalservice.util.SessionAlert.SELLER_DASHBOARD_PAGE_ALERT;
 import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
@@ -98,11 +99,7 @@ public class FirstAccessServlet extends HttpServlet {
                 session.getTransaction().commit();
                 res.sendRedirect("/seller/dashboard");
             } catch (RuntimeException ex) {
-                if (session.getTransaction().isActive()) {
-                    LOGGER.error("Some issues appears. Transaction rollback and revert previous state...");
-                    session.getTransaction().rollback();
-                }
-                throw ex;
+                onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             if (isNull(ex.getMessage())) alert.setActive(false);

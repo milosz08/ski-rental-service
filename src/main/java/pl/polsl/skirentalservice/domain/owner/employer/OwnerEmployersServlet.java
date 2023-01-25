@@ -36,6 +36,7 @@ import static org.apache.commons.lang3.math.NumberUtils.toInt;
 
 import static pl.polsl.skirentalservice.util.AlertType.*;
 import static pl.polsl.skirentalservice.util.SessionAttribute.*;
+import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
 import static pl.polsl.skirentalservice.util.PageTitle.OWNER_EMPLOYERS_PAGE;
 import static pl.polsl.skirentalservice.util.Utils.getAndDestroySessionAlert;
 import static pl.polsl.skirentalservice.util.SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT;
@@ -114,11 +115,7 @@ public class OwnerEmployersServlet extends HttpServlet {
                 req.setAttribute("pagesData", pagination);
                 req.setAttribute("employersData", employersList);
             } catch (RuntimeException ex) {
-                if (session.getTransaction().isActive()) {
-                    LOGGER.error("Some issues appears. Transaction rollback and revert previous state...");
-                    session.getTransaction().rollback();
-                }
-                throw ex;
+                onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setType(ERROR);

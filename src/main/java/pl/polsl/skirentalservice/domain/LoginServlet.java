@@ -38,6 +38,7 @@ import static pl.polsl.skirentalservice.util.PageTitle.LOGIN_PAGE;
 import static pl.polsl.skirentalservice.util.Utils.invalidPassword;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 import static pl.polsl.skirentalservice.exception.CredentialException.*;
+import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
 import static pl.polsl.skirentalservice.util.SessionAlert.LOGIN_PAGE_ALERT;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -117,11 +118,7 @@ public class LoginServlet extends HttpServlet {
                 }
                 res.sendRedirect("/" + employer.getRoleEng() + "/dashboard");
             } catch (RuntimeException ex) {
-                if (session.getTransaction().isActive()) {
-                    LOGGER.error("Some issues appears. Transaction rollback and revert previous state...");
-                    session.getTransaction().rollback();
-                }
-                throw ex;
+                onHibernateException(session, LOGGER, ex);
             }
         } catch (AccountTemporaryBlockedException ex) {
             alert.setType(WARN);

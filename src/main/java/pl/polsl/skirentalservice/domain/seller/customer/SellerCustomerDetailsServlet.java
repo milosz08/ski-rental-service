@@ -29,6 +29,7 @@ import pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto;
 import java.io.IOException;
 
 import static java.util.Objects.isNull;
+import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
 import static pl.polsl.skirentalservice.util.PageTitle.OWNER_EMPLOYER_DETAILS_PAGE;
 import static pl.polsl.skirentalservice.util.SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT;
 
@@ -74,11 +75,7 @@ public class SellerCustomerDetailsServlet extends HttpServlet {
                 req.setAttribute("title", OWNER_EMPLOYER_DETAILS_PAGE.getName());
                 req.getRequestDispatcher("/WEB-INF/pages/seller/customer/seller-customer-details.jsp").forward(req, res);
             } catch (RuntimeException ex) {
-                if (session.getTransaction().isActive()) {
-                    LOGGER.error("Some issues appears. Transaction rollback and revert previous state...");
-                    session.getTransaction().rollback();
-                }
-                throw ex;
+                onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());

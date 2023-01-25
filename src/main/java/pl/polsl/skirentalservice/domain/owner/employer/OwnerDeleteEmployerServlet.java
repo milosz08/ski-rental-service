@@ -33,6 +33,7 @@ import static java.util.Objects.isNull;
 
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
+import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
 import static pl.polsl.skirentalservice.util.SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79,11 +80,7 @@ public class OwnerDeleteEmployerServlet extends HttpServlet {
                 session.getTransaction().commit();
                 LOGGER.info("Employer with id: {} was succesfuly removed from system.", userId);
             } catch (RuntimeException ex) {
-                if (session.getTransaction().isActive()) {
-                    LOGGER.error("Some issues appears. Transaction rollback and revert previous state...");
-                    session.getTransaction().rollback();
-                }
-                throw ex;
+                onHibernateException(session, LOGGER, ex);
             }
         } catch (Exception ex) {
             alert.setMessage(ex.getMessage());
