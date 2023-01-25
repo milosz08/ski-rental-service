@@ -23,17 +23,19 @@ import jakarta.servlet.annotation.WebServlet;
 
 import java.io.IOException;
 
+import pl.polsl.skirentalservice.util.Utils;
 import pl.polsl.skirentalservice.dto.attribute.*;
-import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.core.ValidatorBean;
 import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.entity.EquipmentTypeEntity;
 
-import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 
+import static pl.polsl.skirentalservice.util.Utils.*;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
+import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
 import static pl.polsl.skirentalservice.util.SessionAlert.OWNER_ADD_EQUIPMENT_PAGE_ALERT;
-import static pl.polsl.skirentalservice.util.SessionAttribute.EQUIPMENT_TYPES_MODAL_DATA;
+import static pl.polsl.skirentalservice.util.SessionAttribute.EQ_TYPES_MODAL_DATA;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -49,16 +51,11 @@ public class OwnerAddEquipmentTypeServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final AlertTupleDto failureAlert = new AlertTupleDto();
-        final AlertTupleDto successAlert = new AlertTupleDto(true);
+        final AttributeValidatorPayloadDto payload = Utils.validateEquipmentAttribute(req, validator);
+        final String loggedUser = getLoggedUserLogin(req);
         final HttpSession httpSession = req.getSession();
-
-        final AttributeModalReqDto reqDto = new AttributeModalReqDto(req);
-        final AttributeModalResDto resDto = new AttributeModalResDto(validator, reqDto, failureAlert);
-
-        resDto.setModalImmediatelyOpen(validator.someFieldsAreInvalid(reqDto));
-        if (validator.someFieldsAreInvalid(reqDto)) {
-            httpSession.setAttribute(EQUIPMENT_TYPES_MODAL_DATA.getName(), resDto);
+        if (payload.isInvalid()) {
+            httpSession.setAttribute(EQ_TYPES_MODAL_DATA.getName(), payload.getResDto());
             res.sendRedirect("/owner/add-equipment");
             return;
         }
@@ -69,31 +66,31 @@ public class OwnerAddEquipmentTypeServlet extends HttpServlet {
                 final String jpqlFindTypeAlreadyExist =
                     "SELECT COUNT(t.id) > 0 FROM EquipmentTypeEntity t WHERE LOWER(t.name) = LOWER(:name)";
                 final Boolean typeAlreadyExist = session.createQuery(jpqlFindTypeAlreadyExist, Boolean.class)
-                    .setParameter("name", reqDto.getName())
+                    .setParameter("name", payload.getReqDto().getName())
                     .getSingleResult();
                 if (typeAlreadyExist) throw new EquipmentTypeAlreadyExistException();
 
-                final EquipmentTypeEntity typeEntity = new EquipmentTypeEntity(reqDto.getName());
+                final EquipmentTypeEntity typeEntity = new EquipmentTypeEntity(payload.getReqDto().getName());
                 session.persist(typeEntity);
 
-                resDto.getName().setValue("");
-                successAlert.setType(INFO);
-                successAlert.setMessage(
-                    "Nastąpiło pomyślne dodanie nowego typu sprzętu narciarskiego: <strong>" + reqDto.getName()
-                    + "</strong>."
+                payload.getResDto().getName().setValue(EMPTY);
+                payload.getSuccessAlert().setType(INFO);
+                payload.getSuccessAlert().setMessage(
+                    "Nastąpiło pomyślne dodanie nowego typu sprzętu narciarskiego: <strong>" +
+                    payload.getReqDto().getName() + "</strong>."
                 );
-                httpSession.setAttribute(OWNER_ADD_EQUIPMENT_PAGE_ALERT.getName(), successAlert);
+                httpSession.setAttribute(OWNER_ADD_EQUIPMENT_PAGE_ALERT.getName(), payload.getSuccessAlert());
                 session.getTransaction().commit();
+                LOGGER.info("Successful added new equipment type by: {}. Type: {}", loggedUser,
+                    payload.getReqDto().getName());
             } catch (RuntimeException ex) {
                 onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
-            failureAlert.setActive(true);
-            failureAlert.setMessage(ex.getMessage());
-            resDto.setAlert(failureAlert);
-            resDto.setModalImmediatelyOpen(true);
+            onAttributeException(payload, ex);
+            LOGGER.error("Failure add new equipment type by: {}. Cause: {}", loggedUser, ex.getMessage());
         }
-        httpSession.setAttribute(EQUIPMENT_TYPES_MODAL_DATA.getName(), resDto);
+        httpSession.setAttribute(EQ_TYPES_MODAL_DATA.getName(), payload.getResDto());
         res.sendRedirect("/owner/add-equipment");
     }
 }

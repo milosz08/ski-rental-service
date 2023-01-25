@@ -25,15 +25,14 @@ import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.dto.equipment.*;
 import pl.polsl.skirentalservice.core.ValidatorBean;
 import pl.polsl.skirentalservice.core.db.HibernateBean;
-import pl.polsl.skirentalservice.dto.attribute.AttributeModalResDto;
 
 import java.util.*;
 import java.io.IOException;
 
+import static pl.polsl.skirentalservice.util.SessionAttribute.*;
 import static pl.polsl.skirentalservice.util.Utils.*;
 import static pl.polsl.skirentalservice.exception.ServletException.*;
 import static pl.polsl.skirentalservice.util.SessionAlert.OWNER_ADD_EQUIPMENT_PAGE_ALERT;
-import static pl.polsl.skirentalservice.util.SessionAttribute.EQUIPMENT_TYPES_MODAL_DATA;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -41,6 +40,7 @@ import static pl.polsl.skirentalservice.util.SessionAttribute.EQUIPMENT_TYPES_MO
 public class OwnerAddEquipmentServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerAddEquipmentServlet.class);
+    private static final String POST_REDIR_GET = "owner-add-equipment-post-redir-get";
 
     @EJB private HibernateBean database;
     @EJB private ValidatorBean validator;
@@ -50,11 +50,7 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final AlertTupleDto alert = getAndDestroySessionAlert(req, OWNER_ADD_EQUIPMENT_PAGE_ALERT);
-        final AttributeModalResDto eqTypeResDto = getAndDestroySessionModalData(req, EQUIPMENT_TYPES_MODAL_DATA);
-
-        final HttpSession httpSession = req.getSession();
-        AddEditEquipmentResDto resDto = (AddEditEquipmentResDto) httpSession.getAttribute("response-test");
-        httpSession.removeAttribute("response-test");
+        var resDto = getFromSessionAndDestroy(req, POST_REDIR_GET, AddEditEquipmentResDto.class);
         if (Objects.isNull(resDto)) resDto = new AddEditEquipmentResDto();
 
         try (final Session session = database.open()) {
@@ -95,7 +91,9 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
         req.setAttribute("alertData", alert);
         req.setAttribute("addEditEquipmentData", resDto);
         req.setAttribute("addEditText", "Dodaj");
-        req.setAttribute(EQUIPMENT_TYPES_MODAL_DATA.getName(), eqTypeResDto);
+        req.setAttribute(EQ_TYPES_MODAL_DATA.getName(), getAndDestroySessionModalData(req, EQ_TYPES_MODAL_DATA));
+        req.setAttribute(EQ_BRANDS_MODAL_DATA.getName(), getAndDestroySessionModalData(req, EQ_BRANDS_MODAL_DATA));
+        req.setAttribute(EQ_COLORS_MODAL_DATA.getName(), getAndDestroySessionModalData(req, EQ_COLORS_MODAL_DATA));
         req.getRequestDispatcher("/WEB-INF/pages/owner/equipment/owner-add-edit-equipment.jsp").forward(req, res);
     }
 
@@ -109,7 +107,7 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
         final AddEditEquipmentReqDto reqDto = new AddEditEquipmentReqDto(req);
         final AddEditEquipmentResDto resDto = new AddEditEquipmentResDto(validator, reqDto);
         if (validator.someFieldsAreInvalid(reqDto)) {
-            httpSession.setAttribute("response-test", resDto);
+            httpSession.setAttribute(POST_REDIR_GET, resDto);
             res.sendRedirect("/owner/add-equipment");
             return;
         }

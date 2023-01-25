@@ -29,10 +29,10 @@ import pl.polsl.skirentalservice.dto.attribute.AttributeModalResDto;
 
 import static java.util.Objects.isNull;
 
+import static pl.polsl.skirentalservice.util.Utils.*;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
-import static pl.polsl.skirentalservice.util.SessionAttribute.EQUIPMENT_TYPES_MODAL_DATA;
-import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
+import static pl.polsl.skirentalservice.util.SessionAttribute.EQ_TYPES_MODAL_DATA;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -48,6 +48,7 @@ public class OwnerDeleteEquipmentTypeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final String typeId = req.getParameter("id");
+        final String loggedUser = getLoggedUserLogin(req);
 
         final AlertTupleDto alert = new AlertTupleDto(true);
         final HttpSession httpSession = req.getSession();
@@ -61,14 +62,13 @@ public class OwnerDeleteEquipmentTypeServlet extends HttpServlet {
 
                 final String jqplFindNameOfDeletingType = "SELECT t.name FROM EquipmentTypeEntity t WHERE t.id = :id";
                 final String getDeletedName = session.createQuery(jqplFindNameOfDeletingType, String.class)
-                        .setParameter("id", typeId).getSingleResultOrNull();
+                    .setParameter("id", typeId).getSingleResultOrNull();
                 if (isNull(getDeletedName)) throw new EquipmentTypeNotFoundException();
 
                 // TODO: sprawdzenie przed usunięciem czy nie ma żadnych odwołań w tabeli equipments
 
                 session.createMutationQuery("DELETE EquipmentTypeEntity e WHERE e.id = :id")
                     .setParameter("id", typeId).executeUpdate();
-
                 resDto.getActiveFirstPage().setActive(false);
                 resDto.getActiveSecondPage().setActive(true);
                 alert.setType(INFO);
@@ -76,16 +76,15 @@ public class OwnerDeleteEquipmentTypeServlet extends HttpServlet {
                     "Usuwanie typu sprzętu narciarskiego: <strong>" + getDeletedName + "</strong> zakończone sukcesem."
                 );
                 session.getTransaction().commit();
+                LOGGER.info("Successful deleted equipment type by: {}. Type: {}", loggedUser, getDeletedName);
             } catch (RuntimeException ex) {
                 onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
-            alert.setActive(true);
-            alert.setMessage(ex.getMessage());
-            resDto.setAlert(alert);
-            resDto.setModalImmediatelyOpen(true);
+            onAttributeException(alert, resDto, ex);
+            LOGGER.error("Failure delete equipment type by: {}. Cause: {}", loggedUser, ex.getMessage());
         }
-        httpSession.setAttribute(EQUIPMENT_TYPES_MODAL_DATA.getName(), resDto);
+        httpSession.setAttribute(EQ_TYPES_MODAL_DATA.getName(), resDto);
         res.sendRedirect("/owner/add-equipment");
     }
 }
