@@ -25,7 +25,9 @@ public enum SessionAttribute {
     CUSTOMERS_LIST_SORTER("customers-list-sorter"),
     CUSTOMERS_LIST_FILTER("customers-list-filter"),
 
-    EQUIPMENT_TYPES_MODAL_DATA("equipmentTypeModalData"),
+    EQ_TYPES_MODAL_DATA("equipmentTypeModalData"),
+    EQ_BRANDS_MODAL_DATA("equipmentBrandsModalData"),
+    EQ_COLORS_MODAL_DATA("equipmentColorsModalData"),
 
     LOGGED_USER_DETAILS("loggedUserDetails"),
     LOGOUT_MODAL("logout-modal");

@@ -13,10 +13,9 @@
 
 package pl.polsl.skirentalservice.filter.method;
 
+import jakarta.servlet.*;
 import jakarta.servlet.http.*;
-import jakarta.servlet.FilterChain;
 import jakarta.servlet.annotation.*;
-import jakarta.servlet.ServletException;
 
 import java.io.IOException;
 
@@ -24,6 +23,8 @@ import java.io.IOException;
 
 @WebFilter(urlPatterns = {
     "/owner/add-equipment-type",
+    "/owner/add-equipment-brand",
+    "/owner/add-equipment-color",
 }, initParams = @WebInitParam(name = "mood", value = "awake"))
 public class RedirectOnGetMethodRequestFilter extends HttpFilter {
 

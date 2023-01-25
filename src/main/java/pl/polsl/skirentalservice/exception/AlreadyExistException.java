@@ -52,4 +52,22 @@ public class AlreadyExistException {
                 "bądź wybierz z listy dostępnych.");
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class EquipmentBrandAlreadyExistException extends RuntimeException {
+        public EquipmentBrandAlreadyExistException() {
+            super("Wybrana marka sprzętu narciarskiego do dodania istnieje już w systemie. Spróbuj dodać inną markę, " +
+                "bądź wybierz z listy dostępnych.");
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class EquipmentColorAlreadyExistException extends RuntimeException {
+        public EquipmentColorAlreadyExistException() {
+            super("Wybrany kolor sprzętu narciarskiego do dodania istnieje już w systemie. Spróbuj dodać inny kolor, " +
+                "bądź wybierz z listy dostępnych.");
+        }
+    }
 }

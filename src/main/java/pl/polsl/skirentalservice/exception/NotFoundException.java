@@ -45,4 +45,20 @@ public class NotFoundException {
             super("Wybrany typ sprzętu narciarskiego nie istnieje w systemie.");
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class EquipmentBrandNotFoundException extends RuntimeException {
+        public EquipmentBrandNotFoundException() {
+            super("Wybrana marka sprzętu narciarskiego nie istnieje w systemie.");
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class EquipmentColorNotFoundException extends RuntimeException {
+        public EquipmentColorNotFoundException() {
+            super("Wybrany kolor sprzętu narciarskiego nie istnieje w systemie.");
+        }
+    }
 }

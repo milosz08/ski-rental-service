@@ -57,8 +57,10 @@ function disableResize() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function tiggeredOpenModalImmediately(modalId) {
-    if (document.getElementById(modalId).dataset.equipmentTypeModalEnable === 'open') {
+function tiggeredOpenModalImmediately(modalId, attrName) {
+    const modalElement = document.getElementById(modalId);
+    if (modalElement === null) return;
+    if (modalElement.getAttribute('data-equipment-' + attrName + '-modal-enable') === 'open') {
         showModal(modalId);
     }
 }
@@ -82,7 +84,9 @@ function onLoad() {
     });
 }
 
-tiggeredOpenModalImmediately('equipmentTypeModal');
+tiggeredOpenModalImmediately('equipmentTypeModal', 'type');
+tiggeredOpenModalImmediately('equipmentBrandModal', 'brand');
+tiggeredOpenModalImmediately('equipmentColorModal', 'color');
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
