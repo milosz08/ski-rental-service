@@ -1,5 +1,5 @@
 <%@ tag description="Seller panel wrapper template" pageEncoding="UTF-8" language="java" %>
-<%@ tag trimDirectiveWhitespaces="true"%>s
+<%@ tag trimDirectiveWhitespaces="true"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 

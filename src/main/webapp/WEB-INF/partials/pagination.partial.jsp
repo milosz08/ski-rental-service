@@ -24,7 +24,6 @@
             Wyświetlanie od ${pagesData.fromRecords} do ${pagesData.toRecords} rekordów z (${pagesData.totalRecords})
         </div>
         <nav class="col-md-4 d-flex justify-content-sm-end justify-content-center align-items-center px-0 mb-2">
-
             <label for="pagesData">Strona:</label>
             <select id="pagesData" class="form-select form-select-sm fit-content mx-2" onchange="location = this.value;">
                 <c:forEach items="${pagesData.selectPages}" var="option">
@@ -68,6 +67,5 @@
                 </li>
             </ul>
         </nav>
-
     </div>
 </div>
