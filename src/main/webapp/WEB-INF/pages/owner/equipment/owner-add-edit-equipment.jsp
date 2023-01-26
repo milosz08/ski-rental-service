@@ -44,10 +44,17 @@
                                 <div class="invalid-feedback lh-sm">${addEditEquipmentData.name.message}</div>
                             </div>
                             <div class="col-xl-6 mb-2">
+                                <label for="model" class="form-label mb-1 text-secondary micro-font">Model sprzętu:</label>
+                                <input type="text" class="form-control form-control-sm ${addEditEquipmentData.model.errorStyle}"
+                                    id="model" value="${addEditEquipmentData.model.value}" placeholder="np. RC76"
+                                    name="model" maxlength="50">
+                                <div class="invalid-feedback lh-sm">${addEditEquipmentData.model.message}</div>
+                            </div>
+                            <div class="col-xl-6 mb-2">
                                 <label for="type" class="form-label mb-1 text-secondary micro-font">Typ sprzętu:</label>
                                 <div class="input-group input-group-sm has-validation">
                                     <select class="form-select form-select-sm rounded-1 ${addEditEquipmentData.types.errorStyle}"
-                                            name="type" id="type">
+                                        name="type" id="type">
                                         <c:forEach items="${addEditEquipmentData.types.selects}" var="type">
                                             <option value="${type.value}" ${type.isSelected}>${type.text}</option>
                                         </c:forEach>
@@ -63,7 +70,7 @@
                                 <label for="brand" class="form-label mb-1 text-secondary micro-font">Marka sprzętu:</label>
                                 <div class="input-group input-group-sm has-validation">
                                     <select class="form-select form-select-sm rounded-1 ${addEditEquipmentData.brands.errorStyle}"
-                                            name="brand" id="brand" >
+                                        name="brand" id="brand" >
                                         <c:forEach items="${addEditEquipmentData.brands.selects}" var="brand">
                                             <option value="${brand.value}" ${brand.isSelected}>${brand.text}</option>
                                         </c:forEach>
@@ -76,12 +83,30 @@
                                 </div>
                             </div>
                             <div class="col-xl-6 mb-2">
-                                <label for="gender" class="form-label mb-1 text-secondary micro-font">Przeznaczone dla:</label>
+                                <label for="gender" class="form-label mb-1 text-secondary micro-font">
+                                    Przeznaczone dla (płeć):
+                                </label>
                                 <select id="gender" class="form-select form-select-sm flex-grow-1" name="gender">
                                     <c:forEach items="${addEditEquipmentData.genders}" var="gender">
                                         <option value="${gender.value}" ${gender.isSelected}>${gender.text}</option>
                                     </c:forEach>
                                 </select>
+                            </div>
+                            <div class="col-xl-6 mb-2">
+                                <label for="color" class="form-label mb-1 text-secondary micro-font">Kolor dominujący:</label>
+                                <div class="input-group input-group-sm has-validation">
+                                    <select class="form-select form-select-sm rounded-1 ${addEditEquipmentData.colors.errorStyle}"
+                                        id="color" name="color">
+                                        <c:forEach items="${addEditEquipmentData.colors.selects}" var="color">
+                                            <option value="${color.value}" ${color.isSelected}>${color.text}</option>
+                                        </c:forEach>
+                                    </select>
+                                    <button type="button" data-bs-toggle="modal" data-bs-target="#equipmentColorModal"
+                                        class="btn btn-sm btn-dark ms-2 rounded-1">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </button>
+                                    <div class="invalid-feedback lh-sm">${addEditEquipmentData.colors.message}</div>
+                                </div>
                             </div>
                             <div class="col-xl-12 mb-3">
                                 <label for="description" class="form-label mb-1 text-secondary micro-font">
@@ -102,30 +127,14 @@
                             Dodatkowe atrybuty:
                         </legend>
                         <div class="row mt-0">
-                            <div class="col-lg-12 col-xl-3 mb-2">
+                            <div class="col-xl-6 mb-2">
                                 <label for="total" class="form-label mb-1 text-secondary micro-font">Ilość na stanie:</label>
                                 <input type="number" class="form-control form-control-sm ${addEditEquipmentData.total.errorStyle}"
                                     id="total" value="${addEditEquipmentData.total.value}" placeholder="np. 15" name="total"
                                     max="9999" min="1">
                                 <div class="invalid-feedback lh-sm">${addEditEquipmentData.total.message}</div>
                             </div>
-                            <div class="col-lg-12 col-xl mb-3">
-                                <label for="color" class="form-label mb-1 text-secondary micro-font">Kolor dominujący:</label>
-                                <div class="input-group input-group-sm has-validation">
-                                    <select class="form-select form-select-sm rounded-1 ${addEditEquipmentData.colors.errorStyle}"
-                                            id="color" name="color">
-                                        <c:forEach items="${addEditEquipmentData.colors.selects}" var="color">
-                                            <option value="${color.value}" ${color.isSelected}>${color.text}</option>
-                                        </c:forEach>
-                                    </select>
-                                    <button type="button" data-bs-toggle="modal" data-bs-target="#equipmentColorModal"
-                                        class="btn btn-sm btn-dark ms-2 rounded-1">
-                                        <i class="bi bi-plus-lg"></i>
-                                    </button>
-                                    <div class="invalid-feedback lh-sm">${addEditEquipmentData.colors.message}</div>
-                                </div>
-                            </div>
-                            <div class="col-lg-12 col-xl mb-3">
+                            <div class="col-xl-6 mb-3">
                                 <label for="size" class="form-label mb-1 text-secondary micro-font">
                                     Rozmiar (opcjonalny):
                                 </label>
@@ -138,45 +147,61 @@
                             </div>
                         </div>
                     </fieldset>
-
-                    <%-- TODO: ta sekcjo do dorobienia --%>
-
                     <fieldset class="border rounded-1 py-2 pb-0 px-3 pt-1 mb-3">
                         <legend class="float-none w-auto px-2 fs-6 text-secondary bg-light fw-light mb-0">
                             Cena za sprzęt:
                         </legend>
                         <div class="row mt-0">
                             <div class="col-xl-6 mb-3">
-                                <label for="price" class="form-label mb-1 text-secondary micro-font">Cena netto w jednostce:</label>
+                                <label for="nettoPricePerHour" class="form-label mb-1 text-secondary micro-font">
+                                    Cena za 1h wypożyczenia (netto):
+                                </label>
                                 <div class="input-group input-group-sm has-validation">
-                                    <input type="text" class="form-control form-control-sm ${addEditEmployerData.firstName.errorStyle}"
-                                        id="price" value="${addEditEmployerData.firstName.value}" placeholder="np. 25,00" name="price">
-                                    <div class="invalid-feedback">${addEditEmployerData.firstName.message}</div>
+                                    <input class="form-control form-control-sm ${addEditEquipmentData.nettoPricePerHour.errorStyle}"
+                                        id="nettoPricePerHour" value="${addEditEquipmentData.nettoPricePerHour.value}"
+                                        placeholder="np. 25,00" name="nettoPricePerHour" type="text" >
                                     <span class="input-group-text">zł</span>
+                                    <div class="invalid-feedback lh-sm">${addEditEquipmentData.nettoPricePerHour.message}</div>
                                 </div>
                             </div>
                             <div class="col-xl-6 mb-3">
-                                <label for="priceUnit" class="form-label mb-1 text-secondary micro-font">Jednostka rozliczeniowa:</label>
-                                <div class="hstack gap-2">
-                                    <select id="priceUnit" class="form-select form-select-sm flex-grow-1" name="color">
-                                        <option value="ski">Doba</option>
-                                        <option value="ski">Godzina</option>
-                                    </select>
-                                    <button class="btn btn-sm btn-dark">
-                                        <i class="bi bi-plus-lg"></i>
-                                    </button>
+                                <label for="nettoPriceNextEveryHour" class="form-label mb-1 text-secondary micro-font">
+                                    Cena za każdą kolejną godzinę (netto):
+                                </label>
+                                <div class="input-group input-group-sm has-validation">
+                                    <input class="form-control form-control-sm ${addEditEquipmentData.nettoPriceNextEveryHour.errorStyle}"
+                                        id="nettoPriceNextEveryHour" value="${addEditEquipmentData.nettoPriceNextEveryHour.value}"
+                                        placeholder="np. 5,00" name="nettoPriceNextEveryHour" type="text" >
+                                    <span class="input-group-text">zł</span>
+                                    <div class="invalid-feedback lh-sm">${addEditEquipmentData.nettoPriceNextEveryHour.message}</div>
                                 </div>
                             </div>
-                            <div class="col-12">
-                                <button class="btn btn-sm btn-dark mb-3 w-100">
-                                    Dodaj nową cenę netto w jednostce rozliczeniowej
-                                </button>
+                            <div class="col-xl-6 mb-3">
+                                <label for="nettoPricePerDay" class="form-label mb-1 text-secondary micro-font">
+                                    Cena za 1 dobę wypożyczenia (netto):
+                                </label>
+                                <div class="input-group input-group-sm has-validation">
+                                    <input class="form-control form-control-sm ${addEditEquipmentData.nettoPricePerDay.errorStyle}"
+                                        id="nettoPricePerDay" value="${addEditEquipmentData.nettoPricePerDay.value}"
+                                        placeholder="np. 80,00" name="nettoPricePerDay" type="text" >
+                                    <span class="input-group-text">zł</span>
+                                    <div class="invalid-feedback lh-sm">${addEditEquipmentData.nettoPricePerDay.message}</div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 mb-3">
+                                <label for="nettoTotalValue" class="form-label mb-1 text-secondary micro-font">
+                                    Wartość sprzętu (netto):
+                                </label>
+                                <div class="input-group input-group-sm has-validation">
+                                    <input class="form-control form-control-sm ${addEditEquipmentData.nettoTotalValue.errorStyle}"
+                                        id="nettoTotalValue" value="${addEditEquipmentData.nettoTotalValue.value}"
+                                        placeholder="np. 650,00" name="nettoTotalValue" type="text" >
+                                    <span class="input-group-text">zł</span>
+                                    <div class="invalid-feedback lh-sm">${addEditEquipmentData.nettoTotalValue.message}</div>
+                                </div>
                             </div>
                         </div>
                     </fieldset>
-
-                    <%-- TODO: ta sekcjo do dorobienia --%>
-
                 </div>
             </div>
         </div>
