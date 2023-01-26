@@ -27,23 +27,31 @@ import static pl.polsl.skirentalservice.util.Gender.*;
 @NoArgsConstructor
 public class AddEditEquipmentResDto {
     private FormValueInfoTupleDto name;
+    private FormValueInfoTupleDto model;
     private FormValueInfoTupleDto description;
     private FormValueInfoTupleDto total;
     private FormValueInfoTupleDto size;
+    private FormValueInfoTupleDto nettoPricePerHour;
+    private FormValueInfoTupleDto nettoPriceNextEveryHour;
+    private FormValueInfoTupleDto nettoPricePerDay;
+    private FormValueInfoTupleDto nettoTotalValue;
     private FormSelectsDto types = new FormSelectsDto();
     private FormSelectsDto brands = new FormSelectsDto();
     private FormSelectsDto colors = new FormSelectsDto();
     private List<FormSelectTupleDto> genders = getGendersWithUnisex();
 
-    // TODO: dodawnie dodatkowych pól do obsługi cen
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public AddEditEquipmentResDto(ValidatorBean validator, AddEditEquipmentReqDto reqDto) {
         this.name = validator.validateField(reqDto, "name", reqDto.getName());
+        this.model = validator.validateField(reqDto, "model", reqDto.getModel());
         this.description = validator.validateField(reqDto, "description", reqDto.getDescription());
         this.total = validator.validateField(reqDto, "total", reqDto.getTotal());
         this.size = validator.validateField(reqDto, "size", reqDto.getSize());
+        this.nettoPricePerHour = validator.validateField(reqDto, "nettoPricePerHour", reqDto.getNettoPricePerHour());
+        this.nettoPriceNextEveryHour = validator.validateField(reqDto, "nettoPriceNextEveryHour", reqDto.getNettoPriceNextEveryHour());
+        this.nettoPricePerDay = validator.validateField(reqDto, "nettoPricePerDay", reqDto.getNettoPricePerDay());
+        this.nettoTotalValue = validator.validateField(reqDto, "nettoTotalValue", reqDto.getNettoTotalValue());
         this.types = validator.validateSelectField(reqDto, "type", this.types, reqDto.getType());
         this.brands = validator.validateSelectField(reqDto, "brand", this.brands, reqDto.getBrand());
         this.colors = validator.validateSelectField(reqDto, "color", this.colors, reqDto.getColor());
@@ -80,5 +88,22 @@ public class AddEditEquipmentResDto {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // TODO: generacja metody toString()
+    @Override
+    public String toString() {
+        return "{" +
+            "name=" + name +
+            ", model=" + model +
+            ", description=" + description +
+            ", total=" + total +
+            ", size=" + size +
+            ", nettoPricePerHour=" + nettoPricePerHour +
+            ", nettoPriceNextEveryHour=" + nettoPriceNextEveryHour +
+            ", nettoPricePerDay=" + nettoPricePerDay +
+            ", nettoTotalValue=" + nettoTotalValue +
+            ", types=" + types +
+            ", brands=" + brands +
+            ", colors=" + colors +
+            ", genders=" + genders +
+            '}';
+    }
 }

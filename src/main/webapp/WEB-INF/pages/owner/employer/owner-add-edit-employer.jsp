@@ -37,91 +37,111 @@
     </c:if>
     <form action="" class="container-fluid px-0" method="post" novalidate>
         <div class="row">
-            <div class="col-lg-4 mb-3">
-                <label for="firstName" class="form-label mb-1 text-secondary">Imię pracownika:</label>
-                <input type="text" class="form-control form-control-sm ${addEditEmployerData.firstName.errorStyle}"
-                    id="firstName" value="${addEditEmployerData.firstName.value}" placeholder="np. Jan" name="firstName"
-                    maxlength="30">
-                <div class="invalid-feedback">${addEditEmployerData.firstName.message}</div>
+            <div class="col-md-6">
+                <fieldset class="border rounded-1 py-2 pb-0 px-3 pt-1 mb-3">
+                    <legend class="float-none w-auto px-2 fs-6 text-secondary bg-light fw-light mb-0">
+                        Podstawowe dane pracownika:
+                    </legend>
+                    <div class="row mt-0">
+                        <div class="col-xl-6 mb-3">
+                            <label for="firstName" class="form-label mb-1 text-secondary micro-font">Imię pracownika:</label>
+                            <input type="text" class="form-control form-control-sm ${addEditEmployerData.firstName.errorStyle}"
+                                id="firstName" value="${addEditEmployerData.firstName.value}" placeholder="np. Jan" name="firstName"
+                                maxlength="30">
+                            <div class="invalid-feedback lh-sm">${addEditEmployerData.firstName.message}</div>
+                        </div>
+                        <div class="col-xl-6 mb-3">
+                            <label for="lastName" class="form-label mb-1 text-secondary micro-font">Nazwisko pracownika:</label>
+                            <input type="text" class="form-control form-control-sm ${addEditEmployerData.lastName.errorStyle}"
+                                id="lastName" value="${addEditEmployerData.lastName.value}" placeholder="np. Kowalski" name="lastName"
+                                maxlength="30">
+                            <div class="invalid-feedback lh-sm">${addEditEmployerData.lastName.message}</div>
+                        </div>
+                        <div class="col-xl-6 mb-3">
+                            <label for="pesel" class="form-label mb-1 text-secondary micro-font">Nr PESEL:</label>
+                            <input type="text" class="form-control form-control-sm ${addEditEmployerData.pesel.errorStyle}"
+                                id="pesel" value="${addEditEmployerData.pesel.value}" placeholder="np. 65052859767" name="pesel"
+                                maxlength="11">
+                            <div class="invalid-feedback lh-sm">${addEditEmployerData.pesel.message}</div>
+                        </div>
+                        <div class="col-xl-6 mb-3">
+                            <label for="phoneNumber" class="form-label mb-1 text-secondary micro-font">Nr telefonu pracownika:</label>
+                            <div class="input-group input-group-sm has-validation">
+                                <span class="input-group-text">+48</span>
+                                <input type="tel" class="form-control form-control-sm ${addEditEmployerData.phoneNumber.errorStyle}"
+                                    id="phoneNumber" name="phoneNumber" placeholder="np. 123 456 789"
+                                    value="${addEditEmployerData.phoneNumber.value}">
+                                <div class="invalid-feedback lh-sm">${addEditEmployerData.phoneNumber.message}</div>
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-xl-2 mb-3">
+                            <label for="bornDate" class="form-label mb-1 text-secondary micro-font">Data urodzenia:</label>
+                            <input type="date" class="form-control form-control-sm ${addEditEmployerData.bornDate.errorStyle}"
+                                id="bornDate" value="${addEditEmployerData.bornDate.value}" name="bornDate">
+                            <div class="invalid-feedback lh-sm">${addEditEmployerData.bornDate.message}</div>
+                        </div>
+                        <div class="col-xl-6 col-xl-2 mb-3">
+                            <label for="hiredDate" class="form-label mb-1 text-secondary micro-font">Data zatrudnienia:</label>
+                            <input type="date" class="form-control form-control-sm ${addEditEmployerData.hiredDate.errorStyle}"
+                                id="hiredDate" value="${addEditEmployerData.hiredDate.value}" name="hiredDate">
+                            <div class="invalid-feedback lh-sm">${addEditEmployerData.hiredDate.message}</div>
+                        </div>
+                    </div>
+                </fieldset>
             </div>
-            <div class="col-lg-4 mb-3">
-                <label for="lastName" class="form-label mb-1 text-secondary">Nazwisko pracownika:</label>
-                <input type="text" class="form-control form-control-sm ${addEditEmployerData.lastName.errorStyle}"
-                    id="lastName" value="${addEditEmployerData.lastName.value}" placeholder="np. Kowalski" name="lastName"
-                    maxlength="30">
-                <div class="invalid-feedback">${addEditEmployerData.lastName.message}</div>
-            </div>
-            <div class="col-lg-4 mb-3">
-                <label for="pesel" class="form-label mb-1 text-secondary">Nr PESEL:</label>
-                <input type="text" class="form-control form-control-sm ${addEditEmployerData.pesel.errorStyle}"
-                    id="pesel" value="${addEditEmployerData.pesel.value}" placeholder="np. 65052859767" name="pesel"
-                    maxlength="11">
-                <div class="invalid-feedback">${addEditEmployerData.pesel.message}</div>
-            </div>
-            <div class="col-lg-4 mb-3">
-                <label for="phoneNumber" class="form-label mb-1 text-secondary">Nr telefonu pracownika:</label>
-                <div class="input-group input-group-sm has-validation">
-                    <span class="input-group-text">+48</span>
-                    <input type="tel" class="form-control form-control-sm ${addEditEmployerData.phoneNumber.errorStyle}"
-                        id="phoneNumber" name="phoneNumber" placeholder="np. 123 456 789"
-                        value="${addEditEmployerData.phoneNumber.value}">
-                    <div class="invalid-feedback">${addEditEmployerData.phoneNumber.message}</div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-xl-2 mb-3">
-                <label for="bornDate" class="form-label mb-1 text-secondary">Data urodzenia:</label>
-                <input type="date" class="form-control form-control-sm ${addEditEmployerData.bornDate.errorStyle}"
-                    id="bornDate" value="${addEditEmployerData.bornDate.value}" name="bornDate">
-                <div class="invalid-feedback">${addEditEmployerData.bornDate.message}</div>
-            </div>
-            <div class="col-lg-4 col-xl-2 mb-3">
-                <label for="hiredDate" class="form-label mb-1 text-secondary">Data zatrudnienia:</label>
-                <input type="date" class="form-control form-control-sm ${addEditEmployerData.hiredDate.errorStyle}"
-                    id="hiredDate" value="${addEditEmployerData.hiredDate.value}" name="hiredDate">
-                <div class="invalid-feedback">${addEditEmployerData.hiredDate.message}</div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label for="street" class="form-label mb-1 text-secondary">Ulica zamieszkania:</label>
-                <input type="text" class="form-control form-control-sm ${addEditEmployerData.street.errorStyle}"
-                    id="street" value="${addEditEmployerData.street.value}" name="street" placeholder="np. Długa"
-                    maxlength="50">
-                <div class="invalid-feedback">${addEditEmployerData.street.message}</div>
-            </div>
-            <div class="col-lg-4 col-xl-2 mb-3">
-                <label for="buildingNr" class="form-label mb-1 text-secondary">Nr budynku:</label>
-                <input type="text" class="form-control form-control-sm ${addEditEmployerData.buildingNr.errorStyle}"
-                    id="buildingNr" value="${addEditEmployerData.buildingNr.value}" name="buildingNr" placeholder="np. 43c"
-                    maxlength="5">
-                <div class="invalid-feedback">${addEditEmployerData.buildingNr.message}</div>
-            </div>
-            <div class="col-lg-4 col-xl-2 mb-3">
-                <label for="apartmentNr" class="form-label mb-1 text-secondary">Nr mieszkania (opcjonalnie):</label>
-                <input type="text" class="form-control form-control-sm ${addEditEmployerData.apartmentNr.errorStyle}"
-                    id="apartmentNr" value="${addEditEmployerData.apartmentNr.value}" name="apartmentNr" placeholder="np. 12"
-                    maxlength="5">
-                <div class="invalid-feedback">${addEditEmployerData.apartmentNr.message}</div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label for="city" class="form-label mb-1 text-secondary">Miasto zamieszkania:</label>
-                <input type="text" class="form-control form-control-sm ${addEditEmployerData.city.errorStyle}"
-                    id="city" value="${addEditEmployerData.city.value}" name="city" placeholder="np. Gliwice"
-                    maxlength="70">
-                <div class="invalid-feedback">${addEditEmployerData.city.message}</div>
-            </div>
-            <div class="col-lg-4 col-xl-2 mb-3">
-                <label for="postCode" class="form-label mb-1 text-secondary">Kod pocztowy:</label>
-                <input type="text" class="form-control form-control-sm ${addEditEmployerData.postalCode.errorStyle}"
-                    id="postCode" value="${addEditEmployerData.postalCode.value}" name="postalCode" placeholder="np. 43-100"
-                    maxlength="70">
-                <div class="invalid-feedback">${addEditEmployerData.postalCode.message}</div>
-            </div>
-            <div class="col-lg-4 col-xl-2 mb-3">
-                <label for="gender" class="form-label mb-1 text-secondary">Płeć pracownika:</label>
-                <select id="gender" class="form-select form-select-sm" name="gender">
-                    <c:forEach items="${addEditEmployerData.genders}" var="gender">
-                        <option ${gender.isSelected} value="${gender.value}">${gender.text}</option>
-                    </c:forEach>
-                </select>
+            <div class="col-md-6">
+                <fieldset class="border rounded-1 py-2 pb-0 px-3 pt-1 mb-3">
+                    <legend class="float-none w-auto px-2 fs-6 text-secondary bg-light fw-light mb-0">
+                        Dodatkowe dane pracownika:
+                    </legend>
+                    <div class="row mt-0">
+                        <div class="col-xl-6 mb-3">
+                            <label for="street" class="form-label mb-1 text-secondary micro-font">Ulica zamieszkania:</label>
+                            <input type="text" class="form-control form-control-sm ${addEditEmployerData.street.errorStyle}"
+                                id="street" value="${addEditEmployerData.street.value}" name="street" placeholder="np. Długa"
+                                maxlength="50">
+                            <div class="invalid-feedback lh-sm">${addEditEmployerData.street.message}</div>
+                        </div>
+                        <div class="col-xl-6 mb-3">
+                            <label for="buildingNr" class="form-label mb-1 text-secondary micro-font">Nr budynku:</label>
+                            <input type="text" class="form-control form-control-sm ${addEditEmployerData.buildingNr.errorStyle}"
+                                id="buildingNr" value="${addEditEmployerData.buildingNr.value}" name="buildingNr" placeholder="np. 43c"
+                                maxlength="5">
+                            <div class="invalid-feedback lh-sm">${addEditEmployerData.buildingNr.message}</div>
+                        </div>
+                        <div class="col-xl-6 mb-3">
+                            <label for="apartmentNr" class="form-label mb-1 text-secondary micro-font">
+                                Nr mieszkania (opcjonalnie):
+                            </label>
+                            <input type="text" class="form-control form-control-sm ${addEditEmployerData.apartmentNr.errorStyle}"
+                                id="apartmentNr" value="${addEditEmployerData.apartmentNr.value}" name="apartmentNr" placeholder="np. 12"
+                                maxlength="5">
+                            <div class="invalid-feedback lh-sm">${addEditEmployerData.apartmentNr.message}</div>
+                        </div>
+                        <div class="col-xl-6 mb-3">
+                            <label for="city" class="form-label mb-1 text-secondary micro-font">Miasto zamieszkania:</label>
+                            <input type="text" class="form-control form-control-sm ${addEditEmployerData.city.errorStyle}"
+                                id="city" value="${addEditEmployerData.city.value}" name="city" placeholder="np. Gliwice"
+                                maxlength="70">
+                            <div class="invalid-feedback lh-sm">${addEditEmployerData.city.message}</div>
+                        </div>
+                        <div class="col-xl-6 mb-3">
+                            <label for="postCode" class="form-label mb-1 text-secondary micro-font">Kod pocztowy:</label>
+                            <input type="text" class="form-control form-control-sm ${addEditEmployerData.postalCode.errorStyle}"
+                                id="postCode" value="${addEditEmployerData.postalCode.value}" name="postalCode" placeholder="np. 43-100"
+                                maxlength="70">
+                            <div class="invalid-feedback lh-sm">${addEditEmployerData.postalCode.message}</div>
+                        </div>
+                        <div class="col-xl-6 mb-3">
+                            <label for="gender" class="form-label mb-1 text-secondary micro-font">Płeć pracownika:</label>
+                            <select id="gender" class="form-select form-select-sm" name="gender">
+                                <c:forEach items="${addEditEmployerData.genders}" var="gender">
+                                    <option ${gender.isSelected} value="${gender.value}">${gender.text}</option>
+                                </c:forEach>
+                            </select>
+                        </div>
+                    </div>
+                </fieldset>
             </div>
         </div>
         <hr/>
