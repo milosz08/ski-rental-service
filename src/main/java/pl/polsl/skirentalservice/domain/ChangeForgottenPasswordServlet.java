@@ -30,10 +30,10 @@ import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.exception.CredentialException.*;
 
 import static java.util.Objects.isNull;
+
+import static pl.polsl.skirentalservice.util.Utils.*;
+import static pl.polsl.skirentalservice.util.SessionAlert.*;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
-import static pl.polsl.skirentalservice.util.Utils.generateHash;
-import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
-import static pl.polsl.skirentalservice.util.SessionAlert.LOGIN_PAGE_ALERT;
 import static pl.polsl.skirentalservice.util.PageTitle.CHANGE_FORGOTTEN_PASSWORD_PAGE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,43 +50,75 @@ public class ChangeForgottenPasswordServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final AlertTupleDto alert = new AlertTupleDto();
-        ChangePasswordEmployerDetailsDto dto = null;
+        AlertTupleDto alert = getAndDestroySessionAlert(req, CHANGE_FORGOTTEN_PASSWORD_PAGE_ALERT);
+        if (isNull(alert)) alert = new AlertTupleDto();
+        final String token = req.getParameter("token");
+
         try (final Session session = database.open()) {
-            dto = validateTokenParameter(session, req);
-        } catch (Exception ex) {
+            try {
+                session.beginTransaction();
+
+                final String jpqlFindToken =
+                    "SELECT new pl.polsl.skirentalservice.dto.change_password.ChangePasswordEmployerDetailsDto(" +
+                        "e.id, t.id, CONCAT(d.firstName, ' ', d.lastName)," +
+                        "CASE WHEN e.imageUrl IS NULL THEN 'static/images/default-profile-image.svg' ELSE e.imageUrl END" +
+                        ") FROM OtaTokenEntity t " +
+                        "INNER JOIN t.employer e " +
+                        "INNER JOIN e.userDetails d " +
+                        "WHERE t.otaToken = :token AND t.isUsed = false AND t.expiredDate >= NOW()";
+                final var details = session.createQuery(jpqlFindToken, ChangePasswordEmployerDetailsDto.class)
+                    .setParameter("token", token)
+                    .getSingleResultOrNull();
+                if (isNull(details)) throw new OtaTokenNotFoundException(req, token, LOGGER);
+
+                req.setAttribute("employerData", details);
+                session.getTransaction().commit();
+            } catch (RuntimeException ex) {
+                onHibernateException(session, LOGGER, ex);
+            }
+        } catch (RuntimeException ex) {
             alert.setActive(true);
-            alert.setMessage(ex.getMessage());
             alert.setDisableContent(true);
+            alert.setMessage(ex.getMessage());
         }
-        selfRedirect(req, res, alert, dto);
+        req.setAttribute("changePassData", getFromSessionAndDestroy(req, getClass().getName(),
+            ChangeForgottenPasswordResDto.class));
+        req.setAttribute("alertData", alert);
+        req.setAttribute("title", CHANGE_FORGOTTEN_PASSWORD_PAGE.getName());
+        req.getRequestDispatcher("/WEB-INF/pages/change-forgotten-password.jsp").forward(req, res);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        final String token = req.getParameter("token");
         final AlertTupleDto alert = new AlertTupleDto(true);
         final HttpSession httpSession = req.getSession();
 
         final ChangeForgottenPasswordReqDto reqDto = new ChangeForgottenPasswordReqDto(req);
         final ChangeForgottenPasswordResDto resDto = new ChangeForgottenPasswordResDto(validator, reqDto);
-        final boolean isPasswordsDiff = !reqDto.getPassword().equals(reqDto.getPasswordRepeat());
-        if (validator.someFieldsAreInvalid(reqDto) || isPasswordsDiff) {
-            AlertTupleDto alertTupleDto = null;
-            if (isPasswordsDiff) {
-                alert.setMessage("Wartości wprowadzone w obu polach różnią się między sobą.");
-                alertTupleDto = alert;
-            }
-            req.setAttribute("changePassData", resDto);
-            selfRedirect(req, res, alertTupleDto, null);
+        if (validator.someFieldsAreInvalid(reqDto)) {
+            httpSession.setAttribute(getClass().getName(), resDto);
+            res.sendRedirect("/change-forgotten-password?token=" + token);
             return;
         }
         try (final Session session = database.open()) {
+            if (!reqDto.getPassword().equals(reqDto.getPasswordRepeat())) {
+                throw new PasswordMismatchException("hasło", "powtórz hasło");
+            }
             try {
                 session.beginTransaction();
 
-                final var details = validateTokenParameter(session, req);
+                final String jpqlFindToken =
+                    "SELECT new pl.polsl.skirentalservice.dto.change_password.TokenDetailsDto(e.id, t.id) " +
+                    "FROM OtaTokenEntity t INNER JOIN t.employer e " +
+                    "WHERE t.otaToken = :token AND t.isUsed = false AND t.expiredDate >= NOW()";
+                final var details = session.createQuery(jpqlFindToken, TokenDetailsDto.class)
+                    .setParameter("token", token)
+                    .getSingleResultOrNull();
+                if (isNull(details)) throw new OtaTokenNotFoundException(req, token, LOGGER);
+
                 session.createMutationQuery("UPDATE EmployerEntity e SET e.password = :password WHERE e.id = :employerId")
                     .setParameter("password", generateHash(reqDto.getPassword()))
                     .setParameter("employerId", details.getId())
@@ -100,44 +132,17 @@ public class ChangeForgottenPasswordServlet extends HttpServlet {
                 alert.setType(INFO);
                 LOGGER.info("Successful change password for employer account. Details: {}", details);
                 httpSession.setAttribute(LOGIN_PAGE_ALERT.getName(), alert);
+                httpSession.removeAttribute(getClass().getName());
                 res.sendRedirect("/login");
             } catch (RuntimeException ex) {
                 onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
-            alert.setDisableContent(true);
+            if (!(ex instanceof PasswordMismatchException)) alert.setDisableContent(true);
             alert.setMessage(ex.getMessage());
-            req.setAttribute("title", CHANGE_FORGOTTEN_PASSWORD_PAGE.getName());
-            req.getRequestDispatcher("/WEB-INF/pages/change-forgotten-password.jsp").forward(req, res);
+            httpSession.setAttribute(getClass().getName(), resDto);
+            httpSession.setAttribute(CHANGE_FORGOTTEN_PASSWORD_PAGE_ALERT.getName(), alert);
+            res.sendRedirect("/change-forgotten-password?token=" + token);
         }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private void selfRedirect(HttpServletRequest req, HttpServletResponse res, AlertTupleDto alert,
-                              ChangePasswordEmployerDetailsDto employer) throws ServletException, IOException {
-        req.setAttribute("alertData", alert);
-        req.setAttribute("employerData", employer);
-        req.setAttribute("title", CHANGE_FORGOTTEN_PASSWORD_PAGE.getName());
-        req.getRequestDispatcher("/WEB-INF/pages/change-forgotten-password.jsp").forward(req, res);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private ChangePasswordEmployerDetailsDto validateTokenParameter(Session session, HttpServletRequest req) {
-        final String token = req.getParameter("token");
-        final String jpqlFindToken =
-            "SELECT new pl.polsl.skirentalservice.dto.change_password.ChangePasswordEmployerDetailsDto(" +
-                "e.id, t.id, CONCAT(d.firstName, ' ', d.lastName)," +
-                "IFNULL(e.imageUrl, 'static/images/default-profile-image.svg')" +
-            ") FROM OtaTokenEntity t " +
-            "INNER JOIN t.employer e " +
-            "INNER JOIN e.userDetails d " +
-            "WHERE t.otaToken = :token AND t.isUsed = false AND t.expiredDate >= NOW()";
-        final var details = session.createQuery(jpqlFindToken, ChangePasswordEmployerDetailsDto.class)
-                .setParameter("token", token)
-                .getSingleResultOrNull();
-        if (isNull(details)) throw new OtaTokenNotFoundException(req, token, LOGGER);
-        return details;
     }
 }

@@ -15,6 +15,7 @@ package pl.polsl.skirentalservice.domain;
 
 import org.slf4j.*;
 import org.hibernate.*;
+import at.favre.lib.crypto.bcrypt.BCrypt;
 
 import jakarta.ejb.EJB;
 import jakarta.servlet.http.*;
@@ -32,13 +33,11 @@ import pl.polsl.skirentalservice.dto.logout.LogoutModalDto;
 
 import static java.util.Objects.isNull;
 
-import static pl.polsl.skirentalservice.util.AlertType.WARN;
+import static pl.polsl.skirentalservice.util.Utils.*;
 import static pl.polsl.skirentalservice.util.SessionAttribute.*;
 import static pl.polsl.skirentalservice.util.PageTitle.LOGIN_PAGE;
-import static pl.polsl.skirentalservice.util.Utils.invalidPassword;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 import static pl.polsl.skirentalservice.exception.CredentialException.*;
-import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
 import static pl.polsl.skirentalservice.util.SessionAlert.LOGIN_PAGE_ALERT;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -55,11 +54,10 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final HttpSession httpSession = req.getSession();
-        boolean modalVisible = !isNull(httpSession.getAttribute(LOGOUT_MODAL.name()));
-        if (modalVisible) httpSession.removeAttribute(LOGOUT_MODAL.name());
-        req.setAttribute("logoutModal", new LogoutModalDto(modalVisible));
-        req.setAttribute("alertData", Utils.getAndDestroySessionAlert(req, LOGIN_PAGE_ALERT));
+        final LogoutModalDto logoutModal = getFromSessionAndDestroy(req, LOGOUT_MODAL.getName(), LogoutModalDto.class);
+        req.setAttribute("logoutModal", logoutModal);
+        req.setAttribute("alertData", getAndDestroySessionAlert(req, LOGIN_PAGE_ALERT));
+        req.setAttribute("loginData", getFromSessionAndDestroy(req, getClass().getName(), LoginFormResDto.class));
         req.setAttribute("title", LOGIN_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(req, res);
     }
@@ -74,7 +72,8 @@ public class LoginServlet extends HttpServlet {
         final LoginFormReqDto reqDto = new LoginFormReqDto(req);
         final LoginFormResDto resDto = new LoginFormResDto(validator, reqDto);
         if (validator.someFieldsAreInvalid(reqDto)) {
-            selfRedirect(req, res, resDto);
+            httpSession.setAttribute(getClass().getName(), resDto);
+            res.sendRedirect("/login");
             return;
         }
         try (final Session session = database.open()) {
@@ -82,17 +81,14 @@ public class LoginServlet extends HttpServlet {
                 session.beginTransaction();
 
                 final String jpqlFindEmployer =
-                    "SELECT new pl.polsl.skirentalservice.dto.login.PrependLoginDto(e.password, e.isBlocked) " +
-                    "FROM EmployerEntity e " +
-                    "INNER JOIN e.userDetails d " +
+                    "SELECT e.password FROM EmployerEntity e INNER JOIN e.userDetails d " +
                     "WHERE e.login = :loginOrEmail OR d.emailAddress = :loginOrEmail";
-                final PrependLoginDto prependLogin = session.createQuery(jpqlFindEmployer, PrependLoginDto.class)
+                final String password = session.createQuery(jpqlFindEmployer, String.class)
                     .setParameter("loginOrEmail", reqDto.getLoginOrEmail())
                     .getSingleResultOrNull();
 
-                if (isNull(prependLogin)) throw new UserNotFoundException(reqDto, LOGGER);
-                if (prependLogin.getIsBlocked()) throw new AccountTemporaryBlockedException();
-                if (invalidPassword(reqDto.getPassword(), prependLogin.getPassword())) {
+                if (isNull(password)) throw new UserNotFoundException(reqDto, LOGGER);
+                if (!(BCrypt.verifyer().verify(reqDto.getPassword().toCharArray(), password).verified)) {
                     throw new InvalidCredentialsException(reqDto, LOGGER);
                 }
 
@@ -111,6 +107,7 @@ public class LoginServlet extends HttpServlet {
 
                 session.getTransaction().commit();
                 httpSession.setAttribute(LOGGED_USER_DETAILS.getName(), employer);
+                httpSession.removeAttribute(getClass().getName());
                 LOGGER.info("Successful logged on {} account. Account data: {}", employer.getRoleEng(), employer);
                 if (employer.getIsFirstAccess() && employer.getRoleAlias().equals(UserRole.SELLER.getAlias())) {
                     res.sendRedirect("/first-access");
@@ -120,24 +117,11 @@ public class LoginServlet extends HttpServlet {
             } catch (RuntimeException ex) {
                 onHibernateException(session, LOGGER, ex);
             }
-        } catch (AccountTemporaryBlockedException ex) {
-            alert.setType(WARN);
-            alert.setMessage(ex.getMessage());
-            req.setAttribute("alertData", alert);
-            selfRedirect(req, res, resDto);
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
-            req.setAttribute("alertData", alert);
-            selfRedirect(req, res, resDto);
+            httpSession.setAttribute(getClass().getName(), resDto);
+            httpSession.setAttribute(LOGIN_PAGE_ALERT.getName(), alert);
+            res.sendRedirect("/login");
         }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private void selfRedirect(HttpServletRequest req, HttpServletResponse res, LoginFormResDto resDto)
-        throws ServletException, IOException {
-        req.setAttribute("loginData", resDto);
-        req.setAttribute("title", LOGIN_PAGE.getName());
-        req.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(req, res);
     }
 }

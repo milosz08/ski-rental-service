@@ -26,8 +26,8 @@ import java.text.*;
 import java.io.IOException;
 
 import pl.polsl.skirentalservice.dto.*;
-import pl.polsl.skirentalservice.entity.*;
 import pl.polsl.skirentalservice.core.*;
+import pl.polsl.skirentalservice.entity.*;
 import pl.polsl.skirentalservice.core.mail.*;
 import pl.polsl.skirentalservice.dto.change_password.*;
 import pl.polsl.skirentalservice.core.db.HibernateBean;
@@ -35,10 +35,11 @@ import pl.polsl.skirentalservice.core.db.HibernateBean;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 
+import static pl.polsl.skirentalservice.util.Utils.*;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
-import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
 import static pl.polsl.skirentalservice.util.PageTitle.FORGOT_PASSWORD_REQUEST_PAGE;
+import static pl.polsl.skirentalservice.util.SessionAlert.FORGOT_PASSWORD_PAGE_ALERT;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -56,20 +57,25 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        selfRedirect(req, res, null);
+        req.setAttribute("alertData", getAndDestroySessionAlert(req, FORGOT_PASSWORD_PAGE_ALERT));
+        req.setAttribute("resetPassData", getFromSessionAndDestroy(req, getClass().getName(),
+            RequestToChangePasswordResDto.class));
+        req.setAttribute("title", FORGOT_PASSWORD_REQUEST_PAGE.getName());
+        req.getRequestDispatcher("/WEB-INF/pages/forgot-password-request.jsp").forward(req, res);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        final HttpSession httpSession = req.getSession();
         final RequestToChangePasswordReqDto reqDto = new RequestToChangePasswordReqDto(req);
         final RequestToChangePasswordResDto resDto = new RequestToChangePasswordResDto(validator, reqDto);
         if (validator.someFieldsAreInvalid(reqDto)) {
-            selfRedirect(req, res, resDto);
+            httpSession.setAttribute(getClass().getName(), resDto);
+            res.sendRedirect("/forgot-password-request");
             return;
         }
-
         final AlertTupleDto alert = new AlertTupleDto(true);
         try (final Session session = database.open()) {
             try {
@@ -120,19 +126,10 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
                 onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
-            alert.setActive(true);
             alert.setMessage(ex.getMessage());
+            httpSession.setAttribute(getClass().getName(), resDto);
         }
-        req.setAttribute("alertData", alert);
-        selfRedirect(req, res, resDto);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private void selfRedirect(HttpServletRequest req, HttpServletResponse res, RequestToChangePasswordResDto resDto)
-        throws ServletException, IOException {
-        req.setAttribute("resetPassData", resDto);
-        req.setAttribute("title", FORGOT_PASSWORD_REQUEST_PAGE.getName());
-        req.getRequestDispatcher("/WEB-INF/pages/forgot-password-request.jsp").forward(req, res);
+        httpSession.setAttribute(FORGOT_PASSWORD_PAGE_ALERT.getName(), alert);
+        res.sendRedirect("/forgot-password-request");
     }
 }
