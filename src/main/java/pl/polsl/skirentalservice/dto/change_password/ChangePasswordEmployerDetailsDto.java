@@ -18,6 +18,7 @@ import lombok.*;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class ChangePasswordEmployerDetailsDto {
     private Long id;
@@ -31,8 +32,8 @@ public class ChangePasswordEmployerDetailsDto {
     public String toString() {
         return '{' +
             "id=" + id +
-            ", fullName='" + fullName + '\'' +
-            ", imageUrl='" + imageUrl + '\'' +
+            ", fullName='" + fullName +
+            ", imageUrl='" + imageUrl +
             '}';
     }
 }

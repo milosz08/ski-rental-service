@@ -4,7 +4,6 @@
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
 <jsp:useBean id="addEditText" class="java.lang.String" scope="request"/>
-<jsp:useBean id="alertData" class="pl.polsl.skirentalservice.dto.AlertTupleDto" scope="request"/>
 <jsp:useBean id="addEditEquipmentData" class="pl.polsl.skirentalservice.dto.equipment.AddEditEquipmentResDto" scope="request"/>
 
 <p:generic-owner.wrapper>
@@ -21,12 +20,7 @@
         </ol>
     </nav>
     <hr/>
-    <c:if test="${alertData.active}">
-        <div class="alert ${alertData.type.cssClass} alert-dismissible mb-3 fade show lh-sm" role="alert">
-                ${alertData.message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    </c:if>
+    <jsp:include page="/WEB-INF/partials/dynamic-alert.partial.jsp"/>
     <form action="" method="post">
         <div class="container-fluid px-0">
             <div class="row">
@@ -217,7 +211,7 @@
     <jsp:include page="/WEB-INF/partials/reject-changes.partial.jsp">
         <jsp:param name="redirectPath" value="/owner/equipments"/>
     </jsp:include>
-    <jsp:include page="/WEB-INF/partials/owner-equipment/type-modal.partial.jsp"/>
-    <jsp:include page="/WEB-INF/partials/owner-equipment/brand-modal.partial.jsp"/>
-    <jsp:include page="/WEB-INF/partials/owner-equipment/color-modal.partial.jsp"/>
+    <jsp:include page="/WEB-INF/partials/owner/type-modal.partial.jsp"/>
+    <jsp:include page="/WEB-INF/partials/owner/brand-modal.partial.jsp"/>
+    <jsp:include page="/WEB-INF/partials/owner/color-modal.partial.jsp"/>
 </p:generic-owner.wrapper>

@@ -4,12 +4,11 @@
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
 <jsp:useBean id="loginData" class="pl.polsl.skirentalservice.dto.login.LoginFormResDto" scope="request"/>
-<jsp:useBean id="alertData" class="pl.polsl.skirentalservice.dto.AlertTupleDto" scope="request"/>
 <jsp:useBean id="logoutModal" class="pl.polsl.skirentalservice.dto.logout.LogoutModalDto" scope="request"/>
 
 <p:generic-page.wrapper>
     <c:if test="${logoutModal.visible}">
-        <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="false">
+        <div class="modal fade" id="logoutModal" tabindex="-1" aria-hidden="false">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-body">
@@ -25,12 +24,7 @@
     </c:if>
     <main class="d-flex justify-content-center align-items-center flex-fill my-3">
         <div class="container-sm mx-2 px-0 media-small-size-box">
-            <c:if test="${alertData.active}">
-                <div class="alert ${alertData.type.cssClass} alert-dismissible mb-3 fade show lh-sm" role="alert">
-                    ${alertData.message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            </c:if>
+            <jsp:include page="/WEB-INF/partials/dynamic-alert.partial.jsp"/>
             <form action="" method="post" class="card p-4" novalidate>
                 <h1 class="fs-4 mb-2 fw-normal text-secondary text-center">Logowanie do systemu</h1>
                 <hr class="mb-4">

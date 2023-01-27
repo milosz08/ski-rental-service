@@ -29,18 +29,18 @@ import pl.polsl.skirentalservice.core.ValidatorBean;
 import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.exception.DateException;
 import pl.polsl.skirentalservice.core.mail.MailSocketBean;
-import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 
 import java.io.IOException;
 import java.time.LocalDate;
 
+import static java.util.Objects.isNull;
+
+import static pl.polsl.skirentalservice.util.Utils.*;
+import static pl.polsl.skirentalservice.util.SessionAlert.*;
 import static pl.polsl.skirentalservice.util.UserRole.USER;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
-import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
 import static pl.polsl.skirentalservice.util.PageTitle.SELLER_ADD_CUSTOMER_PAGE;
-import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
-import static pl.polsl.skirentalservice.util.SessionAlert.SELLER_CUSTOMERS_PAGE_ALERT;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -59,22 +59,32 @@ public class SellerAddCustomerServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        selfRedirect(req, res);
+        final AlertTupleDto alert = getAndDestroySessionAlert(req, SELLER_ADD_CUSTOMER_PAGE_ALERT);
+        var resDto = getFromSessionAndDestroy(req, getClass().getName(), AddEditCustomerResDto.class);
+        if (isNull(resDto)) resDto = new AddEditCustomerResDto();
+
+        req.setAttribute("alertData", alert);
+        req.setAttribute("addEditCustomerData", resDto);
+        req.setAttribute("addEditText", "Dodaj");
+        req.setAttribute("title", SELLER_ADD_CUSTOMER_PAGE.getName());
+        req.getRequestDispatcher("/WEB-INF/pages/seller/customer/seller-add-edit-customer.jsp").forward(req, res);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        final HttpSession httpSession = req.getSession();
         final AlertTupleDto alert = new AlertTupleDto(true);
+        final String loggedUser = getLoggedUserLogin(req);
+
         final AddEditCustomerReqDto reqDto = new AddEditCustomerReqDto(req);
         final AddEditCustomerResDto resDto = new AddEditCustomerResDto(validator, reqDto);
         if (validator.someFieldsAreInvalid(reqDto)) {
-            req.setAttribute("addEditCustomerData", resDto);
-            selfRedirect(req, res);
+            httpSession.setAttribute(getClass().getName(), resDto);
+            res.sendRedirect("/seller/add-customer");
             return;
         }
-        final HttpSession httpSession = req.getSession();
         try (final Session session = database.open()) {
             if (reqDto.getParsedBornDate().isAfter(LocalDate.now().minusYears(config.getCircaDateYears()))) {
                 throw new DateException.DateInFutureException("data urodzenia", config.getCircaDateYears());
@@ -109,28 +119,21 @@ public class SellerAddCustomerServlet extends HttpServlet {
                 session.persist(customer);
                 session.getTransaction().commit();
 
-                final var seller = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
-                LOGGER.info("Successfully added new customer by: {}. Customer data: {}", seller.getLogin(), reqDto);
                 alert.setType(INFO);
                 alert.setMessage("Procedura dodawania nowego klienta do systemu zakończona sukcesem.");
-                httpSession.setAttribute(SELLER_CUSTOMERS_PAGE_ALERT.getName(), alert);
+                httpSession.setAttribute(COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
+                httpSession.removeAttribute(getClass().getName());
+                LOGGER.info("Successfully added new customer by: {}. Customer data: {}", loggedUser, reqDto);
                 res.sendRedirect("/seller/customers");
             } catch (RuntimeException ex) {
                 onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
-            req.setAttribute("alertData", alert);
-            req.setAttribute("addEditCustomerData", resDto);
-            selfRedirect(req, res);
+            httpSession.setAttribute(getClass().getName(), resDto);
+            httpSession.setAttribute(SELLER_ADD_CUSTOMER_PAGE.getName(), alert);
+            LOGGER.error("Unable to create new customer. Cause: {}", ex.getMessage());
+            res.sendRedirect("/seller/add-customer");
         }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private void selfRedirect(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        req.setAttribute("addEditText", "Dodaj");
-        req.setAttribute("title", SELLER_ADD_CUSTOMER_PAGE.getName());
-        req.getRequestDispatcher("/WEB-INF/pages/seller/customer/seller-add-edit-customer.jsp").forward(req, res);
     }
 }

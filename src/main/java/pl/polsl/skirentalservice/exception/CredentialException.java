@@ -45,15 +45,7 @@ public class CredentialException {
     public static class InvalidCredentialsException extends RuntimeException {
         public InvalidCredentialsException(LoginFormReqDto reqDto, Logger logger) {
             super("Nieprawidłowe hasło. Spróbuj ponownie podając inne hasło.");
-            logger.warn("Attempt to login with invalid credentials. Credentials data: {}", reqDto);
-        }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public static class AccountTemporaryBlockedException extends RuntimeException {
-        public AccountTemporaryBlockedException() {
-            super("Twoje konto zostało tymczasowo zablokowane przez kierownika systemu.");
+            logger.warn("Attempt to login with invalid credentials. Login/email data: {}", reqDto.getLoginOrEmail());
         }
     }
 }

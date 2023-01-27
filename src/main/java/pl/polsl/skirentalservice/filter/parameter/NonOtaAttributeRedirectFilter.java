@@ -22,7 +22,9 @@ import java.io.IOException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@WebFilter(urlPatterns = "/change-forgotten-password/*", initParams = @WebInitParam(name = "mood", value = "awake"))
+@WebFilter(urlPatterns = {
+    "/change-forgotten-password/*",
+}, initParams = @WebInitParam(name = "mood", value = "awake"))
 public class NonOtaAttributeRedirectFilter extends HttpFilter {
 
     @Override

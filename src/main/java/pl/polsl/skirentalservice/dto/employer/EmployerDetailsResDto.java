@@ -35,7 +35,5 @@ public class EmployerDetailsResDto {
     private String cityWithPostCode;
     private String accountState;
     private String accountStateColor;
-    private String lockedState;
-    private String lockedStateColor;
     private String address;
 }

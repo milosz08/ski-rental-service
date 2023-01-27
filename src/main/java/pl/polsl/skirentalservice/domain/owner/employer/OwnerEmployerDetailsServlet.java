@@ -64,8 +64,6 @@ public class OwnerEmployerDetailsServlet extends HttpServlet {
                         "YEAR(NOW()) - YEAR(e.hiredDate), d.gender, CONCAT(a.postalCode, ' ', a.city)," +
                         "CAST(IF(e.firstAccess, 'nieaktywowane', 'aktywowane') AS string)," +
                         "CAST(IF(e.firstAccess, 'text-danger', 'text-success') AS string)," +
-                        "CAST(IF(e.isBlocked, 'zablokowane', 'brak blokady') AS string)," +
-                        "CAST(IF(e.isBlocked, 'text-danger', 'text-success') AS string)," +
                         "CONCAT('ul. ', a.street, ' ', a.buildingNr, IF(a.apartmentNr, CONCAT('/', a.apartmentNr), ''))" +
                     ") FROM EmployerEntity e INNER JOIN e.userDetails d INNER JOIN e.locationAddress a " +
                     "WHERE e.id = :uid";

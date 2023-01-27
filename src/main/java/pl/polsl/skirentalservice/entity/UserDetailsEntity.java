@@ -113,12 +113,12 @@ public class UserDetailsEntity extends AuditableEntity {
     @Override
     public String toString() {
         return '{' +
-            "firstName='" + firstName + '\'' +
-            ", lastName='" + lastName + '\'' +
-            ", pesel='" + pesel + '\'' +
+            "firstName='" + firstName +
+            ", lastName='" + lastName +
+            ", pesel='" + pesel +
             ", phoneAreaCode=" + phoneAreaCode +
-            ", phoneNumber='" + phoneNumber + '\'' +
-            ", emailAddress='" + emailAddress + '\'' +
+            ", phoneNumber='" + phoneNumber +
+            ", emailAddress='" + emailAddress +
             ", bornDate=" + bornDate +
             ", gender=" + gender +
             '}';

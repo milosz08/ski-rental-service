@@ -19,9 +19,9 @@ INSERT INTO location_addresses (street, building_no, apartment_no, city, postal_
 ('Arnolda Szarego', '112', '45b', 'Zabrze', '41-400');
 
 
-INSERT INTO employeers (login, password, hired_date, role_id, user_details_id, location_address_id) VALUES
-('annnow321', '$2a$10$gSSrolxiKaXtpTCYz260AOyMH2.dUVUBMvNzgzLNoIHD5o4ZFFTku', '2005-04-25', 1, 1, 1),
-('andand456', '$2a$10$Aw9Zr09KmE22wgcmUPqeY.3/80burYO2BZkAqeLmxHiFc6bHNE5p2', '2001-10-12', 2, 2, 2);
+INSERT INTO employeers (login, password, hired_date, role_id, user_details_id, location_address_id, first_access) VALUES
+('annnow321', '$2a$10$gSSrolxiKaXtpTCYz260AOyMH2.dUVUBMvNzgzLNoIHD5o4ZFFTku', '2005-04-25', 1, 1, 1, 1),
+('andand456', '$2a$10$Aw9Zr09KmE22wgcmUPqeY.3/80burYO2BZkAqeLmxHiFc6bHNE5p2', '2001-10-12', 2, 2, 2, 0);
 
 
 INSERT INTO customers (user_details_id, location_address_id) VALUES

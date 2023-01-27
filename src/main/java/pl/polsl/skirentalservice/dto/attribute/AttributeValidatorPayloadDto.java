@@ -22,8 +22,7 @@ import pl.polsl.skirentalservice.dto.AlertTupleDto;
 @Builder
 @AllArgsConstructor
 public class AttributeValidatorPayloadDto {
-    private AlertTupleDto failureAlert;
-    private AlertTupleDto successAlert;
+    private AlertTupleDto alert;
     private AttributeModalReqDto reqDto;
     private AttributeModalResDto resDto;
     private boolean isInvalid;

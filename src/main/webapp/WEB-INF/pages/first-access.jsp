@@ -3,19 +3,13 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
-<jsp:useBean id="firstAccessData" class="pl.polsl.skirentalservice.dto.first_access.FirstAccessResDto" scope="request"/>
-<jsp:useBean id="alertData" class="pl.polsl.skirentalservice.dto.AlertTupleDto" scope="request"/>
 <jsp:useBean id="loggedUserDetails" type="pl.polsl.skirentalservice.dto.login.LoggedUserDataDto" scope="session"/>
+<jsp:useBean id="firstAccessData" class="pl.polsl.skirentalservice.dto.first_access.FirstAccessResDto" scope="request"/>
 
 <p:generic-page.wrapper>
     <main class="d-flex justify-content-center align-items-center flex-fill my-3">
         <div class="container-sm mx-2 px-0 media-small-size-box">
-            <c:if test="${alertData.active}">
-            <div class="alert ${alertData.type.cssClass} alert-dismissible mb-3 fade show lh-sm" role="alert">
-                    ${alertData.message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            </c:if>
+            <jsp:include page="/WEB-INF/partials/dynamic-alert.partial.jsp"/>
             <form action="" method="post" class="card p-4" novalidate>
                 <h1 class="fs-4 mb-2 fw-normal text-secondary text-center">
                     Witaj <span class="text-dark">${loggedUserDetails.fullName}</span>!

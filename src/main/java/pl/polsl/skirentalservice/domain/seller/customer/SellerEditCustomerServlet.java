@@ -33,14 +33,14 @@ import java.time.LocalDate;
 
 import static java.util.Objects.isNull;
 
+import static pl.polsl.skirentalservice.util.Utils.*;
 import static pl.polsl.skirentalservice.util.UserRole.USER;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
+import static pl.polsl.skirentalservice.util.SessionAlert.*;
 import static pl.polsl.skirentalservice.exception.DateException.*;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
-import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
 import static pl.polsl.skirentalservice.util.PageTitle.SELLER_EDIT_CUSTOMER_PAGE;
-import static pl.polsl.skirentalservice.util.SessionAlert.SELLER_CUSTOMERS_PAGE_ALERT;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -58,55 +58,67 @@ public class SellerEditCustomerServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final String userId = req.getParameter("id");
-        final AlertTupleDto alert = new AlertTupleDto(true);
+        final String customerId = req.getParameter("id");
         final HttpSession httpSession = req.getSession();
-        try (final Session session = database.open()) {
-            try {
-                session.beginTransaction();
 
-                final String jpqlFindCustomerBaseId =
-                    "SELECT new pl.polsl.skirentalservice.dto.customer.AddEditCustomerReqDto(" +
-                        "d.firstName, d.lastName, d.pesel," +
-                        "CONCAT(SUBSTRING(d.phoneNumber, 1, 3), ' ', SUBSTRING(d.phoneNumber, 4, 3), ' '," +
-                        "SUBSTRING(d.phoneNumber, 7, 3))," +
-                        "CAST(d.bornDate AS string), d.emailAddress, a.street," +
-                        "a.buildingNr, a.apartmentNr, a.city, a.postalCode, d.gender" +
-                    ") FROM CustomerEntity c " +
-                    "INNER JOIN c.userDetails d INNER JOIN c.locationAddress a " +
-                    "WHERE c.id = :uid";
-                final AddEditCustomerReqDto customerDetails = session
-                    .createQuery(jpqlFindCustomerBaseId, AddEditCustomerReqDto.class)
-                    .setParameter("uid", userId)
-                    .getSingleResultOrNull();
-                if (isNull(customerDetails)) throw new UserNotFoundException(userId);
+        final AlertTupleDto alert = getAndDestroySessionAlert(req, SELLER_EDIT_CUSTOMER_PAGE_ALERT);
+        var resDto = (AddEditCustomerResDto) httpSession.getAttribute(getClass().getName());
 
-                session.getTransaction().commit();
-                selfRedirect(req, res, new AddEditCustomerResDto(validator, customerDetails));
+        if (isNull(resDto)) {
+            try (final Session session = database.open()) {
+                try {
+                    session.beginTransaction();
+
+                    final String jpqlFindCustomerBaseId =
+                        "SELECT new pl.polsl.skirentalservice.dto.customer.AddEditCustomerReqDto(" +
+                            "d.firstName, d.lastName, d.pesel," +
+                            "CONCAT(SUBSTRING(d.phoneNumber, 1, 3), ' ', SUBSTRING(d.phoneNumber, 4, 3), ' '," +
+                            "SUBSTRING(d.phoneNumber, 7, 3))," +
+                            "CAST(d.bornDate AS string), d.emailAddress, a.street," +
+                            "a.buildingNr, a.apartmentNr, a.city, a.postalCode, d.gender" +
+                        ") FROM CustomerEntity c " +
+                        "INNER JOIN c.userDetails d INNER JOIN c.locationAddress a " +
+                        "WHERE c.id = :uid";
+                    final AddEditCustomerReqDto customerDetails = session
+                        .createQuery(jpqlFindCustomerBaseId, AddEditCustomerReqDto.class)
+                        .setParameter("uid", customerId)
+                        .getSingleResultOrNull();
+                    if (isNull(customerDetails)) throw new UserNotFoundException(customerId);
+
+                    resDto = new AddEditCustomerResDto(validator, customerDetails);
+                    session.getTransaction().commit();
+                } catch (RuntimeException ex) {
+                    if (!isNull(session)) onHibernateException(session, LOGGER, ex);
+                }
             } catch (RuntimeException ex) {
-                onHibernateException(session, LOGGER, ex);
+                alert.setMessage(ex.getMessage());
+                httpSession.setAttribute(COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
+                res.sendRedirect("/seller/customers");
             }
-        } catch (RuntimeException ex) {
-            alert.setMessage(ex.getMessage());
-            httpSession.setAttribute(SELLER_CUSTOMERS_PAGE_ALERT.getName(), alert);
-            res.sendRedirect("/seller/customers");
         }
+        req.setAttribute("alertData", alert);
+        req.setAttribute("addEditCustomerData", resDto);
+        req.setAttribute("addEditText", "Edytuj");
+        req.setAttribute("title", SELLER_EDIT_CUSTOMER_PAGE.getName());
+        req.getRequestDispatcher("/WEB-INF/pages/seller/customer/seller-add-edit-customer.jsp").forward(req, res);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final String userId = req.getParameter("id");
+        final String customerId = req.getParameter("id");
         final AlertTupleDto alert = new AlertTupleDto(true);
+        final HttpSession httpSession = req.getSession();
+        final String loggedUser = getLoggedUserLogin(req);
 
         final AddEditCustomerReqDto reqDto = new AddEditCustomerReqDto(req);
         final AddEditCustomerResDto resDto = new AddEditCustomerResDto(validator, reqDto);
         if (validator.someFieldsAreInvalid(reqDto)) {
-            selfRedirect(req, res, resDto);
+            httpSession.setAttribute(getClass().getName(), resDto);
+            res.sendRedirect("/seller/edit-customer?id=" + customerId);
             return;
         }
-        final HttpSession httpSession = req.getSession();
         try (final Session session = database.open()) {
             if (reqDto.getParsedBornDate().isAfter(LocalDate.now().minusYears(config.getCircaDateYears()))) {
                 throw new DateInFutureException("data zatrudnienia", config.getCircaDateYears());
@@ -114,15 +126,15 @@ public class SellerEditCustomerServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final CustomerEntity updatableCustomer = session.get(CustomerEntity.class, userId);
-                if (isNull(updatableCustomer)) throw new UserNotFoundException(userId);
+                final CustomerEntity updatableCustomer = session.get(CustomerEntity.class, customerId);
+                if (isNull(updatableCustomer)) throw new UserNotFoundException(customerId);
 
                 final String jpqlFindPesel =
                     "SELECT COUNT(c.id) > 0 FROM CustomerEntity c INNER JOIN c.userDetails d " +
                     "WHERE d.pesel = :pesel AND c.id <> :uid";
                 final Boolean peselExist = session.createQuery(jpqlFindPesel, Boolean.class)
                     .setParameter("pesel", reqDto.getPesel())
-                    .setParameter("uid", userId)
+                    .setParameter("uid", customerId)
                     .getSingleResult();
                 if (peselExist) throw new PeselAlreadyExistException(reqDto.getPesel(), USER);
 
@@ -131,7 +143,7 @@ public class SellerEditCustomerServlet extends HttpServlet {
                     "WHERE d.phoneNumber = :phoneNumber AND c.id <> :uid";
                 final Boolean phoneNumberExist = session.createQuery(jpqlFindPhoneNumber, Boolean.class)
                     .setParameter("phoneNumber", reqDto.getPhoneNumber())
-                    .setParameter("uid", userId)
+                    .setParameter("uid", customerId)
                     .getSingleResult();
                 if (phoneNumberExist) throw new PhoneNumberAlreadyExistException(reqDto.getPhoneNumber(), USER);
 
@@ -140,7 +152,7 @@ public class SellerEditCustomerServlet extends HttpServlet {
                     "WHERE d.emailAddress = :emailAddress AND c.id <> :uid";
                 final Boolean emailAddressExist = session.createQuery(jpqlFindEmailAddress, Boolean.class)
                     .setParameter("emailAddress", reqDto.getEmailAddress())
-                    .setParameter("uid", userId)
+                    .setParameter("uid", customerId)
                     .getSingleResult();
                 if (emailAddressExist) throw new EmailAddressAlreadyExistException(reqDto.getEmailAddress(), USER);
 
@@ -152,33 +164,20 @@ public class SellerEditCustomerServlet extends HttpServlet {
                 session.getTransaction().commit();
 
                 alert.setType(INFO);
-                httpSession.setAttribute(SELLER_CUSTOMERS_PAGE_ALERT.getName(), alert);
-                LOGGER.info("Customer with id: {} was successfuly updated. Data: {}", userId, reqDto);
-                alert.setMessage("Dane klienta z ID <strong>#" + userId + "</strong> zostały pomyślnie zaktualizowane.");
+                alert.setMessage("Dane klienta z ID <strong>#" + customerId + "</strong> zostały pomyślnie zaktualizowane.");
+                httpSession.setAttribute(COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
+                httpSession.removeAttribute(getClass().getName());
+                LOGGER.info("Customer with id: {} was successfuly updated. Data: {}", customerId, reqDto);
                 res.sendRedirect("/seller/customers");
-                session.getTransaction().commit();
             } catch (RuntimeException ex) {
                 onHibernateException(session, LOGGER, ex);
             }
-        } catch (UserNotFoundException ex) {
-            alert.setMessage(ex.getMessage());
-            LOGGER.error("Unable to update customer with id: {}. Cause: {}", userId, ex.getMessage());
-            httpSession.setAttribute(SELLER_CUSTOMERS_PAGE_ALERT.getName(), alert);
-            res.sendRedirect("/seller/customers");
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
-            req.setAttribute("alertData", alert);
-            selfRedirect(req, res, resDto);
+            httpSession.setAttribute(getClass().getName(), resDto);
+            httpSession.setAttribute(SELLER_EDIT_CUSTOMER_PAGE.getName(), alert);
+            LOGGER.error("Unable to edit existing customer with id: {}. Cause: {}", customerId, ex.getMessage());
+            res.sendRedirect("/seller/edit-customer?id=" + customerId);
         }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private void selfRedirect(HttpServletRequest req, HttpServletResponse res, AddEditCustomerResDto resDto)
-        throws ServletException, IOException {
-        req.setAttribute("addEditText", "Edytuj");
-        req.setAttribute("addEditCustomerData", resDto);
-        req.setAttribute("title", SELLER_EDIT_CUSTOMER_PAGE.getName());
-        req.getRequestDispatcher("/WEB-INF/pages/seller/customer/seller-add-edit-customer.jsp").forward(req, res);
     }
 }

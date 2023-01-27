@@ -10,12 +10,7 @@
 <p:generic-page.wrapper>
     <main class="d-flex justify-content-center align-items-center flex-fill my-3">
         <div class="container-sm mx-2 px-0 media-small-size-box">
-            <c:if test="${alertData.active}">
-                <div class="alert ${alertData.type.cssClass} alert-dismissible mb-3 fade show lh-sm" role="alert">
-                        ${alertData.message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            </c:if>
+            <jsp:include page="/WEB-INF/partials/dynamic-alert.partial.jsp"/>
             <c:if test="${!alertData.disableContent}">
                 <form action="" method="post" class="card p-4" novalidate>
                     <img src="${employerData.imageUrl}" class="rounded-circle mx-auto d-block" alt="" width="80" height="80">

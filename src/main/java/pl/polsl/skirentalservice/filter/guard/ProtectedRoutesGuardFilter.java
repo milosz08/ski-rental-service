@@ -29,8 +29,10 @@ import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAIL
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@WebFilter(urlPatterns = { "/seller/*", "/owner/*" },
-    initParams = @WebInitParam(name = "mood", value = "awake"))
+@WebFilter(urlPatterns = {
+    "/seller/*",
+    "/owner/*",
+}, initParams = @WebInitParam(name = "mood", value = "awake"))
 public class ProtectedRoutesGuardFilter extends HttpFilter {
 
     @Override

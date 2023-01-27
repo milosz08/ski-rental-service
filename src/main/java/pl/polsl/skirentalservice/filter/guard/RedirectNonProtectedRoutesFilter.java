@@ -22,13 +22,15 @@ import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import java.io.IOException;
 
 import static java.util.Objects.isNull;
-import static pl.polsl.skirentalservice.util.UserRole.OWNER;
 import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@WebFilter(urlPatterns = { "/login", "/forgot-password-request", "/change-forgotten-password/*" },
-    initParams = @WebInitParam(name = "mood", value = "awake"))
+@WebFilter(urlPatterns = {
+    "/login",
+    "/forgot-password-request",
+    "/change-forgotten-password/*",
+}, initParams = @WebInitParam(name = "mood", value = "awake"))
 public class RedirectNonProtectedRoutesFilter extends HttpFilter {
 
     @Override
@@ -37,8 +39,7 @@ public class RedirectNonProtectedRoutesFilter extends HttpFilter {
         final HttpSession httpSession = req.getSession();
         final var loggedUserDetailsDto = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
         if (!isNull(loggedUserDetailsDto)) {
-            final String redirect = loggedUserDetailsDto.getRoleAlias().equals(OWNER.getAlias()) ? "owner" : "seller";
-            res.sendRedirect("/" + redirect + "/dashboard");
+            res.sendRedirect("/" + loggedUserDetailsDto.getRoleEng() + "/dashboard");
             return;
         }
         chain.doFilter(req, res);

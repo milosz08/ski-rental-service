@@ -29,7 +29,9 @@ import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAIL
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@WebFilter(urlPatterns = { "/first-access" }, initParams = @WebInitParam(name = "mood", value = "awake"))
+@WebFilter(urlPatterns = {
+    "/first-access",
+}, initParams = @WebInitParam(name = "mood", value = "awake"))
 public class RedirectOnFirstAccessFilter extends HttpFilter {
 
     @Override
@@ -42,8 +44,7 @@ public class RedirectOnFirstAccessFilter extends HttpFilter {
             return;
         }
         if (!userDetails.getIsFirstAccess() || userDetails.getRoleAlias().equals(OWNER.getAlias())) {
-            final String redirect = userDetails.getRoleAlias().equals(OWNER.getAlias()) ? "owner" : "seller";
-            res.sendRedirect("/" + redirect + "/dashboard");
+            res.sendRedirect("/" + userDetails.getRoleEng() + "/dashboard");
             return;
         }
         chain.doFilter(req, res);

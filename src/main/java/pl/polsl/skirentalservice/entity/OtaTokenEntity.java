@@ -85,7 +85,7 @@ public class OtaTokenEntity extends AuditableEntity {
     @Override
     public String toString() {
         return '{' +
-            "otaToken='" + otaToken + '\'' +
+            "otaToken='" + otaToken +
             ", expiredDate=" + expiredDate +
             ", isUsed=" + isUsed +
             ", employer=" + employer +

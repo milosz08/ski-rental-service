@@ -4,7 +4,6 @@
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
 <jsp:useBean id="addEditText" class="java.lang.String" scope="request"/>
-<jsp:useBean id="alertData" class="pl.polsl.skirentalservice.dto.AlertTupleDto" scope="request"/>
 <jsp:useBean id="addEditCustomerData" class="pl.polsl.skirentalservice.dto.customer.AddEditCustomerResDto" scope="request"/>
 
 <p:generic-seller.wrapper>
@@ -21,12 +20,7 @@
         </ol>
     </nav>
     <hr/>
-    <c:if test="${alertData.active}">
-        <div class="alert ${alertData.type.cssClass} alert-dismissible mb-3 fade show lh-sm" role="alert">
-            ${alertData.message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    </c:if>
+    <jsp:include page="/WEB-INF/partials/dynamic-alert.partial.jsp"/>
     <form action="" class="container-fluid px-0" method="post" novalidate>
         <div class="row">
             <div class="col-md-6">

@@ -21,7 +21,11 @@ import java.io.IOException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@WebFilter(urlPatterns = { "/seller/*", "/owner/*", "/login" }, initParams = @WebInitParam(name = "mood", value = "awake"))
+@WebFilter(urlPatterns = {
+    "/seller/*",
+    "/owner/*",
+    "/login",
+}, initParams = @WebInitParam(name = "mood", value = "awake"))
 public class NoCacheProxyFilter extends HttpFilter {
 
     @Override

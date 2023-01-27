@@ -23,18 +23,16 @@ import jakarta.servlet.annotation.WebServlet;
 
 import java.io.IOException;
 
-import pl.polsl.skirentalservice.util.Utils;
 import pl.polsl.skirentalservice.dto.attribute.*;
 import pl.polsl.skirentalservice.core.ValidatorBean;
 import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.entity.EquipmentTypeEntity;
 
-import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.*;
 
 import static pl.polsl.skirentalservice.util.Utils.*;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
-import static pl.polsl.skirentalservice.util.SessionAlert.OWNER_ADD_EQUIPMENT_PAGE_ALERT;
 import static pl.polsl.skirentalservice.util.SessionAttribute.EQ_TYPES_MODAL_DATA;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,12 +49,12 @@ public class OwnerAddEquipmentTypeServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final AttributeValidatorPayloadDto payload = Utils.validateEquipmentAttribute(req, validator);
+        final AttributeValidatorPayloadDto payload = validateEquipmentAttribute(req, validator);
         final String loggedUser = getLoggedUserLogin(req);
         final HttpSession httpSession = req.getSession();
         if (payload.isInvalid()) {
             httpSession.setAttribute(EQ_TYPES_MODAL_DATA.getName(), payload.getResDto());
-            res.sendRedirect("/owner/add-equipment");
+            res.sendRedirect(defaultIfBlank(req.getParameter("redirect"), "/owner/add-equipment"));
             return;
         }
         try (final Session session = database.open()) {
@@ -73,13 +71,11 @@ public class OwnerAddEquipmentTypeServlet extends HttpServlet {
                 final EquipmentTypeEntity typeEntity = new EquipmentTypeEntity(payload.getReqDto().getName());
                 session.persist(typeEntity);
 
-                payload.getResDto().getName().setValue(EMPTY);
-                payload.getSuccessAlert().setType(INFO);
-                payload.getSuccessAlert().setMessage(
+                payload.getAlert().setType(INFO);
+                payload.getAlert().setMessage(
                     "Nastąpiło pomyślne dodanie nowego typu sprzętu narciarskiego: <strong>" +
                     payload.getReqDto().getName() + "</strong>."
                 );
-                httpSession.setAttribute(OWNER_ADD_EQUIPMENT_PAGE_ALERT.getName(), payload.getSuccessAlert());
                 session.getTransaction().commit();
                 LOGGER.info("Successful added new equipment type by: {}. Type: {}", loggedUser,
                     payload.getReqDto().getName());
@@ -87,10 +83,14 @@ public class OwnerAddEquipmentTypeServlet extends HttpServlet {
                 onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
-            onAttributeException(payload, ex);
+            payload.getAlert().setMessage(ex.getMessage());
             LOGGER.error("Failure add new equipment type by: {}. Cause: {}", loggedUser, ex.getMessage());
         }
+        payload.getAlert().setActive(true);
+        payload.getResDto().setAlert(payload.getAlert());
+        payload.getResDto().setModalImmediatelyOpen(true);
+        payload.getResDto().getName().setValue(EMPTY);
         httpSession.setAttribute(EQ_TYPES_MODAL_DATA.getName(), payload.getResDto());
-        res.sendRedirect("/owner/add-equipment");
+        res.sendRedirect(defaultIfBlank(req.getParameter("redirect"), "/owner/add-equipment"));
     }
 }

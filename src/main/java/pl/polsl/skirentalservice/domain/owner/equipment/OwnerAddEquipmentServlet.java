@@ -23,16 +23,17 @@ import jakarta.servlet.annotation.WebServlet;
 
 import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.dto.equipment.*;
-import pl.polsl.skirentalservice.core.ValidatorBean;
+import pl.polsl.skirentalservice.core.ConfigBean;
 import pl.polsl.skirentalservice.core.db.HibernateBean;
 
-import java.util.*;
-import java.io.IOException;
+import java.io.*;
+import java.util.List;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 
 import static pl.polsl.skirentalservice.util.SessionAttribute.*;
-import static pl.polsl.skirentalservice.util.Utils.*;
-import static pl.polsl.skirentalservice.exception.ServletException.*;
-import static pl.polsl.skirentalservice.util.SessionAlert.OWNER_ADD_EQUIPMENT_PAGE_ALERT;
+import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
+import static pl.polsl.skirentalservice.util.PageTitle.OWNER_ADD_EQUIPMENT_PAGE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -40,7 +41,6 @@ import static pl.polsl.skirentalservice.util.SessionAlert.OWNER_ADD_EQUIPMENT_PA
 public class OwnerAddEquipmentServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerAddEquipmentServlet.class);
-    private static final String POST_REDIR_GET = "owner-add-equipment-post-redir-get";
 
     @EJB private HibernateBean database;
     @EJB private ValidatorBean validator;
@@ -50,29 +50,29 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final AlertTupleDto alert = getAndDestroySessionAlert(req, OWNER_ADD_EQUIPMENT_PAGE_ALERT);
-        var resDto = getFromSessionAndDestroy(req, POST_REDIR_GET, AddEditEquipmentResDto.class);
-        if (Objects.isNull(resDto)) resDto = new AddEditEquipmentResDto();
+        var resDto = getFromSessionAndDestroy(req, getClass().getName(), AddEditEquipmentResDto.class);
+        if (isNull(resDto)) resDto = new AddEditEquipmentResDto();
 
         try (final Session session = database.open()) {
             try {
                 session.beginTransaction();
 
                 final String jpqlFindEquipmentTypes = "SELECT new pl.polsl.skirentalservice.dto.FormSelectTupleDto(" +
-                        "CAST(t.id AS string), t.name) FROM EquipmentTypeEntity t ORDER BY t.id";
+                    "CAST(t.id AS string), t.name) FROM EquipmentTypeEntity t ORDER BY t.id";
                 final List<FormSelectTupleDto> equipmentTypes = session
                     .createQuery(jpqlFindEquipmentTypes, FormSelectTupleDto.class)
                     .getResultList();
                 resDto.insertTypesSelects(equipmentTypes);
 
                 final String jpqlFindEquipmentBrands = "SELECT new pl.polsl.skirentalservice.dto.FormSelectTupleDto(" +
-                        "CAST(t.id AS string), t.name) FROM EquipmentBrandEntity t ORDER BY t.id";
+                    "CAST(t.id AS string), t.name) FROM EquipmentBrandEntity t ORDER BY t.id";
                 final List<FormSelectTupleDto> equipmentBrands = session
                     .createQuery(jpqlFindEquipmentBrands, FormSelectTupleDto.class)
                     .getResultList();
                 resDto.insertBrandsSelects(equipmentBrands);
 
                 final String jpqlFindEquipmentColors = "SELECT new pl.polsl.skirentalservice.dto.FormSelectTupleDto(" +
-                        "CAST(t.id AS string), t.name) FROM EquipmentColorEntity t ORDER BY t.id";
+                    "CAST(t.id AS string), t.name) FROM EquipmentColorEntity t ORDER BY t.id";
                 final List<FormSelectTupleDto> equipmentColors = session
                     .createQuery(jpqlFindEquipmentColors, FormSelectTupleDto.class)
                     .getResultList();
@@ -83,10 +83,8 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
                 onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
-            if (!(ex instanceof InvalidFieldsExistsException)) {
-                alert.setActive(true);
-                alert.setMessage(ex.getMessage());
-            }
+            alert.setActive(true);
+            alert.setMessage(ex.getMessage());
         }
         req.setAttribute("alertData", alert);
         req.setAttribute("addEditEquipmentData", resDto);

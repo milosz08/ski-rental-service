@@ -30,7 +30,7 @@ import java.io.IOException;
 
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
-import static pl.polsl.skirentalservice.util.SessionAlert.SELLER_CUSTOMERS_PAGE_ALERT;
+import static pl.polsl.skirentalservice.util.SessionAlert.COMMON_CUSTOMERS_PAGE_ALERT;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -68,7 +68,7 @@ public class SellerDeleteCustomerServlet extends HttpServlet {
             alert.setMessage(ex.getMessage());
             LOGGER.error("Unable to remove customer with id: {}. Cause: {}", userId, ex.getMessage());
         }
-        httpSession.setAttribute(SELLER_CUSTOMERS_PAGE_ALERT.getName(), alert);
+        httpSession.setAttribute(COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
         res.sendRedirect("/seller/customers");
     }
 }

@@ -10,4 +10,6 @@
             <li class="breadcrumb-item active" aria-current="page">Panel główny</li>
         </ol>
     </nav>
+    <hr/>
+    <jsp:include page="/WEB-INF/partials/dynamic-alert.partial.jsp"/>
 </p:generic-seller.wrapper>

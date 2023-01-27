@@ -4,7 +4,6 @@
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<jsp:useBean id="alertData" class="pl.polsl.skirentalservice.dto.AlertTupleDto" scope="request"/>
 <jsp:useBean id="filterData" class="pl.polsl.skirentalservice.paging.filter.FilterDataDto" scope="request"/>
 <jsp:useBean id="employersData" type="java.util.List<pl.polsl.skirentalservice.dto.employer.EmployerRecordResDto>" scope="request"/>
 <jsp:useBean id="sorterData" type="java.util.Map<java.lang.String, pl.polsl.skirentalservice.paging.sorter.ServletSorterField>" scope="request"/>
@@ -47,12 +46,7 @@
                 </a>
             </div>
         </div>
-        <c:if test="${alertData.active}">
-            <div class="alert ${alertData.type.cssClass} alert-dismissible mb-3 fade show lh-sm" role="alert">
-                ${alertData.message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        </c:if>
+        <jsp:include page="/WEB-INF/partials/dynamic-alert.partial.jsp"/>
         <c:if test="${empty employersData}">
             <div class="alert alert-warning lh-sm">
                 Nie znaleziono żadnych pracowników w systemie. Aby dodać nowego pracownika, kliknij w przycisk "Dodaj
@@ -65,76 +59,76 @@
                 <table class="table table-bordered table-striped table-sm table-hover bg-white">
                     <thead>
                     <tr>
-                        <th scope="col" class="align-middle">
+                        <th scope="col" class="nowrap-tb align-middle">
                             <button class="border-0 bg-transparent fw-bold text-start hstack justify-content-between w-100 lh-sm"
                                 name="sortBy" type="submit" value="identity">
                                 ID
                                 <i class="bi bi-arrow-${sorterData.get("identity").chevronBts} mx-1 micro-font"></i>
                             </button>
                         </th>
-                        <th scope="col" class="align-middle">
+                        <th scope="col" class="nowrap-tb align-middle">
                             <button class="border-0 bg-transparent fw-bold text-start hstack justify-content-between w-100 lh-sm"
                                 name="sortBy" type="submit" value="fullName">
                                 Imię i nazwisko
                                 <i class="bi bi-arrow-${sorterData.get("fullName").chevronBts} mx-1 micro-font"></i>
                             </button>
                         </th>
-                        <th scope="col" class="align-middle">
+                        <th scope="col" class="nowrap-tb align-middle">
                             <button class="border-0 bg-transparent fw-bold text-start hstack justify-content-between w-100 lh-sm"
                                 name="sortBy" type="submit" value="pesel">
                                 Nr PESEL
                                 <i class="bi bi-arrow-${sorterData.get("pesel").chevronBts} mx-1 micro-font"></i>
                             </button>
                         </th>
-                        <th scope="col" class="d-none d-lg-table-cell align-middle">
+                        <th scope="col" class="nowrap-tb d-none d-lg-table-cell align-middle">
                             <button class="border-0 bg-transparent fw-bold text-start hstack justify-content-between w-100 lh-sm"
                                 name="sortBy" type="submit" value="hiredDate">
                                 Data zatrudnienia
                                 <i class="bi bi-arrow-${sorterData.get("hiredDate").chevronBts} mx-1 micro-font"></i>
                             </button>
                         </th>
-                        <th scope="col" class="d-none d-lg-table-cell align-middle">
+                        <th scope="col" class="nowrap-tb d-none d-lg-table-cell align-middle">
                             <button class="border-0 bg-transparent fw-bold text-start hstack justify-content-between w-100 lh-sm"
                                 name="sortBy" type="submit" value="email">
                                 Adres email
                                 <i class="bi bi-arrow-${sorterData.get("email").chevronBts} mx-1 micro-font"></i>
                             </button>
                         </th>
-                        <th scope="col" class="d-none d-lg-table-cell align-middle">
+                        <th scope="col" class="nowrap-tb d-none d-lg-table-cell align-middle">
                             <button class="border-0 bg-transparent fw-bold text-start hstack justify-content-between w-100 lh-sm"
                                 name="sortBy" type="submit" value="phoneNumber">
                                 Nr telefonu
                                 <i class="bi bi-arrow-${sorterData.get("phoneNumber").chevronBts} mx-1 micro-font"></i>
                             </button>
                         </th>
-                        <th scope="col" class="d-none d-lg-table-cell align-middle">
+                        <th scope="col" class="nowrap-tb d-none d-lg-table-cell align-middle">
                             <button class="border-0 bg-transparent fw-bold text-start hstack justify-content-between w-100 lh-sm"
                                 name="sortBy" type="submit" value="gender">
                                 Płeć
                                 <i class="bi bi-arrow-${sorterData.get("gender").chevronBts} mx-1 micro-font"></i>
                             </button>
                         </th>
-                        <th scope="col" class="fit align-middle">Akcja</th>
+                        <th scope="col" class="nowrap-tb fit align-middle">Akcja</th>
                     </tr>
                     </thead>
                     <tbody>
                     <c:forEach items="${employersData}" var="employer">
                         <tr>
-                            <td class="align-middle">${employer.id}</td>
-                            <td class="align-middle">${employer.fullName}</td>
-                            <td class="align-middle">${employer.pesel}</td>
-                            <td class="align-middle d-none d-lg-table-cell">
+                            <td class="nowrap-tb align-middle">${employer.id}</td>
+                            <td class="nowrap-tb align-middle">${employer.fullName}</td>
+                            <td class="nowrap-tb align-middle">${employer.pesel}</td>
+                            <td class="nowrap-tb align-middle d-none d-lg-table-cell">
                                 <fmt:parseDate value="${employer.hiredDate}" pattern="yyyy-MM-dd" var="parsedDate" type="date"/>
                                 <fmt:formatDate value="${parsedDate}" type="date" pattern="dd.MM.yyyy"/>
                             </td>
-                            <td class="align-middle d-none d-lg-table-cell">
+                            <td class="nowrap-tb align-middle d-none d-lg-table-cell">
                                 <a href="mailto:${employer.email}">${employer.email}</a>
                             </td>
-                            <td class="align-middle d-none d-lg-table-cell">
+                            <td class="nowrap-tb align-middle d-none d-lg-table-cell">
                                 <a href="tel:${employer.phoneNumber}">${employer.phoneNumber}</a>
                             </td>
-                            <td class="align-middle d-none d-lg-table-cell">${employer.gender.name}</td>
-                            <td class="align-middle fit">
+                            <td class="nowrap-tb align-middle d-none d-lg-table-cell">${employer.gender.name}</td>
+                            <td class="nowrap-tb align-middle fit">
                                 <button type="button" class="btn btn-sm btn-danger py-0 px-1" data-bs-toggle="modal"
                                     data-bs-target="#deleteEmployer${employer.id}">
                                     <span type="button" data-bs-toggle="tooltip" data-bs-placement="top"
