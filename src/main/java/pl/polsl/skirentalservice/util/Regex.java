@@ -30,5 +30,5 @@ public class Regex {
     public static final String POSTAL_CODE              = "^[0-9]{2}-[0-9]{3}$";
     public static final String DEF_SELECT_VALUE         = "\\b(?!none\\b)\\w+";
     public static final String POS_NUMBER_INT           = "^(?:[1-9][0-9]{3}|[1-9][0-9]{2}|[1-9][0-9]|[1-9])$";
-    public static final String DECIMAL_2_ROUND          = "^$|[1-9]{0,4}(?:[.,][0-9]{1,3})?";
+    public static final String DECIMAL_2_ROUND          = "^$|[0-9]{0,4}(?:[.,][0-9]{1,2})?";
 }

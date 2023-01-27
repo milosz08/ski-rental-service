@@ -94,7 +94,7 @@
     max-width: fit-content !important;
 }
 
-th {
+th, td {
     white-space: nowrap;
 }
 

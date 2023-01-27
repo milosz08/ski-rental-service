@@ -29,12 +29,12 @@ public class AddEditEquipmentResDto {
     private FormValueInfoTupleDto name;
     private FormValueInfoTupleDto model;
     private FormValueInfoTupleDto description;
-    private FormValueInfoTupleDto total;
+    private FormValueInfoTupleDto countInStore;
     private FormValueInfoTupleDto size;
-    private FormValueInfoTupleDto nettoPricePerHour;
-    private FormValueInfoTupleDto nettoPriceNextEveryHour;
-    private FormValueInfoTupleDto nettoPricePerDay;
-    private FormValueInfoTupleDto nettoTotalValue;
+    private FormValueInfoTupleDto pricePerHour;
+    private FormValueInfoTupleDto priceForNextHour;
+    private FormValueInfoTupleDto pricePerDay;
+    private FormValueInfoTupleDto valueCost;
     private FormSelectsDto types = new FormSelectsDto();
     private FormSelectsDto brands = new FormSelectsDto();
     private FormSelectsDto colors = new FormSelectsDto();
@@ -46,12 +46,12 @@ public class AddEditEquipmentResDto {
         this.name = validator.validateField(reqDto, "name", reqDto.getName());
         this.model = validator.validateField(reqDto, "model", reqDto.getModel());
         this.description = validator.validateField(reqDto, "description", reqDto.getDescription());
-        this.total = validator.validateField(reqDto, "total", reqDto.getTotal());
+        this.countInStore = validator.validateField(reqDto, "countInStore", reqDto.getCountInStore());
         this.size = validator.validateField(reqDto, "size", reqDto.getSize());
-        this.nettoPricePerHour = validator.validateField(reqDto, "nettoPricePerHour", reqDto.getNettoPricePerHour());
-        this.nettoPriceNextEveryHour = validator.validateField(reqDto, "nettoPriceNextEveryHour", reqDto.getNettoPriceNextEveryHour());
-        this.nettoPricePerDay = validator.validateField(reqDto, "nettoPricePerDay", reqDto.getNettoPricePerDay());
-        this.nettoTotalValue = validator.validateField(reqDto, "nettoTotalValue", reqDto.getNettoTotalValue());
+        this.pricePerHour = validator.validateField(reqDto, "pricePerHour", reqDto.getPricePerHour());
+        this.priceForNextHour = validator.validateField(reqDto, "priceForNextHour", reqDto.getPriceForNextHour());
+        this.pricePerDay = validator.validateField(reqDto, "pricePerDay", reqDto.getPricePerDay());
+        this.valueCost = validator.validateField(reqDto, "valueCost", reqDto.getValueCost());
         this.types = validator.validateSelectField(reqDto, "type", this.types, reqDto.getType());
         this.brands = validator.validateSelectField(reqDto, "brand", this.brands, reqDto.getBrand());
         this.colors = validator.validateSelectField(reqDto, "color", this.colors, reqDto.getColor());
@@ -94,12 +94,12 @@ public class AddEditEquipmentResDto {
             "name=" + name +
             ", model=" + model +
             ", description=" + description +
-            ", total=" + total +
+            ", countInStore=" + countInStore +
             ", size=" + size +
-            ", nettoPricePerHour=" + nettoPricePerHour +
-            ", nettoPriceNextEveryHour=" + nettoPriceNextEveryHour +
-            ", nettoPricePerDay=" + nettoPricePerDay +
-            ", nettoTotalValue=" + nettoTotalValue +
+            ", pricePerHour=" + pricePerHour +
+            ", priceForNextHour=" + priceForNextHour +
+            ", pricePerDay=" + pricePerDay +
+            ", valueCost=" + valueCost +
             ", types=" + types +
             ", brands=" + brands +
             ", colors=" + colors +

@@ -25,8 +25,3 @@ INSERT INTO equipment_colors (name) VALUES
 ('niebieski'),
 ('czarny'),
 ('zielony');
-
-
-INSERT INTO account_units (name) VALUES
-('doba'),
-('godzina');

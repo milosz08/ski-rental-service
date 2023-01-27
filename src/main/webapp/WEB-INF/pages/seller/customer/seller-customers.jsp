@@ -62,46 +62,52 @@
         </c:if>
         <c:if test="${not empty customersData}">
             <div class="table-responsive">
-                <table class="table table-bordered table-striped table-sm table-hover">
+                <table class="table table-bordered table-striped table-sm table-hover bg-white">
                     <thead>
                     <tr>
-                        <th scope="col">
-                            <button class="border-0 bg-transparent fw-bold" name="sortBy" type="submit" value="identity">
+                        <th scope="col" class="align-middle">
+                            <button class="border-0 bg-transparent fw-bold text-start hstack justify-content-between w-100 lh-sm"
+                                name="sortBy" type="submit" value="identity">
                                 ID
-                                <i class="bi bi-arrow-${sorterData.get("identity").chevronBts} ms-1 micro-font"></i>
+                                <i class="bi bi-arrow-${sorterData.get("identity").chevronBts} mx-1 micro-font"></i>
                             </button>
                         </th>
-                        <th scope="col">
-                            <button class="border-0 bg-transparent fw-bold" name="sortBy" type="submit" value="fullName">
+                        <th scope="col" class="align-middle">
+                            <button class="border-0 bg-transparent fw-bold text-start hstack justify-content-between w-100 lh-sm"
+                                name="sortBy" type="submit" value="fullName">
                                 Imię i nazwisko
-                                <i class="bi bi-arrow-${sorterData.get("fullName").chevronBts} ms-1 micro-font"></i>
+                                <i class="bi bi-arrow-${sorterData.get("fullName").chevronBts} mx-1 micro-font"></i>
                             </button>
                         </th>
-                        <th scope="col">
-                            <button class="border-0 bg-transparent fw-bold" name="sortBy" type="submit" value="pesel">
+                        <th scope="col" class="align-middle">
+                            <button class="border-0 bg-transparent fw-bold text-start hstack justify-content-between w-100 lh-sm"
+                                name="sortBy" type="submit" value="pesel">
                                 Nr PESEL
-                                <i class="bi bi-arrow-${sorterData.get("pesel").chevronBts} ms-1 micro-font"></i>
+                                <i class="bi bi-arrow-${sorterData.get("pesel").chevronBts} mx-1 micro-font"></i>
                             </button>
                         </th>
-                        <th scope="col" class="d-none d-lg-table-cell">
-                            <button class="border-0 bg-transparent fw-bold" name="sortBy" type="submit" value="email">
+                        <th scope="col" class="d-none d-lg-table-cell align-middle">
+                            <button class="border-0 bg-transparent fw-bold text-start hstack justify-content-between w-100 lh-sm"
+                                name="sortBy" type="submit" value="email">
                                 Adres email
-                                <i class="bi bi-arrow-${sorterData.get("email").chevronBts} ms-1 micro-font"></i>
+                                <i class="bi bi-arrow-${sorterData.get("email").chevronBts} mx-1 micro-font"></i>
                             </button>
                         </th>
-                        <th scope="col" class="d-none d-lg-table-cell">
-                            <button class="border-0 bg-transparent fw-bold" name="sortBy" type="submit" value="phoneNumber">
+                        <th scope="col" class="d-none d-lg-table-cell align-middle">
+                            <button class="border-0 bg-transparent fw-bold text-start hstack justify-content-between w-100 lh-sm"
+                                name="sortBy" type="submit" value="phoneNumber">
                                 Nr telefonu
-                                <i class="bi bi-arrow-${sorterData.get("phoneNumber").chevronBts} ms-1 micro-font"></i>
+                                <i class="bi bi-arrow-${sorterData.get("phoneNumber").chevronBts} mx-1 micro-font"></i>
                             </button>
                         </th>
-                        <th scope="col" class="d-none d-lg-table-cell">
-                            <button class="border-0 bg-transparent fw-bold" name="sortBy" type="submit" value="address">
+                        <th scope="col" class="d-none d-lg-table-cell align-middle">
+                            <button class="border-0 bg-transparent fw-bold text-start hstack justify-content-between w-100 lh-sm"
+                                name="sortBy" type="submit" value="address">
                                 Adres zamieszkania
-                                <i class="bi bi-arrow-${sorterData.get("address").chevronBts} ms-1 micro-font"></i>
+                                <i class="bi bi-arrow-${sorterData.get("address").chevronBts} mx-1 micro-font"></i>
                             </button>
                         </th>
-                        <th scope="col" class="fit">Akcja</th>
+                        <th scope="col" class="fit align-middle">Akcja</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -118,25 +124,25 @@
                             </td>
                             <td class="align-middle d-none d-lg-table-cell">${customer.address}</td>
                             <td class="align-middle fit">
-                                <button type="button" class="btn btn-sm btn-danger me-1" data-bs-toggle="modal"
+                                <button type="button" class="btn btn-sm btn-danger py-0 px-1" data-bs-toggle="modal"
                                     data-bs-target="#deleteCustomer${customer.id}">
                                     <span type="button" data-bs-toggle="tooltip" data-bs-placement="top"
                                         data-bs-title="Usuń klienta">
-                                        <i class="bi bi-x-lg"></i>
+                                        <i class="bi bi-x-lg align-middle lh-sm"></i>
                                     </span>
                                 </button>
                                 <a href="${pageContext.request.contextPath}/seller/customer-details?id=${customer.id}"
-                                    class="btn btn-sm btn-dark me-1">
+                                    class="btn btn-sm btn-dark py-0">
                                     Szczegóły
                                 </a>
                                 <a href="${pageContext.request.contextPath}/seller/edit-customer?id=${customer.id}"
-                                    class="btn btn-sm btn-outline-dark me-1">
+                                    class="btn btn-sm btn-outline-dark py-0">
                                     Edytuj
                                 </a>
                                 <a href="${pageContext.request.contextPath}/seller/create-reservation?id=${customer.id}"
-                                    class="btn btn-sm btn-success" type="button" data-bs-toggle="tooltip"
+                                    class="btn btn-sm btn-success py-0" type="button" data-bs-toggle="tooltip"
                                     data-bs-placement="top" data-bs-title="Stwórz nowe wypożyczenie">
-                                    <i class="bi bi-cart-plus"></i>
+                                    <i class="bi bi-cart-plus align-middle lh-sm"></i>
                                 </a>
                             </td>
                         </tr>

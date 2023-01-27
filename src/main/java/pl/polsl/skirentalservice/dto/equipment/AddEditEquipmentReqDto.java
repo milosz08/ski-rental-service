@@ -13,7 +13,7 @@
 
 package pl.polsl.skirentalservice.dto.equipment;
 
-import lombok.Data;
+import lombok.*;
 
 import jakarta.validation.constraints.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +21,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import pl.polsl.skirentalservice.util.Gender;
 import pl.polsl.skirentalservice.core.IReqValidatePojo;
 
-import static org.apache.commons.lang3.StringUtils.trimToEmpty;
+import static org.apache.commons.lang3.StringUtils.*;
 
 import static pl.polsl.skirentalservice.util.Regex.*;
 import static pl.polsl.skirentalservice.util.Gender.findByAlias;
@@ -29,6 +29,7 @@ import static pl.polsl.skirentalservice.util.Gender.findByAlias;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Data
+@AllArgsConstructor
 public class AddEditEquipmentReqDto implements IReqValidatePojo {
 
     @NotEmpty(message = "Pole nazwy sprzętu nie może być puste.")
@@ -44,26 +45,26 @@ public class AddEditEquipmentReqDto implements IReqValidatePojo {
 
     @NotEmpty(message = "Pole stanu magazynowego sprzętu nie może być puste.")
     @Pattern(regexp = POS_NUMBER_INT, message = "Pole stanu magazynowego może przyjmować wartości od 1 do 9999.")
-    private String total;
+    private String countInStore;
 
     @Pattern(regexp = DECIMAL_2_ROUND, message = "Pole rozmiaru musi być w formacie 0,00 lub 0.00, wartość min 1,00.")
     private String size;
 
     @NotEmpty(message = "Pole ceny za dobę wypożyczenia nie może być puste.")
     @Pattern(regexp = DECIMAL_2_ROUND, message = "Pole ceny musi być w formacie 0,00 lub 0.00, wartość min 1,00.")
-    private String nettoPricePerHour;
+    private String pricePerHour;
 
     @NotEmpty(message = "Pole ceny za każdą kolejną godzinę wypożyczenia nie może być puste.")
     @Pattern(regexp = DECIMAL_2_ROUND, message = "Pole ceny musi być w formacie 0,00 lub 0.00, wartość min 1,00.")
-    private String nettoPriceNextEveryHour;
+    private String priceForNextHour;
 
     @NotEmpty(message = "Pole ceny za dzień wypożyczenia nie może być puste.")
     @Pattern(regexp = DECIMAL_2_ROUND, message = "Pole ceny musi być w formacie 0,00 lub 0.00, wartość min 1,00.")
-    private String nettoPricePerDay;
+    private String pricePerDay;
 
     @NotEmpty(message = "Pole całkowitej wartości sprzętu nie może być puste.")
     @Pattern(regexp = DECIMAL_2_ROUND, message = "Pole ceny musi być w formacie 0,00 lub 0.00, wartość min 1,00.")
-    private String nettoTotalValue;
+    private String valueCost;
 
     @Pattern(regexp = DEF_SELECT_VALUE, message = "Należy wybrać wartość inną niż domyślną.")
     private String type;
@@ -81,13 +82,13 @@ public class AddEditEquipmentReqDto implements IReqValidatePojo {
     public AddEditEquipmentReqDto(HttpServletRequest req) {
         this.name = trimToEmpty(req.getParameter("name"));
         this.model = trimToEmpty(req.getParameter("model"));
-        this.description = trimToEmpty(req.getParameter("description"));
-        this.total = trimToEmpty(req.getParameter("total"));
-        this.size = trimToEmpty(req.getParameter("size"));
-        this.nettoPricePerHour = trimToEmpty(req.getParameter("nettoPricePerHour"));
-        this.nettoPriceNextEveryHour = trimToEmpty(req.getParameter("nettoPriceNextEveryHour"));
-        this.nettoPricePerDay = trimToEmpty(req.getParameter("nettoPricePerDay"));
-        this.nettoTotalValue = trimToEmpty(req.getParameter("nettoTotalValue"));
+        this.description = trimToNull(req.getParameter("description"));
+        this.countInStore = trimToEmpty(req.getParameter("countInStore"));
+        this.size = trimToNull(replaceChars(req.getParameter("size"), ',', '.'));
+        this.pricePerHour = trimToEmpty(replaceChars(req.getParameter("pricePerHour"), ',', '.'));
+        this.priceForNextHour = trimToEmpty(replaceChars(req.getParameter("priceForNextHour"), ',', '.'));
+        this.pricePerDay = trimToEmpty(replaceChars(req.getParameter("pricePerDay"), ',', '.'));
+        this.valueCost = trimToEmpty(replaceChars(req.getParameter("valueCost"), ',', '.'));
         this.type = trimToEmpty(req.getParameter("type"));
         this.brand = trimToEmpty(req.getParameter("brand"));
         this.color = trimToEmpty(req.getParameter("color"));
@@ -102,12 +103,12 @@ public class AddEditEquipmentReqDto implements IReqValidatePojo {
             "name='" + name +
             ", model='" + model +
             ", description='" + description +
-            ", total='" + total +
+            ", countInStore='" + countInStore +
             ", size='" + size +
-            ", nettoPricePerHour='" + nettoPricePerHour +
-            ", nettoPriceNextEveryHour='" + nettoPriceNextEveryHour +
-            ", nettoPricePerDay='" + nettoPricePerDay +
-            ", nettoTotalValue='" + nettoTotalValue +
+            ", pricePerHour='" + pricePerHour +
+            ", priceForNextHour='" + priceForNextHour +
+            ", pricePerDay='" + pricePerDay +
+            ", valueCost='" + valueCost +
             ", type='" + type +
             ", brand='" + brand +
             ", color='" + color +

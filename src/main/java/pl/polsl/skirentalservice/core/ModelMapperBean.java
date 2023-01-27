@@ -33,10 +33,8 @@ public class ModelMapperBean {
         this.modelMapper = new ModelMapper();
         this.modelMapper.getConfiguration()
             .setMatchingStrategy(MatchingStrategies.STANDARD)
-            .setFieldAccessLevel(Configuration.AccessLevel.PUBLIC)
-            .setFieldAccessLevel(Configuration.AccessLevel.PRIVATE)
-            .setFieldAccessLevel(Configuration.AccessLevel.PROTECTED)
-            .setFieldAccessLevel(Configuration.AccessLevel.PACKAGE_PRIVATE);
+            .setFieldMatchingEnabled(true)
+            .setFieldAccessLevel(Configuration.AccessLevel.PRIVATE);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

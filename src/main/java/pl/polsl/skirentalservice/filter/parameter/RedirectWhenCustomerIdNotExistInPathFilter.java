@@ -13,10 +13,9 @@
 
 package pl.polsl.skirentalservice.filter.parameter;
 
+import jakarta.servlet.*;
 import jakarta.servlet.http.*;
-import jakarta.servlet.FilterChain;
 import jakarta.servlet.annotation.*;
-import jakarta.servlet.ServletException;
 
 import java.io.IOException;
 
@@ -34,8 +33,8 @@ public class RedirectWhenCustomerIdNotExistInPathFilter extends HttpFilter {
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
         throws IOException, ServletException {
-        final String userId = req.getParameter("id");
-        if (!isNumeric(userId)) {
+        final String customerId = req.getParameter("id");
+        if (!isNumeric(customerId)) {
             res.sendRedirect("/seller/customers");
             return;
         }

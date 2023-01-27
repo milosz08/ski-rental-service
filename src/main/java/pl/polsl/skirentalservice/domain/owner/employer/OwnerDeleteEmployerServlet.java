@@ -56,7 +56,7 @@ public class OwnerDeleteEmployerServlet extends HttpServlet {
         final HttpSession httpSession = req.getSession();
         try (final Session session = database.open()) {
             try {
-                session.getTransaction().begin();
+                session.beginTransaction();
 
                 final String jpqlFindEmployer =
                     "SELECT e FROM EmployerEntity e INNER JOIN e.role r " +

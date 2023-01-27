@@ -8,9 +8,9 @@ INSERT INTO roles (role_name, alias, role_eng) VALUES
 
 
 INSERT INTO user_details(first_name, last_name, pesel, phone_number, email_address, born_date, gender) VALUES
-('Anna', 'Nowak', '65052859767', '454304821', 'annnow321@ski.miloszgilga.pl', '1980-12-25', 1),
-('Andrzej', 'Andrzejewski', '68102023253', '212063998', 'andand456@ski.miloszgilga.pl', '1972-05-12', 0),
-('Jan', 'Kowalski', '66051043845', '450370403', 'jan.kowalski@ski.miloszgilga.pl', '1965-01-18', 0);
+('Anna', 'Nowak', '65052859767', '454304821', 'annnow321@ski.miloszgilga.pl', '1980-12-25', 'FEMALE'),
+('Andrzej', 'Andrzejewski', '68102023253', '212063998', 'andand456@ski.miloszgilga.pl', '1972-05-12', 'MALE'),
+('Jan', 'Kowalski', '66051043845', '450370403', 'jan.kowalski@ski.miloszgilga.pl', '1965-01-18', 'MALE');
 
 
 INSERT INTO location_addresses (street, building_no, apartment_no, city, postal_code) VALUES

@@ -34,12 +34,4 @@ public class ServletException {
             logger.error("Unable to send email message to user email: {}. Message payload: {}", emailAddress, payload);
         }
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public static class InvalidFieldsExistsException extends RuntimeException {
-        public InvalidFieldsExistsException() {
-            super();
-        }
-    }
 }

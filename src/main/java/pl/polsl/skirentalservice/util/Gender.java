@@ -23,9 +23,9 @@ import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
 @Getter
 @AllArgsConstructor
 public enum Gender {
-    UNISEX("unisex", 'U'),
     MALE("mężczyzna", 'M'),
-    FEMALE("kobieta", 'K');
+    FEMALE("kobieta", 'K'),
+    UNISEX("unisex", 'U');
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -41,9 +41,7 @@ public enum Gender {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public static Gender findByAlias(String alias) {
-        return Arrays.stream(Gender.values()).filter(g -> g.alias == alias.charAt(0))
-                .findFirst()
-                .orElse(Gender.MALE);
+        return Arrays.stream(Gender.values()).filter(g -> g.alias == alias.charAt(0)).findFirst().orElse(Gender.MALE);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

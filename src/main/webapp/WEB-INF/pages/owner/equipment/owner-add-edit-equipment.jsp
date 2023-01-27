@@ -113,7 +113,7 @@
                                     Dodatkowy opis (opcjonalny):
                                 </label>
                                 <textarea class="form-control form-control-sm ${addEditEquipmentData.description.errorStyle}"
-                                    rows="4" id="description" name="description"
+                                    rows="4" id="description" name="description" maxlength="200"
                                     placeholder="Wprowadź tutaj dodatkowy opis sprzętu. Maksymalnie 200 znaków."
                                 >${addEditEquipmentData.description.value}</textarea>
                                 <div class="invalid-feedback lh-sm">${addEditEquipmentData.description.message}</div>
@@ -128,11 +128,11 @@
                         </legend>
                         <div class="row mt-0">
                             <div class="col-xl-6 mb-2">
-                                <label for="total" class="form-label mb-1 text-secondary micro-font">Ilość na stanie:</label>
-                                <input type="number" class="form-control form-control-sm ${addEditEquipmentData.total.errorStyle}"
-                                    id="total" value="${addEditEquipmentData.total.value}" placeholder="np. 15" name="total"
-                                    max="9999" min="1">
-                                <div class="invalid-feedback lh-sm">${addEditEquipmentData.total.message}</div>
+                                <label for="countInStore" class="form-label mb-1 text-secondary micro-font">Ilość na stanie:</label>
+                                <input type="number" class="form-control form-control-sm ${addEditEquipmentData.countInStore.errorStyle}"
+                                    id="countInStore" value="${addEditEquipmentData.countInStore.value}" placeholder="np. 15"
+                                    max="9999" min="1" maxlength="4" name="countInStore">
+                                <div class="invalid-feedback lh-sm">${addEditEquipmentData.countInStore.message}</div>
                             </div>
                             <div class="col-xl-6 mb-3">
                                 <label for="size" class="form-label mb-1 text-secondary micro-font">
@@ -140,7 +140,8 @@
                                 </label>
                                 <div class="input-group input-group-sm has-validation">
                                     <input class="form-control form-control-sm ${addEditEquipmentData.size.errorStyle}" name="size"
-                                        type="text" placeholder="np. 32,00" id="size" value="${addEditEquipmentData.size.value}">
+                                        type="text" placeholder="np. 32,00" id="size" value="${addEditEquipmentData.size.value}"
+                                        maxlength="7">
                                     <span class="input-group-text">cm</span>
                                     <div class="invalid-feedback lh-sm">${addEditEquipmentData.size.message}</div>
                                 </div>
@@ -153,51 +154,51 @@
                         </legend>
                         <div class="row mt-0">
                             <div class="col-xl-6 mb-3">
-                                <label for="nettoPricePerHour" class="form-label mb-1 text-secondary micro-font">
+                                <label for="pricePerHour" class="form-label mb-1 text-secondary micro-font">
                                     Cena za 1h wypożyczenia (netto):
                                 </label>
                                 <div class="input-group input-group-sm has-validation">
-                                    <input class="form-control form-control-sm ${addEditEquipmentData.nettoPricePerHour.errorStyle}"
-                                        id="nettoPricePerHour" value="${addEditEquipmentData.nettoPricePerHour.value}"
-                                        placeholder="np. 25,00" name="nettoPricePerHour" type="text" >
+                                    <input class="form-control form-control-sm ${addEditEquipmentData.pricePerHour.errorStyle}"
+                                        id="pricePerHour" value="${addEditEquipmentData.pricePerHour.value}"
+                                        placeholder="np. 25,00" name="pricePerHour" type="text" maxlength="7">
                                     <span class="input-group-text">zł</span>
-                                    <div class="invalid-feedback lh-sm">${addEditEquipmentData.nettoPricePerHour.message}</div>
+                                    <div class="invalid-feedback lh-sm">${addEditEquipmentData.pricePerHour.message}</div>
                                 </div>
                             </div>
                             <div class="col-xl-6 mb-3">
-                                <label for="nettoPriceNextEveryHour" class="form-label mb-1 text-secondary micro-font">
+                                <label for="priceForNextHour" class="form-label mb-1 text-secondary micro-font">
                                     Cena za każdą kolejną godzinę (netto):
                                 </label>
                                 <div class="input-group input-group-sm has-validation">
-                                    <input class="form-control form-control-sm ${addEditEquipmentData.nettoPriceNextEveryHour.errorStyle}"
-                                        id="nettoPriceNextEveryHour" value="${addEditEquipmentData.nettoPriceNextEveryHour.value}"
-                                        placeholder="np. 5,00" name="nettoPriceNextEveryHour" type="text" >
+                                    <input class="form-control form-control-sm ${addEditEquipmentData.priceForNextHour.errorStyle}"
+                                        id="priceForNextHour" value="${addEditEquipmentData.priceForNextHour.value}"
+                                        placeholder="np. 5,00" name="priceForNextHour" type="text" maxlength="7">
                                     <span class="input-group-text">zł</span>
-                                    <div class="invalid-feedback lh-sm">${addEditEquipmentData.nettoPriceNextEveryHour.message}</div>
+                                    <div class="invalid-feedback lh-sm">${addEditEquipmentData.priceForNextHour.message}</div>
                                 </div>
                             </div>
                             <div class="col-xl-6 mb-3">
-                                <label for="nettoPricePerDay" class="form-label mb-1 text-secondary micro-font">
+                                <label for="pricePerDay" class="form-label mb-1 text-secondary micro-font">
                                     Cena za 1 dobę wypożyczenia (netto):
                                 </label>
                                 <div class="input-group input-group-sm has-validation">
-                                    <input class="form-control form-control-sm ${addEditEquipmentData.nettoPricePerDay.errorStyle}"
-                                        id="nettoPricePerDay" value="${addEditEquipmentData.nettoPricePerDay.value}"
-                                        placeholder="np. 80,00" name="nettoPricePerDay" type="text" >
+                                    <input class="form-control form-control-sm ${addEditEquipmentData.pricePerDay.errorStyle}"
+                                        id="pricePerDay" value="${addEditEquipmentData.pricePerDay.value}"
+                                        placeholder="np. 80,00" name="pricePerDay" type="text" maxlength="7">
                                     <span class="input-group-text">zł</span>
-                                    <div class="invalid-feedback lh-sm">${addEditEquipmentData.nettoPricePerDay.message}</div>
+                                    <div class="invalid-feedback lh-sm">${addEditEquipmentData.pricePerDay.message}</div>
                                 </div>
                             </div>
                             <div class="col-xl-6 mb-3">
-                                <label for="nettoTotalValue" class="form-label mb-1 text-secondary micro-font">
+                                <label for="valueCost" class="form-label mb-1 text-secondary micro-font">
                                     Wartość sprzętu (netto):
                                 </label>
                                 <div class="input-group input-group-sm has-validation">
-                                    <input class="form-control form-control-sm ${addEditEquipmentData.nettoTotalValue.errorStyle}"
-                                        id="nettoTotalValue" value="${addEditEquipmentData.nettoTotalValue.value}"
-                                        placeholder="np. 650,00" name="nettoTotalValue" type="text" >
+                                    <input class="form-control form-control-sm ${addEditEquipmentData.valueCost.errorStyle}"
+                                        id="valueCost" value="${addEditEquipmentData.valueCost.value}"
+                                        placeholder="np. 650,00" name="valueCost" type="text" maxlength="7">
                                     <span class="input-group-text">zł</span>
-                                    <div class="invalid-feedback lh-sm">${addEditEquipmentData.nettoTotalValue.message}</div>
+                                    <div class="invalid-feedback lh-sm">${addEditEquipmentData.valueCost.message}</div>
                                 </div>
                             </div>
                         </div>
@@ -218,6 +219,5 @@
     </jsp:include>
     <jsp:include page="/WEB-INF/partials/owner-equipment/type-modal.partial.jsp"/>
     <jsp:include page="/WEB-INF/partials/owner-equipment/brand-modal.partial.jsp"/>
-    <jsp:include page="/WEB-INF/partials/owner-equipment/account-unit-modal.partial.jsp"/>
     <jsp:include page="/WEB-INF/partials/owner-equipment/color-modal.partial.jsp"/>
 </p:generic-owner.wrapper>

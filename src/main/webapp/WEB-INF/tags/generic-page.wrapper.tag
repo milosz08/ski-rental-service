@@ -1,13 +1,13 @@
 <%@ tag description="Overall Page template" pageEncoding="UTF-8" language="java" %>
 <%@ tag trimDirectiveWhitespaces="true"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<jsp:useBean id="pageTitle" type="java.lang.String" scope="request"/>
+<jsp:useBean id="title" class="java.lang.String" scope="request"/>
 
 <!DOCTYPE html>
 <html lang="pl">
     <head>
         <meta charset="UTF-8">
-        <title>${pageTitle}</title>
+        <title>${title}</title>
         <meta name="description" content="Aplikacja do zarządzania zasobami wypożyczalni sprzętu narciarskiego.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="format-detection" content="telephone=no">
