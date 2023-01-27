@@ -11,9 +11,11 @@
     <include file="changelog/2023-01_migrations/aq4_2023-01-19__change-phone-code-and-email-cred.sql" relativeToChangelogFile="true"/>
     <include file="changelog/2023-01_migrations/aq5_2023-01-22__remove-customer-bind-table.sql" relativeToChangelogFile="true"/>
     <include file="changelog/2023-01_migrations/aq6_2023-01-24__create-attribute-tables.sql" relativeToChangelogFile="true"/>
+    <include file="changelog/2023-01_migrations/aq7_2023-01-26__create-equipments-table.sql" relativeToChangelogFile="true"/>
 
     <!-- loadable content scripts -->
     <include file="assertions/fd1_filler__default-employers.sql" relativeToChangelogFile="true"/>
     <include file="assertions/fd2_filler__default-attributes.sql" relativeToChangelogFile="true"/>
+    <include file="assertions/fd3_filler__default-equipments.sql" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

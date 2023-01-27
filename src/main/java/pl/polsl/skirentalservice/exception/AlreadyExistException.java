@@ -70,4 +70,40 @@ public class AlreadyExistException {
                 "bądź wybierz z listy dostępnych.");
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class EquipmentAlreadyExistException extends RuntimeException {
+        public EquipmentAlreadyExistException() {
+            super("Wybrany model sprzętu istnieje już w systemie Jeśli chcesz dodać więcej elementów, zwiększ ich ilość" +
+                "w wypożyczalni.");
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class EquipmentTypeHasConnectionsException extends RuntimeException {
+        public EquipmentTypeHasConnectionsException() {
+            super("Wybrany typ sprzętu narciarskiego nie jest możliwy do usunięcia, ponieważ powiązane są z nim sprzęty. " +
+                "Jeśli chcesz usunąć typ, musisz usunąć wszystkie powiązane z nim sprzęty.");
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class EquipmentBrandHasConnectionsException extends RuntimeException {
+        public EquipmentBrandHasConnectionsException() {
+            super("Wybrana marka sprzętu narciarskiego nie jest możliwa do usunięcia, ponieważ powiązane są z nią sprzęty. " +
+                "Jeśli chcesz usunąć markę, musisz usunąć wszystkie powiązane z nią sprzęty.");
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class EquipmentColorHasConnectionsException extends RuntimeException {
+        public EquipmentColorHasConnectionsException() {
+            super("Wybrany kolor sprzętu narciarskiego nie jest możliwy do usunięcia, ponieważ powiązane są z nim sprzęty. " +
+                "Jeśli chcesz usunąć kolor, musisz usunąć wszystkie powiązane z nim sprzęty.");
+        }
+    }
 }

@@ -15,6 +15,8 @@ package pl.polsl.skirentalservice.domain.owner.equipment;
 
 import org.slf4j.*;
 import org.hibernate.Session;
+import org.krysalis.barcode4j.impl.upcean.EAN13Bean;
+import org.krysalis.barcode4j.output.bitmap.BitmapCanvasProvider;
 
 import jakarta.ejb.EJB;
 import jakarta.servlet.http.*;
@@ -22,6 +24,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
 import pl.polsl.skirentalservice.dto.*;
+import pl.polsl.skirentalservice.core.*;
+import pl.polsl.skirentalservice.entity.*;
 import pl.polsl.skirentalservice.dto.equipment.*;
 import pl.polsl.skirentalservice.core.ConfigBean;
 import pl.polsl.skirentalservice.core.db.HibernateBean;
@@ -31,6 +35,14 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 
+import static java.io.File.separator;
+import static java.util.Objects.isNull;
+import static java.awt.image.BufferedImage.TYPE_BYTE_BINARY;
+import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
+
+import static pl.polsl.skirentalservice.util.Utils.*;
+import static pl.polsl.skirentalservice.util.SessionAlert.*;
+import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.util.SessionAttribute.*;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
 import static pl.polsl.skirentalservice.util.PageTitle.OWNER_ADD_EQUIPMENT_PAGE;
@@ -44,6 +56,8 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
 
     @EJB private HibernateBean database;
     @EJB private ValidatorBean validator;
+    @EJB private ModelMapperBean modelMapper;
+    @EJB private ConfigBean config;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -92,6 +106,7 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
         req.setAttribute(EQ_TYPES_MODAL_DATA.getName(), getAndDestroySessionModalData(req, EQ_TYPES_MODAL_DATA));
         req.setAttribute(EQ_BRANDS_MODAL_DATA.getName(), getAndDestroySessionModalData(req, EQ_BRANDS_MODAL_DATA));
         req.setAttribute(EQ_COLORS_MODAL_DATA.getName(), getAndDestroySessionModalData(req, EQ_COLORS_MODAL_DATA));
+        req.setAttribute("title", OWNER_ADD_EQUIPMENT_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/owner/equipment/owner-add-edit-equipment.jsp").forward(req, res);
     }
 
@@ -101,11 +116,12 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final HttpSession httpSession = req.getSession();
         final AlertTupleDto alert = new AlertTupleDto(true);
+        final String loggedUser = getLoggedUserLogin(req);
 
         final AddEditEquipmentReqDto reqDto = new AddEditEquipmentReqDto(req);
         final AddEditEquipmentResDto resDto = new AddEditEquipmentResDto(validator, reqDto);
         if (validator.someFieldsAreInvalid(reqDto)) {
-            httpSession.setAttribute(POST_REDIR_GET, resDto);
+            httpSession.setAttribute(getClass().getName(), resDto);
             res.sendRedirect("/owner/add-equipment");
             return;
         }
@@ -113,16 +129,61 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                // TODO: dodawnie nowych sprzętów do bazy danych + walidacja
+                final String jpqlEquipmentModelExist =
+                    "SELECT COUNT(e.id) > 0 FROM EquipmentEntity e WHERE LOWER(e.model) = LOWER(:model)";
+                final Boolean equipmentModelExist = session.createQuery(jpqlEquipmentModelExist, Boolean.class)
+                    .setParameter("model", reqDto.getModel())
+                    .getSingleResult();
+                if (equipmentModelExist) throw new EquipmentAlreadyExistException();
 
+                final EquipmentEntity persistNewEquipment = modelMapper.map(reqDto, EquipmentEntity.class);
+                persistNewEquipment.setEquipmentType(session.getReference(EquipmentTypeEntity.class, reqDto.getType()));
+                persistNewEquipment.setEquipmentBrand(session.getReference(EquipmentBrandEntity.class, reqDto.getBrand()));
+                persistNewEquipment.setEquipmentColor(session.getReference(EquipmentColorEntity.class, reqDto.getColor()));
+
+                boolean barcodeExist;
+                String generatedBarcode;
+                do {
+                    generatedBarcode = getBarcodeChecksum(randomNumeric(12));
+                    final String jpqlFindBarcode =
+                        "SELECT COUNT(e.id) > 0 FROM EquipmentEntity e WHERE e.barcode = :barcode";
+                    barcodeExist = session.createQuery(jpqlFindBarcode, Boolean.class)
+                        .setParameter("barcode", generatedBarcode)
+                        .getSingleResult();
+                } while (barcodeExist);
+
+                final EAN13Bean barcodeGenerator = new EAN13Bean();
+                final var canvas = new BitmapCanvasProvider(250, TYPE_BYTE_BINARY, true, 0);
+                barcodeGenerator.generateBarcode(canvas, generatedBarcode);
+                final BufferedImage barcodeBufferedImage = canvas.getBufferedImage();
+
+                final File barCodesDir = new File(config.getUploadsDir() + separator + "bar-codes");
+                barCodesDir.mkdir();
+                final File outputFile = new File(barCodesDir, generatedBarcode + ".png");
+                if (outputFile.createNewFile()) {
+                    ImageIO.write(barcodeBufferedImage, "png", outputFile);
+                } else throw new RuntimeException("Nieudane zapisanie kodu kreskowego sprzętu.");
+
+                session.persist(persistNewEquipment);
                 session.getTransaction().commit();
+                alert.setType(INFO);
+                alert.setMessage(
+                    "Nastąpiło pomyślne zapisanie nowego sprzętu oraz wygenerowanie dla niego kodu kreskowego."
+                );
+                httpSession.setAttribute(COMMON_EQUIPMENTS_PAGE_ALERT.getName(), alert);
+                httpSession.removeAttribute(getClass().getName());
+                LOGGER.info("Successful created new equipment with bar code image by: {}. Equipment data: {}",
+                    loggedUser, reqDto);
+                res.sendRedirect("/owner/equipments");
             } catch (RuntimeException ex) {
                 onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
+            httpSession.setAttribute(getClass().getName(), resDto);
             httpSession.setAttribute(OWNER_ADD_EQUIPMENT_PAGE_ALERT.getName(), alert);
+            LOGGER.error("Unable to create new equipment. Cause: {}", ex.getMessage());
+            res.sendRedirect("/owner/add-equipment");
         }
-        res.sendRedirect("/owner/add-equipment");
     }
 }

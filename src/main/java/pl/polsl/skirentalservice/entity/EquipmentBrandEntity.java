@@ -13,10 +13,13 @@
 
 package pl.polsl.skirentalservice.entity;
 
+import java.util.*;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 import pl.polsl.skirentalservice.core.db.*;
+
+import static jakarta.persistence.FetchType.LAZY;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -27,6 +30,9 @@ import pl.polsl.skirentalservice.core.db.*;
 public class EquipmentBrandEntity extends AuditableEntity {
 
     @Column(name = "name")  private String name;
+
+    @OneToMany(mappedBy = "equipmentBrand", fetch = LAZY)
+    private Set<EquipmentEntity> equipments = new HashSet<>();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -44,12 +50,20 @@ public class EquipmentBrandEntity extends AuditableEntity {
         this.name = name;
     }
 
+    Set<EquipmentEntity> getEquipments() {
+        return equipments;
+    }
+
+    void setEquipments(Set<EquipmentEntity> equipments) {
+        this.equipments = equipments;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public String toString() {
         return "{" +
-            "name='" + name + '\'' +
+            "name='" + name +
             '}';
     }
 }

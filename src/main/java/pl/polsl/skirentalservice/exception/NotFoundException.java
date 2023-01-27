@@ -61,4 +61,12 @@ public class NotFoundException {
             super("Wybrany kolor sprzętu narciarskiego nie istnieje w systemie.");
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class EquipmentNotFoundException extends RuntimeException {
+        public EquipmentNotFoundException(String eqId) {
+            super("Wybrany sprzęt narciarski na podstawie ID <strong>#" + eqId + "</strong> nie istnieje w systemie.");
+        }
+    }
 }
