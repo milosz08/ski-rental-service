@@ -6,7 +6,15 @@
 
 <p:generic-page.wrapper>
     <div class="d-flex flex-grow-1 h-100">
-        <p:generic-left-nav.wrapper requestPath="owner">
+        <p:generic-left-nav.wrapper requestPath="seller">
+            <li class="mb-1">
+                <a href="${pageContext.request.contextPath}/seller/equipments"
+                    class="btn d-flex justify-content-between text-white-50 fw-light btn-hover-dark
+                        rounded border-0 w-100 text-start lh-sm">
+                    Sprzęty narciarskie
+                    <i class="d-inline-flex align-self-center bi bi-arrow-return-right"></i>
+                </a>
+            </li>
             <li class="mb-1">
                 <button data-bs-toggle="collapse" data-bs-target="#customers-collapse" aria-expanded="false"
                         class="btn d-flex justify-content-between text-white-50 fw-light btn-hover-dark
