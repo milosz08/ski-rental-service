@@ -40,13 +40,13 @@ import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.apache.commons.lang3.RandomStringUtils.*;
 
+import static pl.polsl.skirentalservice.util.Utils.*;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
+import static pl.polsl.skirentalservice.util.SessionAlert.*;
 import static pl.polsl.skirentalservice.util.UserRole.SELLER;
-import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
 import static pl.polsl.skirentalservice.util.PageTitle.OWNER_ADD_EMPLOYER_PAGE;
 import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
-import static pl.polsl.skirentalservice.util.SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -66,22 +66,32 @@ public class OwnerAddEmployerServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        selfRedirect(req, res);
+        final AlertTupleDto alert = getAndDestroySessionAlert(req, OWNER_ADD_EMPLOYER_PAGE_ALERT);
+        var resDto = getFromSessionAndDestroy(req, getClass().getName(), AddEditEmployerResDto.class);
+        if (isNull(resDto)) resDto = new AddEditEmployerResDto();
+        req.setAttribute("alertData", alert);
+        req.setAttribute("addEditEmployerData", resDto);
+        req.setAttribute("addEditText", "Dodaj");
+        req.setAttribute("title", OWNER_ADD_EMPLOYER_PAGE.getName());
+        req.getRequestDispatcher("/WEB-INF/pages/owner/employer/owner-add-edit-employer.jsp").forward(req, res);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
+        final HttpSession httpSession = req.getSession();
         final AlertTupleDto alert = new AlertTupleDto(true);
+        final String loggedUser = getLoggedUserLogin(req);
+
         final AddEditEmployerReqDto reqDto = new AddEditEmployerReqDto(req);
         final AddEditEmployerResDto resDto = new AddEditEmployerResDto(validator, reqDto);
         if (validator.someFieldsAreInvalid(reqDto)) {
-            req.setAttribute("addEditCustomerData", resDto);
-            selfRedirect(req, res);
+            httpSession.setAttribute(getClass().getName(), resDto);
+            res.sendRedirect("/owner/add-employer");
             return;
         }
-        final HttpSession httpSession = req.getSession();
+
         final IExecCommandPerformer commandPerformer = new ExecCommandPerformer(sshSocket);
         try (final Session session = database.open()) {
             reqDto.validateDates(config);
@@ -167,6 +177,7 @@ public class OwnerAddEmployerServlet extends HttpServlet {
                 );
                 alert.setType(INFO);
                 httpSession.setAttribute(OWNER_EMPLOYERS_PAGE_ALERT.getName(), alert);
+                httpSession.removeAttribute(getClass().getName());
                 res.sendRedirect("/owner/employers");
             } catch (RuntimeException ex) {
                 if (!isEmpty(email)) commandPerformer.deleteMailbox(email);
@@ -174,18 +185,10 @@ public class OwnerAddEmployerServlet extends HttpServlet {
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
-            req.setAttribute("alertData", alert);
-            req.setAttribute("addEditCustomerData", resDto);
+            httpSession.setAttribute(getClass().getName(), resDto);
+            httpSession.setAttribute(OWNER_ADD_EMPLOYER_PAGE_ALERT.getName(), alert);
             LOGGER.error("Unable to create employer. Cause: {}", ex.getMessage());
-            selfRedirect(req, res);
+            res.sendRedirect("/owner/add-employer");
         }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private void selfRedirect(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        req.setAttribute("addEditText", "Dodaj");
-        req.setAttribute("title", OWNER_ADD_EMPLOYER_PAGE.getName());
-        req.getRequestDispatcher("/WEB-INF/pages/owner/employer/owner-add-edit-employer.jsp").forward(req, res);
     }
 }

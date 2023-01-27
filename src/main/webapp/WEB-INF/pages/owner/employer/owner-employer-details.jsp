@@ -20,6 +20,16 @@
         </ol>
     </nav>
     <hr/>
+    <div class="mb-3">
+        <button class="btn btn-sm btn-danger me-1" data-bs-toggle="modal" data-bs-target="#deleteEmployer${employerData.id}">
+            <i class="bi bi-x-lg align-middle me-2 lh-sm"></i>
+            Usuń pracownika
+        </button>
+        <a href="${pageContext.request.contextPath}/owner/edit-employer?id=${employerData.id}"
+            class="btn btn-sm btn-outline-dark me-1">
+            Edytuj dane pracownika
+        </a>
+    </div>
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-6">
@@ -82,10 +92,6 @@
                         <td>${employerData.yearsHired} lat(a)</td>
                     </tr>
                     <tr>
-                        <td class="fw-bold">Blokada konta:</td>
-                        <td class="fw-bold ${employerData.lockedStateColor}">${employerData.lockedState}</td>
-                    </tr>
-                    <tr>
                         <td class="fw-bold">Płeć:</td>
                         <td>${employerData.gender.name}</td>
                     </tr>
@@ -98,4 +104,8 @@
             </div>
         </div>
     </div>
+    <jsp:include page="/WEB-INF/partials/owner/delete-employer-modal.partial.jsp">
+        <jsp:param name="id" value="${employerData.id}"/>
+        <jsp:param name="fullName" value="${employerData.fullName}"/>
+    </jsp:include>
 </p:generic-owner.wrapper>

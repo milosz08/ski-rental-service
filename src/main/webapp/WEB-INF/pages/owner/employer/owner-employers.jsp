@@ -146,25 +146,10 @@
                                 </a>
                             </td>
                         </tr>
-                        <div class="modal fade" id="deleteEmployer${employer.id}" data-bs-backdrop="static"
-                            tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-body lh-sm">
-                                        Czy na pewno chcesz usunąć pracownika <strong>${employer.fullName}</strong>?
-                                        Operacji nie można cofnąć. Można usunąć tylko tych pracowników, który w danej
-                                        chwili nie obsługują żadnego wypożyczenia w systemie.
-                                    </div>
-                                    <div class="modal-footer">
-                                        <a href="${pageContext.request.contextPath}/owner/delete-employer?id=${employer.id}"
-                                            type="button" class="btn btn-sm btn-outline-danger">Usuń</a>
-                                        <button type="button" class="btn btn-sm btn-dark" data-bs-dismiss="modal">
-                                            Zamknij
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <jsp:include page="/WEB-INF/partials/owner/delete-employer-modal.partial.jsp">
+                            <jsp:param name="id" value="${employer.id}"/>
+                            <jsp:param name="fullName" value="${employer.fullName}"/>
+                        </jsp:include>
                     </c:forEach>
                     </tbody>
                 </table>
