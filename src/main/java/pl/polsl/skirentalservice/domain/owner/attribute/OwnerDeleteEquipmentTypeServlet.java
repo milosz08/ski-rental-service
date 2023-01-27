@@ -28,10 +28,12 @@ import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.dto.attribute.AttributeModalResDto;
 
 import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import static pl.polsl.skirentalservice.util.Utils.*;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
+import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
 import static pl.polsl.skirentalservice.util.SessionAttribute.EQ_TYPES_MODAL_DATA;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,6 +55,7 @@ public class OwnerDeleteEquipmentTypeServlet extends HttpServlet {
         final AlertTupleDto alert = new AlertTupleDto(true);
         final HttpSession httpSession = req.getSession();
         final AttributeModalResDto resDto = new AttributeModalResDto();
+
         resDto.setAlert(alert);
         resDto.setModalImmediatelyOpen(true);
 
@@ -65,12 +68,18 @@ public class OwnerDeleteEquipmentTypeServlet extends HttpServlet {
                     .setParameter("id", typeId).getSingleResultOrNull();
                 if (isNull(getDeletedName)) throw new EquipmentTypeNotFoundException();
 
-                // TODO: sprawdzenie przed usunięciem czy nie ma żadnych odwołań w tabeli equipments
+                resDto.getActiveFirstPage().setActive(false);
+                resDto.getActiveSecondPage().setActive(true);
+
+                final String jpqlFindTypeHasConnections =
+                    "SELECT COUNT(e.id) > 0 FROM EquipmentEntity e INNER JOIN e.equipmentType t WHERE t.id = :id";
+                final Boolean attributeHasConnections = session.createQuery(jpqlFindTypeHasConnections, Boolean.class)
+                    .setParameter("id", typeId)
+                    .getSingleResult();
+                if (attributeHasConnections) throw new EquipmentTypeHasConnectionsException();
 
                 session.createMutationQuery("DELETE EquipmentTypeEntity e WHERE e.id = :id")
                     .setParameter("id", typeId).executeUpdate();
-                resDto.getActiveFirstPage().setActive(false);
-                resDto.getActiveSecondPage().setActive(true);
                 alert.setType(INFO);
                 alert.setMessage(
                     "Usuwanie typu sprzętu narciarskiego: <strong>" + getDeletedName + "</strong> zakończone sukcesem."
@@ -81,10 +90,11 @@ public class OwnerDeleteEquipmentTypeServlet extends HttpServlet {
                 onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
-            onAttributeException(alert, resDto, ex);
+            alert.setActive(true);
+            alert.setMessage(ex.getMessage());
             LOGGER.error("Failure delete equipment type by: {}. Cause: {}", loggedUser, ex.getMessage());
         }
         httpSession.setAttribute(EQ_TYPES_MODAL_DATA.getName(), resDto);
-        res.sendRedirect("/owner/add-equipment");
+        res.sendRedirect(defaultIfBlank(req.getParameter("redirect"), "/owner/add-equipment"));
     }
 }
