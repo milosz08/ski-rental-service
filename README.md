@@ -49,17 +49,18 @@ SMTP_PASS           = xxxxx -> insert here SMTP mail server password
 SSH_HOST            = xxxxx -> SSH host
 SSH_LOGIN           = xxxxx -> SSH login
 ```
-3. To start application, download Wildfly/JBOSS application server from here:
+3. Create directory in `wildfly-27.0.1.Final/standalone/data` with name `ski-rental-service` and create another directory in previous directory with name `bar-codes` and move two sample codes from directory `sample-bar-codes` in project root. 
+4. To start application, download Wildfly/JBOSS application server from here:
 * [download for Windows/x86](https://github.com/wildfly/wildfly/releases/download/27.0.1.Final/wildfly-27.0.1.Final.zip)
 * [download for MacOS/UNIX](https://github.com/wildfly/wildfly/releases/download/27.0.1.Final/wildfly-27.0.1.Final.tar.gz)
-4. Create new user in Wildfly application server by running `add-user.sh` (for UNIX) or `add-user.bat` (for windows) in `bin` directory in Wildfly application server folder.
-5. Configure runtime server in your IDE [example for IntellijIDEA](https://medium.com/geekculture/how-to-configure-and-deploy-webapps-with-wildfly-application-server-in-intellij-idea-f104a6c2a0db).
-5. Run grade build with `copyRsa` task and `processResources` and initiate application (via Gradle Wrapper):
+5. Create new user in Wildfly application server by running `add-user.sh` (for UNIX) or `add-user.bat` (for windows) in `bin` directory in Wildfly application server folder.
+6. Configure runtime server in your IDE [example for IntellijIDEA](https://medium.com/geekculture/how-to-configure-and-deploy-webapps-with-wildfly-application-server-in-intellij-idea-f104a6c2a0db).
+7. Run grade build with `copyRsa` task and `processResources` and initiate application (via Gradle Wrapper):
 ```
 $ ./gradlew run copyRsa            # move private key and known_hosts.dat file into build/resources directory
 $ ./gradlew run processResources   # replacement values from .env file into xml configuration files
 ```
-7. By default, application listen on `127.0.0.1:8080` and Wildfly admin dashboard is available on `127.0.0.1:9990`.
+8. By default, application listen on `127.0.0.1:8080` and Wildfly admin dashboard is available on `127.0.0.1:9990`.
 
 <a name="manage-mailboxes-via-ssh"></a>
 ## Manage mailboxes via SSH
