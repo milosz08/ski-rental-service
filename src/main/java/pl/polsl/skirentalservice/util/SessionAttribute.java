@@ -20,17 +20,19 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 public enum SessionAttribute {
-    EMPLOYERS_LIST_SORTER("employers-list-sorter"),
-    EMPLOYERS_LIST_FILTER("employers-list-filter"),
-    CUSTOMERS_LIST_SORTER("customers-list-sorter"),
-    CUSTOMERS_LIST_FILTER("customers-list-filter"),
+    EMPLOYERS_LIST_SORTER       ("employers-list-sorter"),
+    EMPLOYERS_LIST_FILTER       ("employers-list-filter"),
+    CUSTOMERS_LIST_SORTER       ("customers-list-sorter"),
+    CUSTOMERS_LIST_FILTER       ("customers-list-filter"),
+    EQUIPMENTS_LIST_SORTER      ("equipments-list-sorter"),
+    EQUIPMENTS_LIST_FILTER      ("equipments-list-filter"),
 
-    EQ_TYPES_MODAL_DATA("equipmentTypeModalData"),
-    EQ_BRANDS_MODAL_DATA("equipmentBrandsModalData"),
-    EQ_COLORS_MODAL_DATA("equipmentColorsModalData"),
+    EQ_TYPES_MODAL_DATA         ("equipmentTypeModalData"),
+    EQ_BRANDS_MODAL_DATA        ("equipmentBrandsModalData"),
+    EQ_COLORS_MODAL_DATA        ("equipmentColorsModalData"),
 
-    LOGGED_USER_DETAILS("loggedUserDetails"),
-    LOGOUT_MODAL("logout-modal");
+    LOGGED_USER_DETAILS         ("loggedUserDetails"),
+    LOGOUT_MODAL                ("logout-modal");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
