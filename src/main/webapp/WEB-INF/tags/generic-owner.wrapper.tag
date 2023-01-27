@@ -1,6 +1,5 @@
 <%@ tag description="Owner panel wrapper template" pageEncoding="UTF-8" language="java" %>
 <%@ tag trimDirectiveWhitespaces="true"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
 <jsp:useBean id="loggedUserDetails" type="pl.polsl.skirentalservice.dto.login.LoggedUserDataDto" scope="session"/>
@@ -8,6 +7,22 @@
 <p:generic-page.wrapper>
     <div class="d-flex flex-grow-1 h-100">
         <p:generic-left-nav.wrapper requestPath="owner">
+            <li class="mb-1">
+                <a href="${pageContext.request.contextPath}/owner/rents"
+                    class="btn d-flex justify-content-between text-white-50 fw-light btn-hover-dark
+                        rounded border-0 w-100 text-start lh-sm">
+                    Lista wypożyczeń
+                    <i class="d-inline-flex align-self-center bi bi-arrow-return-right"></i>
+                </a>
+            </li>
+            <li class="mb-1">
+                <a href="${pageContext.request.contextPath}/owner/customers"
+                    class="btn d-flex justify-content-between text-white-50 fw-light btn-hover-dark
+                        rounded border-0 w-100 text-start lh-sm">
+                    Lista klientów
+                    <i class="d-inline-flex align-self-center bi bi-arrow-return-right"></i>
+                </a>
+            </li>
             <li class="mb-1">
                 <button data-bs-toggle="collapse" data-bs-target="#employers-collapse" aria-expanded="false"
                     class="btn d-flex justify-content-between text-white-50 fw-light btn-hover-dark
