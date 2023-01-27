@@ -2,6 +2,8 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page trimDirectiveWhitespaces="true"%>
 
+<jsp:useBean id="equipmentId" class="java.lang.String" scope="request"/>
+<jsp:useBean id="addEditText" class="java.lang.String" scope="request"/>
 <jsp:useBean id="addEditEquipmentData" class="pl.polsl.skirentalservice.dto.equipment.AddEditEquipmentResDto" scope="request"/>
 <jsp:useBean id="equipmentBrandsModalData" class="pl.polsl.skirentalservice.dto.attribute.AttributeModalResDto" scope="request"/>
 
@@ -38,6 +40,12 @@
                     <div class="tab-pane fade ${equipmentBrandsModalData.activeFirstPage.canvas} p-3" id="addNewBrandCard"
                         role="tabpanel" tabindex="0">
                         <form action="${pageContext.request.contextPath}/owner/add-equipment-brand" method="post" novalidate>
+                            <c:if test="${addEditText.equals('Edytuj')}">
+                                <input type="hidden" name="redirect" value="/owner/edit-equipment?id=${equipmentId}"/>
+                            </c:if>
+                            <c:if test="${not addEditText.equals('Edytuj')}">
+                                <input type="hidden" name="redirect" value="/owner/add-equipment"/>
+                            </c:if>
                             <label for="equipmentBrand" class="form-label mb-1 text-secondary micro-font">
                                 Nazwa marki sprzętu:
                             </label>
@@ -67,10 +75,20 @@
                                         <th class="align-middle">${brand.value}</th>
                                         <td class="align-middle">${brand.text}</td>
                                         <td class="align-middle">
-                                            <a href="${pageContext.request.contextPath}/owner/delete-equipment-brand?id=${brand.value}"
-                                                class="btn btn-danger btn-sm py-0">
-                                                Usuń
-                                            </a>
+                                            <c:if test="${addEditText.equals('Edytuj')}">
+                                                <a href="${pageContext.request.contextPath}
+                                                    /owner/delete-equipment-brand?id=${brand.value}&redirect=/owner/edit-equipment?id=${equipmentId}"
+                                                    class="btn btn-danger btn-sm py-0">
+                                                    Usuń
+                                                </a>
+                                            </c:if>
+                                            <c:if test="${not addEditText.equals('Edytuj')}">
+                                                <a href="${pageContext.request.contextPath}
+                                                    /owner/delete-equipment-brand?id=${brand.value}&redirect=/owner/add-equipment"
+                                                    class="btn btn-danger btn-sm py-0">
+                                                    Usuń
+                                                </a>
+                                            </c:if>
                                         </td>
                                     </tr>
                                 </c:if>
