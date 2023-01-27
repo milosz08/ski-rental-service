@@ -3,7 +3,7 @@
  * Silesian University of Technology
  *
  *  File name: SellerCustomerDetailsServlet.java
- *  Last modified: 21/01/2023, 16:18
+ *  Last modified: 25/01/2023, 14:25
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -11,7 +11,7 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentalservice.domain.seller.customer;
+package pl.polsl.skirentalservice.domain.common.customer;
 
 import org.slf4j.*;
 import org.hibernate.Session;
@@ -23,22 +23,24 @@ import jakarta.servlet.annotation.WebServlet;
 
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.core.db.HibernateBean;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.exception.NotFoundException;
 import pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto;
 
 import java.io.IOException;
 
 import static java.util.Objects.isNull;
+import static pl.polsl.skirentalservice.util.PageTitle.*;
 import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
-import static pl.polsl.skirentalservice.util.PageTitle.OWNER_EMPLOYER_DETAILS_PAGE;
-import static pl.polsl.skirentalservice.util.SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT;
+import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
+import static pl.polsl.skirentalservice.util.SessionAlert.COMMON_CUSTOMERS_PAGE_ALERT;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@WebServlet("/seller/customer-details")
-public class SellerCustomerDetailsServlet extends HttpServlet {
+@WebServlet(urlPatterns = { "/seller/customer-details", "/owner/customer-details" })
+public class CommonCustomerDetailsServlet extends HttpServlet {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SellerCustomerDetailsServlet.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommonCustomerDetailsServlet.class);
 
     @EJB private HibernateBean database;
 
@@ -47,9 +49,10 @@ public class SellerCustomerDetailsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final String userId = req.getParameter("id");
-        final AlertTupleDto alert = new AlertTupleDto(true);
-
         final HttpSession httpSession = req.getSession();
+        final var userDataDto = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
+
+        final AlertTupleDto alert = new AlertTupleDto(true);
         try (final Session session = database.open()) {
             try {
                 session.beginTransaction();
@@ -72,15 +75,17 @@ public class SellerCustomerDetailsServlet extends HttpServlet {
 
                 session.getTransaction().commit();
                 req.setAttribute("customerData", customerDetails);
-                req.setAttribute("title", OWNER_EMPLOYER_DETAILS_PAGE.getName());
-                req.getRequestDispatcher("/WEB-INF/pages/seller/customer/seller-customer-details.jsp").forward(req, res);
+                req.setAttribute("title", COMMON_CUSTOMER_DETAILS_PAGE.getName());
+
+                req.getRequestDispatcher("/WEB-INF/pages/" + userDataDto.getRoleEng() + "/customer/" +
+                    userDataDto.getRoleEng() + "-customer-details.jsp").forward(req, res);
             } catch (RuntimeException ex) {
                 onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
-            httpSession.setAttribute(OWNER_EMPLOYERS_PAGE_ALERT.getName(), alert);
-            res.sendRedirect("/owner/employers");
+            httpSession.setAttribute(COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
+            res.sendRedirect("/" + userDataDto.getRoleEng() + "/customers");
         }
     }
 }

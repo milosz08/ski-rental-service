@@ -3,7 +3,7 @@
  * Silesian University of Technology
  *
  *  File name: SellerCustomersServlet.java
- *  Last modified: 21/01/2023, 16:18
+ *  Last modified: 25/01/2023, 14:25
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -11,7 +11,7 @@
  * of the application. Project created for educational purposes only.
  */
 
-package pl.polsl.skirentalservice.domain.seller.customer;
+package pl.polsl.skirentalservice.domain.common.customer;
 
 import org.slf4j.*;
 import org.hibernate.Session;
@@ -25,6 +25,7 @@ import pl.polsl.skirentalservice.paging.filter.*;
 import pl.polsl.skirentalservice.paging.sorter.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.core.db.HibernateBean;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.dto.employer.EmployerRecordResDto;
 import pl.polsl.skirentalservice.paging.pagination.ServletPagination;
 
@@ -37,16 +38,16 @@ import static org.apache.commons.lang3.math.NumberUtils.toInt;
 import static pl.polsl.skirentalservice.util.AlertType.ERROR;
 import static pl.polsl.skirentalservice.util.SessionAttribute.*;
 import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
+import static pl.polsl.skirentalservice.util.PageTitle.COMMON_CUSTOMERS_PAGE;
 import static pl.polsl.skirentalservice.util.Utils.getAndDestroySessionAlert;
-import static pl.polsl.skirentalservice.util.PageTitle.SELLER_EDIT_CUSTOMER_PAGE;
-import static pl.polsl.skirentalservice.util.SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT;
+import static pl.polsl.skirentalservice.util.SessionAlert.COMMON_CUSTOMERS_PAGE_ALERT;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@WebServlet("/seller/customers")
-public class SellerCustomersServlet extends HttpServlet {
+@WebServlet(urlPatterns = { "/seller/customers", "/owner/customers" })
+public class CommonCustomersServlet extends HttpServlet {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SellerCustomersServlet.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommonCustomersServlet.class);
 
     private final Map<String, ServletSorterField> sorterFieldMap = new HashMap<>();
     private final List<FilterColumn> filterFieldMap = new ArrayList<>();
@@ -80,12 +81,15 @@ public class SellerCustomersServlet extends HttpServlet {
         final int page = toInt(requireNonNullElse(req.getParameter("page"), "1"), 1);
         final int total = toInt(requireNonNullElse(req.getParameter("total"), "10"), 10);
 
+        final HttpSession httpSession = req.getSession();
+        final var userDataDto = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
+
         final ServletSorter servletSorter = new ServletSorter(req, "c.id", sorterFieldMap);
         final SorterDataDto sorterData = servletSorter.generateSortingJPQuery(CUSTOMERS_LIST_SORTER);
         final ServletFilter servletFilter = new ServletFilter(req, filterFieldMap);
         final FilterDataDto filterData = servletFilter.generateFilterJPQuery(CUSTOMERS_LIST_FILTER);
 
-        final AlertTupleDto alert = getAndDestroySessionAlert(req, OWNER_EMPLOYERS_PAGE_ALERT);
+        final AlertTupleDto alert = getAndDestroySessionAlert(req, COMMON_CUSTOMERS_PAGE_ALERT);
         try (final Session session = database.open()) {
             try {
                 session.beginTransaction();
@@ -125,8 +129,9 @@ public class SellerCustomersServlet extends HttpServlet {
         req.setAttribute("alertData", alert);
         req.setAttribute("sorterData", sorterFieldMap);
         req.setAttribute("filterData", filterData);
-        req.setAttribute("title", SELLER_EDIT_CUSTOMER_PAGE.getName());
-        req.getRequestDispatcher("/WEB-INF/pages/seller/customer/seller-customers.jsp").forward(req, res);
+        req.setAttribute("title", COMMON_CUSTOMERS_PAGE.getName());
+        req.getRequestDispatcher("/WEB-INF/pages/" + userDataDto.getRoleEng() + "/customer/" +
+            userDataDto.getRoleEng() + "-customers.jsp").forward(req, res);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -135,10 +140,15 @@ public class SellerCustomersServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final int page = toInt(requireNonNullElse(req.getParameter("page"), "1"), 1);
         final int total = toInt(requireNonNullElse(req.getParameter("total"), "10"), 10);
+
+        final HttpSession httpSession = req.getSession();
+        final var userDataDto = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
+
         final ServletSorter servletSorter = new ServletSorter(req, "c.id", sorterFieldMap);
         servletSorter.generateSortingJPQuery(CUSTOMERS_LIST_SORTER);
         final ServletFilter servletFilter = new ServletFilter(req, filterFieldMap);
         servletFilter.generateFilterJPQuery(CUSTOMERS_LIST_FILTER);
-        res.sendRedirect("/seller/customers?page=" + page + "&total=" + total);
+
+        res.sendRedirect("/" + userDataDto.getRoleEng() + "/customers?page=" + page + "&total=" + total);
     }
 }
