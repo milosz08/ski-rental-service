@@ -94,8 +94,7 @@ public class LoginServlet extends HttpServlet {
 
                 final String jpqlSelectEmployer =
                     "SELECT new pl.polsl.skirentalservice.dto.login.LoggedUserDataDto(" +
-                        "e.id, e.login, CONCAT(d.firstName, ' ', d.lastName)," +
-                        "IFNULL(e.imageUrl, 'static/images/default-profile-image.svg'), r.roleName, " +
+                        "e.id, e.login, CONCAT(d.firstName, ' ', d.lastName), r.roleName, " +
                         "e.role.alias, e.role.roleEng, d.gender, d.emailAddress, e.firstAccess" +
                     ") FROM EmployerEntity e " +
                     "INNER JOIN e.role r " +

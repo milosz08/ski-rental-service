@@ -61,14 +61,13 @@ public class CommonEquipmentDetailsServlet extends HttpServlet {
                     "SELECT new pl.polsl.skirentalservice.dto.equipment.EquipmentDetailsResDto(" +
                         "e.id, e.name, t.name, e.model, e.gender, e.barcode," +
                         "CASE WHEN e.size IS NULL THEN '<i>brak danych</i>' ELSE CAST(e.size AS string) END," +
-                        "b.name, c.name, CONCAT(CAST(e.countInStore - SUM(ed.count) AS string), '/', e.countInStore)," +
-                        "CAST(SUM(ed.count) AS string), e.pricePerHour, e.priceForNextHour," +
+                        "b.name, c.name, CONCAT(e.availableCount, '/', e.countInStore)," +
+                        "e.countInStore - e.availableCount, e.pricePerHour, e.priceForNextHour," +
                         "e.pricePerDay, e.valueCost," +
                         "CASE WHEN e.description IS NULL THEN '<i>brak danych</i>' ELSE e.description END" +
                     ") FROM EquipmentEntity e " +
-                    "LEFT OUTER JOIN e.rentsEquipments ed " +
                     "INNER JOIN e.equipmentType t INNER JOIN e.equipmentBrand b INNER JOIN e.equipmentColor c " +
-                    "WHERE e.id = :eid GROUP BY e.id";
+                    "WHERE e.id = :eid";
                 final EquipmentDetailsResDto equipmentDetails = session
                     .createQuery(jpqlFindEquipmentDetails, EquipmentDetailsResDto.class)
                     .setParameter("eid", equipmentId)

@@ -24,7 +24,6 @@ public class LoggedUserDataDto {
     private Long id;
     private String login;
     private String fullName;
-    private String imageUrl;
     private String roleName;
     private Character roleAlias;
     private String roleEng;
@@ -38,15 +37,14 @@ public class LoggedUserDataDto {
     public String toString() {
         return "{" +
             "id=" + id +
-            ", login='" + login + '\'' +
-            ", fullName='" + fullName + '\'' +
-            ", imageUrl='" + imageUrl + '\'' +
-            ", roleName='" + roleName + '\'' +
+            ", login='" + login +
+            ", fullName='" + fullName +
+            ", roleName='" + roleName +
             ", roleAlias=" + roleAlias +
-            ", roleEng='" + roleEng + '\'' +
+            ", roleEng='" + roleEng +
             ", gender=" + gender +
-            ", emailAddress='" + emailAddress + '\'' +
-            ", isFirstAccess='" + isFirstAccess + '\'' +
+            ", emailAddress='" + emailAddress +
+            ", isFirstAccess='" + isFirstAccess +
             '}';
     }
 }

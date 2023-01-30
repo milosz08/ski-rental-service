@@ -1,12 +1,25 @@
 <%@ tag description="Seller panel wrapper template" pageEncoding="UTF-8" language="java" %>
 <%@ tag trimDirectiveWhitespaces="true"%>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <jsp:useBean id="loggedUserDetails" type="pl.polsl.skirentalservice.dto.login.LoggedUserDataDto" scope="session"/>
 
 <p:generic-page.wrapper>
     <div class="d-flex flex-grow-1 h-100">
         <p:generic-left-nav.wrapper requestPath="seller">
+            <c:if test="${sessionScope.get('inmemoryNewRentData') != null}">
+                <jsp:useBean id="inmemoryNewRentData" type="pl.polsl.skirentalservice.dto.rent.InMemoryRentDataDto" scope="session"/>
+                <li class="mb-1">
+                    <a href="${pageContext.request.contextPath}/seller/create-new-rent?id=${inmemoryNewRentData.customerId}"
+                        class="btn d-flex justify-content-between text-white-50 fw-light btn-hover-dark
+                        rounded border-0 w-100 text-start lh-sm rent-saved-data-opacity">
+                        Wypożyczenie robocze
+                        <i class="d-inline-flex align-self-center bi bi-arrow-bar-right"></i>
+                    </a>
+                </li>
+                <div class="border-top border-secondary my-3"></div>
+            </c:if>
             <li class="mb-1">
                 <a href="${pageContext.request.contextPath}/seller/equipments"
                     class="btn d-flex justify-content-between text-white-50 fw-light btn-hover-dark
@@ -51,18 +64,27 @@
                         <a href="${pageContext.request.contextPath}/seller/rents"
                             class="text-white-50 d-inline-flex align-items-center py-1 ps-2
                                 text-decoration-none rounded btn-hover-dark w-100 fw-light">
-                            <span class="material-symbols-outlined fs-6 me-2">shopping_cart</span>Lista wypożyczeń
+                            <span class="material-symbols-outlined fs-6 me-2">shopping_cart</span>
+                            Lista wypożyczeń
                         </a>
                     </li>
                     <li class="mb-1">
-                        <a href="${pageContext.request.contextPath}/seller/create-new-rent"
+                        <a href="${pageContext.request.contextPath}/seller/returns"
                             class="text-white-50 d-inline-flex align-items-center py-1 ps-2
                                 text-decoration-none rounded btn-hover-dark w-100 fw-light">
-                            <span class="material-symbols-outlined fs-6 me-2">add_shopping_cart</span>
-                            Stwórz nowe wypożyczenie
+                            <span class="material-symbols-outlined fs-6 me-2">shopping_cart_checkout</span>
+                            Lista zwrotów
                         </a>
                     </li>
                 </ul>
+            </li>
+            <li class="mb-1">
+                <a href="${pageContext.request.contextPath}/seller/profile"
+                    class="btn d-flex justify-content-between text-white-50 fw-light btn-hover-dark
+                        rounded border-0 w-100 text-start lh-sm">
+                    Moje konto
+                    <i class="d-inline-flex align-self-center bi bi-arrow-return-right"></i>
+                </a>
             </li>
         </p:generic-left-nav.wrapper>
         <div id="main-wrapper" class="d-flex flex-column flex-fill main-wrapper main-wrapper-active simple-transition">

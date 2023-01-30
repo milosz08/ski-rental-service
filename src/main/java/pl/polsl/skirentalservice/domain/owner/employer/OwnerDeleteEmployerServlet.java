@@ -31,8 +31,11 @@ import pl.polsl.skirentalservice.core.ssh.SshSocketBean;
 import static java.util.Objects.isNull;
 
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
+import static pl.polsl.skirentalservice.util.RentStatus.RETURNED;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
+import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
+import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
 import static pl.polsl.skirentalservice.util.SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,11 +68,17 @@ public class OwnerDeleteEmployerServlet extends HttpServlet {
                     .getSingleResultOrNull();
                 if (isNull(deletingEmployer)) throw new UserNotFoundException(userId);
 
+                final String jpqlCheckIfHasAnyRents =
+                    "SELECT COUNT(r.id) > 0 FROM RentEntity r INNER JOIN r.employer e " +
+                    "WHERE e.id = :eid AND r.status <> :st";
+                final Boolean hasAnyRents = session.createQuery(jpqlCheckIfHasAnyRents, Boolean.class)
+                    .setParameter("eid", userId).setParameter("st", RETURNED)
+                    .getSingleResult();
+                if (hasAnyRents) throw new EmployerHasOpenedRentsException();
+
                 final IExecCommandPerformer commandPerformer = new ExecCommandPerformer(sshSocket);
                 commandPerformer.deleteMailbox(deletingEmployer.getEmailAddress());
                 session.remove(deletingEmployer);
-
-                // TODO: dodatkowe sprawdzanie, czy pracownik nie ma w tym czasie stworzonych przez siebie rezerwacji sprzętu
 
                 alert.setType(INFO);
                 alert.setMessage(

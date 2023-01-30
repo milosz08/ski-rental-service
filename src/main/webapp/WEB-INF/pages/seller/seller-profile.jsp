@@ -1,6 +1,5 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ page trimDirectiveWhitespaces="true"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
 <p:generic-seller.wrapper>
@@ -13,4 +12,6 @@
             <li class="breadcrumb-item active" aria-current="page">Profil konta pracownika</li>
         </ol>
     </nav>
+    <hr/>
+    <jsp:include page="/WEB-INF/partials/common/employer/common-employer-details.partial.jsp"/>
 </p:generic-seller.wrapper>

@@ -100,12 +100,11 @@ public class CommonEquipmentsServlet extends HttpServlet {
 
                 final String jpqlFindAllEquipments =
                     "SELECT new pl.polsl.skirentalservice.dto.equipment.EquipmentRecordResDto(" +
-                        "e.id, e.name, t.name, e.barcode, IFNULL(CAST(e.countInStore - SUM(ed.count) AS integer), " +
-                        "e.countInStore), e.pricePerHour, e.priceForNextHour, e.pricePerDay, e.valueCost" +
+                        "e.id, e.name, t.name, e.barcode, e.availableCount, e.pricePerHour, e.priceForNextHour," +
+                        "e.pricePerDay, e.valueCost" +
                     ") FROM EquipmentEntity e " +
-                    "LEFT OUTER JOIN e.rentsEquipments ed " +
                     "INNER JOIN e.equipmentType t " +
-                    "WHERE " + filterData.getSearchColumn() + " LIKE :search GROUP BY e.id " +
+                    "WHERE " + filterData.getSearchColumn() + " LIKE :search " +
                     "ORDER BY " + sorterData.getJpql();
                 final List<EquipmentRecordResDto> equipmentsList = session
                     .createQuery(jpqlFindAllEquipments, EquipmentRecordResDto.class)

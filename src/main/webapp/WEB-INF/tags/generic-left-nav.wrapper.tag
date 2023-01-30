@@ -29,31 +29,6 @@
                 </a>
             </li>
             <jsp:doBody/>
-            <li class="mb-1">
-                <button data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false"
-                        class="btn d-flex justify-content-between text-white-50 fw-light btn-hover-dark
-                            rounded border-0 collapsed w-100 text-start lh-sm">
-                    Moje konto
-                    <i class="d-inline-flex align-self-center bi bi-chevron-right chewron-icon simple-transition"></i>
-                </button>
-                <ul class="collapse ms-3 mt-1 btn-toggle-nav list-unstyled fw-normal pb-1 small"
-                    id="account-collapse-mobile">
-                    <li class="mb-1">
-                        <a href="${pageContext.request.contextPath}/${requestPath}/profile"
-                            class="text-white-50 d-inline-flex align-items-center py-1 ps-2
-                            text-decoration-none rounded btn-hover-dark w-100 fw-light">
-                            <span class="material-symbols-outlined fs-6 me-2">person</span>Profil
-                        </a>
-                    </li>
-                    <li class="mb-1">
-                        <a href="${pageContext.request.contextPath}/${requestPath}/settings"
-                            class="text-white-50 d-inline-flex align-items-center py-1 ps-2
-                                text-decoration-none rounded btn-hover-dark w-100 fw-light">
-                            <span class="material-symbols-outlined fs-6 me-2">settings</span>Ustawienia
-                        </a>
-                    </li>
-                </ul>
-            </li>
         </ul>
         <div class="mt-3">
             <div class="border-top border-secondary mb-3"></div>
@@ -85,31 +60,6 @@
                 </a>
             </li>
             <jsp:doBody/>
-            <li class="mb-1">
-                <button data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false"
-                    class="btn d-flex justify-content-between text-white-50 fw-light btn-hover-dark
-                        rounded border-0 collapsed w-100 text-start lh-sm">
-                    Moje konto
-                    <i class="d-inline-flex align-self-center bi bi-chevron-right chewron-icon simple-transition"></i>
-                </button>
-                <ul class="collapse ms-3 mt-1 btn-toggle-nav list-unstyled fw-normal pb-1 small"
-                    id="account-collapse">
-                    <li class="mb-1">
-                        <a href="${pageContext.request.contextPath}/${requestPath}/profile"
-                            class="text-white-50 d-inline-flex align-items-center py-1 ps-2
-                            text-decoration-none rounded btn-hover-dark w-100 fw-light">
-                            <span class="material-symbols-outlined fs-6 me-2">person</span>Profil
-                        </a>
-                    </li>
-                    <li class="mb-1">
-                        <a href="${pageContext.request.contextPath}/${requestPath}/settings"
-                            class="text-white-50 d-inline-flex align-items-center py-1 ps-2
-                                text-decoration-none rounded btn-hover-dark w-100 fw-light">
-                            <span class="material-symbols-outlined fs-6 me-2">settings</span>Ustawienia
-                        </a>
-                    </li>
-                </ul>
-            </li>
         </ul>
         <div class="mt-3">
             <div class="border-top border-secondary mb-3"></div>

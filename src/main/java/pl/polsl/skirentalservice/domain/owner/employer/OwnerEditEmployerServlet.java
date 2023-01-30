@@ -149,11 +149,11 @@ public class OwnerEditEmployerServlet extends HttpServlet {
                 session.getTransaction().commit();
 
                 alert.setType(INFO);
-                httpSession.setAttribute(OWNER_EMPLOYERS_PAGE_ALERT.getName(), alert);
                 httpSession.removeAttribute(getClass().getName());
                 alert.setMessage(
                     "Dane pracownika z ID <strong>#" + employerId + "</strong> zostały pomyślnie zaktualizowane."
                 );
+                httpSession.setAttribute(OWNER_EMPLOYERS_PAGE_ALERT.getName(), alert);
                 LOGGER.info("Employer with id: {} was successfuly updated. Data: {}", employerId, reqDto);
                 res.sendRedirect("/owner/employers");
             } catch (RuntimeException ex) {
