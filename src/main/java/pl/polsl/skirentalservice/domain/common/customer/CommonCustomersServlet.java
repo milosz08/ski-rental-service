@@ -14,9 +14,8 @@
 package pl.polsl.skirentalservice.domain.common.customer;
 
 import org.slf4j.*;
-import org.hibernate.Session;
+import org.hibernate.*;
 
-import jakarta.ejb.EJB;
 import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -24,7 +23,6 @@ import jakarta.servlet.annotation.WebServlet;
 import pl.polsl.skirentalservice.paging.filter.*;
 import pl.polsl.skirentalservice.paging.sorter.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.dto.employer.EmployerRecordResDto;
 import pl.polsl.skirentalservice.paging.pagination.ServletPagination;
@@ -40,6 +38,7 @@ import static pl.polsl.skirentalservice.util.SessionAttribute.*;
 import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
 import static pl.polsl.skirentalservice.util.PageTitle.COMMON_CUSTOMERS_PAGE;
 import static pl.polsl.skirentalservice.util.Utils.getAndDestroySessionAlert;
+import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
 import static pl.polsl.skirentalservice.util.SessionAlert.COMMON_CUSTOMERS_PAGE_ALERT;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -48,14 +47,13 @@ import static pl.polsl.skirentalservice.util.SessionAlert.COMMON_CUSTOMERS_PAGE_
 public class CommonCustomersServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonCustomersServlet.class);
+    private final SessionFactory sessionFactory = getSessionFactory();
 
     private final Map<String, ServletSorterField> sorterFieldMap = new HashMap<>();
     private final List<FilterColumn> filterFieldMap = new ArrayList<>();
 
     private final String addressColumn =
         "CONCAT('ul. ', a.street, ' ', a.buildingNr, IF(a.apartmentNr, CONCAT('/', a.apartmentNr), ''))";
-
-    @EJB private HibernateBean database;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -90,11 +88,16 @@ public class CommonCustomersServlet extends HttpServlet {
         final FilterDataDto filterData = servletFilter.generateFilterJPQuery(CUSTOMERS_LIST_FILTER);
 
         final AlertTupleDto alert = getAndDestroySessionAlert(req, COMMON_CUSTOMERS_PAGE_ALERT);
-        try (final Session session = database.open()) {
+        try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
 
-                final Long totalEmployers = session.createQuery("SELECT COUNT(c.id) FROM CustomerEntity c", Long.class)
+                final String jpqlFindAll =
+                    "SELECT COUNT(c.id) FROM CustomerEntity c " +
+                    "INNER JOIN c.userDetails d INNER JOIN c.locationAddress a " +
+                    "WHERE " + filterData.getSearchColumn() + " LIKE :search";
+                final Long totalEmployers = session.createQuery(jpqlFindAll, Long.class)
+                    .setParameter("search", "%" + filterData.getSearchText() + "%")
                     .getSingleResult();
 
                 final ServletPagination pagination = new ServletPagination(page, total, totalEmployers);

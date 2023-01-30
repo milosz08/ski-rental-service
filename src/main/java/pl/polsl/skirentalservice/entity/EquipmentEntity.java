@@ -16,6 +16,7 @@ package pl.polsl.skirentalservice.entity;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
+import java.util.*;
 import java.math.BigDecimal;
 
 import pl.polsl.skirentalservice.core.db.*;
@@ -56,6 +57,9 @@ public class EquipmentEntity extends AuditableEntity {
     @ManyToOne(fetch = LAZY, cascade = { PERSIST, MERGE })
     @JoinColumn(name = "color_id", referencedColumnName = "id")
     private EquipmentColorEntity equipmentColor;
+
+    @OneToMany(fetch = LAZY, cascade = { PERSIST, MERGE }, mappedBy = "equipment")
+    private Set<RentEquipmentEntity> rentsEquipments = new HashSet<>();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -169,6 +173,14 @@ public class EquipmentEntity extends AuditableEntity {
 
     public void setEquipmentColor(EquipmentColorEntity equipmentColor) {
         this.equipmentColor = equipmentColor;
+    }
+
+    Set<RentEquipmentEntity> getRentsEquipments() {
+        return rentsEquipments;
+    }
+
+    public void setRentsEquipments(Set<RentEquipmentEntity> rentsEquipments) {
+        this.rentsEquipments = rentsEquipments;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

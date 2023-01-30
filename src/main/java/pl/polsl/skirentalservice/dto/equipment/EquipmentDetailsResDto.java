@@ -32,8 +32,8 @@ public class EquipmentDetailsResDto {
     private String size;
     private String brand;
     private String color;
-    private Integer totalCount;
-    private Integer availableCount;
+    private String countData;
+    private String rentCount;
     private BigDecimal pricePerHour;
     private BigDecimal priceForNextHour;
     private BigDecimal pricePerDay;

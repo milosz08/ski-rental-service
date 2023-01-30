@@ -56,20 +56,16 @@
             <table class="table table-fixed-width">
                 <tbody>
                 <tr>
-                    <td class="fw-bold">Ilość w magazynie (całkowita):</td>
-                    <td>${equipmentData.totalCount} szt.</td>
+                    <td class="fw-bold">Ilość w systemie (dostępna/całkowita):</td>
+                    <td>${equipmentData.countData} szt.</td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Cena netto za godzinę wypożyczenia:</td>
-                    <td>
-                        <fmt:formatNumber value="${equipmentData.pricePerHour}" minFractionDigits="2" type="currency"/>
-                    </td>
+                    <td><fmt:formatNumber value="${equipmentData.pricePerHour}" minFractionDigits="2" type="currency"/></td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Cena netto za dzień wypożyczenia:</td>
-                    <td>
-                        <fmt:formatNumber value="${equipmentData.pricePerDay}" minFractionDigits="2" type="currency"/>
-                    </td>
+                    <td><fmt:formatNumber value="${equipmentData.pricePerDay}" minFractionDigits="2" type="currency"/></td>
                 </tr>
                 </tbody>
             </table>
@@ -78,20 +74,16 @@
             <table class="table table-fixed-width">
                 <tbody>
                 <tr>
-                    <td class="fw-bold">Ilość w magazynie (dostępna):</td>
-                    <td>${equipmentData.availableCount} szt.</td>
+                    <td class="fw-bold">Ilość w obiegu (wypożyczonych):</td>
+                    <td>${equipmentData.rentCount} szt.</td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Cena netto za kolejną godzinę wypożyczenia:</td>
-                    <td>
-                        <fmt:formatNumber value="${equipmentData.priceForNextHour}" minFractionDigits="2" type="currency"/>
-                    </td>
+                    <td><fmt:formatNumber value="${equipmentData.priceForNextHour}" minFractionDigits="2" type="currency"/></td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Wartość sprzętu:</td>
-                    <td>
-                        <fmt:formatNumber value="${equipmentData.valueCost}" minFractionDigits="2" type="currency"/>
-                    </td>
+                    <td><fmt:formatNumber value="${equipmentData.valueCost}" minFractionDigits="2" type="currency"/></td>
                 </tr>
                 </tbody>
             </table>

@@ -14,12 +14,11 @@
 package pl.polsl.skirentalservice.domain.owner.equipment;
 
 import org.slf4j.*;
-import org.hibernate.Session;
+import org.hibernate.*;
 
 import jakarta.ejb.EJB;
 import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.annotation.WebServlet;
 
 import java.io.File;
@@ -27,14 +26,17 @@ import java.io.IOException;
 
 import pl.polsl.skirentalservice.core.ConfigBean;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.entity.EquipmentEntity;
 
 import static java.io.File.separator;
 import static java.util.Objects.isNull;
+
 import static pl.polsl.skirentalservice.util.Utils.*;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
+import static pl.polsl.skirentalservice.util.RentStatus.RETURNED;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
+import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
+import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
 import static pl.polsl.skirentalservice.util.SessionAlert.COMMON_EQUIPMENTS_PAGE_ALERT;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,8 +45,8 @@ import static pl.polsl.skirentalservice.util.SessionAlert.COMMON_EQUIPMENTS_PAGE
 public class OwnerDeleteEquipmentServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerDeleteEquipmentServlet.class);
+    private final SessionFactory sessionFactory = getSessionFactory();
 
-    @EJB private HibernateBean database;
     @EJB private ConfigBean config;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,14 +58,20 @@ public class OwnerDeleteEquipmentServlet extends HttpServlet {
         final String loggedUser = getLoggedUserLogin(req);
 
         final HttpSession httpSession = req.getSession();
-        try (final Session session = database.open()) {
+        try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
 
+                final String jpqlFindHasConnections =
+                    "SELECT COUNT(r.id) > 0 FROM RentEntity r INNER JOIN r.equipments e " +
+                    "WHERE e.id = :eid AND r.status <> :rst";
+                final Boolean hasAnyConnections = session.createQuery(jpqlFindHasConnections, Boolean.class)
+                    .setParameter("eid", equipmentId).setParameter("rst", RETURNED)
+                    .getSingleResult();
+                if (hasAnyConnections) throw new EquipmenHasOpenedRentsException();
+
                 final EquipmentEntity equipmentEntity = session.getReference(EquipmentEntity.class, equipmentId);
                 if (isNull(equipmentEntity)) throw new EquipmentNotFoundException(equipmentId);
-
-                // TODO: sprawdzenie, czy dany sprzęt narciarski nie jest obecny w zestawieniu wypożyczeń klienta/ów
 
                 final String uploadsDir = config.getUploadsDir() + separator + "bar-codes";
                 final File barcodeFile = new File(uploadsDir, equipmentEntity.getBarcode() + ".png");

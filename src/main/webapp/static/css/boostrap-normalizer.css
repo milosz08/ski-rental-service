@@ -37,3 +37,14 @@
     background: var(--bs-gray-dark);
     border-color: var(--bs-gray-dark);
 }
+
+.alert {
+    padding: 10px 50px 10px 15px;
+}
+
+.alert-dismissible .btn-close {
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    right: 10px !important;
+    padding: 5px !important;
+}

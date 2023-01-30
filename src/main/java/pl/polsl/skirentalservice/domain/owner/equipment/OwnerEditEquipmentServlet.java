@@ -14,7 +14,7 @@
 package pl.polsl.skirentalservice.domain.owner.equipment;
 
 import org.slf4j.*;
-import org.hibernate.Session;
+import org.hibernate.*;
 
 import jakarta.ejb.EJB;
 import jakarta.servlet.http.*;
@@ -26,7 +26,6 @@ import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
 import pl.polsl.skirentalservice.entity.*;
 import pl.polsl.skirentalservice.dto.equipment.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.core.db.HibernateBean;
 
 import java.io.IOException;
 import java.util.List;
@@ -39,6 +38,7 @@ import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.util.SessionAttribute.*;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
+import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
 import static pl.polsl.skirentalservice.util.PageTitle.OWNER_EDIT_EQUIPMENT_PAGE;
 import static pl.polsl.skirentalservice.util.SessionAttribute.EQ_COLORS_MODAL_DATA;
 
@@ -48,8 +48,8 @@ import static pl.polsl.skirentalservice.util.SessionAttribute.EQ_COLORS_MODAL_DA
 public class OwnerEditEquipmentServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerEditEquipmentServlet.class);
+    private final SessionFactory sessionFactory = getSessionFactory();
 
-    @EJB private HibernateBean database;
     @EJB private ModelMapperBean modelMapper;
     @EJB private ValidatorBean validator;
 
@@ -63,7 +63,7 @@ public class OwnerEditEquipmentServlet extends HttpServlet {
         final AlertTupleDto alert = getAndDestroySessionAlert(req, OWNER_EDIT_EQUIPMENT_PAGE_ALERT);
         var resDto = (AddEditEquipmentResDto) httpSession.getAttribute(getClass().getName());
         if (isNull(resDto)) {
-            try (final Session session = database.open()) {
+            try (final Session session = sessionFactory.openSession()) {
                 try {
                     session.beginTransaction();
                     final String jpqlFindEquipmentBaseId = "" +
@@ -140,7 +140,7 @@ public class OwnerEditEquipmentServlet extends HttpServlet {
             res.sendRedirect("/owner/edit-equipment?id=" + equipmentId);
             return;
         }
-        try (final Session session = database.open()) {
+        try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
 

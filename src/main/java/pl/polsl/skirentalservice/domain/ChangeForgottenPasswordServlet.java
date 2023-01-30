@@ -26,7 +26,6 @@ import java.io.IOException;
 import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.change_password.*;
-import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.exception.CredentialException.*;
 
 import static java.util.Objects.isNull;
@@ -34,6 +33,7 @@ import static java.util.Objects.isNull;
 import static pl.polsl.skirentalservice.util.Utils.*;
 import static pl.polsl.skirentalservice.util.SessionAlert.*;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
+import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
 import static pl.polsl.skirentalservice.util.PageTitle.CHANGE_FORGOTTEN_PASSWORD_PAGE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -42,8 +42,8 @@ import static pl.polsl.skirentalservice.util.PageTitle.CHANGE_FORGOTTEN_PASSWORD
 public class ChangeForgottenPasswordServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChangeForgottenPasswordServlet.class);
+    private final SessionFactory sessionFactory = getSessionFactory();
 
-    @EJB private HibernateBean database;
     @EJB private ValidatorBean validator;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,7 +54,7 @@ public class ChangeForgottenPasswordServlet extends HttpServlet {
         if (isNull(alert)) alert = new AlertTupleDto();
         final String token = req.getParameter("token");
 
-        try (final Session session = database.open()) {
+        try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
 
@@ -103,7 +103,7 @@ public class ChangeForgottenPasswordServlet extends HttpServlet {
             res.sendRedirect("/change-forgotten-password?token=" + token);
             return;
         }
-        try (final Session session = database.open()) {
+        try (final Session session = sessionFactory.openSession()) {
             if (!reqDto.getPassword().equals(reqDto.getPasswordRepeat())) {
                 throw new PasswordMismatchException("hasło", "powtórz hasło");
             }

@@ -14,9 +14,8 @@
 package pl.polsl.skirentalservice.domain.common.equipment;
 
 import org.slf4j.*;
-import org.hibernate.Session;
+import org.hibernate.*;
 
-import jakarta.ejb.EJB;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.http.HttpServlet;
@@ -25,7 +24,6 @@ import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.dto.equipment.EquipmentDetailsResDto;
 
@@ -33,6 +31,7 @@ import static java.util.Objects.isNull;
 
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
+import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
 import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
 import static pl.polsl.skirentalservice.util.PageTitle.COMMON_EQUIPMENT_DETAILS_PAGE;
 import static pl.polsl.skirentalservice.util.SessionAlert.COMMON_EQUIPMENTS_PAGE_ALERT;
@@ -43,8 +42,7 @@ import static pl.polsl.skirentalservice.util.SessionAlert.COMMON_EQUIPMENTS_PAGE
 public class CommonEquipmentDetailsServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonEquipmentDetailsServlet.class);
-
-    @EJB private HibernateBean database;
+    private final SessionFactory sessionFactory = getSessionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -55,7 +53,7 @@ public class CommonEquipmentDetailsServlet extends HttpServlet {
         final var userDataDto = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
 
         final AlertTupleDto alert = new AlertTupleDto(true);
-        try (final Session session = database.open()) {
+        try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
 
@@ -63,12 +61,14 @@ public class CommonEquipmentDetailsServlet extends HttpServlet {
                     "SELECT new pl.polsl.skirentalservice.dto.equipment.EquipmentDetailsResDto(" +
                         "e.id, e.name, t.name, e.model, e.gender, e.barcode," +
                         "CASE WHEN e.size IS NULL THEN '<i>brak danych</i>' ELSE CAST(e.size AS string) END," +
-                        "b.name, c.name, e.countInStore, e.countInStore, e.pricePerHour, e.priceForNextHour," +
+                        "b.name, c.name, CONCAT(CAST(e.countInStore - SUM(ed.count) AS string), '/', e.countInStore)," +
+                        "CAST(SUM(ed.count) AS string), e.pricePerHour, e.priceForNextHour," +
                         "e.pricePerDay, e.valueCost," +
                         "CASE WHEN e.description IS NULL THEN '<i>brak danych</i>' ELSE e.description END" +
                     ") FROM EquipmentEntity e " +
+                    "LEFT OUTER JOIN e.rentsEquipments ed " +
                     "INNER JOIN e.equipmentType t INNER JOIN e.equipmentBrand b INNER JOIN e.equipmentColor c " +
-                    "WHERE e.id = :eid";
+                    "WHERE e.id = :eid GROUP BY e.id";
                 final EquipmentDetailsResDto equipmentDetails = session
                     .createQuery(jpqlFindEquipmentDetails, EquipmentDetailsResDto.class)
                     .setParameter("eid", equipmentId)
@@ -78,7 +78,6 @@ public class CommonEquipmentDetailsServlet extends HttpServlet {
                 session.getTransaction().commit();
                 req.setAttribute("equipmentData", equipmentDetails);
                 req.setAttribute("title", COMMON_EQUIPMENT_DETAILS_PAGE.getName());
-
                 req.getRequestDispatcher("/WEB-INF/pages/" + userDataDto.getRoleEng() + "/equipment/" +
                     userDataDto.getRoleEng() + "-equipment-details.jsp").forward(req, res);
             } catch (RuntimeException ex) {

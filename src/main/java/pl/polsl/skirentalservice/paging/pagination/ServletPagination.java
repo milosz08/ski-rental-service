@@ -64,7 +64,7 @@ public class ServletPagination {
 
     public boolean checkIfIsInvalid() {
         final int[] pages = { 10, 20, 25, 50, 100 };
-        return (page > allPages || page < 1) || Arrays.stream(pages).noneMatch(p -> p == totalPerPage);
+        return ((page > allPages || page < 1) && allPages > 0) || Arrays.stream(pages).noneMatch(p -> p == totalPerPage);
     }
 }
 

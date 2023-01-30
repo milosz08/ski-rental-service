@@ -19,7 +19,10 @@ import jakarta.servlet.annotation.*;
 
 import java.io.IOException;
 
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+
 import static org.apache.commons.lang3.StringUtils.isNumeric;
+import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -27,6 +30,8 @@ import static org.apache.commons.lang3.StringUtils.isNumeric;
     "/seller/edit-customer/*",
     "/seller/delete-customer/*",
     "/seller/customer-details/*",
+    "/owner/customer-details/*",
+    "/seller/create-new-rent/*",
 }, initParams = @WebInitParam(name = "mood", value = "awake"))
 public class RedirectWhenCustomerIdNotExistInPathFilter extends HttpFilter {
 
@@ -34,8 +39,10 @@ public class RedirectWhenCustomerIdNotExistInPathFilter extends HttpFilter {
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
         throws IOException, ServletException {
         final String customerId = req.getParameter("id");
+        final HttpSession httpSession = req.getSession();
+        final var loggedUserDataDto = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
         if (!isNumeric(customerId)) {
-            res.sendRedirect("/seller/customers");
+            res.sendRedirect("/" + loggedUserDataDto.getRoleEng() + "/customers");
             return;
         }
         chain.doFilter(req, res);

@@ -31,4 +31,6 @@ public class Regex {
     public static final String DEF_SELECT_VALUE         = "\\b(?!none\\b)\\w+";
     public static final String POS_NUMBER_INT           = "^(?:[1-9][0-9]{3}|[1-9][0-9]{2}|[1-9][0-9]|[1-9])$";
     public static final String DECIMAL_2_ROUND          = "^$|[0-9]{0,4}(?:[.,][0-9]{1,2})?";
+    public static final String DATE_TIME                = "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}$";
+    public static final String TAX                      = "^[1-9][0-9]?$|^100$";
 }

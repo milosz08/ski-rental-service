@@ -14,7 +14,7 @@
 package pl.polsl.skirentalservice.domain.seller.customer;
 
 import org.slf4j.*;
-import org.hibernate.Session;
+import org.hibernate.*;
 
 import jakarta.ejb.EJB;
 import jakarta.servlet.http.*;
@@ -26,7 +26,6 @@ import pl.polsl.skirentalservice.entity.*;
 import pl.polsl.skirentalservice.dto.customer.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.core.ValidatorBean;
-import pl.polsl.skirentalservice.core.db.HibernateBean;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -40,6 +39,7 @@ import static pl.polsl.skirentalservice.util.SessionAlert.*;
 import static pl.polsl.skirentalservice.exception.DateException.*;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
+import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
 import static pl.polsl.skirentalservice.util.PageTitle.SELLER_EDIT_CUSTOMER_PAGE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -48,8 +48,8 @@ import static pl.polsl.skirentalservice.util.PageTitle.SELLER_EDIT_CUSTOMER_PAGE
 public class SellerEditCustomerServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SellerEditCustomerServlet.class);
+    private final SessionFactory sessionFactory = getSessionFactory();
 
-    @EJB private HibernateBean database;
     @EJB private ValidatorBean validator;
     @EJB private ModelMapperBean modelMapper;
     @EJB private ConfigBean config;
@@ -65,7 +65,7 @@ public class SellerEditCustomerServlet extends HttpServlet {
         var resDto = (AddEditCustomerResDto) httpSession.getAttribute(getClass().getName());
 
         if (isNull(resDto)) {
-            try (final Session session = database.open()) {
+            try (final Session session = sessionFactory.openSession()) {
                 try {
                     session.beginTransaction();
 
@@ -119,7 +119,7 @@ public class SellerEditCustomerServlet extends HttpServlet {
             res.sendRedirect("/seller/edit-customer?id=" + customerId);
             return;
         }
-        try (final Session session = database.open()) {
+        try (final Session session = sessionFactory.openSession()) {
             if (reqDto.getParsedBornDate().isAfter(LocalDate.now().minusYears(config.getCircaDateYears()))) {
                 throw new DateInFutureException("data zatrudnienia", config.getCircaDateYears());
             }

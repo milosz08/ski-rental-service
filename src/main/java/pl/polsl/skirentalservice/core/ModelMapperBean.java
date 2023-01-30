@@ -34,7 +34,8 @@ public class ModelMapperBean {
         this.modelMapper.getConfiguration()
             .setMatchingStrategy(MatchingStrategies.STANDARD)
             .setFieldMatchingEnabled(true)
-            .setFieldAccessLevel(Configuration.AccessLevel.PRIVATE);
+            .setFieldAccessLevel(Configuration.AccessLevel.PRIVATE)
+            .setAmbiguityIgnored(true);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

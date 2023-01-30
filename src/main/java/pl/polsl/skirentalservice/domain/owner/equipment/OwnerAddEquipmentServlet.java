@@ -14,7 +14,7 @@
 package pl.polsl.skirentalservice.domain.owner.equipment;
 
 import org.slf4j.*;
-import org.hibernate.Session;
+import org.hibernate.*;
 import org.krysalis.barcode4j.impl.upcean.EAN13Bean;
 import org.krysalis.barcode4j.output.bitmap.BitmapCanvasProvider;
 
@@ -28,7 +28,6 @@ import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.entity.*;
 import pl.polsl.skirentalservice.dto.equipment.*;
 import pl.polsl.skirentalservice.core.ConfigBean;
-import pl.polsl.skirentalservice.core.db.HibernateBean;
 
 import java.io.*;
 import java.util.List;
@@ -45,6 +44,7 @@ import static pl.polsl.skirentalservice.util.SessionAlert.*;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.util.SessionAttribute.*;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
+import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
 import static pl.polsl.skirentalservice.util.PageTitle.OWNER_ADD_EQUIPMENT_PAGE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,8 +53,8 @@ import static pl.polsl.skirentalservice.util.PageTitle.OWNER_ADD_EQUIPMENT_PAGE;
 public class OwnerAddEquipmentServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerAddEquipmentServlet.class);
+    private final SessionFactory sessionFactory = getSessionFactory();
 
-    @EJB private HibernateBean database;
     @EJB private ValidatorBean validator;
     @EJB private ModelMapperBean modelMapper;
     @EJB private ConfigBean config;
@@ -67,7 +67,7 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
         var resDto = getFromSessionAndDestroy(req, getClass().getName(), AddEditEquipmentResDto.class);
         if (isNull(resDto)) resDto = new AddEditEquipmentResDto();
 
-        try (final Session session = database.open()) {
+        try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
 
@@ -125,7 +125,7 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
             res.sendRedirect("/owner/add-equipment");
             return;
         }
-        try (final Session session = database.open()) {
+        try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
 

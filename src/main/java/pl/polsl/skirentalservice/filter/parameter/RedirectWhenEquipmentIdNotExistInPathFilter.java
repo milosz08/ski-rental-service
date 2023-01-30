@@ -19,7 +19,10 @@ import jakarta.servlet.annotation.*;
 
 import java.io.IOException;
 
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+
 import static org.apache.commons.lang3.StringUtils.isNumeric;
+import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -27,6 +30,7 @@ import static org.apache.commons.lang3.StringUtils.isNumeric;
     "/owner/edit-equipment/*",
     "/owner/delete-equipment/*",
     "/owner/equipment-details/*",
+    "/seller/equipment-details/*",
 }, initParams = @WebInitParam(name = "mood", value = "awake"))
 public class RedirectWhenEquipmentIdNotExistInPathFilter extends HttpFilter {
 
@@ -34,8 +38,10 @@ public class RedirectWhenEquipmentIdNotExistInPathFilter extends HttpFilter {
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
         throws IOException, ServletException {
         final String equipmentId = req.getParameter("id");
+        final HttpSession httpSession = req.getSession();
+        final var loggedUserDataDto = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
         if (!isNumeric(equipmentId)) {
-            res.sendRedirect("/owner/equipments");
+            res.sendRedirect("/" + loggedUserDataDto.getRoleEng() + "/equipments");
             return;
         }
         chain.doFilter(req, res);

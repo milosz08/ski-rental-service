@@ -28,7 +28,6 @@ import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.util.*;
 import pl.polsl.skirentalservice.dto.login.*;
-import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.dto.logout.LogoutModalDto;
 
 import static java.util.Objects.isNull;
@@ -39,6 +38,7 @@ import static pl.polsl.skirentalservice.util.PageTitle.LOGIN_PAGE;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 import static pl.polsl.skirentalservice.exception.CredentialException.*;
 import static pl.polsl.skirentalservice.util.SessionAlert.LOGIN_PAGE_ALERT;
+import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -46,8 +46,8 @@ import static pl.polsl.skirentalservice.util.SessionAlert.LOGIN_PAGE_ALERT;
 public class LoginServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoginServlet.class);
+    private final SessionFactory sessionFactory = getSessionFactory();
 
-    @EJB private HibernateBean database;
     @EJB private ValidatorBean validator;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -76,7 +76,7 @@ public class LoginServlet extends HttpServlet {
             res.sendRedirect("/login");
             return;
         }
-        try (final Session session = database.open()) {
+        try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
 

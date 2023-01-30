@@ -32,7 +32,6 @@ import pl.polsl.skirentalservice.core.ssh.*;
 import pl.polsl.skirentalservice.core.mail.*;
 import pl.polsl.skirentalservice.dto.employer.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 
 import static java.util.Locale.ENGLISH;
@@ -46,6 +45,7 @@ import static pl.polsl.skirentalservice.util.SessionAlert.*;
 import static pl.polsl.skirentalservice.util.UserRole.SELLER;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
 import static pl.polsl.skirentalservice.util.PageTitle.OWNER_ADD_EMPLOYER_PAGE;
+import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
 import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,8 +54,8 @@ import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAIL
 public class OwnerAddEmployerServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerAddEmployerServlet.class);
+    private final SessionFactory sessionFactory = getSessionFactory();
 
-    @EJB private HibernateBean database;
     @EJB private ValidatorBean validator;
     @EJB private ModelMapperBean mapper;
     @EJB private MailSocketBean mailSocket;
@@ -93,7 +93,7 @@ public class OwnerAddEmployerServlet extends HttpServlet {
         }
 
         final IExecCommandPerformer commandPerformer = new ExecCommandPerformer(sshSocket);
-        try (final Session session = database.open()) {
+        try (final Session session = sessionFactory.openSession()) {
             reqDto.validateDates(config);
             String email = "";
             try {

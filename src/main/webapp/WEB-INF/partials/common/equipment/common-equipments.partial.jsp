@@ -29,7 +29,7 @@
     <th scope="col" class="nowrap-tb d-none d-lg-table-cell align-middle">
         <button class="border-0 bg-transparent fw-bold text-start hstack justify-content-between w-100 lh-sm"
             name="sortBy" type="submit" value="countInStore">
-            Ilość (szt.)
+            Ilość<br>dostępnych (szt.)
             <i class="bi bi-arrow-${sorterData.get("countInStore").chevronBts} mx-1 micro-font"></i>
         </button>
     </th>

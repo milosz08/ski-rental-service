@@ -43,7 +43,9 @@ public class Utils {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public static AlertTupleDto getAndDestroySessionAlert(HttpServletRequest req, SessionAlert sessionAlert) {
-        return getFromSessionAndDestroy(req, sessionAlert.getName(), AlertTupleDto.class);
+        final AlertTupleDto alert = getFromSessionAndDestroy(req, sessionAlert.getName(), AlertTupleDto.class);
+        if (isNull(alert)) return new AlertTupleDto();
+        return alert;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -14,7 +14,7 @@
 package pl.polsl.skirentalservice.domain;
 
 import org.slf4j.*;
-import org.hibernate.Session;
+import org.hibernate.*;
 
 import jakarta.ejb.EJB;
 import jakarta.servlet.http.*;
@@ -27,7 +27,6 @@ import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.core.ValidatorBean;
 import pl.polsl.skirentalservice.dto.first_access.*;
 import pl.polsl.skirentalservice.core.ssh.SshSocketBean;
-import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.exception.CredentialException.*;
 
@@ -37,6 +36,7 @@ import static pl.polsl.skirentalservice.util.Utils.*;
 import static pl.polsl.skirentalservice.util.SessionAlert.*;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.util.PageTitle.FIRST_ACCESS_PAGE;
+import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
 import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -45,8 +45,8 @@ import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAIL
 public class FirstAccessServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FirstAccessServlet.class);
+    private final SessionFactory sessionFactory = getSessionFactory();
 
-    @EJB private HibernateBean database;
     @EJB private ValidatorBean validator;
     @EJB private SshSocketBean sshSocket;
 
@@ -76,7 +76,7 @@ public class FirstAccessServlet extends HttpServlet {
             res.sendRedirect("/first-access");
             return;
         }
-        try (final Session session = database.open()) {
+        try (final Session session = sessionFactory.openSession()) {
             if (!reqDto.getPassword().equals(reqDto.getPasswordRep())) {
                 throw new PasswordMismatchException("nowe hasło do konta", "powtórz nowe hasło do konta");
             }

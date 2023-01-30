@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function showHidePassword(selector) {
-    $(selector).toArray().forEach(function (el) {
+    $(selector).each(function (_, el) {
         const input = $(el).parent().find('>:first-child');
         const buttonIcon = $(el).find('>:first-child');
         $(el).on('click', function () {
@@ -57,7 +57,7 @@ function disableResize() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function tiggeredOpenModalImmediately(modalId, attrName) {
+function triggeredOpenModalImmediately(modalId, attrName) {
     const modalElement = document.getElementById(modalId);
     if (modalElement === null) return;
     if (modalElement.getAttribute('data-equipment-' + attrName + '-modal-enable') === 'open') {
@@ -67,12 +67,37 @@ function tiggeredOpenModalImmediately(modalId, attrName) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function onLoad() {
+function triggeredOpenAddEditCartModalImmediately(addEdit) {
+    $('.eq-modals').each(function (_, el) {
+        if (el.getAttribute('data-equipment-' + addEdit + '-cart-modal-enable-' + el.getAttribute('data-eqid')) === 'open') {
+            showModal(addEdit + 'Equipment' + el.getAttribute('data-eqid'));
+        }
+    });
+}
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function setMaxElementsOnEveryInput() {
+    $('input[type="number"]').on('input', function() {
+        if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);
+    });
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function onLoad() {
     showModal('logoutModal');
+    setMaxElementsOnEveryInput();
 
     showHidePassword('.password-input-toggler');
     disableResize();
+
+    document.querySelectorAll('.onlyPreTimeSelect').forEach(function(el) {
+        el.max = new Date().toISOString().split("T")[0]
+    });
+    document.querySelectorAll('.onlyNextTimeSelect').forEach(function(el) {
+        el.min = new Date().toISOString().slice(0, new Date().toISOString().lastIndexOf(":"));
+    });
 
     $('[data-bs-toggle="tooltip"]').toArray().forEach(function(el) {
         new bootstrap.Tooltip(el);
@@ -84,9 +109,13 @@ function onLoad() {
     });
 }
 
-tiggeredOpenModalImmediately('equipmentTypeModal', 'type');
-tiggeredOpenModalImmediately('equipmentBrandModal', 'brand');
-tiggeredOpenModalImmediately('equipmentColorModal', 'color');
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+triggeredOpenModalImmediately('equipmentTypeModal', 'type');
+triggeredOpenModalImmediately('equipmentBrandModal', 'brand');
+triggeredOpenModalImmediately('equipmentColorModal', 'color');
+triggeredOpenAddEditCartModalImmediately('add');
+triggeredOpenAddEditCartModalImmediately('edit');
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

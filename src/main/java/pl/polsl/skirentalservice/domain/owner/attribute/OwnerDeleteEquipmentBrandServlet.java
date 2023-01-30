@@ -14,9 +14,8 @@
 package pl.polsl.skirentalservice.domain.owner.attribute;
 
 import org.slf4j.*;
-import org.hibernate.Session;
+import org.hibernate.*;
 
-import jakarta.ejb.EJB;
 import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -24,7 +23,6 @@ import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.dto.attribute.AttributeModalResDto;
 
 import static java.util.Objects.isNull;
@@ -34,6 +32,7 @@ import static pl.polsl.skirentalservice.util.Utils.*;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
+import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
 import static pl.polsl.skirentalservice.util.SessionAttribute.EQ_BRANDS_MODAL_DATA;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -42,8 +41,7 @@ import static pl.polsl.skirentalservice.util.SessionAttribute.EQ_BRANDS_MODAL_DA
 public class OwnerDeleteEquipmentBrandServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerDeleteEquipmentBrandServlet.class);
-
-    @EJB private HibernateBean database;
+    private final SessionFactory sessionFactory = getSessionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -59,7 +57,7 @@ public class OwnerDeleteEquipmentBrandServlet extends HttpServlet {
         resDto.setAlert(alert);
         resDto.setModalImmediatelyOpen(true);
 
-        try (final Session session = database.open()) {
+        try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
 

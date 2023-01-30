@@ -89,6 +89,7 @@ dependencies {
     implementation "org.hibernate:hibernate-core:${hibernateVersion}"
     implementation "org.hibernate.validator:hibernate-validator:${hibernateValidatorVersion}"
     implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
+    implementation "org.hibernate.orm:hibernate-c3p0:${hibernateVersion}"
 
     implementation "jakarta.ejb:jakarta.ejb-api:${ejbVersion}"
     implementation "org.glassfish.web:jakarta.servlet.jsp.jstl:${jstlVersion}"

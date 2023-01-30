@@ -1,6 +1,7 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
 <jsp:useBean id="customerData" class="pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto" scope="request"/>
 
@@ -15,10 +16,7 @@
                 </tr>
                 <tr>
                     <td class="fw-bold">Data urodzenia:</td>
-                    <td>
-                        <fmt:parseDate value="${customerData.bornDate}" pattern="yyyy-MM-dd" var="parsedDate" type="date"/>
-                        <fmt:formatDate value="${parsedDate}" type="date" pattern="dd.MM.yyyy"/>
-                    </td>
+                    <td><p:date-formatter date="${customerData.bornDate}"/></td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Wiek klienta:</td>

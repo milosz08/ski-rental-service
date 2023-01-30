@@ -70,13 +70,13 @@
                         </div>
                         <div class="col-xl-6 col-xl-2 mb-3">
                             <label for="bornDate" class="form-label mb-1 text-secondary micro-font">Data urodzenia:</label>
-                            <input type="date" class="form-control form-control-sm ${addEditEmployerData.bornDate.errorStyle}"
+                            <input type="date" class="form-control form-control-sm ${addEditEmployerData.bornDate.errorStyle} onlyPreTimeSelect"
                                 id="bornDate" value="${addEditEmployerData.bornDate.value}" name="bornDate">
                             <div class="invalid-feedback lh-sm">${addEditEmployerData.bornDate.message}</div>
                         </div>
                         <div class="col-xl-6 col-xl-2 mb-3">
                             <label for="hiredDate" class="form-label mb-1 text-secondary micro-font">Data zatrudnienia:</label>
-                            <input type="date" class="form-control form-control-sm ${addEditEmployerData.hiredDate.errorStyle}"
+                            <input type="date" class="form-control form-control-sm ${addEditEmployerData.hiredDate.errorStyle} onlyPreTimeSelect"
                                 id="hiredDate" value="${addEditEmployerData.hiredDate.value}" name="hiredDate">
                             <div class="invalid-feedback lh-sm">${addEditEmployerData.hiredDate.message}</div>
                         </div>

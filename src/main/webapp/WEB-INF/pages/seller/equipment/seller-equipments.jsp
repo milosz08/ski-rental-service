@@ -40,11 +40,7 @@
         </div>
         <jsp:include page="/WEB-INF/partials/dynamic-alert.partial.jsp"/>
         <c:if test="${empty equipmentsData}">
-            <div class="alert alert-warning lh-sm">
-                Nie znaleziono żadnego sprzętu w systemie. Aby dodać nowy sprzęt narciarski, kliknij w przycisk "Dodaj
-                sprzęt" lub w <a href="${pageContext.request.contextPath}/owner/add-equipment" class="alert-link">
-                ten link</a>.
-            </div>
+            <div class="alert alert-warning lh-sm">Nie znaleziono żadnego sprzętu w systemie.</div>
         </c:if>
         <c:if test="${not empty equipmentsData}">
             <div class="table-responsive">

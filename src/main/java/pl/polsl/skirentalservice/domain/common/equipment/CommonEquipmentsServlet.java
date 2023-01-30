@@ -14,9 +14,8 @@
 package pl.polsl.skirentalservice.domain.common.equipment;
 
 import org.slf4j.*;
-import org.hibernate.Session;
+import org.hibernate.*;
 
-import jakarta.ejb.EJB;
 import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -27,7 +26,6 @@ import java.io.IOException;
 import pl.polsl.skirentalservice.paging.sorter.*;
 import pl.polsl.skirentalservice.paging.filter.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.paging.pagination.ServletPagination;
 import pl.polsl.skirentalservice.dto.equipment.EquipmentRecordResDto;
@@ -39,6 +37,7 @@ import static pl.polsl.skirentalservice.util.Utils.*;
 import static pl.polsl.skirentalservice.util.AlertType.ERROR;
 import static pl.polsl.skirentalservice.util.SessionAttribute.*;
 import static pl.polsl.skirentalservice.util.PageTitle.COMMON_EQUIPMENTS_PAGE;
+import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
 import static pl.polsl.skirentalservice.util.SessionAlert.COMMON_EQUIPMENTS_PAGE_ALERT;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47,11 +46,10 @@ import static pl.polsl.skirentalservice.util.SessionAlert.COMMON_EQUIPMENTS_PAGE
 public class CommonEquipmentsServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonEquipmentsServlet.class);
+    private final SessionFactory sessionFactory = getSessionFactory();
 
     private final Map<String, ServletSorterField> sorterFieldMap = new HashMap<>();
     private final List<FilterColumn> filterFieldMap = new ArrayList<>();
-
-    @EJB private HibernateBean database;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -60,7 +58,7 @@ public class CommonEquipmentsServlet extends HttpServlet {
         sorterFieldMap.put("identity", new ServletSorterField("e.id"));
         sorterFieldMap.put("name", new ServletSorterField("e.name"));
         sorterFieldMap.put("type", new ServletSorterField("t.name"));
-        sorterFieldMap.put("countInStore", new ServletSorterField("e.countInStore"));
+        sorterFieldMap.put("countInStore", new ServletSorterField("CAST(e.countInStore - COUNT(ed.id) AS string)"));
         sorterFieldMap.put("pricePerHour", new ServletSorterField("e.pricePerHour"));
         sorterFieldMap.put("priceForNextHour", new ServletSorterField("e.priceForNextHour"));
         sorterFieldMap.put("pricePerDay", new ServletSorterField("e.pricePerDay"));
@@ -85,12 +83,16 @@ public class CommonEquipmentsServlet extends HttpServlet {
         final FilterDataDto filterData = servletFilter.generateFilterJPQuery(EQUIPMENTS_LIST_FILTER);
 
         final AlertTupleDto alert = getAndDestroySessionAlert(req, COMMON_EQUIPMENTS_PAGE_ALERT);
-        try (final Session session = database.open()) {
+        try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
 
-                final Long totalEquipments = session
-                    .createQuery("SELECT COUNT(e.id) FROM EquipmentEntity e", Long.class)
+                final String jpqlFindAll =
+                    "SELECT COUNT(e.id) FROM EquipmentEntity e " +
+                    "INNER JOIN e.equipmentType t " +
+                    "WHERE " + filterData.getSearchColumn() + " LIKE :search ";
+                final Long totalEquipments = session.createQuery(jpqlFindAll, Long.class)
+                    .setParameter("search", "%" + filterData.getSearchText() + "%")
                     .getSingleResult();
 
                 final ServletPagination pagination = new ServletPagination(page, total, totalEquipments);
@@ -98,11 +100,12 @@ public class CommonEquipmentsServlet extends HttpServlet {
 
                 final String jpqlFindAllEquipments =
                     "SELECT new pl.polsl.skirentalservice.dto.equipment.EquipmentRecordResDto(" +
-                        "e.id, e.name, t.name, e.barcode, e.countInStore, e.pricePerHour, e.priceForNextHour," +
-                        "e.pricePerDay, e.valueCost" +
+                        "e.id, e.name, t.name, e.barcode, IFNULL(CAST(e.countInStore - SUM(ed.count) AS integer), " +
+                        "e.countInStore), e.pricePerHour, e.priceForNextHour, e.pricePerDay, e.valueCost" +
                     ") FROM EquipmentEntity e " +
+                    "LEFT OUTER JOIN e.rentsEquipments ed " +
                     "INNER JOIN e.equipmentType t " +
-                    "WHERE " + filterData.getSearchColumn() + " LIKE :search " +
+                    "WHERE " + filterData.getSearchColumn() + " LIKE :search GROUP BY e.id " +
                     "ORDER BY " + sorterData.getJpql();
                 final List<EquipmentRecordResDto> equipmentsList = session
                     .createQuery(jpqlFindAllEquipments, EquipmentRecordResDto.class)

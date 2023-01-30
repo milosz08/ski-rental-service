@@ -16,7 +16,6 @@ package pl.polsl.skirentalservice.domain.owner.employer;
 import org.slf4j.*;
 import org.hibernate.*;
 
-import jakarta.ejb.EJB;
 import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -24,13 +23,13 @@ import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.dto.employer.EmployerDetailsResDto;
 
 import static java.util.Objects.isNull;
 
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
+import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
 import static pl.polsl.skirentalservice.util.SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT;
 import static pl.polsl.skirentalservice.util.PageTitle.OWNER_EMPLOYER_DETAILS_PAGE;
 
@@ -40,8 +39,7 @@ import static pl.polsl.skirentalservice.util.PageTitle.OWNER_EMPLOYER_DETAILS_PA
 public class OwnerEmployerDetailsServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerEmployerDetailsServlet.class);
-
-    @EJB private HibernateBean database;
+    private final SessionFactory sessionFactory = getSessionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -51,7 +49,7 @@ public class OwnerEmployerDetailsServlet extends HttpServlet {
         final AlertTupleDto alert = new AlertTupleDto(true);
 
         final HttpSession httpSession = req.getSession();
-        try (final Session session = database.open()) {
+        try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
 

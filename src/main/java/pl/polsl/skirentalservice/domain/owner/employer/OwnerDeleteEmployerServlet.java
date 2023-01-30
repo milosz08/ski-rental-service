@@ -26,7 +26,6 @@ import java.io.IOException;
 import pl.polsl.skirentalservice.ssh.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.entity.EmployerEntity;
-import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.core.ssh.SshSocketBean;
 
 import static java.util.Objects.isNull;
@@ -42,8 +41,8 @@ import static pl.polsl.skirentalservice.util.SessionAlert.OWNER_EMPLOYERS_PAGE_A
 public class OwnerDeleteEmployerServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerAddEmployerServlet.class);
+    private final SessionFactory sessionFactory = getSessionFactory();
 
-    @EJB private HibernateBean database;
     @EJB private SshSocketBean sshSocket;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,7 +53,7 @@ public class OwnerDeleteEmployerServlet extends HttpServlet {
         final AlertTupleDto alert = new AlertTupleDto(true);
 
         final HttpSession httpSession = req.getSession();
-        try (final Session session = database.open()) {
+        try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
 

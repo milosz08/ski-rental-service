@@ -27,7 +27,6 @@ import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.dto.employer.*;
 import pl.polsl.skirentalservice.core.ValidatorBean;
-import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.entity.EmployerEntity;
 
 import static java.util.Objects.isNull;
@@ -38,6 +37,7 @@ import static pl.polsl.skirentalservice.util.SessionAlert.*;
 import static pl.polsl.skirentalservice.util.UserRole.SELLER;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
+import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
 import static pl.polsl.skirentalservice.util.PageTitle.OWNER_EDIT_EMPLOYER_PAGE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -46,8 +46,8 @@ import static pl.polsl.skirentalservice.util.PageTitle.OWNER_EDIT_EMPLOYER_PAGE;
 public class OwnerEditEmployerServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerEditEmployerServlet.class);
+    private final SessionFactory sessionFactory = getSessionFactory();
 
-    @EJB private HibernateBean database;
     @EJB private ValidatorBean validator;
     @EJB private ModelMapperBean modelMapper;
     @EJB private ConfigBean config;
@@ -62,7 +62,7 @@ public class OwnerEditEmployerServlet extends HttpServlet {
         final AlertTupleDto alert = getAndDestroySessionAlert(req, OWNER_EDIT_EMPLOYER_PAGE_ALERT);
         var resDto = (AddEditEmployerResDto) httpSession.getAttribute(getClass().getName());
         if (isNull(resDto)) {
-            try (final Session session = database.open()) {
+            try (final Session session = sessionFactory.openSession()) {
                 try {
                     session.beginTransaction();
 
@@ -114,7 +114,7 @@ public class OwnerEditEmployerServlet extends HttpServlet {
             res.sendRedirect("/owner/edit-employer?id=" + employerId);
             return;
         }
-        try (final Session session = database.open()) {
+        try (final Session session = sessionFactory.openSession()) {
             reqDto.validateDates(config);
             try {
                 session.beginTransaction();

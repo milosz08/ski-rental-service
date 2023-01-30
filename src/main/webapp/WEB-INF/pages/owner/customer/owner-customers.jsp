@@ -39,11 +39,7 @@
         </div>
         <jsp:include page="/WEB-INF/partials/dynamic-alert.partial.jsp"/>
         <c:if test="${empty customersData}">
-            <div class="alert alert-warning lh-sm">
-                Nie znaleziono żadnych klientów w systemie. Aby dodać nowego klienta, kliknij w przycisk "Dodaj
-                klienta" lub w <a href="${pageContext.request.contextPath}/seller/add-customer" class="alert-link">
-                ten link</a>.
-            </div>
+            <div class="alert alert-warning lh-sm">Nie znaleziono żadnych klientów w systemie.</div>
         </c:if>
         <c:if test="${not empty customersData}">
             <div class="table-responsive">

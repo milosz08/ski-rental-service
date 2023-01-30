@@ -14,7 +14,6 @@
 package pl.polsl.skirentalservice.core.db;
 
 import org.slf4j.*;
-import jakarta.ejb.*;
 
 import org.reflections.util.*;
 import org.reflections.Reflections;
@@ -39,26 +38,35 @@ import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@Startup
-@Singleton(name = "HibernateFactoryBean")
-public class HibernateBean {
+public class HibernateUtil {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HibernateBean.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HibernateUtil.class);
     private static final String LIQUIBASE_CONF = "db/db.changelog.xml";
     private static final String HIBERNATE_CONF = "db/hibernate.cfg.xml";
     private static final String DB_AUTH_PROP = "/db/hibernate.properties";
 
-    private SessionFactory sessionFactory;
+    private static final SessionFactory sessionFactory = buildSessionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    HibernateBean() {
+    private static SessionFactory buildSessionFactory() {
         try {
-            final Configuration configuration = new Configuration().configure(HIBERNATE_CONF);
-            loadMappedHibernateEntities(configuration);
+            final Configuration configurationHib = new Configuration().configure(HIBERNATE_CONF);
+
+            final org.reflections.Configuration configuration = new ConfigurationBuilder()
+                .setUrls(ClasspathHelper.forPackage("pl.polsl.skirentalservice"))
+                .setScanners(Scanners.TypesAnnotated);
+
+            final Reflections reflections = new Reflections(configuration);
+            final Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(EntityInjector.class);
+            for (Class<?> entityClazz : annotatedClasses) {
+                configurationHib.addAnnotatedClass(entityClazz);
+            }
+            final String entities = annotatedClasses.stream().map(Class::getSimpleName).collect(Collectors.joining(", "));
+            LOGGER.info("Successful loaded Hibernate entities: [ {} ]", entities);
 
             final ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
-                .applySettings(configuration.getProperties()).build();
+                .applySettings(configurationHib.getProperties()).build();
 
             final MetadataSources sources = new MetadataSources(serviceRegistry);
             final ConnectionProvider provider = sources.getServiceRegistry().getService(ConnectionProvider.class);
@@ -71,34 +79,18 @@ public class HibernateBean {
             liquibase.getDatabase().setDatabaseChangeLogLockTableName("_liquibase_changelog_lock");
             liquibase.update();
 
-            sessionFactory = configuration.buildSessionFactory(serviceRegistry);
-            LOGGER.info("Successful connected with database.");
+            return configurationHib.buildSessionFactory(serviceRegistry);
         } catch (SQLException ex) {
             LOGGER.error("Unable to connect with database. Exception: {}", ex.getMessage());
         } catch (LiquibaseException ex) {
             LOGGER.error("Unable to load Liquibase configuration. Exception: {}", ex.getMessage());
         }
+        return null;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private void loadMappedHibernateEntities(final Configuration conf) {
-        final org.reflections.Configuration configuration = new ConfigurationBuilder()
-            .setUrls(ClasspathHelper.forPackage("pl.polsl.skirentalservice"))
-            .setScanners(Scanners.TypesAnnotated);
-
-        final Reflections reflections = new Reflections(configuration);
-        final Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(EntityInjector.class);
-        for (Class<?> entityClazz : annotatedClasses) {
-            conf.addAnnotatedClass(entityClazz);
-        }
-        final String entities = annotatedClasses.stream().map(Class::getSimpleName).collect(Collectors.joining(", "));
-        LOGGER.info("Successful loaded Hibernate entities: [ {} ]", entities);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public Session open() {
-        return sessionFactory.openSession();
+    public static SessionFactory getSessionFactory() {
+        return sessionFactory;
     }
 }

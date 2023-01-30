@@ -20,7 +20,7 @@
     </nav>
     <hr/>
     <div class="mb-3">
-        <button class="btn btn-sm btn-danger me-1" data-bs-toggle="modal" data-bs-target="#deleteEmployer${customerData.id}">
+        <button class="btn btn-sm btn-danger me-1" data-bs-toggle="modal" data-bs-target="#deleteCustomer${customerData.id}">
             <i class="bi bi-x-lg align-middle me-2 lh-sm"></i>
             Usuń klienta
         </button>

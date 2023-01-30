@@ -52,7 +52,7 @@
                         </div>
                         <div class="col-xl-6 col-xl-2 mb-3">
                             <label for="bornDate" class="form-label mb-1 text-secondary micro-font">Data urodzenia:</label>
-                            <input type="date" class="form-control form-control-sm ${addEditCustomerData.bornDate.errorStyle}"
+                            <input type="date" class="form-control form-control-sm ${addEditCustomerData.bornDate.errorStyle} onlyPreTimeSelect"
                                 id="bornDate" value="${addEditCustomerData.bornDate.value}" name="bornDate">
                             <div class="invalid-feedback lh-sm">${addEditCustomerData.bornDate.message}</div>
                         </div>

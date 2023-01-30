@@ -16,7 +16,6 @@ package pl.polsl.skirentalservice.domain.owner.employer;
 import org.slf4j.*;
 import org.hibernate.*;
 
-import jakarta.ejb.EJB;
 import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -27,7 +26,6 @@ import java.io.IOException;
 import pl.polsl.skirentalservice.paging.filter.*;
 import pl.polsl.skirentalservice.paging.sorter.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.dto.employer.EmployerRecordResDto;
 import pl.polsl.skirentalservice.paging.pagination.ServletPagination;
 
@@ -39,6 +37,7 @@ import static pl.polsl.skirentalservice.util.SessionAttribute.*;
 import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
 import static pl.polsl.skirentalservice.util.PageTitle.OWNER_EMPLOYERS_PAGE;
 import static pl.polsl.skirentalservice.util.Utils.getAndDestroySessionAlert;
+import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
 import static pl.polsl.skirentalservice.util.SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47,11 +46,10 @@ import static pl.polsl.skirentalservice.util.SessionAlert.OWNER_EMPLOYERS_PAGE_A
 public class OwnerEmployersServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerEmployersServlet.class);
+    private final SessionFactory sessionFactory = getSessionFactory();
 
     private final Map<String, ServletSorterField> sorterFieldMap = new HashMap<>();
     private final List<FilterColumn> filterFieldMap = new ArrayList<>();
-
-    @EJB private HibernateBean database;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -83,13 +81,16 @@ public class OwnerEmployersServlet extends HttpServlet {
         final FilterDataDto filterData = servletFilter.generateFilterJPQuery(EMPLOYERS_LIST_FILTER);
 
         final AlertTupleDto alert = getAndDestroySessionAlert(req, OWNER_EMPLOYERS_PAGE_ALERT);
-        try (final Session session = database.open()) {
+        try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
 
                 final String jpqlTotalEmployersCount =
-                    "SELECT COUNT(e.id) FROM EmployerEntity e INNER JOIN e.role r WHERE r.id = 1";
+                    "SELECT COUNT(e.id) FROM EmployerEntity e " +
+                    "INNER JOIN e.userDetails d INNER JOIN e.role r " +
+                    "WHERE r.id = 1 AND " + filterData.getSearchColumn() + " LIKE :search";
                 final Long totalEmployers = session.createQuery(jpqlTotalEmployersCount, Long.class)
+                    .setParameter("search", "%" + filterData.getSearchText() + "%")
                     .getSingleResult();
 
                 final ServletPagination pagination = new ServletPagination(page, total, totalEmployers);
