@@ -24,7 +24,10 @@ import pl.polsl.skirentalservice.dto.attribute.*;
 import pl.polsl.skirentalservice.core.ValidatorBean;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 
+import java.time.LocalDateTime;
+
 import static java.util.Objects.isNull;
+import static java.time.temporal.ChronoUnit.HOURS;
 
 import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
 
@@ -107,5 +110,15 @@ public class Utils {
         result = (10 - result % 10) % 10;
         barcode += result;
         return barcode;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static LocalDateTime truncateToTotalHour(LocalDateTime localDateTime) {
+        int minutes = localDateTime.getMinute();
+        if (minutes >= 30) {
+            localDateTime = localDateTime.plusHours(1);
+        }
+        return localDateTime.truncatedTo(HOURS);
     }
 }

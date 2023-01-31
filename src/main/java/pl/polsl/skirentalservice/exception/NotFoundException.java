@@ -15,8 +15,11 @@ package pl.polsl.skirentalservice.exception;
 
 import org.slf4j.Logger;
 
+import pl.polsl.skirentalservice.util.UserRole;
 import pl.polsl.skirentalservice.dto.login.LoginFormReqDto;
 import pl.polsl.skirentalservice.dto.change_password.RequestToChangePasswordReqDto;
+
+import static org.apache.commons.lang3.StringUtils.capitalize;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -35,6 +38,10 @@ public class NotFoundException {
         public UserNotFoundException(LoginFormReqDto reqDto, Logger logger) {
             super("Użytkownik z podanymi danymi logowania nie istnieje w systemie.");
             logger.warn("Attempt to login on non existing account. Login data: {}", reqDto);
+        }
+
+        public UserNotFoundException(UserRole role) {
+            super(capitalize(role.getName()) + " nie istnieje w systemie.");
         }
     }
 
@@ -67,6 +74,51 @@ public class NotFoundException {
     public static class EquipmentNotFoundException extends RuntimeException {
         public EquipmentNotFoundException(String eqId) {
             super("Wybrany sprzęt narciarski na podstawie ID <strong>#" + eqId + "</strong> nie istnieje w systemie.");
+        }
+
+        public EquipmentNotFoundException() {
+            super("Nie znaleziono żadnych sprzętów narciarskich w wyszukiwanym zapytaniu.");
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class EquipmentInCartNotFoundException extends RuntimeException {
+        public EquipmentInCartNotFoundException() {
+            super("Wybrany sprzęt na podstawie identyfikatora nie istnieje na liście z zestawieniami.");
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class AnyEquipmentsInCartNotFoundException extends RuntimeException {
+        public AnyEquipmentsInCartNotFoundException() {
+            super("W celu złożenia nowego wypożyczenia należy dodać do niego przynajmniej jeden sprzęt.");
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class RentNotFoundException extends RuntimeException {
+        public RentNotFoundException() {
+            super("Szukane wypożyczenie nie istnieje w systemie, bądź zostało z niego usunięte.");
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class ReturnNotFoundException extends RuntimeException {
+        public ReturnNotFoundException() {
+            super("Szukany zwrot wypożyczenia nie istnieje w systemie, bądź zostało z niego usunięty.");
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class NonEquipmentsBeforeRentCreatingException extends RuntimeException {
+        public NonEquipmentsBeforeRentCreatingException() {
+            super("Aby móc stworzyć nowe wypożyczenie, na liście przedmiotów musi być przynajmniej jeden element w" +
+                "ilości co najmniej jednej sztuki.");
         }
     }
 }

@@ -12,6 +12,9 @@
     <include file="changelog/2023-01_migrations/aq5_2023-01-22__remove-customer-bind-table.sql" relativeToChangelogFile="true"/>
     <include file="changelog/2023-01_migrations/aq6_2023-01-24__create-attribute-tables.sql" relativeToChangelogFile="true"/>
     <include file="changelog/2023-01_migrations/aq7_2023-01-26__create-equipments-table.sql" relativeToChangelogFile="true"/>
+    <include file="changelog/2023-01_migrations/aq8_2023-01-29__create-rents-table.sql" relativeToChangelogFile="true"/>
+    <include file="changelog/2023-01_migrations/aq9_2023-01-30__remove-image-and-add-usable-eq.sql" relativeToChangelogFile="true"/>
+    <include file="changelog/2023-01_migrations/aq10_2023-01-31__create-returns-table.sql" relativeToChangelogFile="true"/>
 
     <!-- loadable content scripts -->
     <include file="assertions/fd1_filler__default-employers.sql" relativeToChangelogFile="true"/>

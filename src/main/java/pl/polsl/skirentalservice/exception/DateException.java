@@ -37,4 +37,20 @@ public class DateException {
             super("Data zatrudnienia nie może być wcześniejsza niż data urodzenia pracownika.");
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class RentDateBeforeIssuedDateException extends RuntimeException {
+        public RentDateBeforeIssuedDateException() {
+            super("Data wypożyczenia sprzętu nie może być wcześniejsza od daty wystawienia nowego wypożyczenia.");
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class ReturnDateBeforeRentDateException extends RuntimeException {
+        public ReturnDateBeforeRentDateException() {
+            super("Data zwrotu wypożyczenia nie może być wcześniejsza niż data wypożyczenia sprzętu.");
+        }
+    }
 }

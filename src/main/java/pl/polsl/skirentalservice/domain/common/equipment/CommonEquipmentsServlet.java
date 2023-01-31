@@ -58,7 +58,7 @@ public class CommonEquipmentsServlet extends HttpServlet {
         sorterFieldMap.put("identity", new ServletSorterField("e.id"));
         sorterFieldMap.put("name", new ServletSorterField("e.name"));
         sorterFieldMap.put("type", new ServletSorterField("t.name"));
-        sorterFieldMap.put("countInStore", new ServletSorterField("CAST(e.countInStore - COUNT(ed.id) AS string)"));
+        sorterFieldMap.put("countInStore", new ServletSorterField("e.availableCount"));
         sorterFieldMap.put("pricePerHour", new ServletSorterField("e.pricePerHour"));
         sorterFieldMap.put("priceForNextHour", new ServletSorterField("e.priceForNextHour"));
         sorterFieldMap.put("pricePerDay", new ServletSorterField("e.pricePerDay"));

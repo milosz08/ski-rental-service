@@ -20,8 +20,7 @@ import java.time.LocalDate;
 
 import pl.polsl.skirentalservice.core.db.*;
 import pl.polsl.skirentalservice.util.Gender;
-
-import static jakarta.persistence.EnumType.STRING;
+import pl.polsl.skirentalservice.converter.GenderConverter;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -37,7 +36,9 @@ public class UserDetailsEntity extends AuditableEntity {
     @Column(name = "phone_number")                  private String phoneNumber;
     @Column(name = "email_address")                 private String emailAddress;
     @Column(name = "born_date")                     private LocalDate bornDate;
-    @Column(name = "gender") @Enumerated(STRING)    private Gender gender;
+
+    @Convert(converter = GenderConverter.class) @Column(name = "gender")
+    private Gender gender;
 
     @Column(name = "phone_area_code", insertable = false, updatable = false)
     private Integer phoneAreaCode;

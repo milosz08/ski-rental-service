@@ -13,6 +13,7 @@
 
 package pl.polsl.skirentalservice.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
 import pl.polsl.skirentalservice.util.UserRole;
 import static org.apache.commons.lang3.StringUtils.capitalize;
 
@@ -104,6 +105,59 @@ public class AlreadyExistException {
         public EquipmentColorHasConnectionsException() {
             super("Wybrany kolor sprzętu narciarskiego nie jest możliwy do usunięcia, ponieważ powiązane są z nim sprzęty. " +
                 "Jeśli chcesz usunąć kolor, musisz usunąć wszystkie powiązane z nim sprzęty.");
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class EquipmentInCartAlreadyExistException extends RuntimeException {
+        public EquipmentInCartAlreadyExistException() {
+            super("Dodawany sprzęt istnieje już w zestawieniu nowego wypożyczenia. Aby zwiększyć ilość, edytuj pozycję.");
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class TooMuchEquipmentsException extends RuntimeException {
+        public TooMuchEquipmentsException() {
+            super("Podano więcej sztuk sprzętu, aniżeli jest dostępnych na stanie.");
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class CustomerHasOpenedRentsException extends RuntimeException {
+        public CustomerHasOpenedRentsException() {
+            super("Nie jest możliwe usunięcie użytkownika, który posiada w danej chwili przynamniej jedno wypożyczenie " +
+                "ze statusem innym niż <strong>Zwrócone</strong>.");
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class EmployerHasOpenedRentsException extends RuntimeException {
+        public EmployerHasOpenedRentsException() {
+            super("Nie jest możliwe usunięcie pracownika, który zarządza w danej chwili przynamniej jednym wypożyczeniem " +
+                "ze statusem innym niż <strong>Zwrócone</strong>.");
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class EquipmenHasOpenedRentsException extends RuntimeException {
+        public EquipmenHasOpenedRentsException() {
+            super("Nie jest możliwe usunięcie sprzętu narciarskiego, który obecny jest w danej chwili w przynajmniej" +
+                "jednym wypożyczeniu ze statusem innym niż <strong>Zwrócone</strong>.");
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static class ReturnDocumentAlreadyExistException extends RuntimeException {
+        public ReturnDocumentAlreadyExistException(HttpServletRequest req, String returnIdentifier, Long returnId) {
+            super("Wybrane wypożyczenie posiada już wygenerowany dokument zwrotu. Możesz go znaleźć, klikając w " +
+                "<a class='alert-link' href='" + req.getContextPath() + "/seller/return-details?id=" + returnId +
+                "'>ten link</a> lub wyszukujac po numerze zwrotu: <strong>" + returnIdentifier + "</strong>.");
         }
     }
 }

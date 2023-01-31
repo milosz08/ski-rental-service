@@ -13,6 +13,7 @@
 
 package pl.polsl.skirentalservice.entity;
 
+import java.util.*;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
@@ -37,6 +38,9 @@ public class CustomerEntity extends AuditableEntity {
     @JoinColumn(name = "location_address_id", referencedColumnName = "id")
     private LocationAddressEntity locationAddress;
 
+    @OneToMany(fetch = LAZY, cascade = { PERSIST, MERGE }, mappedBy = "customer")
+    private Set<RentEntity> rents = new HashSet<>();
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public CustomerEntity(UserDetailsEntity userDetails, LocationAddressEntity locationAddress) {
@@ -60,6 +64,14 @@ public class CustomerEntity extends AuditableEntity {
 
     void setLocationAddress(LocationAddressEntity locationAddress) {
         this.locationAddress = locationAddress;
+    }
+
+    Set<RentEntity> getRents() {
+        return rents;
+    }
+
+    void setRents(Set<RentEntity> rents) {
+        this.rents = rents;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
