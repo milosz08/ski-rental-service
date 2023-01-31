@@ -22,10 +22,10 @@
         <property name="hibernate.c3p0.validate">1800</property>
 
         <property name="hibernate.c3p0.unreturnedConnectionTimeout">30</property>
-        <property name="hibernate.c3p0.debugUnreturnedConnectionStackTraces">true</property>
+        <property name="hibernate.c3p0.debugUnreturnedConnectionStackTraces">false</property>
 
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.hbm2ddl.auto">none</property>
-        <property name="hibernate.format_sql">true</property>
+        <property name="hibernate.format_sql">false</property>
     </session-factory>
 </hibernate-configuration>
