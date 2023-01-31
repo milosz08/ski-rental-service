@@ -1,8 +1,0 @@
-użytkownik -> customer, relacja do detali użytkownika, relacja one to one, jeden użytkownik może mieć jedne detale, relacja one to one
-pracownik -> employer, relacja do detali użytkownika, relacja one to one, jeden pracownik może mieć jedne detale, relacja one to one
-rola -> role, relacja do pracownika, relacja one to one, jeden pracownik może mieć jedną rolę, relacja one to one
-
-pracownik -> adres, jeden pracownik może mieć jeden adres -> relacja one to one
-użytkownik, customer -> wiele użytkowników może mieć ten sam adres zamieszkania, relacja one to many
-
-id użutkownika unikalne, jeden użytkownik może mieć przypisany tylko jeden adres, ale wiele użytkowników może mieć przypisany ten sam adres
