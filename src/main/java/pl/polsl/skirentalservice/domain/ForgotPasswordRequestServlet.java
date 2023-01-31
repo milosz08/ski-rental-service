@@ -30,7 +30,6 @@ import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.entity.*;
 import pl.polsl.skirentalservice.core.mail.*;
 import pl.polsl.skirentalservice.dto.change_password.*;
-import pl.polsl.skirentalservice.core.db.HibernateBean;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
@@ -38,6 +37,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static pl.polsl.skirentalservice.util.Utils.*;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
+import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
 import static pl.polsl.skirentalservice.util.PageTitle.FORGOT_PASSWORD_REQUEST_PAGE;
 import static pl.polsl.skirentalservice.util.SessionAlert.FORGOT_PASSWORD_PAGE_ALERT;
 
@@ -48,8 +48,8 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ForgotPasswordRequestServlet.class);
     private static final DateFormat DF = new SimpleDateFormat("yyyy-MM-dd, kk:mm:ss", new Locale("pl"));
+    private final SessionFactory sessionFactory = getSessionFactory();
 
-    @EJB private HibernateBean database;
     @EJB private ValidatorBean validator;
     @EJB private MailSocketBean mailSocket;
 
@@ -77,7 +77,7 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
             return;
         }
         final AlertTupleDto alert = new AlertTupleDto(true);
-        try (final Session session = database.open()) {
+        try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
 

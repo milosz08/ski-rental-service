@@ -36,6 +36,7 @@ import java.awt.image.BufferedImage;
 
 import static java.io.File.separator;
 import static java.util.Objects.isNull;
+import static java.lang.Integer.parseInt;
 import static java.awt.image.BufferedImage.TYPE_BYTE_BINARY;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 
@@ -137,9 +138,10 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
                 if (equipmentModelExist) throw new EquipmentAlreadyExistException();
 
                 final EquipmentEntity persistNewEquipment = modelMapper.map(reqDto, EquipmentEntity.class);
-                persistNewEquipment.setEquipmentType(session.getReference(EquipmentTypeEntity.class, reqDto.getType()));
-                persistNewEquipment.setEquipmentBrand(session.getReference(EquipmentBrandEntity.class, reqDto.getBrand()));
-                persistNewEquipment.setEquipmentColor(session.getReference(EquipmentColorEntity.class, reqDto.getColor()));
+                persistNewEquipment.setEquipmentType(session.get(EquipmentTypeEntity.class, reqDto.getType()));
+                persistNewEquipment.setEquipmentBrand(session.get(EquipmentBrandEntity.class, reqDto.getBrand()));
+                persistNewEquipment.setEquipmentColor(session.get(EquipmentColorEntity.class, reqDto.getColor()));
+                persistNewEquipment.setAvailableCount(parseInt(reqDto.getCountInStore()));
 
                 boolean barcodeExist;
                 String generatedBarcode;
@@ -164,6 +166,7 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
                     ImageIO.write(barcodeBufferedImage, "png", outputFile);
                 } else throw new RuntimeException("Nieudane zapisanie kodu kreskowego sprzętu.");
 
+                persistNewEquipment.setBarcode(generatedBarcode);
                 session.persist(persistNewEquipment);
                 session.getTransaction().commit();
                 alert.setType(INFO);

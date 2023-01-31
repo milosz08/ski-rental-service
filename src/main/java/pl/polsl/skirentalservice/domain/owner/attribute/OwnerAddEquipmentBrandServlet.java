@@ -14,7 +14,7 @@
 package pl.polsl.skirentalservice.domain.owner.attribute;
 
 import org.slf4j.*;
-import org.hibernate.Session;
+import org.hibernate.*;
 
 import jakarta.ejb.EJB;
 import jakarta.servlet.http.*;
@@ -24,7 +24,6 @@ import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 
 import pl.polsl.skirentalservice.core.ValidatorBean;
-import pl.polsl.skirentalservice.core.db.HibernateBean;
 import pl.polsl.skirentalservice.entity.EquipmentBrandEntity;
 import pl.polsl.skirentalservice.dto.attribute.AttributeValidatorPayloadDto;
 
@@ -33,6 +32,7 @@ import static org.apache.commons.lang3.StringUtils.*;
 import static pl.polsl.skirentalservice.util.Utils.*;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
+import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
 import static pl.polsl.skirentalservice.util.SessionAttribute.EQ_BRANDS_MODAL_DATA;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -41,8 +41,8 @@ import static pl.polsl.skirentalservice.util.SessionAttribute.EQ_BRANDS_MODAL_DA
 public class OwnerAddEquipmentBrandServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerAddEquipmentBrandServlet.class);
+    private final SessionFactory sessionFactory = getSessionFactory();
 
-    @EJB private HibernateBean database;
     @EJB private ValidatorBean validator;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -57,7 +57,7 @@ public class OwnerAddEquipmentBrandServlet extends HttpServlet {
             res.sendRedirect(defaultIfBlank(req.getParameter("redirect"), "/owner/add-equipment"));
             return;
         }
-        try (final Session session = database.open()) {
+        try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
 

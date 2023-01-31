@@ -92,7 +92,7 @@ public class AddEditCustomerReqDto implements IReqValidatePojo {
         this.firstName = trimToEmpty(req.getParameter("firstName"));
         this.lastName = trimToEmpty(req.getParameter("lastName"));
         this.pesel = trimToEmpty(req.getParameter("pesel"));
-        this.phoneNumber = trimToEmpty(req.getParameter("phoneNumber"));
+        this.phoneNumber = remove(trimToEmpty(req.getParameter("phoneNumber")), ' ');
         this.bornDate = trimToEmpty(req.getParameter("bornDate"));
         this.emailAddress = trimToEmpty(req.getParameter("emailAddress"));
         this.street = trimToEmpty(req.getParameter("street"));
@@ -114,17 +114,17 @@ public class AddEditCustomerReqDto implements IReqValidatePojo {
     @Override
     public String toString() {
         return "{" +
-            "firstName='" + firstName + '\'' +
-            ", lastName='" + lastName + '\'' +
-            ", pesel='" + pesel + '\'' +
-            ", phoneNumber='" + phoneNumber + '\'' +
+            "firstName='" + firstName +
+            ", lastName='" + lastName +
+            ", pesel='" + pesel +
+            ", phoneNumber='" + phoneNumber +
             ", bornDate='" + bornDate + '\'' +
-            ", emailAddress='" + emailAddress + '\'' +
-            ", street='" + street + '\'' +
-            ", buildingNr='" + buildingNr + '\'' +
-            ", apartmentNr='" + apartmentNr + '\'' +
-            ", city='" + city + '\'' +
-            ", postalCode='" + postalCode + '\'' +
+            ", emailAddress='" + emailAddress +
+            ", street='" + street +
+            ", buildingNr='" + buildingNr +
+            ", apartmentNr='" + apartmentNr +
+            ", city='" + city +
+            ", postalCode='" + postalCode +
             '}';
     }
 }

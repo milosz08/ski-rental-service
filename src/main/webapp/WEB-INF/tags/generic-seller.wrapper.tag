@@ -89,7 +89,7 @@
         </p:generic-left-nav.wrapper>
         <div id="main-wrapper" class="d-flex flex-column flex-fill main-wrapper main-wrapper-active simple-transition">
             <jsp:include page="/WEB-INF/partials/logged-user-top-bar.partial.jsp">
-                <jsp:param name="requestPath" value="owner"/>
+                <jsp:param name="requestPath" value="seller"/>
             </jsp:include>
             <main class="p-3 p-sm-4 flex-grow-1">
                 <jsp:doBody/>

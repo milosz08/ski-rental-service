@@ -42,13 +42,16 @@ public enum PageTitle {
     SELLER_ADD_CUSTOMER_PAGE            ("Dodaj klienta"),
     SELLER_EDIT_CUSTOMER_PAGE           ("Edytuj klienta"),
     SELLER_CREATE_NEW_RENT_PAGE         ("Kreator nowego wypożyczenia"),
+    SELLER_GENERATE_RETURN_PAGE         ("Generuj zwroj wypożyczenia"),
 
     COMMON_RENTS_PAGE                   ("Lista wypożyczeń"),
     COMMON_RENT_DETAILS_PAGE            ("Szczegóły wypożyczenia"),
     COMMON_CUSTOMERS_PAGE               ("Lista klientów"),
     COMMON_CUSTOMER_DETAILS_PAGE        ("Szczegóły klienta"),
     COMMON_EQUIPMENTS_PAGE              ("Lista sprzętów narciarskich"),
-    COMMON_EQUIPMENT_DETAILS_PAGE       ("Szczegóły sprzętu narciarskiego");
+    COMMON_EQUIPMENT_DETAILS_PAGE       ("Szczegóły sprzętu narciarskiego"),
+    COMMON_RETURNS_PAGE                 ("Lista zwrotów"),
+    COMMON_RETURN_DETAILS_PAGE          ("Szczegóły zwrotu");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

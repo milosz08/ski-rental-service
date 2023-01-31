@@ -33,7 +33,7 @@ public class EquipmentDetailsResDto {
     private String brand;
     private String color;
     private String countData;
-    private String rentCount;
+    private Integer rentCount;
     private BigDecimal pricePerHour;
     private BigDecimal priceForNextHour;
     private BigDecimal pricePerDay;

@@ -8,14 +8,6 @@
     <div class="d-flex flex-grow-1 h-100">
         <p:generic-left-nav.wrapper requestPath="owner">
             <li class="mb-1">
-                <a href="${pageContext.request.contextPath}/owner/rents"
-                    class="btn d-flex justify-content-between text-white-50 fw-light btn-hover-dark
-                        rounded border-0 w-100 text-start lh-sm">
-                    Lista wypożyczeń
-                    <i class="d-inline-flex align-self-center bi bi-arrow-return-right"></i>
-                </a>
-            </li>
-            <li class="mb-1">
                 <a href="${pageContext.request.contextPath}/owner/customers"
                     class="btn d-flex justify-content-between text-white-50 fw-light btn-hover-dark
                         rounded border-0 w-100 text-start lh-sm">
@@ -67,6 +59,32 @@
                             class="text-white-50 d-inline-flex align-items-center py-1 ps-2
                             text-decoration-none rounded btn-hover-dark w-100 fw-light">
                             <span class="material-symbols-outlined fs-6 me-2">add</span>Dodaj sprzęt narciarski
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="mb-1">
+                <button data-bs-toggle="collapse" data-bs-target="#rents-collapse" aria-expanded="false"
+                        class="btn d-flex justify-content-between text-white-50 fw-light btn-hover-dark
+                        rounded border-0 collapsed w-100 text-start lh-sm">
+                    Wypożyczenia
+                    <i class="d-inline-flex align-self-center bi bi-chevron-right chewron-icon simple-transition"></i>
+                </button>
+                <ul class="collapse ms-3 mt-1 btn-toggle-nav list-unstyled fw-normal pb-1 small" id="rents-collapse">
+                    <li class="mb-1">
+                        <a href="${pageContext.request.contextPath}/owner/rents"
+                            class="text-white-50 d-inline-flex align-items-center py-1 ps-2
+                                text-decoration-none rounded btn-hover-dark w-100 fw-light">
+                            <span class="material-symbols-outlined fs-6 me-2">shopping_cart</span>
+                            Lista wypożyczeń
+                        </a>
+                    </li>
+                    <li class="mb-1">
+                        <a href="${pageContext.request.contextPath}/owner/returns"
+                            class="text-white-50 d-inline-flex align-items-center py-1 ps-2
+                                text-decoration-none rounded btn-hover-dark w-100 fw-light">
+                            <span class="material-symbols-outlined fs-6 me-2">shopping_cart_checkout</span>
+                            Lista zwrotów
                         </a>
                     </li>
                 </ul>

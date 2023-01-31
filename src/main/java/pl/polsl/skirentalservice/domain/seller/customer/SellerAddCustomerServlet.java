@@ -26,7 +26,6 @@ import pl.polsl.skirentalservice.entity.*;
 import pl.polsl.skirentalservice.dto.customer.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.core.ValidatorBean;
-import pl.polsl.skirentalservice.exception.DateException;
 import pl.polsl.skirentalservice.core.mail.MailSocketBean;
 
 import java.io.IOException;
@@ -38,6 +37,7 @@ import static pl.polsl.skirentalservice.util.Utils.*;
 import static pl.polsl.skirentalservice.util.SessionAlert.*;
 import static pl.polsl.skirentalservice.util.UserRole.USER;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
+import static pl.polsl.skirentalservice.exception.DateException.*;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
 import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
 import static pl.polsl.skirentalservice.util.PageTitle.SELLER_ADD_CUSTOMER_PAGE;
@@ -87,7 +87,7 @@ public class SellerAddCustomerServlet extends HttpServlet {
         }
         try (final Session session = sessionFactory.openSession()) {
             if (reqDto.getParsedBornDate().isAfter(LocalDate.now().minusYears(config.getCircaDateYears()))) {
-                throw new DateException.DateInFutureException("data urodzenia", config.getCircaDateYears());
+                throw new DateInFutureException("data urodzenia", config.getCircaDateYears());
             }
             try {
                 session.beginTransaction();
@@ -131,7 +131,7 @@ public class SellerAddCustomerServlet extends HttpServlet {
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
             httpSession.setAttribute(getClass().getName(), resDto);
-            httpSession.setAttribute(SELLER_ADD_CUSTOMER_PAGE.getName(), alert);
+            httpSession.setAttribute(SELLER_ADD_CUSTOMER_PAGE_ALERT.getName(), alert);
             LOGGER.error("Unable to create new customer. Cause: {}", ex.getMessage());
             res.sendRedirect("/seller/add-customer");
         }

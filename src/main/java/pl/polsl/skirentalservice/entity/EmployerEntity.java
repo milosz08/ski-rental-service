@@ -36,7 +36,6 @@ public class EmployerEntity extends AuditableEntity {
     @Column(name = "login")                                 private String login;
     @Column(name = "password")                              private String password;
     @Column(name = "hired_date")                            private LocalDate hiredDate;
-    @Column(name = "image_url")                             private String imageUrl;
     @Column(name = "first_access", insertable = false)      private Boolean firstAccess;
 
     @OneToOne(fetch = LAZY, cascade = { PERSIST, MERGE, REMOVE })
@@ -85,14 +84,6 @@ public class EmployerEntity extends AuditableEntity {
         this.hiredDate = hiredDate;
     }
 
-    String getImageUrl() {
-        return imageUrl;
-    }
-
-    void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
     public UserDetailsEntity getUserDetails() {
         return userDetails;
     }
@@ -137,7 +128,6 @@ public class EmployerEntity extends AuditableEntity {
             "login='" + login +
             ", password='" + password +
             ", hiredDate=" + hiredDate +
-            ", imageUrl='" + imageUrl +
             ", firstAccess=" + firstAccess +
             ", role=" + role +
             '}';
