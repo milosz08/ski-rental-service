@@ -20,11 +20,10 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
-import java.time.LocalDateTime;
 import java.util.*;
-import java.time.Duration;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 import pl.polsl.skirentalservice.dto.*;
@@ -134,8 +133,7 @@ public class SellerCompleteRentEquipmentsServlet extends HttpServlet {
 
                 final LocalDateTime startTruncated = truncateToTotalHour(rentData.getParsedRentDateTime());
                 final LocalDateTime endTruncated = truncateToTotalHour(rentData.getParsedReturnDateTime());
-                final Duration elapsed = between(startTruncated, endTruncated);
-                final long totalRentHours = elapsed.toHours();
+                final long totalRentHours = between(startTruncated, endTruncated).toHours();
                 final long rentDays = totalRentHours / 24;
                 rentData.setDays(rentDays);
                 rentData.setHours(totalRentHours % 24);

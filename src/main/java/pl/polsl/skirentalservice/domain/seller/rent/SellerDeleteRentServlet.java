@@ -63,6 +63,7 @@ public class SellerDeleteRentServlet extends HttpServlet {
                     "niechciane wypożyczenie, usuń przypisany do niego dokument zwrotu."
                 );
                 for (final RentEquipmentEntity equipment : rentEntity.getEquipments()) {
+                    if (isNull(equipment.getEquipment())) continue;
                     final String jpqlIncreaseEquipmentCount =
                         "UPDATE EquipmentEntity e SET e.availableCount = e.availableCount + :rentedCount " +
                         "WHERE e.id = :eid";
@@ -71,6 +72,9 @@ public class SellerDeleteRentServlet extends HttpServlet {
                         .setParameter("rentedCount", equipment.getCount())
                         .executeUpdate();
                 }
+
+                // TODO: usuwanie wygenerowanego pdfa
+
                 session.remove(rentEntity);
                 session.getTransaction().commit();
                 alert.setType(INFO);

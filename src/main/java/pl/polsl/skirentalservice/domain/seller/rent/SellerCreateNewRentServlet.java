@@ -81,15 +81,16 @@ public class SellerCreateNewRentServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final String getAllCounts = "SELECT SUM(e.availableCount) > 0 FROM EquipmentEntity e";
-                final Boolean isSomeEquipmentsAvaialble = session.createQuery(getAllCounts, Boolean.class)
-                    .getSingleResult();
-                if (!isSomeEquipmentsAvaialble) {
+                final String getAllCounts = "SELECT SUM(e.availableCount) FROM EquipmentEntity e";
+                final Long isSomeEquipmentsAvaialble = session.createQuery(getAllCounts, Long.class)
+                    .getSingleResultOrNull();
+                if (isNull(isSomeEquipmentsAvaialble) || isSomeEquipmentsAvaialble < 0) {
                     alert.setActive(true);
                     alert.setMessage("Aby stworzyć wypożyczenie musi być dostępny przynajmniej jeden sprzęt w " +
                         "ilości jednej sztuki na stanie.");
                     httpSession.setAttribute(COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
                     res.sendRedirect("/seller/customers");
+                    return;
                 }
                 final String jpqlFindCustomerDetails =
                     "SELECT new pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto(" +

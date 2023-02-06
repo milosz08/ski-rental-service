@@ -63,8 +63,8 @@ public class OwnerDeleteEquipmentServlet extends HttpServlet {
                 session.beginTransaction();
 
                 final String jpqlFindHasConnections =
-                    "SELECT COUNT(r.id) > 0 FROM RentEntity r INNER JOIN r.equipments e " +
-                    "WHERE e.id = :eid AND r.status <> :rst";
+                    "SELECT COUNT(r.id) > 0 FROM RentEntity r INNER JOIN r.equipments e INNER JOIN e.equipment eq " +
+                    "WHERE eq.id = :eid AND r.status <> :rst";
                 final Boolean hasAnyConnections = session.createQuery(jpqlFindHasConnections, Boolean.class)
                     .setParameter("eid", equipmentId).setParameter("rst", RETURNED)
                     .getSingleResult();

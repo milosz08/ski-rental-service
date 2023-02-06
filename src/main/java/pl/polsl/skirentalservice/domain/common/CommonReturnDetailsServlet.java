@@ -86,7 +86,7 @@ public class CommonReturnDetailsServlet extends HttpServlet {
                     ") FROM RentReturnEquipmentEntity re " +
                     "INNER JOIN re.rentEquipment rer " +
                     "INNER JOIN rer.rent r INNER JOIN re.rentReturn rrer LEFT OUTER JOIN re.equipment e " +
-                    "WHERE rrer.id = :rid";
+                    "WHERE rrer.id = :rid ORDER BY re.id";
                 final List<RentEquipmentsDetailsResDto> allReturnEquipments = session
                     .createQuery(jpqlFindAllEquipments, RentEquipmentsDetailsResDto.class)
                     .setParameter("rid", returnId)

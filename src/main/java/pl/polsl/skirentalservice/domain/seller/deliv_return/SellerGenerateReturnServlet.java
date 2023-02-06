@@ -29,7 +29,6 @@ import pl.polsl.skirentalservice.core.ModelMapperBean;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 
 import java.util.*;
-import java.time.Duration;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -125,11 +124,10 @@ public class SellerGenerateReturnServlet extends HttpServlet {
 
                 final LocalDateTime startTruncated = truncateToTotalHour(rentDetails.getRentDateTime());
                 final LocalDateTime endTruncated = truncateToTotalHour(generatedBrief);
-                final Duration elapsed = between(startTruncated, endTruncated);
-                final long totalRentHours = elapsed.toHours();
+                final long totalRentHours = between(startTruncated, endTruncated).toHours();
                 final long rentDays = totalRentHours / 24;
 
-                final RentEntity rentEntity = session.getReference(RentEntity.class, rentId);
+                final RentEntity rentEntity = session.get(RentEntity.class, rentId);
                 final RentReturnEntity rentReturn = modelMapper.map(rentDetails, RentReturnEntity.class);
                 final Set<RentReturnEquipmentEntity> rentEquipmentEntities = new HashSet<>();
 

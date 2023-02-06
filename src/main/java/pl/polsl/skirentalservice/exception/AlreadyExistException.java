@@ -146,7 +146,7 @@ public class AlreadyExistException {
 
     public static class EquipmenHasOpenedRentsException extends RuntimeException {
         public EquipmenHasOpenedRentsException() {
-            super("Nie jest możliwe usunięcie sprzętu narciarskiego, który obecny jest w danej chwili w przynajmniej" +
+            super("Nie jest możliwe usunięcie sprzętu narciarskiego, który obecny jest w danej chwili w przynajmniej " +
                 "jednym wypożyczeniu ze statusem innym niż <strong>Zwrócone</strong>.");
         }
     }

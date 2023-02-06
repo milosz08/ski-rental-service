@@ -71,14 +71,17 @@ public class SellerDeleteReturnServlet extends HttpServlet {
                     .executeUpdate();
 
                 for (final RentEquipmentEntity equipment : rentReturn.getRent().getEquipments()) {
+                    if (isNull(equipment.getEquipment())) continue;
                     final String jpqlIncreaseEquipmentCount =
                         "UPDATE EquipmentEntity e SET e.availableCount = e.availableCount - :rentedCount " +
-                            "WHERE e.id = :eid";
+                        "WHERE e.id = :eid";
                     session.createMutationQuery(jpqlIncreaseEquipmentCount)
                         .setParameter("eid", equipment.getEquipment().getId())
                         .setParameter("rentedCount", equipment.getCount())
                         .executeUpdate();
                 }
+
+                // TODO: usuwanie wygenerowanego pdfa
 
                 alert.setType(INFO);
                 alert.setMessage(

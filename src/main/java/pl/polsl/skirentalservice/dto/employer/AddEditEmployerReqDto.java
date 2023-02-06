@@ -97,8 +97,8 @@ public class AddEditEmployerReqDto implements IReqValidatePojo {
         this.bornDate = trimToEmpty(req.getParameter("bornDate"));
         this.hiredDate = trimToEmpty(req.getParameter("hiredDate"));
         this.street = trimToEmpty(req.getParameter("street"));
-        this.buildingNr = trimToEmpty(req.getParameter("buildingNr"));
-        this.apartmentNr = trimToNull(req.getParameter("apartmentNr"));
+        this.buildingNr = trimToEmpty(req.getParameter("buildingNr")).toLowerCase();
+        this.apartmentNr = trimToNull(req.getParameter("apartmentNr")).toLowerCase();
         this.city = trimToEmpty(req.getParameter("city"));
         this.postalCode = trimToEmpty(req.getParameter("postalCode"));
         this.gender = findByAlias(req.getParameter("gender"));

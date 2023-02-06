@@ -20,7 +20,7 @@ public class Regex {
     public static final String LOGIN_EMAIL              = "^[a-z0-9@.]{5,80}$";
     public static final String PASSWORD_REQ             = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*]).{8,25}$";
     public static final String PASSWORD_AVLB            = "^[a-zA-Z0-9#?!@$%^&*]{8,25}$";
-    public static final String NAME_SURNAME             = "^[a-zA-ZżźćńółęąśŻŹĆĄŚĘŁÓŃ]{3,30}$";
+    public static final String NAME_SURNAME             = "^[a-zA-ZżźćńółęąśŻŹĆĄŚĘŁÓŃ -']{3,30}$";
     public static final String PHONE_NUMBER             = "^[0-9]{3}( |)[0-9]{3}( |)[0-9]{3}$";
     public static final String DATE                     = "^[0-9]{4}\\-(0[1-9]|1[012])\\-(0[1-9]|[12][0-9]|3[01])$";
     public static final String STREET                   = "^[a-zA-Z0-9ąćęłńóśźżĄĆĘŁŃÓŚŹŻ\\- ]{2,50}$";
