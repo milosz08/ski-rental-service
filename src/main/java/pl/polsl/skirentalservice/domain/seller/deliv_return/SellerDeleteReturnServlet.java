@@ -21,6 +21,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.entity.RentEquipmentEntity;
 import pl.polsl.skirentalservice.entity.RentReturnEntity;
 import pl.polsl.skirentalservice.domain.seller.rent.SellerDeleteRentServlet;
 
@@ -68,6 +69,16 @@ public class SellerDeleteReturnServlet extends HttpServlet {
                 session.createMutationQuery(jpqlChangeRentStatus)
                     .setParameter("rstat", RENTED).setParameter("rentid", rentReturn.getRent().getId())
                     .executeUpdate();
+
+                for (final RentEquipmentEntity equipment : rentReturn.getRent().getEquipments()) {
+                    final String jpqlIncreaseEquipmentCount =
+                        "UPDATE EquipmentEntity e SET e.availableCount = e.availableCount - :rentedCount " +
+                            "WHERE e.id = :eid";
+                    session.createMutationQuery(jpqlIncreaseEquipmentCount)
+                        .setParameter("eid", equipment.getEquipment().getId())
+                        .setParameter("rentedCount", equipment.getCount())
+                        .executeUpdate();
+                }
 
                 alert.setType(INFO);
                 alert.setMessage(

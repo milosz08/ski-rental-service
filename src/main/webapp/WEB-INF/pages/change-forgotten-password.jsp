@@ -13,7 +13,8 @@
             <jsp:include page="/WEB-INF/partials/dynamic-alert.partial.jsp"/>
             <c:if test="${!alertData.disableContent}">
                 <form action="" method="post" class="card p-4" novalidate>
-                    <img src="${employerData.imageUrl}" class="rounded-circle mx-auto d-block" alt="" width="80" height="80">
+                    <img src="${pageContext.request.contextPath}/static/images/default-profile-image.svg"
+                        class="rounded-circle mx-auto d-block" alt="" width="80" height="80">
                     <h1 class="mt-4 fs-4 mb-2 fw-normal text-secondary text-center">
                         Zmiana hasła dla
                         <span class="text-dark">${employerData.fullName}</span>

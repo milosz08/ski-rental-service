@@ -24,8 +24,7 @@ public class ChangePasswordEmployerDetailsDto {
     private Long id;
     private Long tokenId;
     private String fullName;
-    private String imageUrl;
-    
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
@@ -33,7 +32,6 @@ public class ChangePasswordEmployerDetailsDto {
         return '{' +
             "id=" + id +
             ", fullName='" + fullName +
-            ", imageUrl='" + imageUrl +
             '}';
     }
 }

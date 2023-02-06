@@ -60,12 +60,11 @@ public class ChangeForgottenPasswordServlet extends HttpServlet {
 
                 final String jpqlFindToken =
                     "SELECT new pl.polsl.skirentalservice.dto.change_password.ChangePasswordEmployerDetailsDto(" +
-                        "e.id, t.id, CONCAT(d.firstName, ' ', d.lastName)," +
-                        "CASE WHEN e.imageUrl IS NULL THEN 'static/images/default-profile-image.svg' ELSE e.imageUrl END" +
-                        ") FROM OtaTokenEntity t " +
-                        "INNER JOIN t.employer e " +
-                        "INNER JOIN e.userDetails d " +
-                        "WHERE t.otaToken = :token AND t.isUsed = false AND t.expiredDate >= NOW()";
+                        "e.id, t.id, CONCAT(d.firstName, ' ', d.lastName)" +
+                    ") FROM OtaTokenEntity t " +
+                    "INNER JOIN t.employer e " +
+                    "INNER JOIN e.userDetails d " +
+                    "WHERE t.otaToken = :token AND t.isUsed = false AND t.expiredDate >= NOW()";
                 final var details = session.createQuery(jpqlFindToken, ChangePasswordEmployerDetailsDto.class)
                     .setParameter("token", token)
                     .getSingleResultOrNull();

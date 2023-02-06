@@ -137,11 +137,13 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
                     .getSingleResult();
                 if (equipmentModelExist) throw new EquipmentAlreadyExistException();
 
+                modelMapper.getModelMapper().getConfiguration().setAmbiguityIgnored(false);
                 final EquipmentEntity persistNewEquipment = modelMapper.map(reqDto, EquipmentEntity.class);
                 persistNewEquipment.setEquipmentType(session.get(EquipmentTypeEntity.class, reqDto.getType()));
                 persistNewEquipment.setEquipmentBrand(session.get(EquipmentBrandEntity.class, reqDto.getBrand()));
                 persistNewEquipment.setEquipmentColor(session.get(EquipmentColorEntity.class, reqDto.getColor()));
                 persistNewEquipment.setAvailableCount(parseInt(reqDto.getCountInStore()));
+                modelMapper.getModelMapper().getConfiguration().setAmbiguityIgnored(true);
 
                 boolean barcodeExist;
                 String generatedBarcode;

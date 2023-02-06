@@ -57,4 +57,8 @@ public class ModelMapperBean {
     public void onUpdateNullableTransactTurnOff() {
         modelMapper.getConfiguration().setPropertyCondition(Conditions.isNull());
     }
+
+    public ModelMapper getModelMapper() {
+        return modelMapper;
+    }
 }

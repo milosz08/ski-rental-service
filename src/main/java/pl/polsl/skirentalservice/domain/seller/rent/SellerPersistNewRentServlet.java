@@ -72,8 +72,10 @@ public class SellerPersistNewRentServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
+                modelMapper.getModelMapper().getConfiguration().setAmbiguityIgnored(true);
                 final RentEntity rent = modelMapper.map(rentData, RentEntity.class);
                 rent.setEquipments(new HashSet<>());
+                modelMapper.getModelMapper().getConfiguration().setAmbiguityIgnored(false);
 
                 final Set<RentEquipmentEntity> equipmentEntities = new HashSet<>();
                 for (final CartSingleEquipmentDataDto cartData : rentData.getEquipments()) {
