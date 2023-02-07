@@ -2,8 +2,8 @@
  * Copyright (c) 2023 by multiple authors
  * Silesian University of Technology
  *
- *  File name: RentReturnDetailsResDto.java
- *  Last modified: 30/01/2023, 23:10
+ *  File name: ClientDetailsResDto.java
+ *  Last modified: 07/02/2023, 15:32
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -15,19 +15,13 @@ package pl.polsl.skirentalservice.dto.deliv_return;
 
 import lombok.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Data
 @AllArgsConstructor
-public class RentReturnDetailsResDto {
-    private String issuedIdentifier;
-    private LocalDateTime rentDateTime;
-    private Integer tax;
-    private BigDecimal totalPriceNetto;
-    private BigDecimal totalPriceBrutto;
-    private BigDecimal totalDepositPriceNetto;
-    private BigDecimal totalDepositPriceBrutto;
+public class CustomerDetailsResDto {
+    private String fullName;
+    private String pesel;
+    private String phoneNumber;
+    private String email;
 }
