@@ -15,6 +15,7 @@ package pl.polsl.skirentalservice.entity;
 
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
+
 import pl.polsl.skirentalservice.core.db.*;
 
 import java.util.*;
@@ -83,7 +84,7 @@ public class RentReturnEntity extends AuditableEntity {
         return totalDepositPrice;
     }
 
-    void setTotalDepositPrice(BigDecimal totalDepositPrice) {
+    public void setTotalDepositPrice(BigDecimal totalDepositPrice) {
         this.totalDepositPrice = totalDepositPrice;
     }
 

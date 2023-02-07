@@ -121,7 +121,7 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                 alert.setType(INFO);
                 alert.setMessage(
                     "Wypożyczenie o numerze <strong>" + rentData.getIssuedIdentifier() + "</strong> zostało pomyślnie " +
-                    "złożone w systemie."
+                    "złożone w systemie. Szczegóły złożonego wypożyczenia znajdziesz również w wiadomości email."
                 );
                 httpSession.setAttribute(COMMON_RENTS_PAGE_ALERT.getName(), alert);
                 httpSession.removeAttribute(INMEMORY_NEW_RENT_DATA.getName());

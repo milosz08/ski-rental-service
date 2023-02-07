@@ -24,6 +24,7 @@ public class EquipmentRentRecordResDto {
     private Long id;
     private String name;
     private String type;
+    private String model;
     private String barcode;
     private Integer totalCount;
     private BigDecimal pricePerHour;
@@ -45,6 +46,7 @@ public class EquipmentRentRecordResDto {
             "id=" + id +
             ", name='" + name +
             ", type='" + type +
+            ", model='" + model +
             ", barcode='" + barcode +
             ", totalCount=" + totalCount +
             ", pricePerHour=" + pricePerHour +

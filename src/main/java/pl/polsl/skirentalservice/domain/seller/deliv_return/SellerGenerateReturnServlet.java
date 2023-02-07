@@ -94,7 +94,9 @@ public class SellerGenerateReturnServlet extends HttpServlet {
 
                 final String jpqlFindRent =
                     "SELECT new pl.polsl.skirentalservice.dto.deliv_return.RentReturnDetailsResDto(" +
-                        "r.issuedIdentifier, r.rentDateTime, r.tax, r.totalDepositPrice" +
+                        "r.issuedIdentifier, r.rentDateTime, r.tax," +
+                        "r.totalPrice, CAST((r.tax / 100) * r.totalPrice + r.totalPrice AS bigdecimal)," +
+                        "r.totalDepositPrice, CAST((r.tax / 100) * r.totalDepositPrice + r.totalDepositPrice AS bigdecimal)" +
                     ") FROM RentEntity r INNER JOIN r.employer e " +
                     "WHERE r.id = :rentid AND e.id = :eid";
                 final RentReturnDetailsResDto rentDetails = session.createQuery(jpqlFindRent, RentReturnDetailsResDto.class)
@@ -116,7 +118,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                     .setParameter("eid", userDataDto.getId())
                     .getResultList();
                 if (equipmentsList.isEmpty()) throw new EquipmentNotFoundException();
-                final LocalDateTime generatedBrief = LocalDateTime.now();
+                final LocalDateTime generatedBrief = LocalDateTime.now().truncatedTo(MINUTES);
                 final String returnIssuerIdentifier = rentDetails.getIssuedIdentifier().replace("WY", "ZW");
                 if (rentDetails.getRentDateTime().isAfter(generatedBrief)) {
                     throw new ReturnDateBeforeRentDateException();
@@ -129,6 +131,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
 
                 final RentEntity rentEntity = session.get(RentEntity.class, rentId);
                 final RentReturnEntity rentReturn = modelMapper.map(rentDetails, RentReturnEntity.class);
+                rentReturn.setTotalDepositPrice(rentDetails.getTotalDepositPriceNetto());
                 final Set<RentReturnEquipmentEntity> rentEquipmentEntities = new HashSet<>();
 
                 rentReturn.setEquipments(new HashSet<>());
@@ -193,7 +196,8 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 alert.setType(INFO);
                 alert.setMessage(
                     "Generowanie zwrotu o numerze <strong>" + returnIssuerIdentifier + "</strong> dla wypożyczenia o " +
-                    "numerze <strong>" + rentDetails.getIssuedIdentifier() + "</strong> zakończone sukcesem."
+                    "numerze <strong>" + rentDetails.getIssuedIdentifier() + "</strong> zakończone sukcesem. Potwierdzenie " +
+                    "wraz z podsumowaniem zostało wysłane również na adres email."
                 );
                 httpSession.setAttribute(COMMON_RETURNS_PAGE_ALERT.getName(), alert);
                 res.sendRedirect("/seller/returns");

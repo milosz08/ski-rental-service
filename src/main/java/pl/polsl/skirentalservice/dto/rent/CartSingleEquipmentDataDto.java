@@ -24,6 +24,7 @@ import pl.polsl.skirentalservice.dto.PriceUnitsDto;
 public class CartSingleEquipmentDataDto {
     private Long id;
     private String name;
+    private String typeAndModel;
     private String count;
     private String totalPersistCount;
     private String description;
@@ -36,6 +37,7 @@ public class CartSingleEquipmentDataDto {
         EquipmentRentRecordResDto equipmentDetails, AddEditEquipmentCartReqDto reqDto, AddEditEquipmentCartResDto resDto
     ) {
         id =  equipmentDetails.getId();
+        typeAndModel = equipmentDetails.getType() + ", " + equipmentDetails.getModel();
         description = reqDto.getDescription();
         count = reqDto.getCount();
         priceUnits = new PriceUnitsDto();
@@ -61,6 +63,7 @@ public class CartSingleEquipmentDataDto {
         return "{" +
             "id=" + id +
             ", name='" + name +
+            ", typeAndModel='" + typeAndModel +
             ", count='" + count +
             ", totalPersistCount='" + totalPersistCount +
             ", description='" + description +

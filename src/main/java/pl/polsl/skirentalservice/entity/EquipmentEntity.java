@@ -66,7 +66,7 @@ public class EquipmentEntity extends AuditableEntity {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    String getName() {
+    public String getName() {
         return name;
     }
 
@@ -74,7 +74,7 @@ public class EquipmentEntity extends AuditableEntity {
         this.name = name;
     }
 
-    String getModel() {
+    public String getModel() {
         return model;
     }
 
@@ -162,7 +162,7 @@ public class EquipmentEntity extends AuditableEntity {
         this.valueCost = valueCost;
     }
 
-    EquipmentTypeEntity getEquipmentType() {
+    public EquipmentTypeEntity getEquipmentType() {
         return equipmentType;
     }
 

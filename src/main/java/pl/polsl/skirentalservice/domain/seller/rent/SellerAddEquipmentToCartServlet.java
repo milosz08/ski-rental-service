@@ -81,8 +81,8 @@ public class SellerAddEquipmentToCartServlet extends HttpServlet {
             try {
                 final String jpqlEquipmentDetails =
                     "SELECT new pl.polsl.skirentalservice.dto.rent.EquipmentRentRecordResDto(" +
-                        "e.id, e.name, t.name, e.barcode, e.availableCount, e.pricePerHour, e.priceForNextHour," +
-                        "e.pricePerDay, ''" +
+                        "e.id, e.name, t.name, e.model, e.barcode, e.availableCount, e.pricePerHour," +
+                        "e.priceForNextHour, e.pricePerDay, ''" +
                     ") FROM EquipmentEntity e " +
                     "INNER JOIN e.equipmentType t " +
                     "WHERE e.id = :id";

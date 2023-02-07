@@ -32,10 +32,10 @@ public class MailRequestPayload {
 
     @Override
     public String toString() {
-        return "MailRequestPayload{" +
-            "messageResoponder='" + messageResponder + '\'' +
-            ", subject='" + subject + '\'' +
-            ", templateName='" + templateName + '\'' +
+        return "{" +
+            "messageResoponder='" + messageResponder +
+            ", subject='" + subject +
+            ", templateName='" + templateName +
             ", templateVars=" + templateVars +
             ", attachmentsPaths=" + attachmentsPaths +
             '}';

@@ -114,10 +114,9 @@ public class SellerCompleteRentEquipmentsServlet extends HttpServlet {
 
                 final String jpqlFindAllEquipments =
                     "SELECT new pl.polsl.skirentalservice.dto.rent.EquipmentRentRecordResDto(" +
-                        "e.id, e.name, t.name, e.barcode, IFNULL(CAST(e.countInStore - SUM(ed.count) AS integer)," +
-                        "e.countInStore), e.pricePerHour, e.priceForNextHour, e.pricePerDay, ''" +
+                        "e.id, e.name, t.name, e.model, e.barcode, e.availableCount, e.pricePerHour," +
+                        "e.priceForNextHour, e.pricePerDay, ''" +
                     ") FROM EquipmentEntity e " +
-                    "LEFT OUTER JOIN e.rentsEquipments ed " +
                     "INNER JOIN e.equipmentType t " +
                     "WHERE " + filterData.getSearchColumn() + " LIKE :search GROUP BY e.id " +
                     "ORDER BY " + sorterData.getJpql();
