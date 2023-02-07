@@ -21,9 +21,10 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
+import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.util.*;
 import pl.polsl.skirentalservice.entity.*;
-import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.core.mail.*;
 import pl.polsl.skirentalservice.dto.deliv_return.*;
 import pl.polsl.skirentalservice.core.ModelMapperBean;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
@@ -36,9 +37,11 @@ import java.time.LocalDateTime;
 import static java.util.Objects.isNull;
 import static java.time.Duration.between;
 import static java.math.RoundingMode.HALF_UP;
+import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.apache.commons.lang3.StringUtils.trimToNull;
 
 import static pl.polsl.skirentalservice.util.SessionAlert.*;
+import static pl.polsl.skirentalservice.util.UserRole.USER;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.util.RentStatus.RETURNED;
 import static pl.polsl.skirentalservice.exception.DateException.*;
@@ -57,6 +60,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
     private final SessionFactory sessionFactory = getSessionFactory();
 
     @EJB private ModelMapperBean modelMapper;
+    @EJB private MailSocketBean mailSocket;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -133,6 +137,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 final RentReturnEntity rentReturn = modelMapper.map(rentDetails, RentReturnEntity.class);
                 rentReturn.setTotalDepositPrice(rentDetails.getTotalDepositPriceNetto());
                 final Set<RentReturnEquipmentEntity> rentEquipmentEntities = new HashSet<>();
+                final Set<EmailEquipmentPayloadDataDto> emailEquipmentsPayload = new HashSet<>();
 
                 rentReturn.setEquipments(new HashSet<>());
                 BigDecimal totalSumPrice = new BigDecimal(0);
@@ -153,6 +158,11 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                         .divide(new BigDecimal(100), 2, HALF_UP).multiply(sumPriceNetto).add(sumPriceNetto)
                         .setScale(2, HALF_UP);
 
+                    final BigDecimal depositPriceBrutto = taxValue
+                        .divide(new BigDecimal(100), 2, HALF_UP).multiply(eqDto.getDepositPriceNetto())
+                        .add(eqDto.getDepositPriceNetto())
+                        .setScale(2, HALF_UP);
+
                     final EquipmentEntity equipmentEntity = session
                         .getReference(EquipmentEntity.class, eqDto.getEquipmentId());
                     final RentEquipmentEntity rentEquipmentEntity = session
@@ -167,6 +177,12 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                         .setParameter("eid", equipmentEntity.getId())
                         .setParameter("rentedCount", eqDto.getCount())
                         .executeUpdate();
+
+                    final var emailEquipment = new EmailEquipmentPayloadDataDto(equipmentEntity, eqDto);
+                    emailEquipment.setTotalPriceNetto(sumPriceNetto);
+                    emailEquipment.setTotalPriceBrutto(sumPriceBrutto);
+                    emailEquipment.setDepositPriceBrutto(depositPriceBrutto);
+                    emailEquipmentsPayload.add(emailEquipment);
 
                     returnEquipmentEntity.setId(null);
                     returnEquipmentEntity.setTotalPrice(sumPriceNetto);
@@ -188,7 +204,83 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                     .setParameter("rst", RETURNED).setParameter("rentid", rentId)
                     .executeUpdate();
 
-                // TODO: wysyłanie wiadomości email
+                final String jpqlGetCustomerDetails =
+                    "SELECT new pl.polsl.skirentalservice.dto.deliv_return.CustomerDetailsResDto(" +
+                        "CONCAT(d.firstName, ' ', d.lastName), d.pesel, CONCAT('+', d.phoneAreaCode, ' '," +
+                        "SUBSTRING(d.phoneNumber, 1, 3), ' ', SUBSTRING(d.phoneNumber, 4, 3), ' '," +
+                        "SUBSTRING(d.phoneNumber, 7, 3)), d.emailAddress" +
+                    ") FROM RentEntity r " +
+                    "INNER JOIN r.customer c INNER JOIN c.userDetails d " +
+                    "WHERE r.id = :rentid";
+                final CustomerDetailsResDto customerDetails = session
+                    .createQuery(jpqlGetCustomerDetails, CustomerDetailsResDto.class)
+                    .setParameter("rentid", rentId)
+                    .getSingleResultOrNull();
+                if (isNull(customerDetails)) throw new UserNotFoundException(USER);
+
+                final var emailPayload = modelMapper.map(rentDetails, RentReturnEmailPayloadDataDto.class);
+                modelMapper.shallowCopy(customerDetails, emailPayload);
+
+                final BigDecimal totalSumPriceBrutto = new BigDecimal(emailPayload.getTax())
+                    .divide(new BigDecimal(100), 2, HALF_UP).multiply(totalSumPrice).add(totalSumPrice)
+                    .setScale(2, HALF_UP);
+                emailPayload.setReturnDate(generatedBrief.toString());
+                emailPayload.setTotalPriceNetto(totalSumPrice);
+                emailPayload.setRentTime(rentDays +  " dni, " + totalRentHours + " godzin");
+                emailPayload.setTotalPriceBrutto(totalSumPriceBrutto);
+
+                final BigDecimal totalWithTax = totalSumPriceBrutto.add(rentDetails.getTotalDepositPriceBrutto());
+                emailPayload.setTotalPriceWithDepositBrutto(totalWithTax);
+                emailPayload.getRentEquipments().addAll(emailEquipmentsPayload);
+
+                final String emailTopic = "SkiRent Service | Nowy zwrot: " + rentReturn.getIssuedIdentifier();
+                final Map<String, Object> templateVars = new HashMap<>();
+                templateVars.put("rentIdentifier", rentDetails.getIssuedIdentifier());
+                templateVars.put("returnIdentifier", rentReturn.getIssuedIdentifier());
+                templateVars.put("additionalDescription", isNull(description) ? "<i>Brak danych</i>" : description);
+                templateVars.put("data", emailPayload);
+
+                final MailRequestPayload customerPayload = MailRequestPayload.builder()
+                    .messageResponder(emailPayload.getFullName())
+                    .subject(emailTopic)
+                    .templateName("create-new-return-customer.template.ftl")
+                    .templateVars(templateVars)
+                    .build();
+                mailSocket.sendMessage(emailPayload.getEmail(), customerPayload, req);
+                LOGGER.info("Successful send rent-return email message for customer. Payload: {}", customerPayload);
+
+                final MailRequestPayload employerPayload = MailRequestPayload.builder()
+                    .messageResponder(userDataDto.getFullName())
+                    .subject(emailTopic)
+                    .templateName("create-new-return-employer.template.ftl")
+                    .templateVars(templateVars)
+                    .build();
+                mailSocket.sendMessage(userDataDto.getEmailAddress(), employerPayload, req);
+                LOGGER.info("Successful send rent-return email message for employer. Payload: {}", employerPayload);
+
+                final Map<String, Object> ownerTemplateVars = new HashMap<>(templateVars);
+                ownerTemplateVars.put("employerFullName", userDataDto.getFullName());
+
+                final String jpqlFindAllOwners =
+                    "SELECT new pl.polsl.skirentalservice.dto.OwnerMailPayloadDto(" +
+                        "CONCAT(d.firstName, ' ', d.lastName), d.emailAddress" +
+                        ") FROM EmployerEntity e " +
+                        "INNER JOIN e.userDetails d INNER JOIN e.role r WHERE r.alias = 'K'";
+                final List<OwnerMailPayloadDto> allOwnersEmails = session
+                    .createQuery(jpqlFindAllOwners, OwnerMailPayloadDto.class)
+                    .getResultList();
+
+                final MailRequestPayload ownerPayload = MailRequestPayload.builder()
+                    .subject(emailTopic)
+                    .templateName("create-new-return-owner.template.ftl")
+                    .templateVars(ownerTemplateVars)
+                    .build();
+                for (final OwnerMailPayloadDto owner : allOwnersEmails) {
+                    ownerPayload.setMessageResponder(owner.getFullName());
+                    mailSocket.sendMessage(owner.getEmail(), ownerPayload, req);
+                }
+                LOGGER.info("Successful send rent-return email message for owner/owners. Payload: {}", ownerPayload);
+
                 // TODO: generowanie pdfa
 
                 session.persist(rentReturn);
