@@ -21,14 +21,17 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
+import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.entity.*;
 import pl.polsl.skirentalservice.dto.rent.*;
+import pl.polsl.skirentalservice.core.mail.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.core.ModelMapperBean;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 
 import java.util.*;
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import static java.util.Objects.isNull;
 import static java.lang.Integer.parseInt;
@@ -52,6 +55,7 @@ public class SellerPersistNewRentServlet extends HttpServlet {
     private final SessionFactory sessionFactory = getSessionFactory();
 
     @EJB private ModelMapperBean modelMapper;
+    @EJB private MailSocketBean mailSocket;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -113,7 +117,67 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                 rent.setEmployer(session.get(EmployerEntity.class, loggedEmployer.getId()));
                 rent.setEquipments(equipmentEntities);
 
-                // TODO: wysyłanie wiadomości email
+                final RentReturnEmailPayloadDataDto emailPayload = modelMapper.map(rentData, RentReturnEmailPayloadDataDto.class);
+                modelMapper.shallowCopy(rentData.getCustomerDetails(), emailPayload);
+
+                final PriceUnitsDto priceUnits = rentData.getPriceUnits();
+                final BigDecimal totalWithTax = priceUnits.getTotalPriceBrutto().add(priceUnits.getTotalDepositPriceBrutto());
+                emailPayload.setTotalPriceWithDepositBrutto(totalWithTax);
+                emailPayload.setRentTime(rentData.getDays() +  " dni, " + rentData.getHours() + " godzin");
+
+                for (final CartSingleEquipmentDataDto equipmentDataDto : rentData.getEquipments()) {
+                    final var equipment = modelMapper.map(equipmentDataDto, EmailEquipmentPayloadDataDto.class);
+                    emailPayload.getRentEquipments().add(equipment);
+                }
+                final String emailTopic = "SkiRent Service | Nowe wypożyczenie: " + rentData.getIssuedIdentifier();
+                final String description = isNull(rentData.getDescription()) ? "<i>Brak danych</i>" : rentData.getDescription();
+
+                final Map<String, Object> templateVars = new HashMap<>();
+                templateVars.put("rentIdentifier", rentData.getIssuedIdentifier());
+                templateVars.put("additionalDescription", description);
+                templateVars.put("data", emailPayload);
+
+                final MailRequestPayload customerPayload = MailRequestPayload.builder()
+                    .messageResponder(rentData.getCustomerDetails().getFullName())
+                    .subject(emailTopic)
+                    .templateName("add-new-rent-customer.template.ftl")
+                    .templateVars(templateVars)
+                    .build();
+                mailSocket.sendMessage(rentData.getCustomerDetails().getEmail(), customerPayload, req);
+                LOGGER.info("Successful send rent email message for customer. Payload: {}", customerPayload);
+
+                final MailRequestPayload employerPayload = MailRequestPayload.builder()
+                    .messageResponder(loggedEmployer.getFullName())
+                    .subject(emailTopic)
+                    .templateName("add-new-rent-employer.template.ftl")
+                    .templateVars(templateVars)
+                    .build();
+                mailSocket.sendMessage(loggedEmployer.getEmailAddress(), employerPayload, req);
+                LOGGER.info("Successful send rent email message for employer. Payload: {}", employerPayload);
+
+                final Map<String, Object> ownerTemplateVars = new HashMap<>(templateVars);
+                ownerTemplateVars.put("employerFullName", loggedEmployer.getFullName());
+
+                final String jpqlFindAllOwners =
+                    "SELECT new pl.polsl.skirentalservice.dto.OwnerMailPayloadDto(" +
+                        "CONCAT(d.firstName, ' ', d.lastName), d.emailAddress" +
+                    ") FROM EmployerEntity e " +
+                    "INNER JOIN e.userDetails d INNER JOIN e.role r WHERE r.alias = 'K'";
+                final List<OwnerMailPayloadDto> allOwnersEmails = session
+                    .createQuery(jpqlFindAllOwners, OwnerMailPayloadDto.class)
+                    .getResultList();
+
+                final MailRequestPayload ownerPayload = MailRequestPayload.builder()
+                    .subject(emailTopic)
+                    .templateName("add-new-rent-owner.template.ftl")
+                    .templateVars(ownerTemplateVars)
+                    .build();
+                for (final OwnerMailPayloadDto owner : allOwnersEmails) {
+                    ownerPayload.setMessageResponder(owner.getFullName());
+                    mailSocket.sendMessage(owner.getEmail(), ownerPayload, req);
+                }
+                LOGGER.info("Successful send rent email message for owner/owners. Payload: {}", ownerPayload);
+
                 // TODO: generowanie pdfa
 
                 session.persist(rent);
