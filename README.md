@@ -34,8 +34,8 @@ $ ssh-keygen -t rsa
 ```
 $ ssh-copy-id -i ~/.ssh/id_rsa.pub login@server
 ```
-* put `id_rsa` and `known_hosts.dat` file in root context of application
-2. Before you run the application, create `.env` file in ROOT context of project and filled with database and SMTP server connection details:
+* put `id_rsa` and `known_hosts.dat` files in root context of application
+2. Before you run the application, create `.env` file in ROOT context of project and fill with database and SMTP server connection details:
 ```properties
 # database credentials
 DB_URL              = jdbc:[dbType]://[dbHost]:[dbPort]/[dbName]
