@@ -23,12 +23,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
 import pl.polsl.skirentalservice.dto.*;
+import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.entity.*;
 import pl.polsl.skirentalservice.dto.rent.*;
 import pl.polsl.skirentalservice.core.mail.*;
-import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.core.ModelMapperBean;
+import pl.polsl.skirentalservice.pdf.RentPdfDocument;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import pl.polsl.skirentalservice.pdf.dto.RentPdfDocumentDataDto;
+import pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto;
 
 import java.util.*;
 import java.io.IOException;
@@ -58,6 +60,7 @@ public class SellerPersistNewRentServlet extends HttpServlet {
     private final ModelMapper modelMapper = getModelMapper();
 
     @EJB private MailSocketBean mailSocket;
+    @EJB private ConfigBean config;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -137,11 +140,26 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                 templateVars.put("additionalDescription", description);
                 templateVars.put("data", emailPayload);
 
+                final RentPdfDocumentDataDto rentPdfDataDto = modelMapper.map(rentData, RentPdfDocumentDataDto.class);
+                final CustomerDetailsResDto customerDetails = rentData.getCustomerDetails();
+                rentPdfDataDto.setTotalSumPriceNetto(priceUnits.getTotalPriceNetto()
+                    .add(priceUnits.getTotalDepositPriceNetto()).toString());
+                rentPdfDataDto.setTotalSumPriceBrutto(priceUnits.getTotalPriceBrutto()
+                    .add(priceUnits.getTotalDepositPriceBrutto()).toString());
+
+                modelMapper.map(rentData.getCustomerDetails(), rentPdfDataDto);
+                rentPdfDataDto.setAddress(customerDetails.getAddress() + ", " + customerDetails.getCityWithPostCode());
+                rentPdfDataDto.setRentTime(rentData.getDays() +  " dni, " + rentData.getHours() + " godzin");
+
+                final RentPdfDocument rentPdfDocument = new RentPdfDocument(config.getUploadsDir(), rentPdfDataDto);
+                rentPdfDocument.generate();
+
                 final MailRequestPayload customerPayload = MailRequestPayload.builder()
                     .messageResponder(rentData.getCustomerDetails().getFullName())
                     .subject(emailTopic)
                     .templateName("add-new-rent-customer.template.ftl")
                     .templateVars(templateVars)
+                    .attachmentsPaths(Set.of(rentPdfDocument.getPath()))
                     .build();
                 mailSocket.sendMessage(rentData.getCustomerDetails().getEmail(), customerPayload, req);
                 LOGGER.info("Successful send rent email message for customer. Payload: {}", customerPayload);
@@ -151,6 +169,7 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                     .subject(emailTopic)
                     .templateName("add-new-rent-employer.template.ftl")
                     .templateVars(templateVars)
+                    .attachmentsPaths(Set.of(rentPdfDocument.getPath()))
                     .build();
                 mailSocket.sendMessage(loggedEmployer.getEmailAddress(), employerPayload, req);
                 LOGGER.info("Successful send rent email message for employer. Payload: {}", employerPayload);
@@ -171,14 +190,13 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                     .subject(emailTopic)
                     .templateName("add-new-rent-owner.template.ftl")
                     .templateVars(ownerTemplateVars)
+                    .attachmentsPaths(Set.of(rentPdfDocument.getPath()))
                     .build();
                 for (final OwnerMailPayloadDto owner : allOwnersEmails) {
                     ownerPayload.setMessageResponder(owner.getFullName());
                     mailSocket.sendMessage(owner.getEmail(), ownerPayload, req);
                 }
                 LOGGER.info("Successful send rent email message for owner/owners. Payload: {}", ownerPayload);
-
-                // TODO: generowanie pdfa
 
                 session.persist(rent);
                 session.getTransaction().commit();

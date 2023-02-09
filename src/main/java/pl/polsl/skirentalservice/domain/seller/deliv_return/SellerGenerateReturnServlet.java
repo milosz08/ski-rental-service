@@ -25,9 +25,11 @@ import jakarta.servlet.annotation.WebServlet;
 import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.util.*;
 import pl.polsl.skirentalservice.entity.*;
+import pl.polsl.skirentalservice.pdf.dto.*;
 import pl.polsl.skirentalservice.core.mail.*;
+import pl.polsl.skirentalservice.core.ConfigBean;
 import pl.polsl.skirentalservice.dto.deliv_return.*;
-import pl.polsl.skirentalservice.core.ModelMapperBean;
+import pl.polsl.skirentalservice.pdf.ReturnPdfDocument;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 
 import java.util.*;
@@ -63,6 +65,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
     private final ModelMapper modelMapper = getModelMapper();
 
     @EJB private MailSocketBean mailSocket;
+    @EJB private ConfigBean config;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -243,11 +246,35 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 templateVars.put("additionalDescription", isNull(description) ? "<i>Brak danych</i>" : description);
                 templateVars.put("data", emailPayload);
 
+                final ReturnPdfDocumentDataDto returnPdfDataDto = modelMapper.map(rentDetails, ReturnPdfDocumentDataDto.class);
+                modelMapper.map(rentDetails, returnPdfDataDto.getPriceUnits());
+                modelMapper.map(customerDetails, returnPdfDataDto);
+
+                returnPdfDataDto.setIssuedIdentifier(returnIssuerIdentifier);
+                returnPdfDataDto.setReturnDate(generatedBrief.toString());
+                returnPdfDataDto.setRentTime(rentDays +  " dni, " + totalRentHours + " godzin");
+                returnPdfDataDto.setDescription(description);
+
+                final PriceUnitsDto pdfPrices = returnPdfDataDto.getPriceUnits();
+                pdfPrices.setTotalPriceNetto(totalSumPriceNetto);
+                pdfPrices.setTotalPriceBrutto(totalSumPriceBrutto);
+
+                returnPdfDataDto.setTotalSumPriceNetto(totalSumPriceNetto.add(pdfPrices.getTotalDepositPriceNetto()).toString());
+                returnPdfDataDto.setTotalSumPriceBrutto(totalWithTax.toString());
+
+                final List<PdfEquipmentDataDto> pdfEquipmentsData = modelMapper.map(emailEquipmentsPayload,
+                    new TypeToken<List<PdfEquipmentDataDto>>(){}.getType());
+                returnPdfDataDto.setEquipments(pdfEquipmentsData);
+
+                final ReturnPdfDocument returnPdfDocument = new ReturnPdfDocument(config.getUploadsDir(), returnPdfDataDto);
+                returnPdfDocument.generate();
+
                 final MailRequestPayload customerPayload = MailRequestPayload.builder()
                     .messageResponder(emailPayload.getFullName())
                     .subject(emailTopic)
                     .templateName("create-new-return-customer.template.ftl")
                     .templateVars(templateVars)
+                    .attachmentsPaths(Set.of(returnPdfDocument.getPath()))
                     .build();
                 mailSocket.sendMessage(emailPayload.getEmail(), customerPayload, req);
                 LOGGER.info("Successful send rent-return email message for customer. Payload: {}", customerPayload);
@@ -257,6 +284,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                     .subject(emailTopic)
                     .templateName("create-new-return-employer.template.ftl")
                     .templateVars(templateVars)
+                    .attachmentsPaths(Set.of(returnPdfDocument.getPath()))
                     .build();
                 mailSocket.sendMessage(userDataDto.getEmailAddress(), employerPayload, req);
                 LOGGER.info("Successful send rent-return email message for employer. Payload: {}", employerPayload);
@@ -277,14 +305,13 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                     .subject(emailTopic)
                     .templateName("create-new-return-owner.template.ftl")
                     .templateVars(ownerTemplateVars)
+                    .attachmentsPaths(Set.of(returnPdfDocument.getPath()))
                     .build();
                 for (final OwnerMailPayloadDto owner : allOwnersEmails) {
                     ownerPayload.setMessageResponder(owner.getFullName());
                     mailSocket.sendMessage(owner.getEmail(), ownerPayload, req);
                 }
                 LOGGER.info("Successful send rent-return email message for owner/owners. Payload: {}", ownerPayload);
-
-                // TODO: generowanie pdfa
 
                 session.persist(rentReturn);
                 session.getTransaction().commit();

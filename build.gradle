@@ -53,6 +53,7 @@ ext {
     apacheCommonsLang3Version   = '3.12.0'
     gsonVersion                 = '2.10.1'
     barcodeVersion              = '2.1'
+    iTextVersion                = '7.2.5'
 
     // webjars
     bootstrapVersion            = '5.2.3'
@@ -84,6 +85,7 @@ dependencies {
     implementation "commons-validator:commons-validator:${commonsValidatorVersion}"
     implementation "com.google.code.gson:gson:${gsonVersion}"
     implementation "net.sf.barcode4j:barcode4j:${barcodeVersion}"
+    implementation "com.itextpdf:itext7-core:${iTextVersion}"
 
     implementation "mysql:mysql-connector-java:${mySqlVersion}"
     implementation "org.hibernate:hibernate-core:${hibernateVersion}"

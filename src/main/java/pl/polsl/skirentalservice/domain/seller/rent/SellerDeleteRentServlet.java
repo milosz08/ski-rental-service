@@ -16,6 +16,7 @@ package pl.polsl.skirentalservice.domain.seller.rent;
 import org.slf4j.*;
 import org.hibernate.*;
 
+import jakarta.ejb.EJB;
 import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -23,8 +24,10 @@ import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 
 import pl.polsl.skirentalservice.entity.*;
+import pl.polsl.skirentalservice.core.ConfigBean;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.exception.NotFoundException;
+import pl.polsl.skirentalservice.pdf.RentPdfDocument;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.math.NumberUtils.toLong;
@@ -42,6 +45,8 @@ public class SellerDeleteRentServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SellerDeleteRentServlet.class);
     private final SessionFactory sessionFactory = getSessionFactory();
+
+    @EJB private ConfigBean config;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -73,7 +78,9 @@ public class SellerDeleteRentServlet extends HttpServlet {
                         .executeUpdate();
                 }
 
-                // TODO: usuwanie wygenerowanego pdfa
+                final RentPdfDocument rentPdfDocument = new RentPdfDocument(config.getUploadsDir(),
+                    rentEntity.getIssuedIdentifier());
+                rentPdfDocument.remove();
 
                 session.remove(rentEntity);
                 session.getTransaction().commit();
