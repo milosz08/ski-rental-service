@@ -28,6 +28,8 @@ public class RentStatusConverter implements AttributeConverter<RentStatus, Strin
         return rentStatus.getStatus();
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     @Override
     public RentStatus convertToEntityAttribute(String name) {
         if (isNull(name)) return OPENED;

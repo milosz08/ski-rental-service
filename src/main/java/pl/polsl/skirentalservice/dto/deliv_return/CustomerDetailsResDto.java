@@ -24,4 +24,5 @@ public class CustomerDetailsResDto {
     private String pesel;
     private String phoneNumber;
     private String email;
+    private String address;
 }

@@ -15,6 +15,7 @@ package pl.polsl.skirentalservice.domain.owner.equipment;
 
 import org.slf4j.*;
 import org.hibernate.*;
+import org.modelmapper.ModelMapper;
 
 import jakarta.ejb.EJB;
 import jakarta.servlet.http.*;
@@ -22,13 +23,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
 import pl.polsl.skirentalservice.core.*;
-import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
 import pl.polsl.skirentalservice.entity.*;
 import pl.polsl.skirentalservice.dto.equipment.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
 
-import java.io.IOException;
 import java.util.List;
+import java.io.IOException;
 
 import static java.util.Objects.isNull;
 
@@ -36,6 +37,7 @@ import static pl.polsl.skirentalservice.util.Utils.*;
 import static pl.polsl.skirentalservice.util.SessionAlert.*;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.util.SessionAttribute.*;
+import static pl.polsl.skirentalservice.core.ModelMapperGenerator.*;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
 import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
@@ -49,8 +51,8 @@ public class OwnerEditEquipmentServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerEditEquipmentServlet.class);
     private final SessionFactory sessionFactory = getSessionFactory();
+    private final ModelMapper modelMapper = getModelMapper();
 
-    @EJB private ModelMapperBean modelMapper;
     @EJB private ValidatorBean validator;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -155,9 +157,9 @@ public class OwnerEditEquipmentServlet extends HttpServlet {
                     .getSingleResult();
                 if (modelAlreadyExist) throw new EquipmentAlreadyExistException();
 
-                modelMapper.onUpdateNullableTransactTurnOn();
-                modelMapper.shallowCopy(reqDto, equipmentEntity);
-                modelMapper.onUpdateNullableTransactTurnOff();
+                onUpdateNullableTransactTurnOn();
+                modelMapper.map(reqDto, equipmentEntity);
+                onUpdateNullableTransactTurnOff();
 
                 equipmentEntity.setEquipmentType(session.getReference(EquipmentTypeEntity.class, reqDto.getType()));
                 equipmentEntity.setEquipmentBrand(session.getReference(EquipmentBrandEntity.class, reqDto.getBrand()));

@@ -132,7 +132,7 @@
                                     class="btn btn-sm btn-dark py-0">
                                     Szczegóły
                                 </a>
-                                <a href="${pageContext.request.contextPath}/resources/rent-fvs/${return.issuedIdentifier.replace('/', '')}.pdf"
+                                <a href="${pageContext.request.contextPath}/resources/return-fvs/${return.issuedIdentifier.replace('/', '')}.pdf"
                                     target="_blank" class="btn btn-sm btn-success py-0">
                                     <span type="button" data-bs-toggle="tooltip" data-bs-placement="top"
                                         data-bs-title="Pobierz zestawienie PDF">

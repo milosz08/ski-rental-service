@@ -53,7 +53,8 @@ public class CommonCustomersServlet extends HttpServlet {
     private final List<FilterColumn> filterFieldMap = new ArrayList<>();
 
     private final String addressColumn =
-        "CONCAT('ul. ', a.street, ' ', a.buildingNr, IF(a.apartmentNr, CONCAT('/', a.apartmentNr), ''))";
+        "CONCAT('ul. ', a.street, ' ', a.buildingNr, IF(a.apartmentNr, CONCAT('/', a.apartmentNr), '')," +
+        "', ', a.postalCode, ' ', a.city)";
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

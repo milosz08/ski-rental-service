@@ -15,6 +15,7 @@ package pl.polsl.skirentalservice.domain.seller.deliv_return;
 
 import org.slf4j.*;
 import org.hibernate.*;
+import org.modelmapper.*;
 
 import jakarta.ejb.EJB;
 import jakarta.servlet.http.*;
@@ -49,6 +50,7 @@ import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 import static pl.polsl.skirentalservice.util.Utils.truncateToTotalHour;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
 import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
+import static pl.polsl.skirentalservice.core.ModelMapperGenerator.getModelMapper;
 import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -58,8 +60,8 @@ public class SellerGenerateReturnServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SellerGenerateReturnServlet.class);
     private final SessionFactory sessionFactory = getSessionFactory();
+    private final ModelMapper modelMapper = getModelMapper();
 
-    @EJB private ModelMapperBean modelMapper;
     @EJB private MailSocketBean mailSocket;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -140,7 +142,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 final Set<EmailEquipmentPayloadDataDto> emailEquipmentsPayload = new HashSet<>();
 
                 rentReturn.setEquipments(new HashSet<>());
-                BigDecimal totalSumPrice = new BigDecimal(0);
+                BigDecimal totalSumPriceNetto = new BigDecimal(0);
 
                 for (final RentReturnEquipmentRecordResDto eqDto : equipmentsList) {
                     final BigDecimal totalPriceDays = eqDto.getPricePerDay().multiply(new BigDecimal(rentDays));
@@ -179,8 +181,8 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                         .executeUpdate();
 
                     final var emailEquipment = new EmailEquipmentPayloadDataDto(equipmentEntity, eqDto);
-                    emailEquipment.setTotalPriceNetto(sumPriceNetto);
-                    emailEquipment.setTotalPriceBrutto(sumPriceBrutto);
+                    emailEquipment.setPriceNetto(sumPriceNetto);
+                    emailEquipment.setPriceBrutto(sumPriceBrutto);
                     emailEquipment.setDepositPriceBrutto(depositPriceBrutto);
                     emailEquipmentsPayload.add(emailEquipment);
 
@@ -190,12 +192,12 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                     returnEquipmentEntity.setRentReturn(rentReturn);
                     returnEquipmentEntity.setRentEquipment(rentEquipmentEntity);
                     rentEquipmentEntities.add(returnEquipmentEntity);
-                    totalSumPrice = totalSumPrice.add(sumPriceNetto);
+                    totalSumPriceNetto = totalSumPriceNetto.add(sumPriceNetto);
                 }
                 rentReturn.setIssuedIdentifier(returnIssuerIdentifier);
                 rentReturn.setIssuedDateTime(generatedBrief);
                 rentReturn.setDescription(description);
-                rentReturn.setTotalPrice(totalSumPrice);
+                rentReturn.setTotalPrice(totalSumPriceNetto);
                 rentReturn.setEquipments(rentEquipmentEntities);
                 rentReturn.setRent(rentEntity);
 
@@ -208,9 +210,10 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                     "SELECT new pl.polsl.skirentalservice.dto.deliv_return.CustomerDetailsResDto(" +
                         "CONCAT(d.firstName, ' ', d.lastName), d.pesel, CONCAT('+', d.phoneAreaCode, ' '," +
                         "SUBSTRING(d.phoneNumber, 1, 3), ' ', SUBSTRING(d.phoneNumber, 4, 3), ' '," +
-                        "SUBSTRING(d.phoneNumber, 7, 3)), d.emailAddress" +
+                        "SUBSTRING(d.phoneNumber, 7, 3)), d.emailAddress, CONCAT('ul. ', a.street, ' ', a.buildingNr," +
+                        "IF(a.apartmentNr, CONCAT('/', a.apartmentNr), ''), ', ', a.postalCode, ' ', a.city)" +
                     ") FROM RentEntity r " +
-                    "INNER JOIN r.customer c INNER JOIN c.userDetails d " +
+                    "INNER JOIN r.customer c INNER JOIN c.userDetails d INNER JOIN c.locationAddress a " +
                     "WHERE r.id = :rentid";
                 final CustomerDetailsResDto customerDetails = session
                     .createQuery(jpqlGetCustomerDetails, CustomerDetailsResDto.class)
@@ -219,13 +222,13 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 if (isNull(customerDetails)) throw new UserNotFoundException(USER);
 
                 final var emailPayload = modelMapper.map(rentDetails, RentReturnEmailPayloadDataDto.class);
-                modelMapper.shallowCopy(customerDetails, emailPayload);
+                modelMapper.map(customerDetails, emailPayload);
 
                 final BigDecimal totalSumPriceBrutto = new BigDecimal(emailPayload.getTax())
-                    .divide(new BigDecimal(100), 2, HALF_UP).multiply(totalSumPrice).add(totalSumPrice)
+                    .divide(new BigDecimal(100), 2, HALF_UP).multiply(totalSumPriceNetto).add(totalSumPriceNetto)
                     .setScale(2, HALF_UP);
                 emailPayload.setReturnDate(generatedBrief.toString());
-                emailPayload.setTotalPriceNetto(totalSumPrice);
+                emailPayload.setTotalPriceNetto(totalSumPriceNetto);
                 emailPayload.setRentTime(rentDays +  " dni, " + totalRentHours + " godzin");
                 emailPayload.setTotalPriceBrutto(totalSumPriceBrutto);
 
@@ -264,8 +267,8 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 final String jpqlFindAllOwners =
                     "SELECT new pl.polsl.skirentalservice.dto.OwnerMailPayloadDto(" +
                         "CONCAT(d.firstName, ' ', d.lastName), d.emailAddress" +
-                        ") FROM EmployerEntity e " +
-                        "INNER JOIN e.userDetails d INNER JOIN e.role r WHERE r.alias = 'K'";
+                    ") FROM EmployerEntity e " +
+                    "INNER JOIN e.userDetails d INNER JOIN e.role r WHERE r.alias = 'K'";
                 final List<OwnerMailPayloadDto> allOwnersEmails = session
                     .createQuery(jpqlFindAllOwners, OwnerMailPayloadDto.class)
                     .getResultList();

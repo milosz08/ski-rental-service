@@ -15,6 +15,7 @@ package pl.polsl.skirentalservice.domain.seller.customer;
 
 import org.slf4j.*;
 import org.hibernate.*;
+import org.modelmapper.ModelMapper;
 
 import jakarta.ejb.EJB;
 import jakarta.servlet.http.*;
@@ -37,6 +38,7 @@ import static pl.polsl.skirentalservice.util.UserRole.USER;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.util.SessionAlert.*;
 import static pl.polsl.skirentalservice.exception.DateException.*;
+import static pl.polsl.skirentalservice.core.ModelMapperGenerator.*;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
 import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
@@ -49,9 +51,9 @@ public class SellerEditCustomerServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SellerEditCustomerServlet.class);
     private final SessionFactory sessionFactory = getSessionFactory();
+    private final ModelMapper modelMapper = getModelMapper();
 
     @EJB private ValidatorBean validator;
-    @EJB private ModelMapperBean modelMapper;
     @EJB private ConfigBean config;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -156,10 +158,10 @@ public class SellerEditCustomerServlet extends HttpServlet {
                     .getSingleResult();
                 if (emailAddressExist) throw new EmailAddressAlreadyExistException(reqDto.getEmailAddress(), USER);
 
-                modelMapper.onUpdateNullableTransactTurnOn();
-                modelMapper.shallowCopy(reqDto, updatableCustomer.getUserDetails());
-                modelMapper.shallowCopy(reqDto, updatableCustomer.getLocationAddress());
-                modelMapper.onUpdateNullableTransactTurnOff();
+                onUpdateNullableTransactTurnOn();
+                modelMapper.map(reqDto, updatableCustomer.getUserDetails());
+                modelMapper.map(reqDto, updatableCustomer.getLocationAddress());
+                onUpdateNullableTransactTurnOff();
 
                 session.getTransaction().commit();
 

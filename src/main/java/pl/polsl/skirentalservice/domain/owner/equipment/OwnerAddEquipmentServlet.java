@@ -15,6 +15,8 @@ package pl.polsl.skirentalservice.domain.owner.equipment;
 
 import org.slf4j.*;
 import org.hibernate.*;
+import org.modelmapper.ModelMapper;
+
 import org.krysalis.barcode4j.impl.upcean.EAN13Bean;
 import org.krysalis.barcode4j.output.bitmap.BitmapCanvasProvider;
 
@@ -47,6 +49,7 @@ import static pl.polsl.skirentalservice.util.SessionAttribute.*;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
 import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
 import static pl.polsl.skirentalservice.util.PageTitle.OWNER_ADD_EQUIPMENT_PAGE;
+import static pl.polsl.skirentalservice.core.ModelMapperGenerator.getModelMapper;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -55,9 +58,9 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerAddEquipmentServlet.class);
     private final SessionFactory sessionFactory = getSessionFactory();
+    private final ModelMapper modelMapper = getModelMapper();
 
     @EJB private ValidatorBean validator;
-    @EJB private ModelMapperBean modelMapper;
     @EJB private ConfigBean config;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -137,13 +140,11 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
                     .getSingleResult();
                 if (equipmentModelExist) throw new EquipmentAlreadyExistException();
 
-                modelMapper.getModelMapper().getConfiguration().setAmbiguityIgnored(false);
                 final EquipmentEntity persistNewEquipment = modelMapper.map(reqDto, EquipmentEntity.class);
                 persistNewEquipment.setEquipmentType(session.get(EquipmentTypeEntity.class, reqDto.getType()));
                 persistNewEquipment.setEquipmentBrand(session.get(EquipmentBrandEntity.class, reqDto.getBrand()));
                 persistNewEquipment.setEquipmentColor(session.get(EquipmentColorEntity.class, reqDto.getColor()));
                 persistNewEquipment.setAvailableCount(parseInt(reqDto.getCountInStore()));
-                modelMapper.getModelMapper().getConfiguration().setAmbiguityIgnored(true);
 
                 boolean barcodeExist;
                 String generatedBarcode;

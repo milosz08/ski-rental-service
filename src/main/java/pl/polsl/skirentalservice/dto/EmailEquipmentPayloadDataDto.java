@@ -27,8 +27,8 @@ public class EmailEquipmentPayloadDataDto {
     private String count;
     private String name;
     private String typeAndModel;
-    private BigDecimal totalPriceNetto;
-    private BigDecimal totalPriceBrutto;
+    private BigDecimal priceNetto;
+    private BigDecimal priceBrutto;
     private BigDecimal depositPriceNetto;
     private BigDecimal depositPriceBrutto;
 
@@ -49,8 +49,8 @@ public class EmailEquipmentPayloadDataDto {
             "count='" + count +
             ", name='" + name +
             ", typeAndModel='" + typeAndModel +
-            ", totalPriceNetto=" + totalPriceNetto +
-            ", totalPriceBrutto=" + totalPriceBrutto +
+            ", priceNetto=" + priceNetto +
+            ", priceBrutto=" + priceBrutto +
             ", depositPriceNetto=" + depositPriceNetto +
             ", depositPriceBrutto=" + depositPriceBrutto +
             '}';

@@ -13,52 +13,39 @@
 
 package pl.polsl.skirentalservice.core;
 
-import jakarta.ejb.*;
-
 import org.modelmapper.*;
 import org.modelmapper.convention.*;
 import org.modelmapper.config.Configuration;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@Startup
-@Singleton(name = "ModelMapperFactoryBean")
-public class ModelMapperBean {
+public class ModelMapperGenerator {
 
-    private final ModelMapper modelMapper;
+    private static final ModelMapper modelMapper = createModelMapper();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public ModelMapperBean() {
-        this.modelMapper = new ModelMapper();
-        this.modelMapper.getConfiguration()
+    private static ModelMapper createModelMapper() {
+        final ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration()
             .setMatchingStrategy(MatchingStrategies.STANDARD)
             .setFieldMatchingEnabled(true)
             .setFieldAccessLevel(Configuration.AccessLevel.PRIVATE)
             .setAmbiguityIgnored(true);
+        return modelMapper;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public <T> T map(Object from, Class<T> to) {
-        return modelMapper.map(from, to);
-    }
-
-    public void shallowCopy(Object from, Object to) {
-        modelMapper.map(from, to);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public void onUpdateNullableTransactTurnOn() {
+    public static void onUpdateNullableTransactTurnOn() {
         modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
     }
 
-    public void onUpdateNullableTransactTurnOff() {
+    public static void onUpdateNullableTransactTurnOff() {
         modelMapper.getConfiguration().setPropertyCondition(Conditions.isNull());
     }
 
-    public ModelMapper getModelMapper() {
+    public static ModelMapper getModelMapper() {
         return modelMapper;
     }
 }

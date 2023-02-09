@@ -15,6 +15,7 @@ package pl.polsl.skirentalservice.domain.seller.rent;
 
 import org.slf4j.*;
 import org.hibernate.*;
+import org.modelmapper.ModelMapper;
 
 import jakarta.ejb.EJB;
 import jakarta.servlet.http.*;
@@ -42,6 +43,7 @@ import static pl.polsl.skirentalservice.util.SessionAlert.*;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.util.RentStatus.RENTED;
 import static pl.polsl.skirentalservice.util.SessionAttribute.*;
+import static pl.polsl.skirentalservice.core.ModelMapperGenerator.*;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
 import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
@@ -53,8 +55,8 @@ public class SellerPersistNewRentServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SellerPersistNewRentServlet.class);
     private final SessionFactory sessionFactory = getSessionFactory();
+    private final ModelMapper modelMapper = getModelMapper();
 
-    @EJB private ModelMapperBean modelMapper;
     @EJB private MailSocketBean mailSocket;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -76,10 +78,8 @@ public class SellerPersistNewRentServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                modelMapper.getModelMapper().getConfiguration().setAmbiguityIgnored(true);
                 final RentEntity rent = modelMapper.map(rentData, RentEntity.class);
                 rent.setEquipments(new HashSet<>());
-                modelMapper.getModelMapper().getConfiguration().setAmbiguityIgnored(false);
 
                 final Set<RentEquipmentEntity> equipmentEntities = new HashSet<>();
                 for (final CartSingleEquipmentDataDto cartData : rentData.getEquipments()) {
@@ -118,7 +118,7 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                 rent.setEquipments(equipmentEntities);
 
                 final RentReturnEmailPayloadDataDto emailPayload = modelMapper.map(rentData, RentReturnEmailPayloadDataDto.class);
-                modelMapper.shallowCopy(rentData.getCustomerDetails(), emailPayload);
+                modelMapper.map(rentData.getCustomerDetails(), emailPayload);
 
                 final PriceUnitsDto priceUnits = rentData.getPriceUnits();
                 final BigDecimal totalWithTax = priceUnits.getTotalPriceBrutto().add(priceUnits.getTotalDepositPriceBrutto());

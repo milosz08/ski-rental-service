@@ -15,6 +15,7 @@ package pl.polsl.skirentalservice.domain.owner.employer;
 
 import org.slf4j.*;
 import org.hibernate.*;
+import org.modelmapper.ModelMapper;
 
 import jakarta.ejb.EJB;
 import jakarta.servlet.http.*;
@@ -46,6 +47,7 @@ import static pl.polsl.skirentalservice.util.UserRole.SELLER;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
 import static pl.polsl.skirentalservice.util.PageTitle.OWNER_ADD_EMPLOYER_PAGE;
 import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
+import static pl.polsl.skirentalservice.core.ModelMapperGenerator.getModelMapper;
 import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -55,9 +57,9 @@ public class OwnerAddEmployerServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerAddEmployerServlet.class);
     private final SessionFactory sessionFactory = getSessionFactory();
+    private final ModelMapper modelMapper = getModelMapper();
 
     @EJB private ValidatorBean validator;
-    @EJB private ModelMapperBean mapper;
     @EJB private MailSocketBean mailSocket;
     @EJB private SshSocketBean sshSocket;
     @EJB private ConfigBean config;
@@ -133,10 +135,10 @@ public class OwnerAddEmployerServlet extends HttpServlet {
                 final String passwordRaw = randomAlphanumeric(10);
                 final String passowordDecoded = Utils.generateHash(passwordRaw);
 
-                final UserDetailsEntity userDetails = mapper.map(reqDto, UserDetailsEntity.class);
+                final UserDetailsEntity userDetails = modelMapper.map(reqDto, UserDetailsEntity.class);
                 userDetails.setBornDate(reqDto.getParsedBornDate());
                 userDetails.setEmailAddress(email);
-                final LocationAddressEntity locationAddress = mapper.map(reqDto, LocationAddressEntity.class);
+                final LocationAddressEntity locationAddress = modelMapper.map(reqDto, LocationAddressEntity.class);
                 locationAddress.setApartmentNr(trimToNull(reqDto.getApartmentNr()));
                 final EmployerEntity employer = EmployerEntity.builder()
                     .login(login)

@@ -15,6 +15,7 @@ package pl.polsl.skirentalservice.domain.owner.employer;
 
 import org.slf4j.*;
 import org.hibernate.*;
+import org.modelmapper.ModelMapper;
 
 import jakarta.ejb.EJB;
 import jakarta.servlet.http.*;
@@ -35,6 +36,7 @@ import static pl.polsl.skirentalservice.util.Utils.*;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.util.SessionAlert.*;
 import static pl.polsl.skirentalservice.util.UserRole.SELLER;
+import static pl.polsl.skirentalservice.core.ModelMapperGenerator.*;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
 import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
@@ -47,9 +49,9 @@ public class OwnerEditEmployerServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerEditEmployerServlet.class);
     private final SessionFactory sessionFactory = getSessionFactory();
+    private final ModelMapper modelMapper = getModelMapper();
 
     @EJB private ValidatorBean validator;
-    @EJB private ModelMapperBean modelMapper;
     @EJB private ConfigBean config;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -140,11 +142,11 @@ public class OwnerEditEmployerServlet extends HttpServlet {
                     .getSingleResult();
                 if (phoneNumberExist) throw new PhoneNumberAlreadyExistException(reqDto.getPhoneNumber(), SELLER);
 
-                modelMapper.onUpdateNullableTransactTurnOn();
-                modelMapper.shallowCopy(reqDto, updatableEmployer.getUserDetails());
-                modelMapper.shallowCopy(reqDto, updatableEmployer.getLocationAddress());
-                modelMapper.shallowCopy(reqDto, updatableEmployer);
-                modelMapper.onUpdateNullableTransactTurnOff();
+                onUpdateNullableTransactTurnOn();
+                modelMapper.map(reqDto, updatableEmployer.getUserDetails());
+                modelMapper.map(reqDto, updatableEmployer.getLocationAddress());
+                modelMapper.map(reqDto, updatableEmployer);
+                onUpdateNullableTransactTurnOff();
 
                 session.getTransaction().commit();
 

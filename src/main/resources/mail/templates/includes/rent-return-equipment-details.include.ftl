@@ -29,10 +29,10 @@
         </td>
         <td class="col-3" style="line-height: 24px; font-size: 16px; min-height: 1px; font-weight: normal; padding-right: 24px; width: 25%; margin: 0;" align="left" valign="top">
           <p class="fw-600 text-right" style="line-height: 24px; font-size: 16px; font-weight: 600 !important; width: 100%; margin: 0;" align="right">
-              ${equipment.totalPriceBrutto?string.currency}
+              ${equipment.priceBrutto?string.currency}
           </p>
           <p class="text-sm text-right" style="line-height: 16.8px; font-size: 14px; width: 100%; margin: 0;" align="right">
-            (netto) ${equipment.totalPriceNetto?string.currency}
+            (netto) ${equipment.priceNetto?string.currency}
           </p>
           <table class="s-2 w-full" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 100%;" width="100%">
             <tbody><tr><td style="line-height: 8px; font-size: 8px; width: 100%; height: 8px; margin: 0;" align="left" width="100%" height="8">&#160;</td></tr></tbody>
