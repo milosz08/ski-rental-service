@@ -18,7 +18,6 @@ import com.itextpdf.kernel.font.*;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.*;
-import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.layout.borders.SolidBorder;
@@ -30,10 +29,11 @@ import java.util.Map;
 import java.util.List;
 import java.io.IOException;
 
+import static com.itextpdf.io.font.PdfEncodings.CP1250;
 import static com.itextpdf.layout.borders.Border.NO_BORDER;
 import static com.itextpdf.layout.properties.TextAlignment.RIGHT;
-import static com.itextpdf.layout.properties.UnitValue.createPercentArray;
 import static com.itextpdf.layout.properties.VerticalAlignment.MIDDLE;
+import static com.itextpdf.layout.properties.UnitValue.createPercentArray;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -51,7 +51,7 @@ public class PdfHandler {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     protected Document createDocument(PdfWriter pdfWriter) throws IOException {
-        final PdfFont pdfFont = PdfFontFactory.createFont(FONT_PATH, PdfEncodings.CP1250);
+        final PdfFont pdfFont = PdfFontFactory.createFont(FONT_PATH, CP1250);
         final PdfDocument pdfDocument = new PdfDocument(pdfWriter);
         pdfDocument.setDefaultPageSize(PageSize.A4);
         return new Document(pdfDocument).setFont(pdfFont).setFontSize(9);
