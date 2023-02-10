@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2023 by multiple authors
+ * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
  * Silesian University of Technology
  *
  *  File name: FormSelectsDto.java
- *  Last modified: 24/01/2023, 15:42
+ *  Last modified: 24/01/2023, 17:43
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.

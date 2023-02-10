@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2023 by multiple authors
+ * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
  * Silesian University of Technology
  *
  *  File name: SellerCreateNewRentServlet.java
- *  Last modified: 27/01/2023, 12:55
+ *  Last modified: 06/02/2023, 20:03
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2023 by multiple authors
+ * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
  * Silesian University of Technology
  *
  *  File name: EmailEquipmentPayloadDataDto.java
- *  Last modified: 07/02/2023, 15:05
+ *  Last modified: 08/02/2023, 23:29
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.

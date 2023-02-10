@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2023 by multiple authors
+ * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
  * Silesian University of Technology
  *
  *  File name: SshSocketBean.java
- *  Last modified: 19/01/2023, 18:22
+ *  Last modified: 21/01/2023, 09:31
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.

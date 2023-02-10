@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2022 by multiple authors
+ * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
  * Silesian University of Technology
  *
  *  File name: ChangeForgottenPasswordServlet.java
- *  Last modified: 31/12/2022, 17:16
+ *  Last modified: 06/02/2023, 18:14
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.

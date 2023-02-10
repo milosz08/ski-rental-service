@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2023 by multiple authors
+ * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
  * Silesian University of Technology
  *
  *  File name: EquipmentEntity.java
- *  Last modified: 26/01/2023, 15:20
+ *  Last modified: 07/02/2023, 16:12
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.

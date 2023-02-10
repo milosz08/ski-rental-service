@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2023 by multiple authors
+ * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
  * Silesian University of Technology
  *
- *  File name: HibernateFactory.java
- *  Last modified: 27/12/2022, 22:48
+ *  File name: HibernateUtil.java
+ *  Last modified: 30/01/2023, 17:48
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.

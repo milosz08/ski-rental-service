@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2022 by multiple authors
+ * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
  * Silesian University of Technology
  *
  *  File name: SessionAttribute.java
- *  Last modified: 28/12/2022, 07:05
+ *  Last modified: 30/01/2023, 23:27
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.

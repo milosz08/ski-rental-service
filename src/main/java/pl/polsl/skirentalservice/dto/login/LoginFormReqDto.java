@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2022 by multiple authors
+ * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
  * Silesian University of Technology
  *
- *  File name: LoginFromDtoReq.java
- *  Last modified: 27/12/2022, 22:24
+ *  File name: LoginFormReqDto.java
+ *  Last modified: 21/01/2023, 14:07
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.

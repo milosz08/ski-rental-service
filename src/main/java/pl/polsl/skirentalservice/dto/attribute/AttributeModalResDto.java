@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2023 by multiple authors
+ * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
  * Silesian University of Technology
  *
- *  File name: EquipmentTypeResDto.java
- *  Last modified: 24/01/2023, 12:43
+ *  File name: AttributeModalResDto.java
+ *  Last modified: 24/01/2023, 21:51
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.

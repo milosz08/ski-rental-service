@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2023 by multiple authors
+ * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
  * Silesian University of Technology
  *
- *  File name: InMemoryRentData.java
- *  Last modified: 28/01/2023, 14:35
+ *  File name: InMemoryRentDataDto.java
+ *  Last modified: 31/01/2023, 08:24
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.

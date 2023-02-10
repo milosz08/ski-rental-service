@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2023 by multiple authors
+ * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
  * Silesian University of Technology
  *
  *  File name: SellerEditEquipmentFromCartServlet.java
- *  Last modified: 29/01/2023, 04:48
+ *  Last modified: 30/01/2023, 20:27
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -82,8 +82,8 @@ public class SellerEditEquipmentFromCartServlet extends HttpServlet {
             try {
                 final String jpqlEquipmentDetails =
                     "SELECT new pl.polsl.skirentalservice.dto.rent.EquipmentRentRecordResDto(" +
-                        "e.id, e.name, t.name, e.barcode, e.availableCount, e.pricePerHour, e.priceForNextHour," +
-                        "e.pricePerDay, ''" +
+                        "e.id, e.name, t.name, e.model, e.barcode, e.availableCount, e.pricePerHour," +
+                        "e.priceForNextHour, e.pricePerDay, ''" +
                     ") FROM EquipmentEntity e " +
                     "INNER JOIN e.equipmentType t " +
                     "WHERE e.id = :id";

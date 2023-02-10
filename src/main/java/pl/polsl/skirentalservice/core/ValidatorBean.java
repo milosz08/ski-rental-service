@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2022 by multiple authors
+ * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
  * Silesian University of Technology
  *
- *  File name: ValidatorFactory.java
- *  Last modified: 27/12/2022, 22:29
+ *  File name: ValidatorBean.java
+ *  Last modified: 24/01/2023, 17:47
  *  Project name: ski-rental-service
  *
  * This project was written for the purpose of a subject taken in the study of Computer Science.
@@ -16,12 +16,9 @@ package pl.polsl.skirentalservice.core;
 import jakarta.ejb.*;
 import jakarta.validation.*;
 
-import java.util.List;
 import java.util.Set;
 
-import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
-import pl.polsl.skirentalservice.dto.FormSelectsDto;
-import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
+import pl.polsl.skirentalservice.dto.*;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
