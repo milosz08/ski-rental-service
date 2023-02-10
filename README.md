@@ -104,4 +104,4 @@ in `src/main/resources/ssh/ssh.cfg.xml`
 
 <a name="project-status"></a>
 ## Project status
-Project is still in development.
+Project is finished.
