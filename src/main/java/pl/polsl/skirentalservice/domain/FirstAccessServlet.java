@@ -23,6 +23,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.annotation.WebServlet;
 
 import pl.polsl.skirentalservice.ssh.*;
+import pl.polsl.skirentalservice.dao.employer.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.core.ValidatorBean;
 import pl.polsl.skirentalservice.dto.first_access.*;
@@ -86,12 +87,8 @@ public class FirstAccessServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final String updateUserPassword =
-                    "UPDATE EmployerEntity e SET e.password = :newPassword, e.firstAccess = false WHERE e.id = :id";
-                session.createMutationQuery(updateUserPassword)
-                    .setParameter("newPassword", generateHash(reqDto.getPassword()))
-                    .setParameter("id", userDataDto.getId())
-                    .executeUpdate();
+                final IEmployerDao employerDao = new EmployerDao(session);
+                employerDao.updateEmployerFirstAccessPassword(generateHash(reqDto.getPassword()), userDataDto.getId());
 
                 final IExecCommandPerformer commandPerformer = new ExecCommandPerformer(sshSocket);
                 commandPerformer.updateMailboxPassword(userDataDto.getEmailAddress(), reqDto.getEmailPassword());

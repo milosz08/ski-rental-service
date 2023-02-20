@@ -20,17 +20,14 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
+import pl.polsl.skirentalservice.dao.employer.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
-import pl.polsl.skirentalservice.dto.employer.EmployerDetailsResDto;
 
 import java.io.IOException;
 
-import static java.util.Objects.isNull;
-
 import static pl.polsl.skirentalservice.util.Utils.*;
 import static pl.polsl.skirentalservice.util.SessionAlert.*;
-import static pl.polsl.skirentalservice.util.UserRole.SELLER;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 import static pl.polsl.skirentalservice.util.PageTitle.SELLER_PROFILE_PAGE;
 import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
@@ -55,24 +52,11 @@ public class CommonProfileServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
+                final IEmployerDao employerDao = new EmployerDao(session);
 
-                final String jpqlFindEmployerDetails =
-                    "SELECT new pl.polsl.skirentalservice.dto.employer.EmployerDetailsResDto(" +
-                        "e.id, CONCAT(d.firstName, ' ', d.lastName), e.login, d.emailAddress, CAST(d.bornDate AS string)," +
-                        "CAST(e.hiredDate AS string), d.pesel, CONCAT('+', d.phoneAreaCode, ' '," +
-                        "SUBSTRING(d.phoneNumber, 1, 3), ' ', SUBSTRING(d.phoneNumber, 4, 3), ' '," +
-                        "SUBSTRING(d.phoneNumber, 7, 3)), YEAR(NOW()) - YEAR(d.bornDate)," +
-                        "YEAR(NOW()) - YEAR(e.hiredDate), d.gender, CONCAT(a.postalCode, ' ', a.city)," +
-                        "CAST(IF(e.firstAccess, 'nieaktywowane', 'aktywowane') AS string)," +
-                        "CAST(IF(e.firstAccess, 'text-danger', 'text-success') AS string)," +
-                        "CONCAT('ul. ', a.street, ' ', a.buildingNr, IF(a.apartmentNr, CONCAT('/', a.apartmentNr), ''))" +
-                    ") FROM EmployerEntity e INNER JOIN e.userDetails d INNER JOIN e.locationAddress a " +
-                    "WHERE e.id = :id";
-                final EmployerDetailsResDto employerDetails = session
-                    .createQuery(jpqlFindEmployerDetails, EmployerDetailsResDto.class)
-                    .setParameter("id", userDataDto.getId())
-                    .getSingleResultOrNull();
-                if (isNull(employerDetails)) throw new UserNotFoundException(SELLER);
+                final var employerDetails = employerDao.findEmployerPageDetails(userDataDto.getId()).orElseThrow(() -> {
+                    throw new UserNotFoundException(String.valueOf(userDataDto.getId()));
+                });
 
                 session.getTransaction().commit();
                 req.setAttribute("alertData", alert);

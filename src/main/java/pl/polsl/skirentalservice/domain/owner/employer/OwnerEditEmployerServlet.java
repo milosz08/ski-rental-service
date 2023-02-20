@@ -26,7 +26,9 @@ import java.io.IOException;
 
 import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.core.*;
+import pl.polsl.skirentalservice.dao.employer.*;
 import pl.polsl.skirentalservice.dto.employer.*;
+import pl.polsl.skirentalservice.dao.user_details.*;
 import pl.polsl.skirentalservice.core.ValidatorBean;
 import pl.polsl.skirentalservice.entity.EmployerEntity;
 
@@ -67,24 +69,13 @@ public class OwnerEditEmployerServlet extends HttpServlet {
             try (final Session session = sessionFactory.openSession()) {
                 try {
                     session.beginTransaction();
+                    final IEmployerDao employerDao = new EmployerDao(session);
 
-                    final String jpqlFindEmployerBaseId =
-                        "SELECT new pl.polsl.skirentalservice.dto.employer.AddEditEmployerReqDto(" +
-                            "d.firstName, d.lastName, d.pesel," +
-                            "CONCAT(SUBSTRING(d.phoneNumber, 1, 3), ' ', SUBSTRING(d.phoneNumber, 4, 3), ' '," +
-                            "SUBSTRING(d.phoneNumber, 7, 3)), CAST(d.bornDate AS string), CAST(e.hiredDate AS string)," +
-                            "a.street, a.buildingNr, a.apartmentNr, a.city, a.postalCode, d.gender" +
-                        ") FROM EmployerEntity e " +
-                        "INNER JOIN e.userDetails d " +
-                        "INNER JOIN e.locationAddress a " +
-                        "WHERE e.id = :uid";
-                    final AddEditEmployerReqDto employerDetails = session
-                        .createQuery(jpqlFindEmployerBaseId, AddEditEmployerReqDto.class)
-                        .setParameter("uid", userId)
-                        .getSingleResultOrNull();
-                    if (isNull(employerDetails)) throw new UserNotFoundException(userId);
-
+                    final var employerDetails = employerDao.findEmployerEditPageDetails(userId).orElseThrow(() -> {
+                        throw new UserNotFoundException(userId);
+                    });
                     resDto = new AddEditEmployerResDto(validator, employerDetails);
+
                     session.getTransaction().commit();
                 } catch (RuntimeException ex) {
                     if (!isNull(session)) onHibernateException(session, LOGGER, ex);
@@ -120,27 +111,17 @@ public class OwnerEditEmployerServlet extends HttpServlet {
             reqDto.validateDates(config);
             try {
                 session.beginTransaction();
+                final IUserDetailsDao userDetailsDao = new UserDetailsDao(session);
 
                 final EmployerEntity updatableEmployer = session.get(EmployerEntity.class, employerId);
                 if (isNull(updatableEmployer)) throw new UserNotFoundException(employerId);
 
-                final String jpqlFindPesel =
-                    "SELECT COUNT(e.id) > 0 FROM EmployerEntity e INNER JOIN e.userDetails d " +
-                    "WHERE d.pesel = :pesel AND e.id <> :uid";
-                final Boolean peselExist = session.createQuery(jpqlFindPesel, Boolean.class)
-                    .setParameter("pesel", reqDto.getPesel())
-                    .setParameter("uid", updatableEmployer.getId())
-                    .getSingleResult();
-                if (peselExist) throw new PeselAlreadyExistException(reqDto.getPesel(), SELLER);
-
-                final String jpqlFindPhoneNumber =
-                    "SELECT COUNT(e.id) > 0 FROM EmployerEntity e INNER JOIN e.userDetails d " +
-                    "WHERE d.phoneNumber = :phoneNumber AND e.id <> :uid";
-                final Boolean phoneNumberExist = session.createQuery(jpqlFindPhoneNumber, Boolean.class)
-                    .setParameter("phoneNumber", reqDto.getPhoneNumber())
-                    .setParameter("uid", updatableEmployer.getId())
-                    .getSingleResult();
-                if (phoneNumberExist) throw new PhoneNumberAlreadyExistException(reqDto.getPhoneNumber(), SELLER);
+                if (userDetailsDao.checkIfEmployerWithSamePeselExist(reqDto.getPesel(), updatableEmployer.getId())) {
+                    throw new PeselAlreadyExistException(reqDto.getPesel(), SELLER);
+                }
+                if (userDetailsDao.checkIfEmployerWithSamePhoneNumberExist(reqDto.getPhoneNumber(), updatableEmployer.getId())) {
+                    throw new PhoneNumberAlreadyExistException(reqDto.getPhoneNumber(), SELLER);
+                }
 
                 onUpdateNullableTransactTurnOn();
                 modelMapper.map(reqDto, updatableEmployer.getUserDetails());

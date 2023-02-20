@@ -26,6 +26,7 @@ import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.entity.*;
 import pl.polsl.skirentalservice.dto.customer.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dao.user_details.*;
 import pl.polsl.skirentalservice.core.ValidatorBean;
 import pl.polsl.skirentalservice.core.mail.MailSocketBean;
 
@@ -35,9 +36,9 @@ import java.time.LocalDate;
 import static java.util.Objects.isNull;
 
 import static pl.polsl.skirentalservice.util.Utils.*;
-import static pl.polsl.skirentalservice.util.SessionAlert.*;
 import static pl.polsl.skirentalservice.util.UserRole.USER;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
+import static pl.polsl.skirentalservice.util.SessionAlert.*;
 import static pl.polsl.skirentalservice.exception.DateException.*;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
 import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
@@ -93,26 +94,17 @@ public class SellerAddCustomerServlet extends HttpServlet {
             }
             try {
                 session.beginTransaction();
+                final IUserDetailsDao userDetailsDao = new UserDetailsDao(session);
 
-                final String jpqlFindPesel =
-                    "SELECT COUNT(c.id) > 0 FROM CustomerEntity c INNER JOIN c.userDetails d WHERE d.pesel = :pesel";
-                final Boolean peselExist = session.createQuery(jpqlFindPesel, Boolean.class)
-                    .setParameter("pesel", reqDto.getPesel()).getSingleResult();
-                if (peselExist) throw new PeselAlreadyExistException(reqDto.getPesel(), USER);
-
-                final String jpqlFindPhoneNumber =
-                    "SELECT COUNT(c.id) > 0 FROM CustomerEntity c " +
-                    "INNER JOIN c.userDetails d WHERE d.phoneNumber = :phoneNumber";
-                final Boolean phoneNumberExist = session.createQuery(jpqlFindPhoneNumber, Boolean.class)
-                    .setParameter("phoneNumber", reqDto.getPhoneNumber()).getSingleResult();
-                if (phoneNumberExist) throw new PhoneNumberAlreadyExistException(reqDto.getPhoneNumber(), USER);
-
-                final String jpqlFindEmailAddress =
-                    "SELECT COUNT(c.id) > 0 FROM CustomerEntity c " +
-                    "INNER JOIN c.userDetails d WHERE d.emailAddress = :emailAddress";
-                final Boolean emailAddressExist = session.createQuery(jpqlFindEmailAddress, Boolean.class)
-                    .setParameter("emailAddress", reqDto.getEmailAddress()).getSingleResult();
-                if (emailAddressExist) throw new EmailAddressAlreadyExistException(reqDto.getEmailAddress(), USER);
+                if (userDetailsDao.checkIfCustomerWithSamePeselExist(reqDto.getPesel(), null)) {
+                    throw new PeselAlreadyExistException(reqDto.getPesel(), USER);
+                }
+                if (userDetailsDao.checkIfCustomerWithSamePhoneNumberExist(reqDto.getPhoneNumber(), null)) {
+                    throw new PhoneNumberAlreadyExistException(reqDto.getPhoneNumber(), USER);
+                }
+                if (userDetailsDao.checkIfCustomerWithSameEmailExist(reqDto.getEmailAddress(), null)) {
+                    throw new EmailAddressAlreadyExistException(reqDto.getEmailAddress(), USER);
+                }
 
                 final LocationAddressEntity locationAddress = modelMapper.map(reqDto, LocationAddressEntity.class);
                 final UserDetailsEntity userDetails = modelMapper.map(reqDto, UserDetailsEntity.class);

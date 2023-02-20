@@ -26,8 +26,13 @@ import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.util.*;
 import pl.polsl.skirentalservice.entity.*;
 import pl.polsl.skirentalservice.pdf.dto.*;
+import pl.polsl.skirentalservice.dao.rent.*;
 import pl.polsl.skirentalservice.core.mail.*;
+import pl.polsl.skirentalservice.dao.customer.*;
+import pl.polsl.skirentalservice.dao.employer.*;
+import pl.polsl.skirentalservice.dao.equipment.*;
 import pl.polsl.skirentalservice.core.ConfigBean;
+import pl.polsl.skirentalservice.dao.return_deliv.*;
 import pl.polsl.skirentalservice.dto.deliv_return.*;
 import pl.polsl.skirentalservice.pdf.ReturnPdfDocument;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
@@ -82,51 +87,29 @@ public class SellerGenerateReturnServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final String jpqlFindCustomerExist =
-                    "SELECT c.id FROM RentEntity r INNER JOIN r.customer c WHERE r.id = :rid";
-                final Long customerExist = session.createQuery(jpqlFindCustomerExist, Long.class)
-                    .setParameter("rid", rentId).getSingleResultOrNull();
-                if (isNull(customerExist)) throw new RuntimeException(
-                    "Generowanie zwrotu wypożyczenia z usuniętym klientem jest niemożliwe."
-                );
-                final String jpqlFindReturn =
-                    "SELECT new pl.polsl.skirentalservice.dto.deliv_return.ReturnAlreadyExistPayloadDto(" +
-                        "re.id, re.issuedIdentifier" +
-                    ") FROM RentReturnEntity re INNER JOIN re.rent r WHERE r.id = :rid";
-                final ReturnAlreadyExistPayloadDto returnAlreadyExist = session
-                    .createQuery(jpqlFindReturn, ReturnAlreadyExistPayloadDto.class)
-                    .setParameter("rid", rentId).getSingleResultOrNull();
-                if (!isNull(returnAlreadyExist)) {
-                    throw new ReturnDocumentAlreadyExistException(req, returnAlreadyExist.getReturnIdentifier(),
-                        returnAlreadyExist.getId());
+                final IEmployerDao employerDao = new EmployerDao(session);
+                final IEquipmentDao equipmentDao = new EquipmentDao(session);
+                final ICustomerDao customerDao = new CustomerDao(session);
+                final IRentDao rentDao = new RentDao(session);
+                final IReturnDao returnDao = new ReturnDao(session);
+
+                if (!customerDao.checkIfCustomerExist(rentId)) {
+                    throw new RuntimeException("Generowanie zwrotu wypożyczenia z usuniętym klientem jest niemożliwe.");
                 }
 
-                final String jpqlFindRent =
-                    "SELECT new pl.polsl.skirentalservice.dto.deliv_return.RentReturnDetailsResDto(" +
-                        "r.issuedIdentifier, r.rentDateTime, r.tax," +
-                        "r.totalPrice, CAST((r.tax / 100) * r.totalPrice + r.totalPrice AS bigdecimal)," +
-                        "r.totalDepositPrice, CAST((r.tax / 100) * r.totalDepositPrice + r.totalDepositPrice AS bigdecimal)" +
-                    ") FROM RentEntity r INNER JOIN r.employer e " +
-                    "WHERE r.id = :rentid AND e.id = :eid";
-                final RentReturnDetailsResDto rentDetails = session.createQuery(jpqlFindRent, RentReturnDetailsResDto.class)
-                    .setParameter("rentid", rentId)
-                    .setParameter("eid", userDataDto.getId())
-                    .getSingleResultOrNull();
-                if (isNull(rentDetails)) throw new RentNotFoundException();
+                final Optional<ReturnAlreadyExistPayloadDto> returnExist = returnDao.findReturnExistDocument(rentId);
+                if (returnExist.isPresent()) {
+                    final ReturnAlreadyExistPayloadDto returnData = returnExist.get();
+                    throw new ReturnDocumentAlreadyExistException(req, returnData.getReturnIdentifier(), returnData.getId());
+                }
 
-                final String jpqlFindAllEquipmentsConnectedWithRent =
-                    "SELECT new pl.polsl.skirentalservice.dto.deliv_return.RentReturnEquipmentRecordResDto(" +
-                        "re.id, red.pricePerHour, red.priceForNextHour, red.pricePerDay, re.count," +
-                        "re.depositPrice, red.id, re.description" +
-                    ") FROM RentEquipmentEntity re " +
-                    "INNER JOIN re.rent r INNER JOIN r.employer e INNER JOIN re.equipment red " +
-                    "WHERE r.id = :rentid AND e.id = :eid";
-                final List<RentReturnEquipmentRecordResDto> equipmentsList = session
-                    .createQuery(jpqlFindAllEquipmentsConnectedWithRent, RentReturnEquipmentRecordResDto.class)
-                    .setParameter("rentid", rentId)
-                    .setParameter("eid", userDataDto.getId())
-                    .getResultList();
+                final RentReturnDetailsResDto rentDetails = rentDao.findRentReturnDetails(rentId, userDataDto.getId())
+                    .orElseThrow(() -> { throw new RentNotFoundException(); });
+
+                final List<RentReturnEquipmentRecordResDto> equipmentsList = equipmentDao
+                    .findAllEquipmentsConnectedWithRentReturn(rentId);
                 if (equipmentsList.isEmpty()) throw new EquipmentNotFoundException();
+
                 final LocalDateTime generatedBrief = LocalDateTime.now().truncatedTo(MINUTES);
                 final String returnIssuerIdentifier = rentDetails.getIssuedIdentifier().replace("WY", "ZW");
                 if (rentDetails.getRentDateTime().isAfter(generatedBrief)) {
@@ -175,13 +158,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                     final RentReturnEquipmentEntity returnEquipmentEntity = modelMapper
                         .map(eqDto, RentReturnEquipmentEntity.class);
 
-                    final String jpqlIncreaseEquipmentCount =
-                        "UPDATE EquipmentEntity e SET e.availableCount = e.availableCount + :rentedCount " +
-                        "WHERE e.id = :eid";
-                    session.createMutationQuery(jpqlIncreaseEquipmentCount)
-                        .setParameter("eid", equipmentEntity.getId())
-                        .setParameter("rentedCount", eqDto.getCount())
-                        .executeUpdate();
+                    equipmentDao.increaseAvailableSelectedEquipmentCount(equipmentEntity.getId(), eqDto.getCount());
 
                     final var emailEquipment = new EmailEquipmentPayloadDataDto(equipmentEntity, eqDto);
                     emailEquipment.setPriceNetto(sumPriceNetto);
@@ -204,25 +181,10 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 rentReturn.setEquipments(rentEquipmentEntities);
                 rentReturn.setRent(rentEntity);
 
-                final String jpqlUpdateRentStatus = "UPDATE RentEntity r SET r.status = :rst WHERE r.id = :rentid";
-                session.createMutationQuery(jpqlUpdateRentStatus)
-                    .setParameter("rst", RETURNED).setParameter("rentid", rentId)
-                    .executeUpdate();
+                rentDao.updateRentStatus(RETURNED, rentId);
 
-                final String jpqlGetCustomerDetails =
-                    "SELECT new pl.polsl.skirentalservice.dto.deliv_return.CustomerDetailsResDto(" +
-                        "CONCAT(d.firstName, ' ', d.lastName), d.pesel, CONCAT('+', d.phoneAreaCode, ' '," +
-                        "SUBSTRING(d.phoneNumber, 1, 3), ' ', SUBSTRING(d.phoneNumber, 4, 3), ' '," +
-                        "SUBSTRING(d.phoneNumber, 7, 3)), d.emailAddress, CONCAT('ul. ', a.street, ' ', a.buildingNr," +
-                        "IF(a.apartmentNr, CONCAT('/', a.apartmentNr), ''), ', ', a.postalCode, ' ', a.city)" +
-                    ") FROM RentEntity r " +
-                    "INNER JOIN r.customer c INNER JOIN c.userDetails d INNER JOIN c.locationAddress a " +
-                    "WHERE r.id = :rentid";
-                final CustomerDetailsResDto customerDetails = session
-                    .createQuery(jpqlGetCustomerDetails, CustomerDetailsResDto.class)
-                    .setParameter("rentid", rentId)
-                    .getSingleResultOrNull();
-                if (isNull(customerDetails)) throw new UserNotFoundException(USER);
+                final CustomerDetailsReturnResDto customerDetails = customerDao.findCustomerDetailsForReturnDocument(rentId)
+                    .orElseThrow(() -> { throw new UserNotFoundException(USER); });
 
                 final var emailPayload = modelMapper.map(rentDetails, RentReturnEmailPayloadDataDto.class);
                 modelMapper.map(customerDetails, emailPayload);
@@ -292,22 +254,13 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 final Map<String, Object> ownerTemplateVars = new HashMap<>(templateVars);
                 ownerTemplateVars.put("employerFullName", userDataDto.getFullName());
 
-                final String jpqlFindAllOwners =
-                    "SELECT new pl.polsl.skirentalservice.dto.OwnerMailPayloadDto(" +
-                        "CONCAT(d.firstName, ' ', d.lastName), d.emailAddress" +
-                    ") FROM EmployerEntity e " +
-                    "INNER JOIN e.userDetails d INNER JOIN e.role r WHERE r.alias = 'K'";
-                final List<OwnerMailPayloadDto> allOwnersEmails = session
-                    .createQuery(jpqlFindAllOwners, OwnerMailPayloadDto.class)
-                    .getResultList();
-
                 final MailRequestPayload ownerPayload = MailRequestPayload.builder()
                     .subject(emailTopic)
                     .templateName("create-new-return-owner.template.ftl")
                     .templateVars(ownerTemplateVars)
                     .attachmentsPaths(Set.of(returnPdfDocument.getPath()))
                     .build();
-                for (final OwnerMailPayloadDto owner : allOwnersEmails) {
+                for (final OwnerMailPayloadDto owner : employerDao.findAllEmployersMailSenders()) {
                     ownerPayload.setMessageResponder(owner.getFullName());
                     mailSocket.sendMessage(owner.getEmail(), ownerPayload, req);
                 }

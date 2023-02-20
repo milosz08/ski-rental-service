@@ -25,10 +25,12 @@ import jakarta.servlet.annotation.WebServlet;
 import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.entity.*;
 import pl.polsl.skirentalservice.dto.equipment.*;
+import pl.polsl.skirentalservice.dao.equipment.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
+import pl.polsl.skirentalservice.dao.equipment_type.*;
+import pl.polsl.skirentalservice.dao.equipment_brand.*;
+import pl.polsl.skirentalservice.dao.equipment_color.*;
 
-import java.util.List;
 import java.io.IOException;
 
 import static java.util.Objects.isNull;
@@ -68,43 +70,19 @@ public class OwnerEditEquipmentServlet extends HttpServlet {
             try (final Session session = sessionFactory.openSession()) {
                 try {
                     session.beginTransaction();
-                    final String jpqlFindEquipmentBaseId = "" +
-                        "SELECT new pl.polsl.skirentalservice.dto.equipment.AddEditEquipmentReqDto(" +
-                            "e.name, e.model, e.description, CAST(e.countInStore AS string), CAST(e.size AS string)," +
-                            "CAST(e.pricePerHour AS string), CAST(e.priceForNextHour AS string)," +
-                            "CAST(e.pricePerDay AS string), CAST(e.valueCost AS string), CAST(t.id AS string)," +
-                            "CAST(b.id AS string), CAST(c.id AS string), e.gender" +
-                        ") FROM EquipmentEntity e " +
-                        "INNER JOIN e.equipmentType t INNER JOIN e.equipmentBrand b INNER JOIN e.equipmentColor c " +
-                        "WHERE e.id = :eid";
-                    final AddEditEquipmentReqDto equipmentDetails = session
-                        .createQuery(jpqlFindEquipmentBaseId, AddEditEquipmentReqDto.class)
-                        .setParameter("eid", equipmentId)
-                        .getSingleResultOrNull();
-                    if (isNull(equipmentDetails)) throw new EquipmentNotFoundException(equipmentId);
+
+                    final IEquipmentDao equipmentDao = new EquipmentDao(session);
+                    final IEquipmentTypeDao equipmentTypeDao = new EquipmentTypeDao(session);
+                    final IEquipmentBrandDao equipmentBrandDao = new EquipmentBrandDao(session);
+                    final IEquipmentColorDao equipmentColorDao = new EquipmentColorDao(session);
+
+                    final var equipmentDetails = equipmentDao.findAddEditEquipmentDetails(equipmentId)
+                        .orElseThrow(() -> { throw new EquipmentNotFoundException(equipmentId); });
 
                     resDto = new AddEditEquipmentResDto(validator, equipmentDetails);
-
-                    final String jpqlFindEquipmentTypes = "SELECT new pl.polsl.skirentalservice.dto.FormSelectTupleDto(" +
-                        "CAST(t.id AS string), t.name) FROM EquipmentTypeEntity t ORDER BY t.id";
-                    final List<FormSelectTupleDto> equipmentTypes = session
-                        .createQuery(jpqlFindEquipmentTypes, FormSelectTupleDto.class)
-                        .getResultList();
-                    resDto.insertTypesSelects(equipmentTypes);
-
-                    final String jpqlFindEquipmentBrands = "SELECT new pl.polsl.skirentalservice.dto.FormSelectTupleDto(" +
-                        "CAST(t.id AS string), t.name) FROM EquipmentBrandEntity t ORDER BY t.id";
-                    final List<FormSelectTupleDto> equipmentBrands = session
-                        .createQuery(jpqlFindEquipmentBrands, FormSelectTupleDto.class)
-                        .getResultList();
-                    resDto.insertBrandsSelects(equipmentBrands);
-
-                    final String jpqlFindEquipmentColors = "SELECT new pl.polsl.skirentalservice.dto.FormSelectTupleDto(" +
-                        "CAST(t.id AS string), t.name) FROM EquipmentColorEntity t ORDER BY t.id";
-                    final List<FormSelectTupleDto> equipmentColors = session
-                        .createQuery(jpqlFindEquipmentColors, FormSelectTupleDto.class)
-                        .getResultList();
-                    resDto.insertColorsSelects(equipmentColors);
+                    resDto.insertTypesSelects(equipmentTypeDao.findAllEquipmentTypes());
+                    resDto.insertBrandsSelects(equipmentBrandDao.findAllEquipmentBrands());
+                    resDto.insertColorsSelects(equipmentColorDao.findAllEquipmentColors());
 
                     session.getTransaction().commit();
                 } catch (RuntimeException ex) {
@@ -145,18 +123,14 @@ public class OwnerEditEquipmentServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
+                final IEquipmentDao equipmentDao = new EquipmentDao(session);
 
                 final EquipmentEntity equipmentEntity = session.get(EquipmentEntity.class, equipmentId);
                 if (isNull(equipmentEntity)) throw new EquipmentNotFoundException(equipmentId);
 
-                final String jpqlFindEquipmentByModel =
-                    "SELECT COUNT(e.id) > 0 FROM EquipmentEntity e WHERE LOWER(e.model) = LOWER(:model) AND e.id <> :eid";
-                final Boolean modelAlreadyExist = session.createQuery(jpqlFindEquipmentByModel, Boolean.class)
-                    .setParameter("model", reqDto.getModel())
-                    .setParameter("eid", equipmentId)
-                    .getSingleResult();
-                if (modelAlreadyExist) throw new EquipmentAlreadyExistException();
-
+                if (equipmentDao.checkIfEquipmentModelExist(reqDto.getModel(), equipmentId)) {
+                    throw new EquipmentAlreadyExistException();
+                }
                 onUpdateNullableTransactTurnOn();
                 modelMapper.map(reqDto, equipmentEntity);
                 onUpdateNullableTransactTurnOff();

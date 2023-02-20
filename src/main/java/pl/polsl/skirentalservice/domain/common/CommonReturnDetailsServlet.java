@@ -20,15 +20,16 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
+import pl.polsl.skirentalservice.dao.equipment.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dao.return_deliv.*;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
-import pl.polsl.skirentalservice.dto.deliv_return.ReturnRentDetailsResDto;
 import pl.polsl.skirentalservice.dto.rent.RentEquipmentsDetailsResDto;
 
 import java.util.List;
 import java.io.IOException;
 
-import static java.util.Objects.isNull;
+import static java.lang.String.valueOf;
 
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
@@ -58,40 +59,15 @@ public class CommonReturnDetailsServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final String jpqlFindReturnDetails =
-                    "SELECT new pl.polsl.skirentalservice.dto.deliv_return.ReturnRentDetailsResDto(" +
-                        "rr.id, rr.issuedIdentifier, r.issuedIdentifier, rr.issuedDateTime, rr.description, r.tax," +
-                        "rr.totalPrice, CAST((r.tax / 100) * rr.totalPrice + rr.totalPrice AS bigdecimal), rr.totalDepositPrice," +
-                        "CAST((r.tax / 100) * rr.totalDepositPrice + rr.totalDepositPrice AS bigdecimal)," +
-                        "CONCAT(d.firstName, ' ', d.lastName), d.pesel, d.bornDate, CONCAT('+', d.phoneAreaCode," +
-                        "SUBSTRING(d.phoneNumber, 1, 3), ' ', SUBSTRING(d.phoneNumber, 4, 3), ' '," +
-                        "SUBSTRING(d.phoneNumber, 7, 3)), YEAR(NOW()) - YEAR(d.bornDate), d.emailAddress," +
-                        "d.gender, CONCAT(a.postalCode, ' ', a.city)," +
-                        "CONCAT('ul. ', a.street, ' ', a.buildingNr, IF(a.apartmentNr, CONCAT('/', a.apartmentNr), ''))" +
-                    ") FROM RentReturnEntity rr " +
-                    "LEFT OUTER JOIN rr.rent r " +
-                    "LEFT OUTER JOIN r.employer e LEFT OUTER JOIN r.customer c LEFT OUTER JOIN c.userDetails d " +
-                    "LEFT OUTER JOIN c.locationAddress a WHERE rr.id = :rid";
-                final ReturnRentDetailsResDto returnDetails = session
-                    .createQuery(jpqlFindReturnDetails, ReturnRentDetailsResDto.class)
-                    .setParameter("rid", returnId)
-                    .getSingleResultOrNull();
-                if (isNull(returnDetails)) throw new ReturnNotFoundException();
+                final IReturnDao returnDao = new ReturnDao(session);
+                final IEquipmentDao equipmentDao = new EquipmentDao(session);
 
-                final String jpqlFindAllEquipments =
-                    "SELECT new pl.polsl.skirentalservice.dto.rent.RentEquipmentsDetailsResDto(" +
-                        "re.id, IFNULL(e.name, '<i>sprzęt usunięty</i>'), rer.count, e.barcode, re.description," +
-                        "re.totalPrice, CAST((r.tax / 100) * re.totalPrice + re.totalPrice AS bigdecimal)," +
-                        "re.depositPrice, CAST((r.tax / 100) * re.depositPrice + re.depositPrice AS bigdecimal)" +
-                    ") FROM RentReturnEquipmentEntity re " +
-                    "INNER JOIN re.rentEquipment rer " +
-                    "INNER JOIN rer.rent r INNER JOIN re.rentReturn rrer LEFT OUTER JOIN re.equipment e " +
-                    "WHERE rrer.id = :rid ORDER BY re.id";
-                final List<RentEquipmentsDetailsResDto> allReturnEquipments = session
-                    .createQuery(jpqlFindAllEquipments, RentEquipmentsDetailsResDto.class)
-                    .setParameter("rid", returnId)
-                    .getResultList();
+                final var returnDetails = returnDao
+                    .findReturnDetails(returnId, userDataDto.getId(), valueOf(userDataDto.getRoleAlias()))
+                    .orElseThrow(() -> { throw new ReturnNotFoundException(); });
 
+                final List<RentEquipmentsDetailsResDto> allReturnEquipments = equipmentDao
+                    .findAllEquipmentsConnectedWithReturn(returnId);
                 final Integer totalSum = allReturnEquipments.stream()
                     .map(RentEquipmentsDetailsResDto::getCount).reduce(0, Integer::sum);
 

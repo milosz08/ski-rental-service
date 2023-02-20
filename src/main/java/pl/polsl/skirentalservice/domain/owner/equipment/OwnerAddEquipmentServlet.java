@@ -29,10 +29,13 @@ import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.entity.*;
 import pl.polsl.skirentalservice.dto.equipment.*;
+import pl.polsl.skirentalservice.dao.equipment.*;
 import pl.polsl.skirentalservice.core.ConfigBean;
+import pl.polsl.skirentalservice.dao.equipment_type.*;
+import pl.polsl.skirentalservice.dao.equipment_color.*;
+import pl.polsl.skirentalservice.dao.equipment_brand.*;
 
 import java.io.*;
-import java.util.List;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 
@@ -75,26 +78,13 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final String jpqlFindEquipmentTypes = "SELECT new pl.polsl.skirentalservice.dto.FormSelectTupleDto(" +
-                    "CAST(t.id AS string), t.name) FROM EquipmentTypeEntity t ORDER BY t.id";
-                final List<FormSelectTupleDto> equipmentTypes = session
-                    .createQuery(jpqlFindEquipmentTypes, FormSelectTupleDto.class)
-                    .getResultList();
-                resDto.insertTypesSelects(equipmentTypes);
+                final IEquipmentTypeDao equipmentTypeDao = new EquipmentTypeDao(session);
+                final IEquipmentBrandDao equipmentBrandDao = new EquipmentBrandDao(session);
+                final IEquipmentColorDao equipmentColorDao = new EquipmentColorDao(session);
 
-                final String jpqlFindEquipmentBrands = "SELECT new pl.polsl.skirentalservice.dto.FormSelectTupleDto(" +
-                    "CAST(t.id AS string), t.name) FROM EquipmentBrandEntity t ORDER BY t.id";
-                final List<FormSelectTupleDto> equipmentBrands = session
-                    .createQuery(jpqlFindEquipmentBrands, FormSelectTupleDto.class)
-                    .getResultList();
-                resDto.insertBrandsSelects(equipmentBrands);
-
-                final String jpqlFindEquipmentColors = "SELECT new pl.polsl.skirentalservice.dto.FormSelectTupleDto(" +
-                    "CAST(t.id AS string), t.name) FROM EquipmentColorEntity t ORDER BY t.id";
-                final List<FormSelectTupleDto> equipmentColors = session
-                    .createQuery(jpqlFindEquipmentColors, FormSelectTupleDto.class)
-                    .getResultList();
-                resDto.insertColorsSelects(equipmentColors);
+                resDto.insertTypesSelects(equipmentTypeDao.findAllEquipmentTypes());
+                resDto.insertBrandsSelects(equipmentBrandDao.findAllEquipmentBrands());
+                resDto.insertColorsSelects(equipmentColorDao.findAllEquipmentColors());
 
                 session.getTransaction().commit();
             } catch (RuntimeException ex) {
@@ -132,14 +122,11 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
+                final IEquipmentDao equipmentDao = new EquipmentDao(session);
 
-                final String jpqlEquipmentModelExist =
-                    "SELECT COUNT(e.id) > 0 FROM EquipmentEntity e WHERE LOWER(e.model) = LOWER(:model)";
-                final Boolean equipmentModelExist = session.createQuery(jpqlEquipmentModelExist, Boolean.class)
-                    .setParameter("model", reqDto.getModel())
-                    .getSingleResult();
-                if (equipmentModelExist) throw new EquipmentAlreadyExistException();
-
+                if (equipmentDao.checkIfEquipmentModelExist(reqDto.getModel(), null)) {
+                    throw new EquipmentAlreadyExistException();
+                }
                 final EquipmentEntity persistNewEquipment = modelMapper.map(reqDto, EquipmentEntity.class);
                 persistNewEquipment.setEquipmentType(session.get(EquipmentTypeEntity.class, reqDto.getType()));
                 persistNewEquipment.setEquipmentBrand(session.get(EquipmentBrandEntity.class, reqDto.getBrand()));
@@ -150,11 +137,7 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
                 String generatedBarcode;
                 do {
                     generatedBarcode = getBarcodeChecksum(randomNumeric(12));
-                    final String jpqlFindBarcode =
-                        "SELECT COUNT(e.id) > 0 FROM EquipmentEntity e WHERE e.barcode = :barcode";
-                    barcodeExist = session.createQuery(jpqlFindBarcode, Boolean.class)
-                        .setParameter("barcode", generatedBarcode)
-                        .getSingleResult();
+                    barcodeExist = equipmentDao.checkIfBarCodeExist(generatedBarcode);
                 } while (barcodeExist);
 
                 final EAN13Bean barcodeGenerator = new EAN13Bean();

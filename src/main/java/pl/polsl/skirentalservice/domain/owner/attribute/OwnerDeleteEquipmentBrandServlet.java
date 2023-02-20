@@ -23,9 +23,9 @@ import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dao.equipment_brand.*;
 import pl.polsl.skirentalservice.dto.attribute.AttributeModalResDto;
 
-import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import static pl.polsl.skirentalservice.util.Utils.*;
@@ -60,30 +60,26 @@ public class OwnerDeleteEquipmentBrandServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
+                final IEquipmentBrandDao equipmentDetailsDao = new EquipmentBrandDao(session);
 
-                final String jqplFindNameOfDeletingBrand= "SELECT b.name FROM EquipmentBrandEntity b WHERE b.id = :id";
-                final String getDeletedName = session.createQuery(jqplFindNameOfDeletingBrand, String.class)
-                    .setParameter("id", brandId).getSingleResultOrNull();
-                if (isNull(getDeletedName)) throw new EquipmentBrandNotFoundException();
+                final String deletedBrand = equipmentDetailsDao.getEquipmentBrandNameById(brandId).orElseThrow(() -> {
+                    throw new EquipmentBrandNotFoundException();
+                });
 
                 resDto.getActiveFirstPage().setActive(false);
                 resDto.getActiveSecondPage().setActive(true);
 
-                final String jpqlFindBrandHasConnections =
-                    "SELECT COUNT(e.id) > 0 FROM EquipmentEntity e INNER JOIN e.equipmentBrand b WHERE b.id = :id";
-                final Boolean attributeHasConnections = session.createQuery(jpqlFindBrandHasConnections, Boolean.class)
-                    .setParameter("id", brandId)
-                    .getSingleResult();
-                if (attributeHasConnections) throw new EquipmentBrandHasConnectionsException();
+                if (equipmentDetailsDao.checkIfEquipmentBrandHasAnyConnections(brandId)) {
+                    throw new EquipmentBrandHasConnectionsException();
+                }
+                equipmentDetailsDao.deleteEquipmentBrandById(brandId);
 
-                session.createMutationQuery("DELETE EquipmentBrandEntity b WHERE b.id = :id")
-                    .setParameter("id", brandId).executeUpdate();
                 alert.setType(INFO);
                 alert.setMessage(
-                    "Usuwanie marki sprzętu narciarskiego: <strong>" + getDeletedName + "</strong> zakończone sukcesem."
+                    "Usuwanie marki sprzętu narciarskiego: <strong>" + deletedBrand + "</strong> zakończone sukcesem."
                 );
                 session.getTransaction().commit();
-                LOGGER.info("Successful deleted equipment brand by: {}. Brand: {}", loggedUser, getDeletedName);
+                LOGGER.info("Successful deleted equipment brand by: {}. Brand: {}", loggedUser, deletedBrand);
             } catch (RuntimeException ex) {
                 onHibernateException(session, LOGGER, ex);
             }

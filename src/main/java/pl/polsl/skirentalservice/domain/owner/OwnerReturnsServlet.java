@@ -24,6 +24,7 @@ import pl.polsl.skirentalservice.util.Utils;
 import pl.polsl.skirentalservice.paging.sorter.*;
 import pl.polsl.skirentalservice.paging.filter.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dao.return_deliv.*;
 import pl.polsl.skirentalservice.paging.pagination.ServletPagination;
 import pl.polsl.skirentalservice.dto.deliv_return.OwnerRentReturnRecordResDto;
 
@@ -86,32 +87,14 @@ public class OwnerReturnsServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final String jpqlTotalReturnsCount =
-                    "SELECT COUNT(r.id) FROM RentReturnEntity r " +
-                    "INNER JOIN r.rent rd INNER JOIN rd.employer e INNER JOIN e.userDetails ed " +
-                    "WHERE " + filterData.getSearchColumn() + " LIKE :search";
-                final Long totalReturns = session.createQuery(jpqlTotalReturnsCount, Long.class)
-                    .setParameter("search", "%" + filterData.getSearchText() + "%")
-                    .getSingleResult();
+                final IReturnDao returnDao = new ReturnDao(session);
 
+                final Long totalReturns = returnDao.findAllReturnsCount(filterData);
                 final ServletPagination pagination = new ServletPagination(page, total, totalReturns);
                 if (pagination.checkIfIsInvalid()) throw new RuntimeException();
 
-                final String jpqlFindAlReturns =
-                    "SELECT new pl.polsl.skirentalservice.dto.deliv_return.OwnerRentReturnRecordResDto(" +
-                        "r.id, r.issuedIdentifier, r.issuedDateTime, r.totalPrice," +
-                        "CAST((rd.tax / 100) * r.totalPrice + r.totalPrice AS bigdecimal), rd.id, rd.issuedIdentifier," +
-                        "e.id, CONCAT(ed.firstName, ' ', ed.lastName)" +
-                    ") FROM RentReturnEntity r " +
-                    "INNER JOIN r.rent rd INNER JOIN rd.employer e INNER JOIN e.userDetails ed " +
-                    "WHERE " + filterData.getSearchColumn() + " LIKE :search " +
-                    "ORDER BY " + sorterData.getJpql();
-                final List<OwnerRentReturnRecordResDto> returnsList = session
-                    .createQuery(jpqlFindAlReturns, OwnerRentReturnRecordResDto.class)
-                    .setParameter("search", "%" + filterData.getSearchText() + "%")
-                    .setFirstResult((page - 1) * total)
-                    .setMaxResults(total)
-                    .getResultList();
+                final List<OwnerRentReturnRecordResDto> returnsList = returnDao
+                    .findAllPageableReturnsRecords(filterData, sorterData, page, total);
 
                 session.getTransaction().commit();
                 req.setAttribute("pagesData", pagination);

@@ -32,7 +32,9 @@ import pl.polsl.skirentalservice.entity.*;
 import pl.polsl.skirentalservice.core.ssh.*;
 import pl.polsl.skirentalservice.core.mail.*;
 import pl.polsl.skirentalservice.dto.employer.*;
+import pl.polsl.skirentalservice.dao.employer.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dao.user_details.*;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 
 import static java.util.Locale.ENGLISH;
@@ -101,33 +103,25 @@ public class OwnerAddEmployerServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final String jpqlFindPesel =
-                    "SELECT COUNT(e.id) > 0 FROM EmployerEntity e INNER JOIN e.userDetails d WHERE d.pesel = :pesel";
-                final Boolean peselExist = session.createQuery(jpqlFindPesel, Boolean.class)
-                    .setParameter("pesel", reqDto.getPesel()).getSingleResult();
-                if (peselExist) throw new PeselAlreadyExistException(reqDto.getPesel(), SELLER);
+                final IEmployerDao employerDao = new EmployerDao(session);
+                final IUserDetailsDao userDetailsDao = new UserDetailsDao(session);
 
-                final String jpqlFindPhoneNumber =
-                    "SELECT COUNT(e.id) > 0 FROM EmployerEntity e " +
-                    "INNER JOIN e.userDetails d WHERE d.phoneNumber = :phoneNumber";
-                final Boolean phoneNumberExist = session.createQuery(jpqlFindPhoneNumber, Boolean.class)
-                    .setParameter("phoneNumber", reqDto.getPhoneNumber()).getSingleResult();
-                if (phoneNumberExist) throw new PhoneNumberAlreadyExistException(reqDto.getPhoneNumber(), SELLER);
-
+                if (userDetailsDao.checkIfEmployerWithSamePeselExist(reqDto.getPesel(), null)) {
+                    throw new PeselAlreadyExistException(reqDto.getPesel(), SELLER);
+                }
+                if (userDetailsDao.checkIfEmployerWithSamePhoneNumberExist(reqDto.getPhoneNumber(), null)) {
+                    throw new PhoneNumberAlreadyExistException(reqDto.getPhoneNumber(), SELLER);
+                }
                 final RoleEntity role = session.get(RoleEntity.class, 1);
                 if (isNull(role)) throw new RuntimeException("Podana rola nie istnieje w systemie.");
 
                 String login;
-                Boolean emailExist;
+                boolean emailExist;
                 do {
                     final String withoutAccents = stripAccents(reqDto.getFirstName().substring(0, 3) +
                         reqDto.getLastName().substring(0, 3));
                     login = withoutAccents.toLowerCase(ENGLISH) + randomNumeric(3);
-
-                    final String jpqlFindMathEmail =
-                        "SELECT COUNT(e.id) > 0 FROM EmployerEntity e WHERE e.login = :loginSeq";
-                    emailExist = session.createQuery(jpqlFindMathEmail, Boolean.class)
-                        .setParameter("loginSeq", login).getSingleResult();
+                    emailExist = employerDao.checkIfLoginAlreadyExist(login);
                 } while (emailExist);
 
                 email = login + mailSocket.getDomain();

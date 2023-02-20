@@ -23,6 +23,7 @@ import jakarta.servlet.annotation.WebServlet;
 import java.util.*;
 import java.io.IOException;
 
+import pl.polsl.skirentalservice.dao.employer.*;
 import pl.polsl.skirentalservice.paging.filter.*;
 import pl.polsl.skirentalservice.paging.sorter.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
@@ -84,33 +85,14 @@ public class OwnerEmployersServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
+                final IEmployerDao employerDao = new EmployerDao(session);
 
-                final String jpqlTotalEmployersCount =
-                    "SELECT COUNT(e.id) FROM EmployerEntity e " +
-                    "INNER JOIN e.userDetails d INNER JOIN e.role r " +
-                    "WHERE r.id = 1 AND " + filterData.getSearchColumn() + " LIKE :search";
-                final Long totalEmployers = session.createQuery(jpqlTotalEmployersCount, Long.class)
-                    .setParameter("search", "%" + filterData.getSearchText() + "%")
-                    .getSingleResult();
-
+                final Long totalEmployers = employerDao.findAllEmployersCount(filterData);
                 final ServletPagination pagination = new ServletPagination(page, total, totalEmployers);
                 if (pagination.checkIfIsInvalid()) throw new RuntimeException();
 
-                final String jpqlFindAllEmployers =
-                    "SELECT new pl.polsl.skirentalservice.dto.employer.EmployerRecordResDto(" +
-                        "e.id, CONCAT(d.firstName, ' ', d.lastName), e.hiredDate, d.pesel, d.emailAddress," +
-                        "CONCAT('+', d.phoneAreaCode, ' ', SUBSTRING(d.phoneNumber, 1, 3), ' '," +
-                        "SUBSTRING(d.phoneNumber, 4, 3), ' ', SUBSTRING(d.phoneNumber, 7, 3)), d.gender" +
-                        ") FROM EmployerEntity e " +
-                    "INNER JOIN e.userDetails d INNER JOIN e.role r " +
-                    "WHERE r.id <> 2 AND " + filterData.getSearchColumn() + " LIKE :search " +
-                    "ORDER BY " + sorterData.getJpql();
-                final List<EmployerRecordResDto> employersList = session
-                    .createQuery(jpqlFindAllEmployers, EmployerRecordResDto.class)
-                    .setParameter("search", "%" + filterData.getSearchText() + "%")
-                    .setFirstResult((page - 1) * total)
-                    .setMaxResults(total)
-                    .getResultList();
+                final List<EmployerRecordResDto> employersList = employerDao
+                    .findAllPageableEmployersRecords(filterData, sorterData, page, total);
 
                 session.getTransaction().commit();
                 req.setAttribute("pagesData", pagination);

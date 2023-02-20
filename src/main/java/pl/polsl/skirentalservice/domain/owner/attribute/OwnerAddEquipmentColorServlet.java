@@ -24,6 +24,7 @@ import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 
 import pl.polsl.skirentalservice.core.ValidatorBean;
+import pl.polsl.skirentalservice.dao.equipment_color.*;
 import pl.polsl.skirentalservice.entity.EquipmentColorEntity;
 import pl.polsl.skirentalservice.dto.attribute.AttributeValidatorPayloadDto;
 
@@ -60,14 +61,11 @@ public class OwnerAddEquipmentColorServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
+                final IEquipmentColorDao equipmentDetailsDao = new EquipmentColorDao(session);
 
-                final String jpqlFindColorAlreadyExist =
-                    "SELECT COUNT(c.id) > 0 FROM EquipmentColorEntity c WHERE LOWER(c.name) = LOWER(:name)";
-                final Boolean colorAlreadyExist = session.createQuery(jpqlFindColorAlreadyExist, Boolean.class)
-                    .setParameter("name", payload.getReqDto().getName())
-                    .getSingleResult();
-                if (colorAlreadyExist) throw new EquipmentColorAlreadyExistException();
-
+                if (equipmentDetailsDao.checkIfEquipmentColorExistByName(payload.getReqDto().getName())) {
+                    throw new EquipmentColorAlreadyExistException();
+                }
                 final EquipmentColorEntity colorEntity = new EquipmentColorEntity(payload.getReqDto().getName());
                 session.persist(colorEntity);
 

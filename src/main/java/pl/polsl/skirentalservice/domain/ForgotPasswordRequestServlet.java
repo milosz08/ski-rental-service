@@ -29,6 +29,7 @@ import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.entity.*;
 import pl.polsl.skirentalservice.core.mail.*;
+import pl.polsl.skirentalservice.dao.employer.*;
 import pl.polsl.skirentalservice.dto.change_password.*;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
@@ -80,25 +81,11 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
+                final IEmployerDao employerDao = new EmployerDao(session);
 
-                final String jpqlFindEmployer =
-                    "SELECT COUNT(*) > 0 FROM EmployerEntity e " +
-                    "INNER JOIN e.userDetails d " +
-                    "WHERE e.login = :loginOrEmail OR d.emailAddress = :loginOrEmail";
-                final boolean employerExist = session.createQuery(jpqlFindEmployer, Boolean.class)
-                    .setParameter("loginOrEmail", reqDto.getLoginOrEmail())
-                    .getSingleResult();
-                if (!employerExist) throw new UserNotFoundException(reqDto, LOGGER);
-
-                final String jpqlEmployerDetails =
-                    "SELECT new pl.polsl.skirentalservice.dto.change_password.EmployerDetailsDto(" +
-                        "e.id, e.login, CONCAT(d.firstName, ' ', d.lastName), d.emailAddress " +
-                        ") FROM EmployerEntity e " +
-                    "INNER JOIN e.userDetails d " +
-                    "WHERE e.login = :loginOrEmail OR d.emailAddress = :loginOrEmail";
-                final var employer = session.createQuery(jpqlEmployerDetails, EmployerDetailsDto.class)
-                    .setParameter("loginOrEmail", reqDto.getLoginOrEmail())
-                    .getSingleResultOrNull();
+                final var employer = employerDao.findEmployerDetails(reqDto.getLoginOrEmail()).orElseThrow(() -> {
+                    throw new UserNotFoundException(reqDto, LOGGER);
+                });
 
                 final String token = randomAlphanumeric(10);
                 final EmployerEntity employerEntity = session.getReference(EmployerEntity.class, employer.getId());

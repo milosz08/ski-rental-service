@@ -25,6 +25,7 @@ import java.io.IOException;
 
 import pl.polsl.skirentalservice.paging.sorter.*;
 import pl.polsl.skirentalservice.paging.filter.*;
+import pl.polsl.skirentalservice.dao.equipment.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.paging.pagination.ServletPagination;
@@ -87,31 +88,14 @@ public class CommonEquipmentsServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final String jpqlFindAll =
-                    "SELECT COUNT(e.id) FROM EquipmentEntity e " +
-                    "INNER JOIN e.equipmentType t " +
-                    "WHERE " + filterData.getSearchColumn() + " LIKE :search ";
-                final Long totalEquipments = session.createQuery(jpqlFindAll, Long.class)
-                    .setParameter("search", "%" + filterData.getSearchText() + "%")
-                    .getSingleResult();
+                final IEquipmentDao equipmentDao = new EquipmentDao(session);
 
+                final Long totalEquipments = equipmentDao.findAllEquipmentsCount(filterData);
                 final ServletPagination pagination = new ServletPagination(page, total, totalEquipments);
                 if (pagination.checkIfIsInvalid()) throw new RuntimeException();
 
-                final String jpqlFindAllEquipments =
-                    "SELECT new pl.polsl.skirentalservice.dto.equipment.EquipmentRecordResDto(" +
-                        "e.id, e.name, t.name, e.barcode, e.availableCount, e.pricePerHour, e.priceForNextHour," +
-                        "e.pricePerDay, e.valueCost" +
-                    ") FROM EquipmentEntity e " +
-                    "INNER JOIN e.equipmentType t " +
-                    "WHERE " + filterData.getSearchColumn() + " LIKE :search " +
-                    "ORDER BY " + sorterData.getJpql();
-                final List<EquipmentRecordResDto> equipmentsList = session
-                    .createQuery(jpqlFindAllEquipments, EquipmentRecordResDto.class)
-                    .setParameter("search", "%" + filterData.getSearchText() + "%")
-                    .setFirstResult((page - 1) * total)
-                    .setMaxResults(total)
-                    .getResultList();
+                final List<EquipmentRecordResDto> equipmentsList = equipmentDao
+                    .findAllPageableEquipmentRecords(filterData, sorterData, page, total);
 
                 session.getTransaction().commit();
                 req.setAttribute("pagesData", pagination);

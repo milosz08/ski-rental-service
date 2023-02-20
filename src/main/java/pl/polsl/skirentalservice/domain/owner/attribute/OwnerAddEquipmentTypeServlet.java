@@ -25,6 +25,7 @@ import java.io.IOException;
 
 import pl.polsl.skirentalservice.dto.attribute.*;
 import pl.polsl.skirentalservice.core.ValidatorBean;
+import pl.polsl.skirentalservice.dao.equipment_type.*;
 import pl.polsl.skirentalservice.entity.EquipmentTypeEntity;
 
 import static org.apache.commons.lang3.StringUtils.*;
@@ -60,14 +61,11 @@ public class OwnerAddEquipmentTypeServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
+                final IEquipmentTypeDao equipmentDetailsDao = new EquipmentTypeDao(session);
 
-                final String jpqlFindTypeAlreadyExist =
-                    "SELECT COUNT(t.id) > 0 FROM EquipmentTypeEntity t WHERE LOWER(t.name) = LOWER(:name)";
-                final Boolean typeAlreadyExist = session.createQuery(jpqlFindTypeAlreadyExist, Boolean.class)
-                    .setParameter("name", payload.getReqDto().getName())
-                    .getSingleResult();
-                if (typeAlreadyExist) throw new EquipmentTypeAlreadyExistException();
-
+                if (equipmentDetailsDao.checkIfEquipmentTypeExistByName(payload.getReqDto().getName())) {
+                    throw new EquipmentTypeAlreadyExistException();
+                }
                 final EquipmentTypeEntity typeEntity = new EquipmentTypeEntity(payload.getReqDto().getName());
                 session.persist(typeEntity);
 

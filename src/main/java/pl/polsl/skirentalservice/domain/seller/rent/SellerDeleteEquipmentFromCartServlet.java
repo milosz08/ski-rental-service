@@ -21,6 +21,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
 import pl.polsl.skirentalservice.dto.rent.*;
+import pl.polsl.skirentalservice.dao.equipment.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 
 import java.util.List;
@@ -64,12 +65,8 @@ public class SellerDeleteEquipmentFromCartServlet extends HttpServlet {
         final String loggedUser = getLoggedUserLogin(req);
         try (final Session session = sessionFactory.openSession()) {
             try {
-                final String jpqlEquipmentDetails =
-                    "SELECT COUNT(e.id) > 0 FROM EquipmentEntity e INNER JOIN e.equipmentType t WHERE e.id = :id";
-                final Boolean equipmentIsExist = session.createQuery(jpqlEquipmentDetails, Boolean.class)
-                    .setParameter("id", equipmentId)
-                    .getSingleResult();
-                if (!equipmentIsExist) throw new EquipmentNotFoundException(equipmentId);
+                final IEquipmentDao equipmentDao = new EquipmentDao(session);
+                if (!equipmentDao.checkIfEquipmentExist(equipmentId)) throw new EquipmentNotFoundException(equipmentId);
 
                 final CartSingleEquipmentDataDto cartData = rentData.getEquipments().stream()
                     .filter(e -> e.getId().toString().equals(equipmentId)).findFirst()

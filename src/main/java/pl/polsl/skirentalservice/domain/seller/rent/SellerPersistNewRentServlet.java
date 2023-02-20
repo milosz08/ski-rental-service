@@ -27,6 +27,8 @@ import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.entity.*;
 import pl.polsl.skirentalservice.dto.rent.*;
 import pl.polsl.skirentalservice.core.mail.*;
+import pl.polsl.skirentalservice.dao.employer.*;
+import pl.polsl.skirentalservice.dao.equipment.*;
 import pl.polsl.skirentalservice.pdf.RentPdfDocument;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.pdf.dto.RentPdfDocumentDataDto;
@@ -81,16 +83,15 @@ public class SellerPersistNewRentServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
+                final IEmployerDao employerDao = new EmployerDao(session);
+                final IEquipmentDao equipmentDao = new EquipmentDao(session);
+
                 final RentEntity rent = modelMapper.map(rentData, RentEntity.class);
                 rent.setEquipments(new HashSet<>());
 
                 final Set<RentEquipmentEntity> equipmentEntities = new HashSet<>();
                 for (final CartSingleEquipmentDataDto cartData : rentData.getEquipments()) {
-                    final String jpqlCheckEquipmentCount =
-                        "SELECT e.availableCount FROM EquipmentEntity e WHERE e.id = :id";
-                    final Integer eqCount = session.createQuery(jpqlCheckEquipmentCount, Integer.class)
-                        .setParameter("id", cartData.getId())
-                        .getSingleResult();
+                    final Integer eqCount = equipmentDao.findAllEquipmentsInCartCount(cartData.getId());
                     if (eqCount < parseInt(cartData.getCount())) throw new TooMuchEquipmentsException();
 
                     final RentEquipmentEntity equipment = modelMapper.map(cartData, RentEquipmentEntity.class);
@@ -102,13 +103,7 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                     equipment.setRent(rent);
                     equipmentEntities.add(equipment);
 
-                    final String jpqlDecreaseAvailableEqCount =
-                        "UPDATE EquipmentEntity e SET e.availableCount = e.availableCount - :rentedCount " +
-                        "WHERE e.id = :eid";
-                    session.createMutationQuery(jpqlDecreaseAvailableEqCount)
-                        .setParameter("eid", cartData.getId())
-                        .setParameter("rentedCount", cartData.getCount())
-                        .executeUpdate();
+                    equipmentDao.decreaseAvailableSelectedEquipmentCount(cartData.getId(), cartData.getCount());
                 }
                 rent.setId(null);
                 rent.setIssuedDateTime(parse(rentData.getIssuedDateTime().replace(' ', 'T')));
@@ -177,22 +172,13 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                 final Map<String, Object> ownerTemplateVars = new HashMap<>(templateVars);
                 ownerTemplateVars.put("employerFullName", loggedEmployer.getFullName());
 
-                final String jpqlFindAllOwners =
-                    "SELECT new pl.polsl.skirentalservice.dto.OwnerMailPayloadDto(" +
-                        "CONCAT(d.firstName, ' ', d.lastName), d.emailAddress" +
-                    ") FROM EmployerEntity e " +
-                    "INNER JOIN e.userDetails d INNER JOIN e.role r WHERE r.alias = 'K'";
-                final List<OwnerMailPayloadDto> allOwnersEmails = session
-                    .createQuery(jpqlFindAllOwners, OwnerMailPayloadDto.class)
-                    .getResultList();
-
                 final MailRequestPayload ownerPayload = MailRequestPayload.builder()
                     .subject(emailTopic)
                     .templateName("add-new-rent-owner.template.ftl")
                     .templateVars(ownerTemplateVars)
                     .attachmentsPaths(Set.of(rentPdfDocument.getPath()))
                     .build();
-                for (final OwnerMailPayloadDto owner : allOwnersEmails) {
+                for (final OwnerMailPayloadDto owner : employerDao.findAllEmployersMailSenders()) {
                     ownerPayload.setMessageResponder(owner.getFullName());
                     mailSocket.sendMessage(owner.getEmail(), ownerPayload, req);
                 }

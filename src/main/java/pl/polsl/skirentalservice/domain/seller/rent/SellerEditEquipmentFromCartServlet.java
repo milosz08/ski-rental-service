@@ -22,6 +22,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
 import pl.polsl.skirentalservice.dto.rent.*;
+import pl.polsl.skirentalservice.dao.equipment.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.core.ValidatorBean;
 
@@ -80,19 +81,11 @@ public class SellerEditEquipmentFromCartServlet extends HttpServlet {
         }
         try (final Session session = sessionFactory.openSession()) {
             try {
-                final String jpqlEquipmentDetails =
-                    "SELECT new pl.polsl.skirentalservice.dto.rent.EquipmentRentRecordResDto(" +
-                        "e.id, e.name, t.name, e.model, e.barcode, e.availableCount, e.pricePerHour," +
-                        "e.priceForNextHour, e.pricePerDay, ''" +
-                    ") FROM EquipmentEntity e " +
-                    "INNER JOIN e.equipmentType t " +
-                    "WHERE e.id = :id";
-                final EquipmentRentRecordResDto equipmentDetails = session
-                    .createQuery(jpqlEquipmentDetails, EquipmentRentRecordResDto.class)
-                    .setParameter("id", equipmentId)
-                    .getSingleResultOrNull();
-                if (isNull(equipmentDetails)) throw new EquipmentNotFoundException(equipmentId);
+                final IEquipmentDao equipmentDao = new EquipmentDao(session);
 
+                final var equipmentDetails = equipmentDao.findEquipmentDetails(equipmentId).orElseThrow(() -> {
+                    throw new EquipmentNotFoundException(equipmentId);
+                });
                 final CartSingleEquipmentDataDto cartData = rentData.getEquipments().stream()
                     .filter(e -> e.getId().equals(equipmentDetails.getId())).findFirst()
                     .orElseThrow(() -> { throw new EquipmentInCartNotFoundException(); });

@@ -23,9 +23,9 @@ import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dao.equipment_color.*;
 import pl.polsl.skirentalservice.dto.attribute.AttributeModalResDto;
 
-import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import static pl.polsl.skirentalservice.util.Utils.*;
@@ -60,30 +60,26 @@ public class OwnerDeleteEquipmentColorServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
+                final IEquipmentColorDao equipmentDetailsDao = new EquipmentColorDao(session);
 
-                final String jqplFindNameOfDeletingColor = "SELECT c.name FROM EquipmentColorEntity c WHERE c.id = :id";
-                final String getDeletedName = session.createQuery(jqplFindNameOfDeletingColor, String.class)
-                    .setParameter("id", colorId).getSingleResultOrNull();
-                if (isNull(getDeletedName)) throw new EquipmentColorNotFoundException();
+                final String deletedColor = equipmentDetailsDao.getEquipmentColorNameById(colorId).orElseThrow(() -> {
+                    throw new EquipmentColorNotFoundException();
+                });
 
                 resDto.getActiveFirstPage().setActive(false);
                 resDto.getActiveSecondPage().setActive(true);
 
-                final String jpqlFindColorHasConnections =
-                    "SELECT COUNT(e.id) > 0 FROM EquipmentEntity e INNER JOIN e.equipmentColor c WHERE c.id = :id";
-                final Boolean attributeHasConnections = session.createQuery(jpqlFindColorHasConnections, Boolean.class)
-                    .setParameter("id", colorId)
-                    .getSingleResult();
-                if (attributeHasConnections) throw new EquipmentColorHasConnectionsException();
+                if (equipmentDetailsDao.checkIfEquipmentColorHasAnyConnections(colorId)) {
+                    throw new EquipmentColorHasConnectionsException();
+                }
+                equipmentDetailsDao.deleteEquipmentColorById(colorId);
 
-                session.createMutationQuery("DELETE EquipmentColorEntity c WHERE c.id = :id")
-                    .setParameter("id", colorId).executeUpdate();
                 alert.setType(INFO);
                 alert.setMessage(
-                    "Usuwanie koloru sprzętu narciarskiego: <strong>" + getDeletedName + "</strong> zakończone sukcesem."
+                    "Usuwanie koloru sprzętu narciarskiego: <strong>" + deletedColor + "</strong> zakończone sukcesem."
                 );
                 session.getTransaction().commit();
-                LOGGER.info("Successful deleted equipment color by: {}. Color: {}", loggedUser, getDeletedName);
+                LOGGER.info("Successful deleted equipment color by: {}. Color: {}", loggedUser, deletedColor);
             } catch (RuntimeException ex) {
                 onHibernateException(session, LOGGER, ex);
             }

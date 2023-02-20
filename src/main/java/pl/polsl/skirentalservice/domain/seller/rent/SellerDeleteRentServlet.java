@@ -24,10 +24,11 @@ import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 
 import pl.polsl.skirentalservice.entity.*;
+import pl.polsl.skirentalservice.dao.equipment.*;
 import pl.polsl.skirentalservice.core.ConfigBean;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.exception.NotFoundException;
 import pl.polsl.skirentalservice.pdf.RentPdfDocument;
+import pl.polsl.skirentalservice.exception.NotFoundException;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.math.NumberUtils.toLong;
@@ -60,6 +61,7 @@ public class SellerDeleteRentServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
+                final IEquipmentDao equipmentDao = new EquipmentDao(session);
 
                 final RentEntity rentEntity = session.getReference(RentEntity.class, rentId);
                 if (isNull(rentEntity)) throw new NotFoundException.RentNotFoundException();
@@ -69,13 +71,8 @@ public class SellerDeleteRentServlet extends HttpServlet {
                 );
                 for (final RentEquipmentEntity equipment : rentEntity.getEquipments()) {
                     if (isNull(equipment.getEquipment())) continue;
-                    final String jpqlIncreaseEquipmentCount =
-                        "UPDATE EquipmentEntity e SET e.availableCount = e.availableCount + :rentedCount " +
-                        "WHERE e.id = :eid";
-                    session.createMutationQuery(jpqlIncreaseEquipmentCount)
-                        .setParameter("eid", equipment.getEquipment().getId())
-                        .setParameter("rentedCount", equipment.getCount())
-                        .executeUpdate();
+                    equipmentDao.increaseAvailableSelectedEquipmentCount(equipment.getEquipment().getId(),
+                        equipment.getCount());
                 }
 
                 final RentPdfDocument rentPdfDocument = new RentPdfDocument(config.getUploadsDir(),

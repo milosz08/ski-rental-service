@@ -23,9 +23,9 @@ import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dao.equipment_type.*;
 import pl.polsl.skirentalservice.dto.attribute.AttributeModalResDto;
 
-import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 import static pl.polsl.skirentalservice.util.Utils.*;
@@ -60,30 +60,26 @@ public class OwnerDeleteEquipmentTypeServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
+                final IEquipmentTypeDao equipmentDetailsDao = new EquipmentTypeDao(session);
 
-                final String jqplFindNameOfDeletingType = "SELECT t.name FROM EquipmentTypeEntity t WHERE t.id = :id";
-                final String getDeletedName = session.createQuery(jqplFindNameOfDeletingType, String.class)
-                    .setParameter("id", typeId).getSingleResultOrNull();
-                if (isNull(getDeletedName)) throw new EquipmentTypeNotFoundException();
+                final String deletedType = equipmentDetailsDao.getEquipmentTypeNameById(typeId).orElseThrow(() -> {
+                    throw new EquipmentTypeNotFoundException();
+                });
 
                 resDto.getActiveFirstPage().setActive(false);
                 resDto.getActiveSecondPage().setActive(true);
 
-                final String jpqlFindTypeHasConnections =
-                    "SELECT COUNT(e.id) > 0 FROM EquipmentEntity e INNER JOIN e.equipmentType t WHERE t.id = :id";
-                final Boolean attributeHasConnections = session.createQuery(jpqlFindTypeHasConnections, Boolean.class)
-                    .setParameter("id", typeId)
-                    .getSingleResult();
-                if (attributeHasConnections) throw new EquipmentTypeHasConnectionsException();
+                if (equipmentDetailsDao.checkIfEquipmentTypeHasAnyConnections(typeId)) {
+                    throw new EquipmentTypeHasConnectionsException();
+                }
+                equipmentDetailsDao.deleteEquipmentTypeById(typeId);
 
-                session.createMutationQuery("DELETE EquipmentTypeEntity e WHERE e.id = :id")
-                    .setParameter("id", typeId).executeUpdate();
                 alert.setType(INFO);
                 alert.setMessage(
-                    "Usuwanie typu sprzętu narciarskiego: <strong>" + getDeletedName + "</strong> zakończone sukcesem."
+                    "Usuwanie typu sprzętu narciarskiego: <strong>" + deletedType + "</strong> zakończone sukcesem."
                 );
                 session.getTransaction().commit();
-                LOGGER.info("Successful deleted equipment type by: {}. Type: {}", loggedUser, getDeletedName);
+                LOGGER.info("Successful deleted equipment type by: {}. Type: {}", loggedUser, deletedType);
             } catch (RuntimeException ex) {
                 onHibernateException(session, LOGGER, ex);
             }

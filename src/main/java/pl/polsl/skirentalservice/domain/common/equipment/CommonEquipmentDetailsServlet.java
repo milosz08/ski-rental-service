@@ -23,11 +23,9 @@ import jakarta.servlet.annotation.WebServlet;
 
 import java.io.IOException;
 
+import pl.polsl.skirentalservice.dao.equipment.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
-import pl.polsl.skirentalservice.dto.equipment.EquipmentDetailsResDto;
-
-import static java.util.Objects.isNull;
 
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
@@ -55,26 +53,12 @@ public class CommonEquipmentDetailsServlet extends HttpServlet {
         final AlertTupleDto alert = new AlertTupleDto(true);
         try (final Session session = sessionFactory.openSession()) {
             try {
-                session.beginTransaction();
+                final IEquipmentDao equipmentDao = new EquipmentDao(session);
 
-                final String jpqlFindEquipmentDetails =
-                    "SELECT new pl.polsl.skirentalservice.dto.equipment.EquipmentDetailsResDto(" +
-                        "e.id, e.name, t.name, e.model, e.gender, e.barcode," +
-                        "CASE WHEN e.size IS NULL THEN '<i>brak danych</i>' ELSE CAST(e.size AS string) END," +
-                        "b.name, c.name, CONCAT(e.availableCount, '/', e.countInStore)," +
-                        "e.countInStore - e.availableCount, e.pricePerHour, e.priceForNextHour," +
-                        "e.pricePerDay, e.valueCost," +
-                        "CASE WHEN e.description IS NULL THEN '<i>brak danych</i>' ELSE e.description END" +
-                    ") FROM EquipmentEntity e " +
-                    "INNER JOIN e.equipmentType t INNER JOIN e.equipmentBrand b INNER JOIN e.equipmentColor c " +
-                    "WHERE e.id = :eid";
-                final EquipmentDetailsResDto equipmentDetails = session
-                    .createQuery(jpqlFindEquipmentDetails, EquipmentDetailsResDto.class)
-                    .setParameter("eid", equipmentId)
-                    .getSingleResultOrNull();
-                if (isNull(equipmentDetails)) throw new EquipmentNotFoundException(equipmentId);
+                final var equipmentDetails = equipmentDao.findEquipmentDetailsPage(equipmentId).orElseThrow(() -> {
+                    throw new EquipmentNotFoundException(equipmentId);
+                });
 
-                session.getTransaction().commit();
                 req.setAttribute("equipmentData", equipmentDetails);
                 req.setAttribute("title", COMMON_EQUIPMENT_DETAILS_PAGE.getName());
                 req.getRequestDispatcher("/WEB-INF/pages/" + userDataDto.getRoleEng() + "/equipment/" +

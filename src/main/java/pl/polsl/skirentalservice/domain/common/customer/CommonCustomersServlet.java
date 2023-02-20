@@ -20,11 +20,12 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
+import pl.polsl.skirentalservice.dao.customer.*;
 import pl.polsl.skirentalservice.paging.filter.*;
 import pl.polsl.skirentalservice.paging.sorter.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
-import pl.polsl.skirentalservice.dto.employer.EmployerRecordResDto;
+import pl.polsl.skirentalservice.dto.customer.CustomerRecordResDto;
 import pl.polsl.skirentalservice.paging.pagination.ServletPagination;
 
 import java.util.*;
@@ -93,32 +94,14 @@ public class CommonCustomersServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final String jpqlFindAll =
-                    "SELECT COUNT(c.id) FROM CustomerEntity c " +
-                    "INNER JOIN c.userDetails d INNER JOIN c.locationAddress a " +
-                    "WHERE " + filterData.getSearchColumn() + " LIKE :search";
-                final Long totalEmployers = session.createQuery(jpqlFindAll, Long.class)
-                    .setParameter("search", "%" + filterData.getSearchText() + "%")
-                    .getSingleResult();
+                final ICustomerDao customerDao = new CustomerDao(session);
 
-                final ServletPagination pagination = new ServletPagination(page, total, totalEmployers);
+                final Long totalCustomers = customerDao.findAllCustomersCount(filterData);
+                final ServletPagination pagination = new ServletPagination(page, total, totalCustomers);
                 if (pagination.checkIfIsInvalid()) throw new RuntimeException();
 
-                final String jpqlFindAllCustomers =
-                    "SELECT new pl.polsl.skirentalservice.dto.customer.CustomerRecordResDto(" +
-                        "c.id, CONCAT(d.firstName, ' ', d.lastName), d.emailAddress, d.pesel," +
-                        "CONCAT('+', d.phoneAreaCode, ' ', SUBSTRING(d.phoneNumber, 1, 3), ' '," +
-                        "SUBSTRING(d.phoneNumber, 4, 3), ' ', SUBSTRING(d.phoneNumber, 7, 3)), " + addressColumn +
-                    ") FROM CustomerEntity c " +
-                    "INNER JOIN c.userDetails d INNER JOIN c.locationAddress a " +
-                    "WHERE " + filterData.getSearchColumn() + " LIKE :search " +
-                    "ORDER BY " + sorterData.getJpql();
-                final List<EmployerRecordResDto> customersList = session
-                    .createQuery(jpqlFindAllCustomers, EmployerRecordResDto.class)
-                    .setParameter("search", "%" + filterData.getSearchText() + "%")
-                    .setFirstResult((page - 1) * total)
-                    .setMaxResults(total)
-                    .getResultList();
+                final List<CustomerRecordResDto> customersList = customerDao
+                    .findAllPageableCustomers(filterData, sorterData, page, total, addressColumn);
 
                 session.getTransaction().commit();
                 req.setAttribute("pagesData", pagination);

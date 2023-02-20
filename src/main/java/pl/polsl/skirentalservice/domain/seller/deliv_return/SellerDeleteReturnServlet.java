@@ -22,6 +22,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
 import pl.polsl.skirentalservice.entity.*;
+import pl.polsl.skirentalservice.dao.rent.*;
+import pl.polsl.skirentalservice.dao.equipment.*;
 import pl.polsl.skirentalservice.core.ConfigBean;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.pdf.ReturnPdfDocument;
@@ -66,25 +68,18 @@ public class SellerDeleteReturnServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
+                final IEquipmentDao equipmentDao = new EquipmentDao(session);
+                final IRentDao rentDao = new RentDao(session);
+
                 final RentReturnEntity rentReturn = session.getReference(RentReturnEntity.class, returnId);
                 if (isNull(rentReturn)) throw new ReturnNotFoundException();
 
-                final String jpqlChangeRentStatus = "UPDATE RentEntity r SET r.status = :rstat WHERE r.id = :rentid";
-                session.createMutationQuery(jpqlChangeRentStatus)
-                    .setParameter("rstat", RENTED).setParameter("rentid", rentReturn.getRent().getId())
-                    .executeUpdate();
-
+                rentDao.updateRentStatus(RENTED, rentReturn.getRent().getId());
                 for (final RentEquipmentEntity equipment : rentReturn.getRent().getEquipments()) {
                     if (isNull(equipment.getEquipment())) continue;
-                    final String jpqlIncreaseEquipmentCount =
-                        "UPDATE EquipmentEntity e SET e.availableCount = e.availableCount - :rentedCount " +
-                        "WHERE e.id = :eid";
-                    session.createMutationQuery(jpqlIncreaseEquipmentCount)
-                        .setParameter("eid", equipment.getEquipment().getId())
-                        .setParameter("rentedCount", equipment.getCount())
-                        .executeUpdate();
+                    equipmentDao.decreaseAvailableSelectedEquipmentCount(equipment.getEquipment().getId(),
+                        equipment.getCount());
                 }
-
                 final ReturnPdfDocument returnPdfDocument = new ReturnPdfDocument(config.getUploadsDir(),
                     rentReturn.getIssuedIdentifier());
                 returnPdfDocument.remove();

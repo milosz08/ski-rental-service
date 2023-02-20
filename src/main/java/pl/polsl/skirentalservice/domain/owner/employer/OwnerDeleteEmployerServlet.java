@@ -24,14 +24,11 @@ import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 
 import pl.polsl.skirentalservice.ssh.*;
+import pl.polsl.skirentalservice.dao.employer.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.entity.EmployerEntity;
 import pl.polsl.skirentalservice.core.ssh.SshSocketBean;
 
-import static java.util.Objects.isNull;
-
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
-import static pl.polsl.skirentalservice.util.RentStatus.RETURNED;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
@@ -59,22 +56,12 @@ public class OwnerDeleteEmployerServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
+                final IEmployerDao employerDao = new EmployerDao(session);
 
-                final String jpqlFindEmployer =
-                    "SELECT e FROM EmployerEntity e INNER JOIN e.role r " +
-                    "INNER JOIN e.userDetails d WHERE e.id = :employerId AND r.id <> 2";
-                final EmployerEntity deletingEmployer = session.createQuery(jpqlFindEmployer, EmployerEntity.class)
-                    .setParameter("employerId", userId)
-                    .getSingleResultOrNull();
-                if (isNull(deletingEmployer)) throw new UserNotFoundException(userId);
-
-                final String jpqlCheckIfHasAnyRents =
-                    "SELECT COUNT(r.id) > 0 FROM RentEntity r INNER JOIN r.employer e " +
-                    "WHERE e.id = :eid AND r.status <> :st";
-                final Boolean hasAnyRents = session.createQuery(jpqlCheckIfHasAnyRents, Boolean.class)
-                    .setParameter("eid", userId).setParameter("st", RETURNED)
-                    .getSingleResult();
-                if (hasAnyRents) throw new EmployerHasOpenedRentsException();
+                final var deletingEmployer = employerDao.findEmployerBasedId(userId).orElseThrow(() -> {
+                    throw new UserNotFoundException(userId);
+                });
+                if (employerDao.checkIfEmployerHasOpenedRents(userId)) throw new EmployerHasOpenedRentsException();
 
                 final IExecCommandPerformer commandPerformer = new ExecCommandPerformer(sshSocket);
                 commandPerformer.deleteMailbox(deletingEmployer.getEmailAddress());

@@ -24,6 +24,8 @@ import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 
 import pl.polsl.skirentalservice.core.*;
+import pl.polsl.skirentalservice.dao.employer.*;
+import pl.polsl.skirentalservice.dao.ota_token.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.change_password.*;
 import pl.polsl.skirentalservice.exception.CredentialException.*;
@@ -57,19 +59,11 @@ public class ChangeForgottenPasswordServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
+                final IOtaTokenDao otaTokenDao = new OtaTokenDao(session);
 
-                final String jpqlFindToken =
-                    "SELECT new pl.polsl.skirentalservice.dto.change_password.ChangePasswordEmployerDetailsDto(" +
-                        "e.id, t.id, CONCAT(d.firstName, ' ', d.lastName)" +
-                    ") FROM OtaTokenEntity t " +
-                    "INNER JOIN t.employer e " +
-                    "INNER JOIN e.userDetails d " +
-                    "WHERE t.otaToken = :token AND t.isUsed = false AND t.expiredDate >= NOW()";
-                final var details = session.createQuery(jpqlFindToken, ChangePasswordEmployerDetailsDto.class)
-                    .setParameter("token", token)
-                    .getSingleResultOrNull();
-                if (isNull(details)) throw new OtaTokenNotFoundException(req, token, LOGGER);
-
+                final var details = otaTokenDao.findTokenRelatedToEmployer(token).orElseThrow(() -> {
+                    throw new OtaTokenNotFoundException(req, token, LOGGER);
+                });
                 req.setAttribute("employerData", details);
                 session.getTransaction().commit();
             } catch (RuntimeException ex) {
@@ -109,22 +103,14 @@ public class ChangeForgottenPasswordServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final String jpqlFindToken =
-                    "SELECT new pl.polsl.skirentalservice.dto.change_password.TokenDetailsDto(e.id, t.id) " +
-                    "FROM OtaTokenEntity t INNER JOIN t.employer e " +
-                    "WHERE t.otaToken = :token AND t.isUsed = false AND t.expiredDate >= NOW()";
-                final var details = session.createQuery(jpqlFindToken, TokenDetailsDto.class)
-                    .setParameter("token", token)
-                    .getSingleResultOrNull();
-                if (isNull(details)) throw new OtaTokenNotFoundException(req, token, LOGGER);
+                final IOtaTokenDao otaTokenDao = new OtaTokenDao(session);
+                final IEmployerDao employerDao = new EmployerDao(session);
 
-                session.createMutationQuery("UPDATE EmployerEntity e SET e.password = :password WHERE e.id = :employerId")
-                    .setParameter("password", generateHash(reqDto.getPassword()))
-                    .setParameter("employerId", details.getId())
-                    .executeUpdate();
-                session.createMutationQuery("UPDATE OtaTokenEntity t SET t.isUsed = true WHERE t.id = :tokenId")
-                    .setParameter("tokenId", details.getTokenId())
-                    .executeUpdate();
+                final var details = otaTokenDao.findTokenDetails(token).orElseThrow(() -> {
+                    throw new OtaTokenNotFoundException(req, token, LOGGER);
+                });
+                employerDao.updateEmployerPassword(generateHash(reqDto.getPassword()), details.getId());
+                otaTokenDao.manuallyExpiredOtaToken(details.getTokenId());
 
                 session.getTransaction().commit();
                 alert.setMessage("Hasło do Twojego konta zostało pomyślnie zmienione.");

@@ -24,6 +24,7 @@ import jakarta.servlet.annotation.WebServlet;
 import java.io.File;
 import java.io.IOException;
 
+import pl.polsl.skirentalservice.dao.equipment.*;
 import pl.polsl.skirentalservice.core.ConfigBean;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.entity.EquipmentEntity;
@@ -33,7 +34,6 @@ import static java.util.Objects.isNull;
 
 import static pl.polsl.skirentalservice.util.Utils.*;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
-import static pl.polsl.skirentalservice.util.RentStatus.RETURNED;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
 import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
@@ -61,15 +61,11 @@ public class OwnerDeleteEquipmentServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
+                final IEquipmentDao equipmentDao = new EquipmentDao(session);
 
-                final String jpqlFindHasConnections =
-                    "SELECT COUNT(r.id) > 0 FROM RentEntity r INNER JOIN r.equipments e INNER JOIN e.equipment eq " +
-                    "WHERE eq.id = :eid AND r.status <> :rst";
-                final Boolean hasAnyConnections = session.createQuery(jpqlFindHasConnections, Boolean.class)
-                    .setParameter("eid", equipmentId).setParameter("rst", RETURNED)
-                    .getSingleResult();
-                if (hasAnyConnections) throw new EquipmenHasOpenedRentsException();
-
+                if (equipmentDao.checkIfEquipmentHasOpenedRents(equipmentId)) {
+                    throw new EquipmenHasOpenedRentsException();
+                }
                 final EquipmentEntity equipmentEntity = session.getReference(EquipmentEntity.class, equipmentId);
                 if (isNull(equipmentEntity)) throw new EquipmentNotFoundException(equipmentId);
 

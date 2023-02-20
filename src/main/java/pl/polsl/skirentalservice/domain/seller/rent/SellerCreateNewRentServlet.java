@@ -22,10 +22,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
 import pl.polsl.skirentalservice.dto.rent.*;
+import pl.polsl.skirentalservice.dao.customer.*;
+import pl.polsl.skirentalservice.dao.employer.*;
+import pl.polsl.skirentalservice.dao.equipment.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.core.ValidatorBean;
-import pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto;
-import pl.polsl.skirentalservice.dto.employer.EmployerDetailsResDto;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -38,11 +40,11 @@ import static pl.polsl.skirentalservice.util.Utils.*;
 import static pl.polsl.skirentalservice.util.UserRole.*;
 import static pl.polsl.skirentalservice.util.SessionAlert.*;
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
+import static pl.polsl.skirentalservice.util.SessionAttribute.*;
 import static pl.polsl.skirentalservice.exception.DateException.*;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
 import static pl.polsl.skirentalservice.util.PageTitle.SELLER_CREATE_NEW_RENT_PAGE;
-import static pl.polsl.skirentalservice.util.SessionAttribute.INMEMORY_NEW_RENT_DATA;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -65,6 +67,8 @@ public class SellerCreateNewRentServlet extends HttpServlet {
         var resDto = getFromSessionAndDestroy(req, getClass().getName(), NewRentDetailsResDto.class);
 
         var inMemoryRentData = (InMemoryRentDataDto) httpSession.getAttribute(INMEMORY_NEW_RENT_DATA.getName());
+        var loggedUser = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
+
         if (!isNull(inMemoryRentData) && !inMemoryRentData.getCustomerId().equals(customerId)) {
             alert.setActive(true);
             alert.setMessage(
@@ -81,6 +85,10 @@ public class SellerCreateNewRentServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
+                final ICustomerDao customerDao = new CustomerDao(session);
+                final IEmployerDao employerDao = new EmployerDao(session);
+                final IEquipmentDao equipmentDao = new EquipmentDao(session);
+
                 final String getAllCounts = "SELECT SUM(e.availableCount) FROM EquipmentEntity e";
                 final Long isSomeEquipmentsAvaialble = session.createQuery(getAllCounts, Long.class)
                     .getSingleResultOrNull();
@@ -92,38 +100,14 @@ public class SellerCreateNewRentServlet extends HttpServlet {
                     res.sendRedirect("/seller/customers");
                     return;
                 }
-                final String jpqlFindCustomerDetails =
-                    "SELECT new pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto(" +
-                        "c.id, CONCAT(d.firstName, ' ', d.lastName), d.emailAddress, CAST(d.bornDate AS string)," +
-                        "d.pesel, CONCAT('+', d.phoneAreaCode, ' '," +
-                        "SUBSTRING(d.phoneNumber, 1, 3), ' ', SUBSTRING(d.phoneNumber, 4, 3), ' '," +
-                        "SUBSTRING(d.phoneNumber, 7, 3)), YEAR(NOW()) - YEAR(d.bornDate)," +
-                        "d.gender, CONCAT(a.postalCode, ' ', a.city)," +
-                        "CONCAT('ul. ', a.street, ' ', a.buildingNr, IF(a.apartmentNr, CONCAT('/', a.apartmentNr), ''))" +
-                    ") FROM CustomerEntity c INNER JOIN c.userDetails d INNER JOIN c.locationAddress a " +
-                    "WHERE c.id = :uid";
-                final var customerDetails = session.createQuery(jpqlFindCustomerDetails, CustomerDetailsResDto.class)
-                    .setParameter("uid", customerId)
-                    .getSingleResultOrNull();
-                if (isNull(customerDetails)) throw new UserNotFoundException(USER);
+                final var customerDetails = customerDao.findCustomerDetails(customerId).orElseThrow(() -> {
+                    throw new UserNotFoundException(USER);
+                });
                 req.setAttribute("customerData", customerDetails);
 
-                final String jpqlFindEmployerDetails =
-                    "SELECT new pl.polsl.skirentalservice.dto.employer.EmployerDetailsResDto(" +
-                        "e.id, CONCAT(d.firstName, ' ', d.lastName), e.login, d.emailAddress, CAST(d.bornDate AS string)," +
-                        "CAST(e.hiredDate AS string), d.pesel, CONCAT('+', d.phoneAreaCode, ' '," +
-                        "SUBSTRING(d.phoneNumber, 1, 3), ' ', SUBSTRING(d.phoneNumber, 4, 3), ' '," +
-                        "SUBSTRING(d.phoneNumber, 7, 3)), YEAR(NOW()) - YEAR(d.bornDate)," +
-                        "YEAR(NOW()) - YEAR(e.hiredDate), d.gender, CONCAT(a.postalCode, ' ', a.city)," +
-                        "CAST(IF(e.firstAccess, 'nieaktywowane', 'aktywowane') AS string)," +
-                        "CAST(IF(e.firstAccess, 'text-danger', 'text-success') AS string)," +
-                        "CONCAT('ul. ', a.street, ' ', a.buildingNr, IF(a.apartmentNr, CONCAT('/', a.apartmentNr), ''))" +
-                    ") FROM EmployerEntity e INNER JOIN e.userDetails d INNER JOIN e.locationAddress a " +
-                    "WHERE e.login = :login";
-                final var employerDetails = session.createQuery(jpqlFindEmployerDetails, EmployerDetailsResDto.class)
-                    .setParameter("login", getLoggedUserLogin(req))
-                    .getSingleResultOrNull();
-                if (isNull(employerDetails)) throw new UserNotFoundException(SELLER);
+                final var employerDetails = employerDao.findEmployerPageDetails(loggedUser.getId()).orElseThrow(() -> {
+                    throw new UserNotFoundException(SELLER);
+                });
                 req.setAttribute("employerData", employerDetails);
 
                 if (isNull(inMemoryRentData)) {

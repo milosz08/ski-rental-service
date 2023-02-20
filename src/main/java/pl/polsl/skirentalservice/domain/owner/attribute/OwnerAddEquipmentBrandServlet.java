@@ -24,6 +24,7 @@ import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
 
 import pl.polsl.skirentalservice.core.ValidatorBean;
+import pl.polsl.skirentalservice.dao.equipment_brand.*;
 import pl.polsl.skirentalservice.entity.EquipmentBrandEntity;
 import pl.polsl.skirentalservice.dto.attribute.AttributeValidatorPayloadDto;
 
@@ -60,14 +61,11 @@ public class OwnerAddEquipmentBrandServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
+                final IEquipmentBrandDao equipmentDetailsDao = new EquipmentBrandDao(session);
 
-                final String jpqlFindBrandAlreadyExist =
-                    "SELECT COUNT(b.id) > 0 FROM EquipmentBrandEntity b WHERE LOWER(b.name) = LOWER(:name)";
-                final Boolean brandAlreadyExist = session.createQuery(jpqlFindBrandAlreadyExist, Boolean.class)
-                    .setParameter("name", payload.getReqDto().getName())
-                    .getSingleResult();
-                if (brandAlreadyExist) throw new EquipmentBrandAlreadyExistException();
-
+                if (!equipmentDetailsDao.checkIfEquipmentBrandExistByName(payload.getReqDto().getName())) {
+                    throw new EquipmentBrandAlreadyExistException();
+                }
                 final EquipmentBrandEntity brandEntity = new EquipmentBrandEntity(payload.getReqDto().getName());
                 session.persist(brandEntity);
 

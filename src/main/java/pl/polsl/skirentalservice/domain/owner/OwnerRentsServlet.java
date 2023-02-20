@@ -20,6 +20,7 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
+import pl.polsl.skirentalservice.dao.rent.*;
 import pl.polsl.skirentalservice.paging.sorter.*;
 import pl.polsl.skirentalservice.paging.filter.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
@@ -85,36 +86,14 @@ public class OwnerRentsServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
+                final IRentDao rentDao = new RentDao(session);
 
-                final String jpqlTotalRentsCount =
-                    "SELECT COUNT(r.id) FROM RentEntity r " +
-                    "LEFT OUTER JOIN r.employer e LEFT OUTER JOIN r.customer c " +
-                    "LEFT OUTER JOIN c.userDetails d LEFT OUTER JOIN e.userDetails ed " +
-                    "WHERE " + filterData.getSearchColumn() + " LIKE :search";
-                final Long totalRents = session.createQuery(jpqlTotalRentsCount, Long.class)
-                    .setParameter("search", "%" + filterData.getSearchText() + "%")
-                    .getSingleResult();
-
+                final Long totalRents = rentDao.findAllRentsCount(filterData);
                 final ServletPagination pagination = new ServletPagination(page, total, totalRents);
                 if (pagination.checkIfIsInvalid()) throw new RuntimeException();
 
-                final String jpqlFindAllRents =
-                    "SELECT new pl.polsl.skirentalservice.dto.rent.OwnerRentRecordResDto(" +
-                        "r.id, r.issuedIdentifier, r.issuedDateTime, r.status, r.totalPrice," +
-                        "CAST((r.tax / 100) * r.totalPrice + r.totalPrice AS bigdecimal)," +
-                        "IFNULL(CONCAT(d.firstName, ' ', d.lastName), '<i>klient usunięty</i>'), c.id," +
-                        "IFNULL(CONCAT(ed.firstName, ' ', ed.lastName), '<i>pracownik usunięty</i>'), ed.id" +
-                    ") FROM RentEntity r " +
-                    "LEFT OUTER JOIN r.employer e LEFT OUTER JOIN r.customer c " +
-                    "LEFT OUTER JOIN c.userDetails d LEFT OUTER JOIN e.userDetails ed " +
-                    "WHERE " + filterData.getSearchColumn() + " LIKE :search " +
-                    "ORDER BY " + sorterData.getJpql();
-                final List<OwnerRentRecordResDto> rentsList = session
-                    .createQuery(jpqlFindAllRents, OwnerRentRecordResDto.class)
-                    .setParameter("search", "%" + filterData.getSearchText() + "%")
-                    .setFirstResult((page - 1) * total)
-                    .setMaxResults(total)
-                    .getResultList();
+                final List<OwnerRentRecordResDto> rentsList = rentDao
+                    .findAllPageableRents(filterData, sorterData, page, total);
 
                 session.getTransaction().commit();
                 req.setAttribute("pagesData", pagination);

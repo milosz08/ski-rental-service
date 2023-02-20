@@ -25,7 +25,9 @@ import jakarta.servlet.annotation.WebServlet;
 import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.entity.*;
 import pl.polsl.skirentalservice.dto.customer.*;
+import pl.polsl.skirentalservice.dao.customer.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dao.user_details.*;
 import pl.polsl.skirentalservice.core.ValidatorBean;
 
 import java.io.IOException;
@@ -70,22 +72,11 @@ public class SellerEditCustomerServlet extends HttpServlet {
             try (final Session session = sessionFactory.openSession()) {
                 try {
                     session.beginTransaction();
+                    final ICustomerDao customerDao = new CustomerDao(session);
 
-                    final String jpqlFindCustomerBaseId =
-                        "SELECT new pl.polsl.skirentalservice.dto.customer.AddEditCustomerReqDto(" +
-                            "d.firstName, d.lastName, d.pesel," +
-                            "CONCAT(SUBSTRING(d.phoneNumber, 1, 3), ' ', SUBSTRING(d.phoneNumber, 4, 3), ' '," +
-                            "SUBSTRING(d.phoneNumber, 7, 3))," +
-                            "CAST(d.bornDate AS string), d.emailAddress, a.street," +
-                            "a.buildingNr, a.apartmentNr, a.city, a.postalCode, d.gender" +
-                        ") FROM CustomerEntity c " +
-                        "INNER JOIN c.userDetails d INNER JOIN c.locationAddress a " +
-                        "WHERE c.id = :uid";
-                    final AddEditCustomerReqDto customerDetails = session
-                        .createQuery(jpqlFindCustomerBaseId, AddEditCustomerReqDto.class)
-                        .setParameter("uid", customerId)
-                        .getSingleResultOrNull();
-                    if (isNull(customerDetails)) throw new UserNotFoundException(customerId);
+                    final var customerDetails = customerDao.findCustomerEditPageDetails(customerId).orElseThrow(() -> {
+                        throw new UserNotFoundException(customerId);
+                    });
 
                     resDto = new AddEditCustomerResDto(validator, customerDetails);
                     session.getTransaction().commit();
@@ -127,36 +118,20 @@ public class SellerEditCustomerServlet extends HttpServlet {
             }
             try {
                 session.beginTransaction();
+                final IUserDetailsDao userDetailsDao = new UserDetailsDao(session);
 
                 final CustomerEntity updatableCustomer = session.get(CustomerEntity.class, customerId);
                 if (isNull(updatableCustomer)) throw new UserNotFoundException(customerId);
 
-                final String jpqlFindPesel =
-                    "SELECT COUNT(c.id) > 0 FROM CustomerEntity c INNER JOIN c.userDetails d " +
-                    "WHERE d.pesel = :pesel AND c.id <> :uid";
-                final Boolean peselExist = session.createQuery(jpqlFindPesel, Boolean.class)
-                    .setParameter("pesel", reqDto.getPesel())
-                    .setParameter("uid", customerId)
-                    .getSingleResult();
-                if (peselExist) throw new PeselAlreadyExistException(reqDto.getPesel(), USER);
-
-                final String jpqlFindPhoneNumber =
-                    "SELECT COUNT(c.id) > 0 FROM CustomerEntity c INNER JOIN c.userDetails d " +
-                    "WHERE d.phoneNumber = :phoneNumber AND c.id <> :uid";
-                final Boolean phoneNumberExist = session.createQuery(jpqlFindPhoneNumber, Boolean.class)
-                    .setParameter("phoneNumber", reqDto.getPhoneNumber())
-                    .setParameter("uid", customerId)
-                    .getSingleResult();
-                if (phoneNumberExist) throw new PhoneNumberAlreadyExistException(reqDto.getPhoneNumber(), USER);
-
-                final String jpqlFindEmailAddress =
-                    "SELECT COUNT(c.id) > 0 FROM CustomerEntity c INNER JOIN c.userDetails d " +
-                    "WHERE d.emailAddress = :emailAddress AND c.id <> :uid";
-                final Boolean emailAddressExist = session.createQuery(jpqlFindEmailAddress, Boolean.class)
-                    .setParameter("emailAddress", reqDto.getEmailAddress())
-                    .setParameter("uid", customerId)
-                    .getSingleResult();
-                if (emailAddressExist) throw new EmailAddressAlreadyExistException(reqDto.getEmailAddress(), USER);
+                if (userDetailsDao.checkIfCustomerWithSamePeselExist(reqDto.getPesel(), customerId)) {
+                    throw new PeselAlreadyExistException(reqDto.getPesel(), USER);
+                }
+                if (userDetailsDao.checkIfCustomerWithSamePhoneNumberExist(reqDto.getPhoneNumber(), customerId)) {
+                    throw new PhoneNumberAlreadyExistException(reqDto.getPhoneNumber(), USER);
+                }
+                if (userDetailsDao.checkIfCustomerWithSameEmailExist(reqDto.getEmailAddress(), customerId)) {
+                    throw new EmailAddressAlreadyExistException(reqDto.getEmailAddress(), USER);
+                }
 
                 onUpdateNullableTransactTurnOn();
                 modelMapper.map(reqDto, updatableCustomer.getUserDetails());

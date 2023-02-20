@@ -22,22 +22,21 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.annotation.WebServlet;
 
+import pl.polsl.skirentalservice.entity.*;
+import pl.polsl.skirentalservice.dao.rent.*;
+import pl.polsl.skirentalservice.dao.customer.*;
+import pl.polsl.skirentalservice.dao.equipment.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.entity.CustomerEntity;
 import pl.polsl.skirentalservice.core.mail.MailSocketBean;
 import pl.polsl.skirentalservice.dto.rent.InMemoryRentDataDto;
-import pl.polsl.skirentalservice.entity.RentEntity;
-import pl.polsl.skirentalservice.entity.RentEquipmentEntity;
 
 import java.io.IOException;
-import java.util.List;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.math.NumberUtils.toLong;
 
 import static pl.polsl.skirentalservice.util.AlertType.INFO;
 import static pl.polsl.skirentalservice.util.UserRole.SELLER;
-import static pl.polsl.skirentalservice.util.RentStatus.RETURNED;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
@@ -67,31 +66,20 @@ public class SellerDeleteCustomerServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
+                final IEquipmentDao equipmentDao = new EquipmentDao(session);
+                final ICustomerDao customerDao = new CustomerDao(session);
+                final IRentDao rentDao = new RentDao(session);
+
                 final CustomerEntity customerEntity = session.get(CustomerEntity.class, userId);
                 if (isNull(customerEntity)) throw new UserNotFoundException(SELLER);
-
-                final String jpqlCheckIfHasAnyRents =
-                    "SELECT COUNT(r.id) > 0 FROM RentEntity r INNER JOIN r.customer c " +
-                    "WHERE c.id = :cid AND r.status <> :st";
-                final Boolean hasAnyRents = session.createQuery(jpqlCheckIfHasAnyRents, Boolean.class)
-                    .setParameter("cid", userId).setParameter("st", RETURNED)
-                    .getSingleResult();
-                if (hasAnyRents) throw new CustomerHasOpenedRentsException();
-
-                final String jpqlFindAllRents =
-                    "SELECT r FROM RentEntity r INNER JOIN r.customer c WHERE c.id = :cid";
-                final List<RentEntity> findAllUserRents = session.createQuery(jpqlFindAllRents, RentEntity.class)
-                    .setParameter("cid", userId).getResultList();
-                for (final RentEntity rentEntity : findAllUserRents) {
+                if (customerDao.checkIfCustomerHasAnyActiveRents(userId)) {
+                    throw new CustomerHasOpenedRentsException();
+                }
+                for (final RentEntity rentEntity : rentDao.findAllRentsBaseCustomerId(userId)) {
                     for (final RentEquipmentEntity equipment : rentEntity.getEquipments()) {
                         if (isNull(equipment.getEquipment())) continue;
-                        final String jpqlIncreaseEquipmentCount =
-                            "UPDATE EquipmentEntity e SET e.availableCount = e.availableCount + :rentedCount " +
-                            "WHERE e.id = :eid AND e.id IS NOT NULL";
-                        session.createMutationQuery(jpqlIncreaseEquipmentCount)
-                            .setParameter("eid", equipment.getEquipment().getId())
-                            .setParameter("rentedCount", equipment.getCount())
-                            .executeUpdate();
+                        equipmentDao.increaseAvailableSelectedEquipmentCount(equipment.getEquipment().getId(),
+                            equipment.getCount());
                     }
                 }
                 final var rentData = (InMemoryRentDataDto) httpSession.getAttribute(INMEMORY_NEW_RENT_DATA.getName());

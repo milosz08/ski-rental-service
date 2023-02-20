@@ -28,9 +28,8 @@ import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.util.*;
 import pl.polsl.skirentalservice.dto.login.*;
+import pl.polsl.skirentalservice.dao.employer.*;
 import pl.polsl.skirentalservice.dto.logout.LogoutModalDto;
-
-import static java.util.Objects.isNull;
 
 import static pl.polsl.skirentalservice.util.Utils.*;
 import static pl.polsl.skirentalservice.util.SessionAttribute.*;
@@ -79,31 +78,17 @@ public class LoginServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
+                final IEmployerDao employerDao = new EmployerDao(session);
 
-                final String jpqlFindEmployer =
-                    "SELECT e.password FROM EmployerEntity e INNER JOIN e.userDetails d " +
-                    "WHERE e.login = :loginOrEmail OR d.emailAddress = :loginOrEmail";
-                final String password = session.createQuery(jpqlFindEmployer, String.class)
-                    .setParameter("loginOrEmail", reqDto.getLoginOrEmail())
-                    .getSingleResultOrNull();
-
-                if (isNull(password)) throw new UserNotFoundException(reqDto, LOGGER);
+                final String password = employerDao.findEmployerPassword(reqDto.getLoginOrEmail()).orElseThrow(() -> {
+                    throw new UserNotFoundException(reqDto, LOGGER);
+                });
                 if (!(BCrypt.verifyer().verify(reqDto.getPassword().toCharArray(), password).verified)) {
                     throw new InvalidCredentialsException(reqDto, LOGGER);
                 }
-
-                final String jpqlSelectEmployer =
-                    "SELECT new pl.polsl.skirentalservice.dto.login.LoggedUserDataDto(" +
-                        "e.id, e.login, CONCAT(d.firstName, ' ', d.lastName), r.roleName, " +
-                        "e.role.alias, e.role.roleEng, d.gender, d.emailAddress, e.firstAccess" +
-                    ") FROM EmployerEntity e " +
-                    "INNER JOIN e.role r " +
-                    "INNER JOIN e.userDetails d " +
-                    "WHERE e.login = :loginOrEmail OR d.emailAddress = :loginOrEmail";
-                final LoggedUserDataDto employer = session.createQuery(jpqlSelectEmployer, LoggedUserDataDto.class)
-                    .setParameter("loginOrEmail", reqDto.getLoginOrEmail())
-                    .getSingleResultOrNull();
-
+                final var employer = employerDao.findLoggedEmployerDetails(reqDto.getLoginOrEmail()).orElseThrow(() -> {
+                    throw new UserNotFoundException(reqDto, LOGGER);
+                });
                 session.getTransaction().commit();
                 httpSession.setAttribute(LOGGED_USER_DETAILS.getName(), employer);
                 httpSession.removeAttribute(getClass().getName());
