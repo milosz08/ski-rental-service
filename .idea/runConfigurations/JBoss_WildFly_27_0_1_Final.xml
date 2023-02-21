@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="JBoss/WildFly 27.0.1.Final" type="JBossConfiguration" factoryName="Local" APPLICATION_SERVER_NAME="JBoss/WildFly 27.0.1.Final" ALTERNATIVE_JRE_ENABLED="true" ALTERNATIVE_JRE_PATH="corretto-11">
+  <configuration default="false" name="JBoss/WildFly 27.0.1.Final" type="JBossConfiguration" factoryName="Local" APPLICATION_SERVER_NAME="JBoss/WildFly 27.0.1.Final" ALTERNATIVE_JRE_ENABLED="true" ALTERNATIVE_JRE_PATH="corretto-17">
     <option name="OPEN_IN_BROWSER" value="false" />
-    <option name="COMMON_VM_ARGUMENTS" value="-Duser.language=pl -Duser.country=PL -Dfile.encoding=UTF8 --illegal-access=warn --add-opens java.base/com.sun.net.ssl.internal.ssl=ALL-UNNAMED" />
+    <option name="COMMON_VM_ARGUMENTS" value="-Duser.language=pl -Duser.country=PL -Dfile.encoding=UTF8" />
     <option name="UPDATE_ON_FRAME_DEACTIVATION" value="true" />
     <option name="UPDATE_CLASSES_ON_FRAME_DEACTIVATION" value="true" />
     <deployment>
@@ -29,7 +29,7 @@
       </ENTRIES>
     </extension>
     <RunnerSettings RunnerId="Debug">
-      <option name="DEBUG_PORT" value="2426" />
+      <option name="DEBUG_PORT" value="7648" />
     </RunnerSettings>
     <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Cover">
       <option name="USE_ENV_VARIABLES" value="true" />

@@ -19,7 +19,7 @@ import lombok.*;
 
 @Data
 @AllArgsConstructor
-public class CustomerDetailsResDto {
+public class CustomerDetailsReturnResDto {
     private String fullName;
     private String pesel;
     private String phoneNumber;
