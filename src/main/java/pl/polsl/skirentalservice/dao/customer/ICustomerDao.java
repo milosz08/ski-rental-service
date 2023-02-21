@@ -16,7 +16,7 @@ package pl.polsl.skirentalservice.dao.customer;
 import java.util.*;
 
 import pl.polsl.skirentalservice.dto.customer.*;
-import pl.polsl.skirentalservice.paging.sorter.SorterDataDto;
+import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
 import pl.polsl.skirentalservice.dto.deliv_return.CustomerDetailsReturnResDto;
 
@@ -31,6 +31,5 @@ public interface ICustomerDao {
     Optional<AddEditCustomerReqDto> findCustomerEditPageDetails(Object customerId);
 
     Long findAllCustomersCount(FilterDataDto filterData);
-    List<CustomerRecordResDto> findAllPageableCustomers(
-        FilterDataDto filterData, SorterDataDto sorterData, int page, int total, String addressColumn);
+    List<CustomerRecordResDto> findAllPageableCustomers(PageableDto pageableDto, String addressColumn);
 }

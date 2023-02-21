@@ -20,8 +20,8 @@ import org.hibernate.Session;
 
 import pl.polsl.skirentalservice.dto.rent.*;
 import pl.polsl.skirentalservice.dto.equipment.*;
+import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
-import pl.polsl.skirentalservice.paging.sorter.SorterDataDto;
 import pl.polsl.skirentalservice.dto.deliv_return.RentReturnEquipmentRecordResDto;
 
 import static java.util.Optional.*;
@@ -245,42 +245,38 @@ public class EquipmentDao implements IEquipmentDao{
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    public List<EquipmentRecordResDto> findAllPageableEquipmentRecords(
-        FilterDataDto filterData, SorterDataDto sorterData, int page, int total
-    ) {
+    public List<EquipmentRecordResDto> findAllPageableEquipmentRecords(PageableDto pageableDto) {
         final String jpqlFindAllEquipments =
             "SELECT new pl.polsl.skirentalservice.dto.equipment.EquipmentRecordResDto(" +
                 "e.id, e.name, t.name, e.barcode, e.availableCount, e.pricePerHour, e.priceForNextHour," +
                 "e.pricePerDay, e.valueCost" +
             ") FROM EquipmentEntity e " +
             "INNER JOIN e.equipmentType t " +
-            "WHERE " + filterData.getSearchColumn() + " LIKE :search " +
-            "ORDER BY " + sorterData.getJpql();
+            "WHERE " + pageableDto.filterData().getSearchColumn() + " LIKE :search " +
+            "ORDER BY " + pageableDto.sorterData().getJpql();
         return session.createQuery(jpqlFindAllEquipments, EquipmentRecordResDto.class)
-            .setParameter("search", "%" + filterData.getSearchText() + "%")
-            .setFirstResult((page - 1) * total)
-            .setMaxResults(total)
+            .setParameter("search", "%" + pageableDto.filterData().getSearchText() + "%")
+            .setFirstResult((pageableDto.page() - 1) * pageableDto.total())
+            .setMaxResults(pageableDto.total())
             .getResultList();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    public List<EquipmentRentRecordResDto> findAllPageableEquipments(
-        FilterDataDto filterData, SorterDataDto sorterData, int page, int total
-    ) {
+    public List<EquipmentRentRecordResDto> findAllPageableEquipments(PageableDto pageableDto) {
         final String jpqlFindAllEquipments =
             "SELECT new pl.polsl.skirentalservice.dto.rent.EquipmentRentRecordResDto(" +
                 "e.id, e.name, t.name, e.model, e.barcode, e.availableCount, e.pricePerHour," +
                 "e.priceForNextHour, e.pricePerDay, ''" +
             ") FROM EquipmentEntity e " +
             "INNER JOIN e.equipmentType t " +
-            "WHERE " + filterData.getSearchColumn() + " LIKE :search GROUP BY e.id " +
-            "ORDER BY " + sorterData.getJpql();
+            "WHERE " + pageableDto.filterData().getSearchColumn() + " LIKE :search GROUP BY e.id " +
+            "ORDER BY " + pageableDto.sorterData().getJpql();
         return session.createQuery(jpqlFindAllEquipments, EquipmentRentRecordResDto.class)
-            .setParameter("search", "%" + filterData.getSearchText() + "%")
-            .setFirstResult((page - 1) * total)
-            .setMaxResults(total)
+            .setParameter("search", "%" + pageableDto.filterData().getSearchText() + "%")
+            .setFirstResult((pageableDto.page() - 1) * pageableDto.total())
+            .setMaxResults(pageableDto.total())
             .getResultList();
     }
 }

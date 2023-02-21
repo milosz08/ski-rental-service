@@ -17,8 +17,8 @@ import java.util.*;
 
 import pl.polsl.skirentalservice.dto.rent.*;
 import pl.polsl.skirentalservice.dto.equipment.*;
+import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
-import pl.polsl.skirentalservice.paging.sorter.SorterDataDto;
 import pl.polsl.skirentalservice.dto.deliv_return.RentReturnEquipmentRecordResDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,8 +43,6 @@ public interface IEquipmentDao {
     Long findAllEquipmentsCount(FilterDataDto filterData);
     Integer findAllEquipmentsInCartCount(Object equipmentId);
 
-    List<EquipmentRecordResDto> findAllPageableEquipmentRecords(
-        FilterDataDto filterData, SorterDataDto sorterData, int page, int total);
-    List<EquipmentRentRecordResDto> findAllPageableEquipments(
-        FilterDataDto filterData, SorterDataDto sorterData, int page, int total);
+    List<EquipmentRecordResDto> findAllPageableEquipmentRecords(PageableDto pageableDto);
+    List<EquipmentRentRecordResDto> findAllPageableEquipments(PageableDto pageableDto);
 }

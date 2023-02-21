@@ -111,7 +111,7 @@ public class SellerCompleteRentEquipmentsServlet extends HttpServlet {
                 if (pagination.checkIfIsInvalid()) throw new RuntimeException();
 
                 final List<EquipmentRentRecordResDto> equipmentsList = equipmentDao
-                    .findAllPageableEquipments(filterData, sorterData, page, total)
+                    .findAllPageableEquipments(new PageableDto(filterData, sorterData, page, total))
                     .stream()
                     .filter(l -> l.getTotalCount() > 0).collect(Collectors.toList());
 

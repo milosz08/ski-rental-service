@@ -15,9 +15,9 @@ package pl.polsl.skirentalservice.dao.return_deliv;
 
 import java.util.*;
 
+import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.dto.deliv_return.*;
 import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
-import pl.polsl.skirentalservice.paging.sorter.SorterDataDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -28,8 +28,6 @@ public interface IReturnDao {
     Long findAllReturnsCount(FilterDataDto filterData);
     Long findAllReturnsFromEmployerCount(FilterDataDto filterData, Object employerId);
 
-    List<OwnerRentReturnRecordResDto> findAllPageableReturnsRecords(
-        FilterDataDto filterData, SorterDataDto sorterData, int page, int total);
-    List<SellerRentReturnRecordResDto> findAllPageableReturnsFromEmployerRecords(
-        FilterDataDto filterData, SorterDataDto sorterData, Object employerId, int page, int total);
+    List<OwnerRentReturnRecordResDto> findAllPageableReturnsRecords(PageableDto pageableDto);
+    List<SellerRentReturnRecordResDto> findAllPageableReturnsFromEmployerRecords(PageableDto pageableDto, Object employerId);
 }

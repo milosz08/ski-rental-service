@@ -23,10 +23,10 @@ import jakarta.servlet.annotation.WebServlet;
 import java.util.*;
 import java.io.IOException;
 
+import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.paging.sorter.*;
 import pl.polsl.skirentalservice.paging.filter.*;
 import pl.polsl.skirentalservice.dao.equipment.*;
-import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.paging.pagination.ServletPagination;
 import pl.polsl.skirentalservice.dto.equipment.EquipmentRecordResDto;
@@ -95,7 +95,7 @@ public class CommonEquipmentsServlet extends HttpServlet {
                 if (pagination.checkIfIsInvalid()) throw new RuntimeException();
 
                 final List<EquipmentRecordResDto> equipmentsList = equipmentDao
-                    .findAllPageableEquipmentRecords(filterData, sorterData, page, total);
+                    .findAllPageableEquipmentRecords(new PageableDto(filterData, sorterData, page, total));
 
                 session.getTransaction().commit();
                 req.setAttribute("pagesData", pagination);

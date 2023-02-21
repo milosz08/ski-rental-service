@@ -16,9 +16,9 @@ package pl.polsl.skirentalservice.dao.rent;
 import java.util.*;
 
 import pl.polsl.skirentalservice.dto.rent.*;
+import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.util.RentStatus;
 import pl.polsl.skirentalservice.entity.RentEntity;
-import pl.polsl.skirentalservice.paging.sorter.SorterDataDto;
 import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
 import pl.polsl.skirentalservice.dto.deliv_return.RentReturnDetailsResDto;
 
@@ -34,8 +34,6 @@ public interface IRentDao {
     Long findAllRentsFromEmployerCount(FilterDataDto filterData, Long employerId);
 
     List<RentEntity> findAllRentsBaseCustomerId(Object customerId);
-    List<OwnerRentRecordResDto> findAllPageableRents(
-        FilterDataDto filterData, SorterDataDto sorterData, int page, int total);
-    List<SellerRentRecordResDto> findAllPageableRentsFromEmployer(
-        FilterDataDto filterData, SorterDataDto sorterData, Long employerId, int page, int total);
+    List<OwnerRentRecordResDto> findAllPageableRents(PageableDto pageableDto);
+    List<SellerRentRecordResDto> findAllPageableRentsFromEmployer(PageableDto pageableDto, Object employerId);
 }

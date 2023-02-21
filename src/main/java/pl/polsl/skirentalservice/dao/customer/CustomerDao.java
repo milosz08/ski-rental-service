@@ -19,7 +19,7 @@ import java.util.*;
 import org.hibernate.Session;
 
 import pl.polsl.skirentalservice.dto.customer.*;
-import pl.polsl.skirentalservice.paging.sorter.SorterDataDto;
+import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
 import pl.polsl.skirentalservice.dto.deliv_return.CustomerDetailsReturnResDto;
 
@@ -139,9 +139,7 @@ public class CustomerDao implements ICustomerDao {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    public List<CustomerRecordResDto> findAllPageableCustomers(
-        FilterDataDto filterData, SorterDataDto sorterData, int page, int total, String addressColumn
-    ) {
+    public List<CustomerRecordResDto> findAllPageableCustomers(PageableDto pageableDto, String addressColumn) {
         final String jpqlFindAllCustomers =
             "SELECT new pl.polsl.skirentalservice.dto.customer.CustomerRecordResDto(" +
                 "c.id, CONCAT(d.firstName, ' ', d.lastName), d.emailAddress, d.pesel," +
@@ -149,13 +147,13 @@ public class CustomerDao implements ICustomerDao {
                 "SUBSTRING(d.phoneNumber, 4, 3), ' ', SUBSTRING(d.phoneNumber, 7, 3)), " + addressColumn +
             ") FROM CustomerEntity c " +
             "INNER JOIN c.userDetails d INNER JOIN c.locationAddress a " +
-            "WHERE " + filterData.getSearchColumn() + " LIKE :search " +
-            "ORDER BY " + sorterData.getJpql();
+            "WHERE " + pageableDto.filterData().getSearchColumn() + " LIKE :search " +
+            "ORDER BY " + pageableDto.sorterData().getJpql();
         return session
             .createQuery(jpqlFindAllCustomers, CustomerRecordResDto.class)
-            .setParameter("search", "%" + filterData.getSearchText() + "%")
-            .setFirstResult((page - 1) * total)
-            .setMaxResults(total)
+            .setParameter("search", "%" + pageableDto.filterData().getSearchText() + "%")
+            .setFirstResult((pageableDto.page() - 1) * pageableDto.total())
+            .setMaxResults(pageableDto.total())
             .getResultList();
     }
 }

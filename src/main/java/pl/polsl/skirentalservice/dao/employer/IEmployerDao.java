@@ -15,11 +15,10 @@ package pl.polsl.skirentalservice.dao.employer;
 
 import java.util.*;
 
+import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.dto.employer.*;
 import pl.polsl.skirentalservice.entity.EmployerEntity;
-import pl.polsl.skirentalservice.dto.OwnerMailPayloadDto;
 import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
-import pl.polsl.skirentalservice.paging.sorter.SorterDataDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.dto.change_password.EmployerDetailsDto;
 
@@ -42,6 +41,5 @@ public interface IEmployerDao {
 
     List<OwnerMailPayloadDto> findAllEmployersMailSenders();
     Long findAllEmployersCount(FilterDataDto filterData);
-    List<EmployerRecordResDto> findAllPageableEmployersRecords(
-        FilterDataDto filterData, SorterDataDto sorterData, int page, int total);
+    List<EmployerRecordResDto> findAllPageableEmployersRecords(PageableDto pageableDto);
 }

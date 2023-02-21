@@ -18,12 +18,11 @@ import lombok.RequiredArgsConstructor;
 import java.util.*;
 import org.hibernate.Session;
 
+import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.dto.employer.*;
 import pl.polsl.skirentalservice.entity.EmployerEntity;
-import pl.polsl.skirentalservice.dto.OwnerMailPayloadDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
-import pl.polsl.skirentalservice.paging.sorter.SorterDataDto;
 import pl.polsl.skirentalservice.dto.change_password.EmployerDetailsDto;
 
 import static java.util.Optional.*;
@@ -221,9 +220,7 @@ public class EmployerDao implements IEmployerDao {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    public List<EmployerRecordResDto> findAllPageableEmployersRecords(
-        FilterDataDto filterData, SorterDataDto sorterData, int page, int total
-    ) {
+    public List<EmployerRecordResDto> findAllPageableEmployersRecords(PageableDto pageableDto) {
         final String jpqlFindAllEmployers =
             "SELECT new pl.polsl.skirentalservice.dto.employer.EmployerRecordResDto(" +
                 "e.id, CONCAT(d.firstName, ' ', d.lastName), e.hiredDate, d.pesel, d.emailAddress," +
@@ -231,13 +228,13 @@ public class EmployerDao implements IEmployerDao {
                 "SUBSTRING(d.phoneNumber, 4, 3), ' ', SUBSTRING(d.phoneNumber, 7, 3)), d.gender" +
             ") FROM EmployerEntity e " +
             "INNER JOIN e.userDetails d INNER JOIN e.role r " +
-            "WHERE r.id <> 2 AND " + filterData.getSearchColumn() + " LIKE :search " +
-            "ORDER BY " + sorterData.getJpql();
+            "WHERE r.id <> 2 AND " + pageableDto.filterData().getSearchColumn() + " LIKE :search " +
+            "ORDER BY " + pageableDto.sorterData().getJpql();
         return session
             .createQuery(jpqlFindAllEmployers, EmployerRecordResDto.class)
-            .setParameter("search", "%" + filterData.getSearchText() + "%")
-            .setFirstResult((page - 1) * total)
-            .setMaxResults(total)
+            .setParameter("search", "%" + pageableDto.filterData().getSearchText() + "%")
+            .setFirstResult((pageableDto.page() - 1) * pageableDto.total())
+            .setMaxResults(pageableDto.total())
             .getResultList();
     }
 }

@@ -18,8 +18,8 @@ import lombok.RequiredArgsConstructor;
 import java.util.*;
 import org.hibernate.Session;
 
+import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.dto.deliv_return.*;
-import pl.polsl.skirentalservice.paging.sorter.SorterDataDto;
 import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
 
 import static java.util.Optional.*;
@@ -107,9 +107,7 @@ public class ReturnDao implements IReturnDao {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    public List<OwnerRentReturnRecordResDto> findAllPageableReturnsRecords(
-        FilterDataDto filterData, SorterDataDto sorterData, int page, int total
-    ) {
+    public List<OwnerRentReturnRecordResDto> findAllPageableReturnsRecords(PageableDto pageableDto) {
         final String jpqlFindAlReturns =
             "SELECT new pl.polsl.skirentalservice.dto.deliv_return.OwnerRentReturnRecordResDto(" +
                 "r.id, r.issuedIdentifier, r.issuedDateTime, r.totalPrice," +
@@ -117,36 +115,34 @@ public class ReturnDao implements IReturnDao {
                 "e.id, CONCAT(ed.firstName, ' ', ed.lastName)" +
             ") FROM RentReturnEntity r " +
             "INNER JOIN r.rent rd INNER JOIN rd.employer e INNER JOIN e.userDetails ed " +
-            "WHERE " + filterData.getSearchColumn() + " LIKE :search " +
-            "ORDER BY " + sorterData.getJpql();
+            "WHERE " + pageableDto.filterData().getSearchColumn() + " LIKE :search " +
+            "ORDER BY " + pageableDto.sorterData().getJpql();
         return session
             .createQuery(jpqlFindAlReturns, OwnerRentReturnRecordResDto.class)
-            .setParameter("search", "%" + filterData.getSearchText() + "%")
-            .setFirstResult((page - 1) * total)
-            .setMaxResults(total)
+            .setParameter("search", "%" + pageableDto.filterData().getSearchText() + "%")
+            .setFirstResult((pageableDto.page() - 1) * pageableDto.total())
+            .setMaxResults(pageableDto.total())
             .getResultList();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    public List<SellerRentReturnRecordResDto> findAllPageableReturnsFromEmployerRecords(
-        FilterDataDto filterData, SorterDataDto sorterData, Object employerId, int page, int total
-    ) {
+    public List<SellerRentReturnRecordResDto> findAllPageableReturnsFromEmployerRecords(PageableDto pageableDto, Object employerId) {
         final String jpqlFindAlReturnsConnectedWithEmployer =
             "SELECT new pl.polsl.skirentalservice.dto.deliv_return.SellerRentReturnRecordResDto(" +
                 "r.id, r.issuedIdentifier, r.issuedDateTime, r.totalPrice," +
                 "CAST((rd.tax / 100) * r.totalPrice + r.totalPrice AS bigdecimal), rd.id, rd.issuedIdentifier" +
             ") FROM RentReturnEntity r " +
             "INNER JOIN r.rent rd INNER JOIN rd.employer e " +
-            "WHERE e.id = :eid AND " + filterData.getSearchColumn() + " LIKE :search " +
-            "ORDER BY " + sorterData.getJpql();
+            "WHERE e.id = :eid AND " + pageableDto.filterData().getSearchColumn() + " LIKE :search " +
+            "ORDER BY " + pageableDto.sorterData().getJpql();
         return session
             .createQuery(jpqlFindAlReturnsConnectedWithEmployer, SellerRentReturnRecordResDto.class)
-            .setParameter("search", "%" + filterData.getSearchText() + "%")
+            .setParameter("search", "%" + pageableDto.filterData().getSearchText() + "%")
             .setParameter("eid", employerId)
-            .setFirstResult((page - 1) * total)
-            .setMaxResults(total)
+            .setFirstResult((pageableDto.page() - 1) * pageableDto.total())
+            .setMaxResults(pageableDto.total())
             .getResultList();
     }
 }

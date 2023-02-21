@@ -20,10 +20,10 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
+import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.dao.customer.*;
 import pl.polsl.skirentalservice.paging.filter.*;
 import pl.polsl.skirentalservice.paging.sorter.*;
-import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.dto.customer.CustomerRecordResDto;
 import pl.polsl.skirentalservice.paging.pagination.ServletPagination;
@@ -101,7 +101,7 @@ public class CommonCustomersServlet extends HttpServlet {
                 if (pagination.checkIfIsInvalid()) throw new RuntimeException();
 
                 final List<CustomerRecordResDto> customersList = customerDao
-                    .findAllPageableCustomers(filterData, sorterData, page, total, addressColumn);
+                    .findAllPageableCustomers(new PageableDto(filterData, sorterData, page, total), addressColumn);
 
                 session.getTransaction().commit();
                 req.setAttribute("pagesData", pagination);

@@ -20,10 +20,10 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
+import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.dao.rent.*;
 import pl.polsl.skirentalservice.paging.sorter.*;
 import pl.polsl.skirentalservice.paging.filter.*;
-import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.rent.OwnerRentRecordResDto;
 import pl.polsl.skirentalservice.paging.pagination.ServletPagination;
 
@@ -93,7 +93,7 @@ public class OwnerRentsServlet extends HttpServlet {
                 if (pagination.checkIfIsInvalid()) throw new RuntimeException();
 
                 final List<OwnerRentRecordResDto> rentsList = rentDao
-                    .findAllPageableRents(filterData, sorterData, page, total);
+                    .findAllPageableRents(new PageableDto(filterData, sorterData, page, total));
 
                 session.getTransaction().commit();
                 req.setAttribute("pagesData", pagination);
