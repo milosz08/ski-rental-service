@@ -26,7 +26,6 @@ import java.io.*;
 import java.text.*;
 import java.util.*;
 import java.time.LocalDate;
-import java.util.stream.Collectors;
 
 import pl.polsl.skirentalservice.core.ConfigBean;
 import pl.polsl.skirentalservice.core.JAXBProperty;
@@ -71,7 +70,7 @@ public class MailSocketBean {
             final Properties properties = new Properties();
             final List<JAXBProperty> withoutCredentials = config.getProperties().stream()
                 .filter(p -> !p.getName().equals("mail.smtp.user") && !p.getName().equals("mail.smtp.pass"))
-                .collect(Collectors.toList());
+                .toList();
 
             for (final JAXBProperty property : withoutCredentials) {
                 properties.put(property.getName(), property.getValue());
