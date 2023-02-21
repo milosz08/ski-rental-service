@@ -11,19 +11,19 @@
                 <tbody>
                 <tr>
                     <td class="fw-bold">Nazwa sprzętu:</td>
-                    <td>${equipmentData.name}</td>
+                    <td>${equipmentData.name()}</td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Model sprzętu:</td>
-                    <td>${equipmentData.model}</td>
+                    <td>${equipmentData.model()}</td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Nr identyfikacyjny (kod kreskowy):</td>
-                    <td>${equipmentData.barcode}</td>
+                    <td>${equipmentData.barcode()}</td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Marka sprzętu:</td>
-                    <td>${equipmentData.brand}</td>
+                    <td>${equipmentData.brand()}</td>
                 </tr>
                 </tbody>
             </table>
@@ -33,19 +33,19 @@
                 <tbody>
                 <tr>
                     <td class="fw-bold">Typ sprzętu:</td>
-                    <td>${equipmentData.type}</td>
+                    <td>${equipmentData.type()}</td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Przeznaczony dla:</td>
-                    <td>${equipmentData.gender.name}</td>
+                    <td>${equipmentData.gender().name}</td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Rozmar (w cm):</td>
-                    <td><fmt:formatNumber value="${equipmentData.size}" minFractionDigits="2"/> cm</td>
+                    <td><fmt:formatNumber value="${equipmentData.size()}" minFractionDigits="2"/> cm</td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Kolor sprzętu:</td>
-                    <td>${equipmentData.color}</td>
+                    <td>${equipmentData.color()}</td>
                 </tr>
                 </tbody>
             </table>
@@ -57,15 +57,15 @@
                 <tbody>
                 <tr>
                     <td class="fw-bold">Ilość w systemie (dostępna/całkowita):</td>
-                    <td>${equipmentData.countData} szt.</td>
+                    <td>${equipmentData.countData()} szt.</td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Cena netto za godzinę wypożyczenia:</td>
-                    <td><fmt:formatNumber value="${equipmentData.pricePerHour}" minFractionDigits="2" type="currency"/></td>
+                    <td><fmt:formatNumber value="${equipmentData.pricePerHour()}" minFractionDigits="2" type="currency"/></td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Cena netto za dzień wypożyczenia:</td>
-                    <td><fmt:formatNumber value="${equipmentData.pricePerDay}" minFractionDigits="2" type="currency"/></td>
+                    <td><fmt:formatNumber value="${equipmentData.pricePerDay()}" minFractionDigits="2" type="currency"/></td>
                 </tr>
                 </tbody>
             </table>
@@ -75,15 +75,15 @@
                 <tbody>
                 <tr>
                     <td class="fw-bold">Ilość w obiegu (wypożyczonych):</td>
-                    <td>${equipmentData.rentCount} szt.</td>
+                    <td>${equipmentData.rentCount()} szt.</td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Cena netto za kolejną godzinę wypożyczenia:</td>
-                    <td><fmt:formatNumber value="${equipmentData.priceForNextHour}" minFractionDigits="2" type="currency"/></td>
+                    <td><fmt:formatNumber value="${equipmentData.priceForNextHour()}" minFractionDigits="2" type="currency"/></td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Wartość sprzętu:</td>
-                    <td><fmt:formatNumber value="${equipmentData.valueCost}" minFractionDigits="2" type="currency"/></td>
+                    <td><fmt:formatNumber value="${equipmentData.valueCost()}" minFractionDigits="2" type="currency"/></td>
                 </tr>
                 </tbody>
             </table>
@@ -92,7 +92,7 @@
     <div class="row mb-3">
         <div class="col-md-12">
             <p class="fw-bold mb-0">Dodatkowy opis sprzętu:</p>
-            <p class="">${equipmentData.description}</p>
+            <p class="">${equipmentData.description()}</p>
         </div>
     </div>
 </div>

@@ -109,8 +109,8 @@ public class ChangeForgottenPasswordServlet extends HttpServlet {
                 final var details = otaTokenDao.findTokenDetails(token).orElseThrow(() -> {
                     throw new OtaTokenNotFoundException(req, token, LOGGER);
                 });
-                employerDao.updateEmployerPassword(generateHash(reqDto.getPassword()), details.getId());
-                otaTokenDao.manuallyExpiredOtaToken(details.getTokenId());
+                employerDao.updateEmployerPassword(generateHash(reqDto.getPassword()), details.id());
+                otaTokenDao.manuallyExpiredOtaToken(details.tokenId());
 
                 session.getTransaction().commit();
                 alert.setMessage("Hasło do Twojego konta zostało pomyślnie zmienione.");

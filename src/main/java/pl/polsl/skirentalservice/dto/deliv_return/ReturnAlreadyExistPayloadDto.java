@@ -13,13 +13,10 @@
 
 package pl.polsl.skirentalservice.dto.deliv_return;
 
-import lombok.*;
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@Data
-@AllArgsConstructor
-public class ReturnAlreadyExistPayloadDto {
-    private Long id;
-    private String returnIdentifier;
+public record ReturnAlreadyExistPayloadDto(
+    Long id,
+    String returnIdentifier
+){
 }

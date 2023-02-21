@@ -13,22 +13,20 @@
 
 package pl.polsl.skirentalservice.dto.customer;
 
-import lombok.*;
 import pl.polsl.skirentalservice.util.Gender;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@Data
-@AllArgsConstructor
-public class CustomerDetailsResDto {
-    private Long id;
-    private String fullName;
-    private String email;
-    private String bornDate;
-    private String pesel;
-    private String phoneNumber;
-    private Integer yearsAge;
-    private Gender gender;
-    private String cityWithPostCode;
-    private String address;
+public record CustomerDetailsResDto(
+    Long id,
+    String fullName,
+    String email,
+    String bornDate,
+    String pesel,
+    String phoneNumber,
+    Integer yearsAge,
+    Gender gender,
+    String cityWithPostCode,
+    String address
+) {
 }

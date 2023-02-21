@@ -13,8 +13,6 @@
 
 package pl.polsl.skirentalservice.dto.rent;
 
-import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -22,15 +20,14 @@ import pl.polsl.skirentalservice.util.RentStatus;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@Data
-@AllArgsConstructor
-public class SellerRentRecordResDto {
-    private Long id;
-    private String issuedIdentifier;
-    private LocalDateTime issuedDateTime;
-    private RentStatus status;
-    private BigDecimal totalPriceNetto;
-    private BigDecimal totalPriceBrutto;
-    private String customerName;
-    private Long customerId;
+public record SellerRentRecordResDto(
+    Long id,
+    String issuedIdentifier,
+    LocalDateTime issuedDateTime,
+    RentStatus status,
+    BigDecimal totalPriceNetto,
+    BigDecimal totalPriceBrutto,
+    String customerName,
+    Long customerId
+) {
 }

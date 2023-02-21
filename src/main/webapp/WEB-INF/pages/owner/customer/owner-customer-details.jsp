@@ -6,7 +6,7 @@
 <jsp:useBean id="customerData" class="pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto" scope="request"/>
 
 <p:generic-owner.wrapper>
-    <h1 class="fs-2 fw-normal text-dark mb-2">Szczegóły klienta #${customerData.id}</h1>
+    <h1 class="fs-2 fw-normal text-dark mb-2">Szczegóły klienta #${customerData.id()}</h1>
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
@@ -15,7 +15,7 @@
             <li class="breadcrumb-item">
                 <a class="link-dark" href="${pageContext.request.contextPath}/owner/customers">Lista klientów</a>
             </li>
-            <li class="breadcrumb-item active" aria-current="page">Szczegóły klienta #${customerData.id}</li>
+            <li class="breadcrumb-item active" aria-current="page">Szczegóły klienta #${customerData.id()}</li>
         </ol>
     </nav>
     <hr/>

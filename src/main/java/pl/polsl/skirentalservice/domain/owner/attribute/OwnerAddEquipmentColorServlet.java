@@ -54,7 +54,7 @@ public class OwnerAddEquipmentColorServlet extends HttpServlet {
         final String loggedUser = getLoggedUserLogin(req);
         final HttpSession httpSession = req.getSession();
         if (payload.isInvalid()) {
-            httpSession.setAttribute(EQ_COLORS_MODAL_DATA.getName(), payload.getResDto());
+            httpSession.setAttribute(EQ_COLORS_MODAL_DATA.getName(), payload.resDto());
             res.sendRedirect(defaultIfBlank(req.getParameter("redirect"), "/owner/add-equipment"));
             return;
         }
@@ -63,32 +63,32 @@ public class OwnerAddEquipmentColorServlet extends HttpServlet {
                 session.beginTransaction();
                 final IEquipmentColorDao equipmentDetailsDao = new EquipmentColorDao(session);
 
-                if (equipmentDetailsDao.checkIfEquipmentColorExistByName(payload.getReqDto().getName())) {
+                if (equipmentDetailsDao.checkIfEquipmentColorExistByName(payload.reqDto().getName())) {
                     throw new EquipmentColorAlreadyExistException();
                 }
-                final EquipmentColorEntity colorEntity = new EquipmentColorEntity(payload.getReqDto().getName());
+                final EquipmentColorEntity colorEntity = new EquipmentColorEntity(payload.reqDto().getName());
                 session.persist(colorEntity);
 
-                payload.getAlert().setType(INFO);
-                payload.getAlert().setMessage(
+                payload.alert().setType(INFO);
+                payload.alert().setMessage(
                     "Nastąpiło pomyślne dodanie nowego koloru sprzętu narciarskiego: <strong>" +
-                    payload.getReqDto().getName() + "</strong>."
+                    payload.reqDto().getName() + "</strong>."
                 );
                 session.getTransaction().commit();
                 LOGGER.info("Successful added new equipment color by: {}. Color: {}", loggedUser,
-                    payload.getReqDto().getName());
+                    payload.reqDto().getName());
             } catch (RuntimeException ex) {
                 onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
-            payload.getAlert().setMessage(ex.getMessage());
+            payload.alert().setMessage(ex.getMessage());
             LOGGER.error("Failure add new equipment color by: {}. Cause: {}", loggedUser, ex.getMessage());
         }
-        payload.getAlert().setActive(true);
-        payload.getResDto().setAlert(payload.getAlert());
-        payload.getResDto().setModalImmediatelyOpen(true);
-        payload.getResDto().getName().setValue(EMPTY);
-        httpSession.setAttribute(EQ_COLORS_MODAL_DATA.getName(), payload.getResDto());
+        payload.alert().setActive(true);
+        payload.resDto().setAlert(payload.alert());
+        payload.resDto().setModalImmediatelyOpen(true);
+        payload.resDto().getName().setValue(EMPTY);
+        httpSession.setAttribute(EQ_COLORS_MODAL_DATA.getName(), payload.resDto());
         res.sendRedirect(defaultIfBlank(req.getParameter("redirect"), "/owner/add-equipment"));
     }
 }

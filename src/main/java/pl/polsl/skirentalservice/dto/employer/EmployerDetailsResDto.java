@@ -13,27 +13,25 @@
 
 package pl.polsl.skirentalservice.dto.employer;
 
-import lombok.*;
 import pl.polsl.skirentalservice.util.Gender;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@Data
-@AllArgsConstructor
-public class EmployerDetailsResDto {
-    private Long id;
-    private String fullName;
-    private String login;
-    private String email;
-    private String bornDate;
-    private String hiredDate;
-    private String pesel;
-    private String phoneNumber;
-    private Integer yearsAge;
-    private Integer yearsHired;
-    private Gender gender;
-    private String cityWithPostCode;
-    private String accountState;
-    private String accountStateColor;
-    private String address;
+public record EmployerDetailsResDto(
+    Long id,
+    String fullName,
+    String login,
+    String email,
+    String bornDate,
+    String hiredDate,
+    String pesel,
+    String phoneNumber,
+    Integer yearsAge,
+    Integer yearsHired,
+    Gender gender,
+    String cityWithPostCode,
+    String accountState,
+    String accountStateColor,
+    String address
+) {
 }

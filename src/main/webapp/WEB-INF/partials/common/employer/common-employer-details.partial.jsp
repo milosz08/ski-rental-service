@@ -12,31 +12,31 @@
                 <tbody>
                 <tr>
                     <td class="fw-bold">Imię i nazwisko:</td>
-                    <td>${employerData.fullName}</td>
+                    <td>${employerData.fullName()}</td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Data urodzenia:</td>
-                    <td><p:date-formatter date="${employerData.bornDate}"/></td>
+                    <td><p:date-formatter date="${employerData.bornDate()}"/></td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Numer PESEL:</td>
-                    <td>${employerData.pesel}</td>
+                    <td>${employerData.pesel()}</td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Wiek:</td>
-                    <td>${employerData.yearsAge} lat(a)</td>
+                    <td>${employerData.yearsAge()} lat(a)</td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Status konta:</td>
-                    <td class="fw-bold ${employerData.accountStateColor}">${employerData.accountState}</td>
+                    <td class="fw-bold ${employerData.accountStateColor()}">${employerData.accountState()}</td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Adres email:</td>
-                    <td><a href="mailto:${employerData.email}">${employerData.email}</a></td>
+                    <td><a href="mailto:${employerData.email()}">${employerData.email()}</a></td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Adres zamieszkania:</td>
-                    <td>${employerData.address}</td>
+                    <td>${employerData.address()}</td>
                 </tr>
                 </tbody>
             </table>
@@ -46,27 +46,27 @@
                 <tbody>
                 <tr>
                     <td class="fw-bold">Login:</td>
-                    <td>${employerData.login}</td>
+                    <td>${employerData.login()}</td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Data zatrudnienia:</td>
-                    <td><p:date-formatter date="${employerData.hiredDate}"/></td>
+                    <td><p:date-formatter date="${employerData.hiredDate()}"/></td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Numer telefonu:</td>
-                    <td><a href="tel:${employerData.phoneNumber}">${employerData.phoneNumber}</a></td>
+                    <td><a href="tel:${employerData.phoneNumber()}">${employerData.phoneNumber()}</a></td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Ilość lat w firmie:</td>
-                    <td>${employerData.yearsHired} lat(a)</td>
+                    <td>${employerData.yearsHired()} lat(a)</td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Płeć:</td>
-                    <td>${employerData.gender.name}</td>
+                    <td>${employerData.gender().name}</td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Miejscowość zamieszkania:</td>
-                    <td>${employerData.cityWithPostCode}</td>
+                    <td>${employerData.cityWithPostCode()}</td>
                 </tr>
                 </tbody>
             </table>

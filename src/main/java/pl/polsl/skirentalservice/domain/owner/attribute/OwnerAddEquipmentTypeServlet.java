@@ -54,7 +54,7 @@ public class OwnerAddEquipmentTypeServlet extends HttpServlet {
         final String loggedUser = getLoggedUserLogin(req);
         final HttpSession httpSession = req.getSession();
         if (payload.isInvalid()) {
-            httpSession.setAttribute(EQ_TYPES_MODAL_DATA.getName(), payload.getResDto());
+            httpSession.setAttribute(EQ_TYPES_MODAL_DATA.getName(), payload.resDto());
             res.sendRedirect(defaultIfBlank(req.getParameter("redirect"), "/owner/add-equipment"));
             return;
         }
@@ -63,32 +63,32 @@ public class OwnerAddEquipmentTypeServlet extends HttpServlet {
                 session.beginTransaction();
                 final IEquipmentTypeDao equipmentDetailsDao = new EquipmentTypeDao(session);
 
-                if (equipmentDetailsDao.checkIfEquipmentTypeExistByName(payload.getReqDto().getName())) {
+                if (equipmentDetailsDao.checkIfEquipmentTypeExistByName(payload.reqDto().getName())) {
                     throw new EquipmentTypeAlreadyExistException();
                 }
-                final EquipmentTypeEntity typeEntity = new EquipmentTypeEntity(payload.getReqDto().getName());
+                final EquipmentTypeEntity typeEntity = new EquipmentTypeEntity(payload.reqDto().getName());
                 session.persist(typeEntity);
 
-                payload.getAlert().setType(INFO);
-                payload.getAlert().setMessage(
+                payload.alert().setType(INFO);
+                payload.alert().setMessage(
                     "Nastąpiło pomyślne dodanie nowego typu sprzętu narciarskiego: <strong>" +
-                    payload.getReqDto().getName() + "</strong>."
+                    payload.reqDto().getName() + "</strong>."
                 );
                 session.getTransaction().commit();
                 LOGGER.info("Successful added new equipment type by: {}. Type: {}", loggedUser,
-                    payload.getReqDto().getName());
+                    payload.reqDto().getName());
             } catch (RuntimeException ex) {
                 onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
-            payload.getAlert().setMessage(ex.getMessage());
+            payload.alert().setMessage(ex.getMessage());
             LOGGER.error("Failure add new equipment type by: {}. Cause: {}", loggedUser, ex.getMessage());
         }
-        payload.getAlert().setActive(true);
-        payload.getResDto().setAlert(payload.getAlert());
-        payload.getResDto().setModalImmediatelyOpen(true);
-        payload.getResDto().getName().setValue(EMPTY);
-        httpSession.setAttribute(EQ_TYPES_MODAL_DATA.getName(), payload.getResDto());
+        payload.alert().setActive(true);
+        payload.resDto().setAlert(payload.alert());
+        payload.resDto().setModalImmediatelyOpen(true);
+        payload.resDto().getName().setValue(EMPTY);
+        httpSession.setAttribute(EQ_TYPES_MODAL_DATA.getName(), payload.resDto());
         res.sendRedirect(defaultIfBlank(req.getParameter("redirect"), "/owner/add-equipment"));
     }
 }

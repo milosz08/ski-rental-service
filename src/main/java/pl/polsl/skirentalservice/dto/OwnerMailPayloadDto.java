@@ -13,13 +13,10 @@
 
 package pl.polsl.skirentalservice.dto;
 
-import lombok.*;
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@Data
-@AllArgsConstructor
-public class OwnerMailPayloadDto {
-    private String fullName;
-    private String email;
+public record OwnerMailPayloadDto(
+    String fullName,
+    String email
+) {
 }

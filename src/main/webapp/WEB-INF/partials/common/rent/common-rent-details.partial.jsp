@@ -126,37 +126,37 @@
         <tbody>
         <c:forEach items="${equipmentsRentDetailsData}" var="equipment">
             <tr>
-                <td class="nowrap-tb align-middle">${equipment.id}</td>
-                <td class="nowrap-tb align-middle">${equipment.name}</td>
-                <td class="nowrap-tb align-middle">${equipment.count} szt.</td>
+                <td class="nowrap-tb align-middle">${equipment.id()}</td>
+                <td class="nowrap-tb align-middle">${equipment.name()}</td>
+                <td class="nowrap-tb align-middle">${equipment.count()} szt.</td>
                 <td class="nowrap-tb align-middle">
-                    <fmt:formatNumber value="${equipment.priceNetto}" minFractionDigits="2" type="currency"/>
+                    <fmt:formatNumber value="${equipment.priceNetto()}" minFractionDigits="2" type="currency"/>
                 </td>
                 <td class="nowrap-tb align-middle">
-                    <fmt:formatNumber value="${equipment.priceBrutto}" minFractionDigits="2" type="currency"/>
+                    <fmt:formatNumber value="${equipment.priceBrutto()}" minFractionDigits="2" type="currency"/>
                 </td>
                 <td class="nowrap-tb align-middle">
-                    <fmt:formatNumber value="${equipment.depositPriceNetto}" minFractionDigits="2" type="currency"/>
+                    <fmt:formatNumber value="${equipment.depositPriceNetto()}" minFractionDigits="2" type="currency"/>
                 </td>
                 <td class="nowrap-tb align-middle">
-                    <fmt:formatNumber value="${equipment.depositPriceBrutto}" minFractionDigits="2" type="currency"/>
+                    <fmt:formatNumber value="${equipment.depositPriceBrutto()}" minFractionDigits="2" type="currency"/>
                 </td>
                 <td class="nowrap-tb align-middle fit">
-                    <c:if test="${not empty equipment.name}">
+                    <c:if test="${not empty equipment.name()}">
                         <button class="btn btn-outline-dark btn-sm py-0" type="button" data-bs-toggle="modal"
-                            data-bs-target="#equipmentDetails${equipment.id}">
+                            data-bs-target="#equipmentDetails${equipment.id()}">
                             Szczegóły
                         </button>
                     </c:if>
-                    <c:if test="${empty equipment.name}">
+                    <c:if test="${empty equipment.name()}">
                         <button class="btn btn-outline-dark btn-sm py-0 disabled" type="button" data-bs-toggle="modal"
-                                data-bs-target="#equipmentDetails${equipment.id}" disabled>
+                                data-bs-target="#equipmentDetails${equipment.id()}" disabled>
                             Szczegóły
                         </button>
                     </c:if>
                 </td>
             </tr>
-            <div class="modal fade" id="equipmentDetails${equipment.id}" tabindex="-1" aria-hidden="true">
+            <div class="modal fade" id="equipmentDetails${equipment.id()}" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -164,14 +164,14 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body lh-sm">
-                            <p class="lh-sm text-secondary mb-3">Kod kreskowy (${equipment.barcode}):</p>
+                            <p class="lh-sm text-secondary mb-3">Kod kreskowy (${equipment.barcode()}):</p>
                             <p class="mb-3">
-                                <img src="${pageContext.request.contextPath}/resources/bar-codes/${equipment.barcode}.png"
+                                <img src="${pageContext.request.contextPath}/resources/bar-codes/${equipment.barcode()}.png"
                                     alt="" class="mx-auto d-block" height="120px"/>
                             </p>
                             <p class="lh-sm text-secondary mb-1">Dodatkowy opis:</p>
                             <p class="mb-0">
-                                ${empty equipment.description ? '<i>brak opisu</i>' : equipment.description}
+                                ${empty equipment.description() ? '<i>brak opisu</i>' : equipment.description()}
                             </p>
                         </div>
                         <div class="modal-footer">

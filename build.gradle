@@ -62,8 +62,8 @@ ext {
     jqueryVersion               = '3.6.2'
 }
 
-java.sourceCompatibility = JavaVersion.VERSION_11
-java.targetCompatibility = JavaVersion.VERSION_11
+java.sourceCompatibility = JavaVersion.VERSION_17
+java.targetCompatibility = JavaVersion.VERSION_17
 
 dependencies {
     implementation      "org.webjars.bower:jquery:${jqueryVersion}"

@@ -111,10 +111,10 @@ public class SellerCreateNewRentServlet extends HttpServlet {
                 req.setAttribute("employerData", employerDetails);
 
                 if (isNull(inMemoryRentData)) {
-                    inMemoryRentData = new InMemoryRentDataDto(customerId, customerDetails.getFullName());
+                    inMemoryRentData = new InMemoryRentDataDto(customerId, customerDetails.fullName());
                     final LocalDateTime now = LocalDateTime.now();
                     final String issuerStaticPart = "WY/" + now.getYear() + "/" + now.getMonth().getValue() + "/";
-                    final String issuerUsers = "/" + employerDetails.getId() + "/" + customerId;
+                    final String issuerUsers = "/" + employerDetails.id() + "/" + customerId;
                     boolean founded = false;
                     while (true) {
                         final String randomizer = randomNumeric(4);

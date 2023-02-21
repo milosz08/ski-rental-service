@@ -69,7 +69,7 @@ public class CommonRentDetailsServlet extends HttpServlet {
                 final List<RentEquipmentsDetailsResDto> allRentEquipments = equipmentDao
                     .findAllEquipmentsConnectedWithRent(rentId);
                 final Integer totalSum = allRentEquipments.stream()
-                    .map(RentEquipmentsDetailsResDto::getCount).reduce(0, Integer::sum);
+                    .map(RentEquipmentsDetailsResDto::count).reduce(0, Integer::sum);
 
                 session.getTransaction().commit();
                 req.setAttribute("totalSum", totalSum);

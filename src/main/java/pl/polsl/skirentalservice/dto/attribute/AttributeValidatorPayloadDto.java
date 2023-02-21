@@ -18,12 +18,11 @@ import pl.polsl.skirentalservice.dto.AlertTupleDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@Data
 @Builder
-@AllArgsConstructor
-public class AttributeValidatorPayloadDto {
-    private AlertTupleDto alert;
-    private AttributeModalReqDto reqDto;
-    private AttributeModalResDto resDto;
-    private boolean isInvalid;
+public record AttributeValidatorPayloadDto (
+    AlertTupleDto alert,
+    AttributeModalReqDto reqDto,
+    AttributeModalResDto resDto,
+    boolean isInvalid
+) {
 }

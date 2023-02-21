@@ -32,8 +32,8 @@
                     <div class="row mt-0">
                         <div class="col-12 col-md mb-3">
                             <p class="mb-1 text-secondary">Tworzenie nowego wypożyczenia dla klienta:</p>
-                            <p class="fw-bold mb-0 lh-sm">${customerData.fullName}, Nr PESEL: ${customerData.pesel}</p>
-                            <p class="fw-bold mb-0 lh-sm">${customerData.address}, ${customerData.cityWithPostCode}</p>
+                            <p class="fw-bold mb-0 lh-sm">${customerData.fullName()}, Nr PESEL: ${customerData.pesel()}</p>
+                            <p class="fw-bold mb-0 lh-sm">${customerData.address()}, ${customerData.cityWithPostCode()}</p>
                         </div>
                         <div class="col-12 col-md-auto mb-3 d-flex align-items-center">
                             <button class="btn btn-dark btn-sm w-100" type="button" data-bs-toggle="modal"
@@ -52,8 +52,8 @@
                     <div class="row mt-0">
                         <div class="col-12 col-md mb-3">
                             <p class="mb-1 text-secondary">Tworzenie nowego wypożyczenia przez pracownika:</p>
-                            <p class="fw-bold mb-0 lh-sm">${employerData.fullName}, Nr PESEL: ${employerData.pesel}</p>
-                            <p class="fw-bold mb-0 lh-sm">${employerData.address}, ${employerData.cityWithPostCode}</p>
+                            <p class="fw-bold mb-0 lh-sm">${employerData.fullName()}, Nr PESEL: ${employerData.pesel()}</p>
+                            <p class="fw-bold mb-0 lh-sm">${employerData.address()}, ${employerData.cityWithPostCode()}</p>
                         </div>
                         <div class="col-12 col-md-auto mb-3 d-flex align-items-center">
                             <button class="btn btn-dark btn-sm w-100" type="button" data-bs-toggle="modal"

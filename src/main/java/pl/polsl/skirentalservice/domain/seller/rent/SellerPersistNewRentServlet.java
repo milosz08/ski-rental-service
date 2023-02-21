@@ -143,20 +143,20 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                     .add(priceUnits.getTotalDepositPriceBrutto()).toString());
 
                 modelMapper.map(rentData.getCustomerDetails(), rentPdfDataDto);
-                rentPdfDataDto.setAddress(customerDetails.getAddress() + ", " + customerDetails.getCityWithPostCode());
+                rentPdfDataDto.setAddress(customerDetails.address() + ", " + customerDetails.cityWithPostCode());
                 rentPdfDataDto.setRentTime(rentData.getDays() +  " dni, " + rentData.getHours() + " godzin");
 
                 final RentPdfDocument rentPdfDocument = new RentPdfDocument(config.getUploadsDir(), rentPdfDataDto);
                 rentPdfDocument.generate();
 
                 final MailRequestPayload customerPayload = MailRequestPayload.builder()
-                    .messageResponder(rentData.getCustomerDetails().getFullName())
+                    .messageResponder(rentData.getCustomerDetails().fullName())
                     .subject(emailTopic)
                     .templateName("add-new-rent-customer.template.ftl")
                     .templateVars(templateVars)
                     .attachmentsPaths(Set.of(rentPdfDocument.getPath()))
                     .build();
-                mailSocket.sendMessage(rentData.getCustomerDetails().getEmail(), customerPayload, req);
+                mailSocket.sendMessage(rentData.getCustomerDetails().email(), customerPayload, req);
                 LOGGER.info("Successful send rent email message for customer. Payload: {}", customerPayload);
 
                 final MailRequestPayload employerPayload = MailRequestPayload.builder()
@@ -179,8 +179,8 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                     .attachmentsPaths(Set.of(rentPdfDocument.getPath()))
                     .build();
                 for (final OwnerMailPayloadDto owner : employerDao.findAllEmployersMailSenders()) {
-                    ownerPayload.setMessageResponder(owner.getFullName());
-                    mailSocket.sendMessage(owner.getEmail(), ownerPayload, req);
+                    ownerPayload.setMessageResponder(owner.fullName());
+                    mailSocket.sendMessage(owner.email(), ownerPayload, req);
                 }
                 LOGGER.info("Successful send rent email message for owner/owners. Payload: {}", ownerPayload);
 

@@ -114,41 +114,41 @@
                     <tbody>
                     <c:forEach items="${rentsData}" var="rent">
                         <tr>
-                            <td class="nowrap-tb align-middle">${rent.id}</td>
-                            <td class="nowrap-tb align-middle">${rent.issuedIdentifier}</td>
-                            <td class="nowrap-tb align-middle"><p:datetime-formatter datetime="${rent.issuedDateTime}"/></td>
-                            <td class="nowrap-tb align-middle">${rent.status.status}</td>
+                            <td class="nowrap-tb align-middle">${rent.id()}</td>
+                            <td class="nowrap-tb align-middle">${rent.issuedIdentifier()}</td>
+                            <td class="nowrap-tb align-middle"><p:datetime-formatter datetime="${rent.issuedDateTime()}"/></td>
+                            <td class="nowrap-tb align-middle">${rent.status().status}</td>
                             <td class="nowrap-tb align-middle">
-                                <fmt:formatNumber value="${rent.totalPriceNetto}" minFractionDigits="2" type="currency"/>
+                                <fmt:formatNumber value="${rent.totalPriceNetto()}" minFractionDigits="2" type="currency"/>
                             </td>
                             <td class="nowrap-tb align-middle">
-                                <fmt:formatNumber value="${rent.totalPriceBrutto}" minFractionDigits="2" type="currency"/>
+                                <fmt:formatNumber value="${rent.totalPriceBrutto()}" minFractionDigits="2" type="currency"/>
                             </td>
                             <td class="nowrap-tb align-middle">
-                                <c:if test="${not empty rent.customerId}">
-                                    <a href="${pageContext.request.contextPath}/seller/customer-details?id=${rent.customerId}">
-                                        ${rent.customerName}
+                                <c:if test="${not empty rent.customerId()}">
+                                    <a href="${pageContext.request.contextPath}/seller/customer-details?id=${rent.customerId()}">
+                                        ${rent.customerName()}
                                     </a>
                                 </c:if>
-                                <c:if test="${empty rent.customerId}">${rent.customerName}</c:if>
+                                <c:if test="${empty rent.customerId()}">${rent.customerName()}</c:if>
                             </td>
                             <td class="nowrap-tb align-middle fit">
                                 <button type="button" class="btn btn-sm btn-danger py-0 px-1" data-bs-toggle="modal"
-                                    data-bs-target="#deleteRent${rent.id}">
+                                    data-bs-target="#deleteRent${rent.id()}">
                                     <span type="button" data-bs-toggle="tooltip" data-bs-placement="top"
                                         data-bs-title="Usuń wypożyczenie">
                                         <i class="bi bi-x-lg align-middle lh-sm"></i>
                                     </span>
                                 </button>
-                                <a href="${pageContext.request.contextPath}/seller/rent-details?id=${rent.id}"
+                                <a href="${pageContext.request.contextPath}/seller/rent-details?id=${rent.id()}"
                                     class="btn btn-sm btn-dark py-0">
                                     Szczegóły
                                 </a>
-                                <button type="button" data-bs-toggle="modal" data-bs-target="#generateReturn${rent.id}"
+                                <button type="button" data-bs-toggle="modal" data-bs-target="#generateReturn${rent.id()}"
                                     class="btn btn-sm btn-outline-success py-0">
                                     Generuj zwrot
                                 </button>
-                                <a href="${pageContext.request.contextPath}/resources/rent-fvs/${rent.issuedIdentifier.replace('/', '')}.pdf"
+                                <a href="${pageContext.request.contextPath}/resources/rent-fvs/${rent.issuedIdentifier().replace('/', '')}.pdf"
                                     target="_blank" class="btn btn-sm btn-success py-0">
                                     <span type="button" data-bs-toggle="tooltip" data-bs-placement="top"
                                         data-bs-title="Pobierz zestawienie PDF">
@@ -158,8 +158,8 @@
                             </td>
                         </tr>
                         <jsp:include page="/WEB-INF/partials/seller/delete-rent-modal.partial.jsp">
-                            <jsp:param name="id" value="${rent.id}"/>
-                            <jsp:param name="issuedIdentifier" value="${rent.issuedIdentifier}"/>
+                            <jsp:param name="id" value="${rent.id()}"/>
+                            <jsp:param name="issuedIdentifier" value="${rent.issuedIdentifier()}"/>
                         </jsp:include>
                     </c:forEach>
                     </tbody>
@@ -170,8 +170,8 @@
     </form>
     <c:forEach items="${rentsData}" var="rent">
         <jsp:include page="/WEB-INF/partials/seller/generate-return-modal.partial.jsp">
-            <jsp:param name="id" value="${rent.id}"/>
-            <jsp:param name="issuedIdentifier" value="${rent.issuedIdentifier}"/>
+            <jsp:param name="id" value="${rent.id()}"/>
+            <jsp:param name="issuedIdentifier" value="${rent.issuedIdentifier()}"/>
         </jsp:include>
     </c:forEach>
 </p:generic-seller.wrapper>

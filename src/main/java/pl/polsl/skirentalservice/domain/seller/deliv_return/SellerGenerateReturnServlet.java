@@ -100,7 +100,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 final Optional<ReturnAlreadyExistPayloadDto> returnExist = returnDao.findReturnExistDocument(rentId);
                 if (returnExist.isPresent()) {
                     final ReturnAlreadyExistPayloadDto returnData = returnExist.get();
-                    throw new ReturnDocumentAlreadyExistException(req, returnData.getReturnIdentifier(), returnData.getId());
+                    throw new ReturnDocumentAlreadyExistException(req, returnData.returnIdentifier(), returnData.id());
                 }
 
                 final RentReturnDetailsResDto rentDetails = rentDao.findRentReturnDetails(rentId, userDataDto.getId())
@@ -111,19 +111,19 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 if (equipmentsList.isEmpty()) throw new EquipmentNotFoundException();
 
                 final LocalDateTime generatedBrief = LocalDateTime.now().truncatedTo(MINUTES);
-                final String returnIssuerIdentifier = rentDetails.getIssuedIdentifier().replace("WY", "ZW");
-                if (rentDetails.getRentDateTime().isAfter(generatedBrief)) {
+                final String returnIssuerIdentifier = rentDetails.issuedIdentifier().replace("WY", "ZW");
+                if (rentDetails.rentDateTime().isAfter(generatedBrief)) {
                     throw new ReturnDateBeforeRentDateException();
                 }
 
-                final LocalDateTime startTruncated = truncateToTotalHour(rentDetails.getRentDateTime());
+                final LocalDateTime startTruncated = truncateToTotalHour(rentDetails.rentDateTime());
                 final LocalDateTime endTruncated = truncateToTotalHour(generatedBrief);
                 final long totalRentHours = between(startTruncated, endTruncated).toHours();
                 final long rentDays = totalRentHours / 24;
 
                 final RentEntity rentEntity = session.get(RentEntity.class, rentId);
                 final RentReturnEntity rentReturn = modelMapper.map(rentDetails, RentReturnEntity.class);
-                rentReturn.setTotalDepositPrice(rentDetails.getTotalDepositPriceNetto());
+                rentReturn.setTotalDepositPrice(rentDetails.totalDepositPriceNetto());
                 final Set<RentReturnEquipmentEntity> rentEquipmentEntities = new HashSet<>();
                 final Set<EmailEquipmentPayloadDataDto> emailEquipmentsPayload = new HashSet<>();
 
@@ -131,34 +131,34 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 BigDecimal totalSumPriceNetto = new BigDecimal(0);
 
                 for (final RentReturnEquipmentRecordResDto eqDto : equipmentsList) {
-                    final BigDecimal totalPriceDays = eqDto.getPricePerDay().multiply(new BigDecimal(rentDays));
-                    BigDecimal totalPriceHoursSum = eqDto.getPricePerHour();
+                    final BigDecimal totalPriceDays = eqDto.pricePerDay().multiply(new BigDecimal(rentDays));
+                    BigDecimal totalPriceHoursSum = eqDto.pricePerHour();
                     if ((totalRentHours % 24) > 0) {
                         for (int i = 0; i < (totalRentHours % 24) - 1; i++) {
-                            totalPriceHoursSum = totalPriceHoursSum.add(eqDto.getPriceForNextHour());
+                            totalPriceHoursSum = totalPriceHoursSum.add(eqDto.priceForNextHour());
                         }
                     }
                     final BigDecimal totalPrice = totalPriceDays.add(totalPriceHoursSum);
-                    final BigDecimal sumPriceNetto = totalPrice.multiply(new BigDecimal(eqDto.getCount()));
+                    final BigDecimal sumPriceNetto = totalPrice.multiply(new BigDecimal(eqDto.count()));
 
-                    final BigDecimal taxValue = new BigDecimal(rentDetails.getTax());
+                    final BigDecimal taxValue = new BigDecimal(rentDetails.tax());
                     final BigDecimal sumPriceBrutto = taxValue
                         .divide(new BigDecimal(100), 2, HALF_UP).multiply(sumPriceNetto).add(sumPriceNetto)
                         .setScale(2, HALF_UP);
 
                     final BigDecimal depositPriceBrutto = taxValue
-                        .divide(new BigDecimal(100), 2, HALF_UP).multiply(eqDto.getDepositPriceNetto())
-                        .add(eqDto.getDepositPriceNetto())
+                        .divide(new BigDecimal(100), 2, HALF_UP).multiply(eqDto.depositPriceNetto())
+                        .add(eqDto.depositPriceNetto())
                         .setScale(2, HALF_UP);
 
                     final EquipmentEntity equipmentEntity = session
-                        .getReference(EquipmentEntity.class, eqDto.getEquipmentId());
+                        .getReference(EquipmentEntity.class, eqDto.equipmentId());
                     final RentEquipmentEntity rentEquipmentEntity = session
-                        .getReference(RentEquipmentEntity.class, eqDto.getId());
+                        .getReference(RentEquipmentEntity.class, eqDto.id());
                     final RentReturnEquipmentEntity returnEquipmentEntity = modelMapper
                         .map(eqDto, RentReturnEquipmentEntity.class);
 
-                    equipmentDao.increaseAvailableSelectedEquipmentCount(equipmentEntity.getId(), eqDto.getCount());
+                    equipmentDao.increaseAvailableSelectedEquipmentCount(equipmentEntity.getId(), eqDto.count());
 
                     final var emailEquipment = new EmailEquipmentPayloadDataDto(equipmentEntity, eqDto);
                     emailEquipment.setPriceNetto(sumPriceNetto);
@@ -197,13 +197,13 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 emailPayload.setRentTime(rentDays +  " dni, " + totalRentHours + " godzin");
                 emailPayload.setTotalPriceBrutto(totalSumPriceBrutto);
 
-                final BigDecimal totalWithTax = totalSumPriceBrutto.add(rentDetails.getTotalDepositPriceBrutto());
+                final BigDecimal totalWithTax = totalSumPriceBrutto.add(rentDetails.totalDepositPriceBrutto());
                 emailPayload.setTotalPriceWithDepositBrutto(totalWithTax);
                 emailPayload.getRentEquipments().addAll(emailEquipmentsPayload);
 
                 final String emailTopic = "SkiRent Service | Nowy zwrot: " + rentReturn.getIssuedIdentifier();
                 final Map<String, Object> templateVars = new HashMap<>();
-                templateVars.put("rentIdentifier", rentDetails.getIssuedIdentifier());
+                templateVars.put("rentIdentifier", rentDetails.issuedIdentifier());
                 templateVars.put("returnIdentifier", rentReturn.getIssuedIdentifier());
                 templateVars.put("additionalDescription", isNull(description) ? "<i>Brak danych</i>" : description);
                 templateVars.put("data", emailPayload);
@@ -261,8 +261,8 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                     .attachmentsPaths(Set.of(returnPdfDocument.getPath()))
                     .build();
                 for (final OwnerMailPayloadDto owner : employerDao.findAllEmployersMailSenders()) {
-                    ownerPayload.setMessageResponder(owner.getFullName());
-                    mailSocket.sendMessage(owner.getEmail(), ownerPayload, req);
+                    ownerPayload.setMessageResponder(owner.fullName());
+                    mailSocket.sendMessage(owner.email(), ownerPayload, req);
                 }
                 LOGGER.info("Successful send rent-return email message for owner/owners. Payload: {}", ownerPayload);
 
@@ -271,7 +271,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 alert.setType(INFO);
                 alert.setMessage(
                     "Generowanie zwrotu o numerze <strong>" + returnIssuerIdentifier + "</strong> dla wypożyczenia o " +
-                    "numerze <strong>" + rentDetails.getIssuedIdentifier() + "</strong> zakończone sukcesem. Potwierdzenie " +
+                    "numerze <strong>" + rentDetails.issuedIdentifier() + "</strong> zakończone sukcesem. Potwierdzenie " +
                     "wraz z podsumowaniem zostało wysłane również na adres email."
                 );
                 httpSession.setAttribute(COMMON_RETURNS_PAGE_ALERT.getName(), alert);

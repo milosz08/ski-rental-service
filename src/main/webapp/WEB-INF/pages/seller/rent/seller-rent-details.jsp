@@ -3,7 +3,6 @@
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
 <jsp:useBean id="rentDetailsData" class="pl.polsl.skirentalservice.dto.rent.RentDetailsResDto" scope="request"/>
-<jsp:useBean id="equipmentsRentDetailsData" type="java.util.List<pl.polsl.skirentalservice.dto.rent.RentEquipmentsDetailsResDto>" scope="request"/>
 
 <p:generic-seller.wrapper>
     <h1 class="fs-2 fw-normal text-dark mb-2">Szczegóły wypożyczenia #${rentDetailsData.id}</h1>

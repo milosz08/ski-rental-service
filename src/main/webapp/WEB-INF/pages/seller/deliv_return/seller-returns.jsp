@@ -106,33 +106,33 @@
                     <tbody>
                     <c:forEach items="${returnsData}" var="return">
                         <tr>
-                            <td class="nowrap-tb align-middle">${return.id}</td>
-                            <td class="nowrap-tb align-middle">${return.issuedIdentifier}</td>
-                            <td class="nowrap-tb align-middle"><p:datetime-formatter datetime="${return.issuedDateTime}"/></td>
+                            <td class="nowrap-tb align-middle">${return.id()}</td>
+                            <td class="nowrap-tb align-middle">${return.issuedIdentifier()}</td>
+                            <td class="nowrap-tb align-middle"><p:datetime-formatter datetime="${return.issuedDateTime()}"/></td>
                             <td class="nowrap-tb align-middle">
-                                <fmt:formatNumber value="${return.totalPriceNetto}" minFractionDigits="2" type="currency"/>
+                                <fmt:formatNumber value="${return.totalPriceNetto()}" minFractionDigits="2" type="currency"/>
                             </td>
                             <td class="nowrap-tb align-middle">
-                                <fmt:formatNumber value="${return.totalPriceBrutto}" minFractionDigits="2" type="currency"/>
+                                <fmt:formatNumber value="${return.totalPriceBrutto()}" minFractionDigits="2" type="currency"/>
                             </td>
                             <td class="nowrap-tb align-middle">
-                                <a href="${pageContext.request.contextPath}/seller/rent-details?id=${return.rentId}">
-                                    ${return.rentIssuedIdentifier}
+                                <a href="${pageContext.request.contextPath}/seller/rent-details?id=${return.rentId()}">
+                                    ${return.rentIssuedIdentifier()}
                                 </a>
                             </td>
                             <td class="nowrap-tb align-middle fit">
                                 <button type="button" class="btn btn-sm btn-danger py-0 px-1" data-bs-toggle="modal"
-                                    data-bs-target="#deleteReturn${return.id}">
+                                    data-bs-target="#deleteReturn${return.id()}">
                                     <span type="button" data-bs-toggle="tooltip" data-bs-placement="top"
                                         data-bs-title="Usuń zwrot wypożyczenia">
                                         <i class="bi bi-x-lg align-middle lh-sm"></i>
                                     </span>
                                 </button>
-                                <a href="${pageContext.request.contextPath}/seller/return-details?id=${return.id}"
+                                <a href="${pageContext.request.contextPath}/seller/return-details?id=${return.id()}"
                                     class="btn btn-sm btn-dark py-0">
                                     Szczegóły
                                 </a>
-                                <a href="${pageContext.request.contextPath}/resources/return-fvs/${return.issuedIdentifier.replace('/', '')}.pdf"
+                                <a href="${pageContext.request.contextPath}/resources/return-fvs/${return.issuedIdentifier().replace('/', '')}.pdf"
                                     target="_blank" class="btn btn-sm btn-success py-0">
                                     <span type="button" data-bs-toggle="tooltip" data-bs-placement="top"
                                         data-bs-title="Pobierz zestawienie PDF">
@@ -142,9 +142,9 @@
                             </td>
                         </tr>
                         <jsp:include page="/WEB-INF/partials/seller/delete-return-modal.partial.jsp">
-                            <jsp:param name="id" value="${return.id}"/>
-                            <jsp:param name="issuedIdentifier" value="${return.issuedIdentifier}"/>
-                            <jsp:param name="rentIssuedIdentifier" value="${return.rentIssuedIdentifier}"/>
+                            <jsp:param name="id" value="${return.id()}"/>
+                            <jsp:param name="issuedIdentifier" value="${return.issuedIdentifier()}"/>
+                            <jsp:param name="rentIssuedIdentifier" value="${return.rentIssuedIdentifier()}"/>
                         </jsp:include>
                     </c:forEach>
                     </tbody>

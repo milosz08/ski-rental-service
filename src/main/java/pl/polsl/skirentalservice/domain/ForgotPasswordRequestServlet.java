@@ -88,7 +88,7 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
                 });
 
                 final String token = randomAlphanumeric(10);
-                final EmployerEntity employerEntity = session.getReference(EmployerEntity.class, employer.getId());
+                final EmployerEntity employerEntity = session.getReference(EmployerEntity.class, employer.id());
                 final OtaTokenEntity otaToken = new OtaTokenEntity(token, employerEntity);
                 session.persist(otaToken);
 
@@ -96,16 +96,16 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
                 templateVars.put("token", token);
 
                 final MailRequestPayload payload = MailRequestPayload.builder()
-                    .messageResponder(employer.getFullName())
-                    .subject("SkiRent Service | Zmiana hasła dla użytkownika " + employer.getFullName())
+                    .messageResponder(employer.fullName())
+                    .subject("SkiRent Service | Zmiana hasła dla użytkownika " + employer.fullName())
                     .templateName("change-password.template.ftl")
                     .templateVars(templateVars)
                     .build();
 
-                mailSocket.sendMessage(employer.getEmailAddress(), payload, req);
+                mailSocket.sendMessage(employer.emailAddress(), payload, req);
                 alert.setType(INFO);
                 alert.setMessage(
-                    "Na adres email <strong>" + employer.getEmailAddress() + "</strong> został przesłany link aktywacyjny."
+                    "Na adres email <strong>" + employer.emailAddress() + "</strong> został przesłany link aktywacyjny."
                 );
                 resDto.getLoginOrEmail().setValue(EMPTY);
                 session.getTransaction().commit();

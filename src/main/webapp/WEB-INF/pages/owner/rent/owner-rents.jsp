@@ -112,41 +112,41 @@
                     <tbody>
                     <c:forEach items="${rentsData}" var="rent">
                         <tr>
-                            <td class="nowrap-tb align-middle">${rent.id}</td>
-                            <td class="nowrap-tb align-middle">${rent.issuedIdentifier}</td>
-                            <td class="nowrap-tb align-middle"><p:datetime-formatter datetime="${rent.issuedDateTime}"/></td>
-                            <td class="nowrap-tb align-middle">${rent.status.status}</td>
+                            <td class="nowrap-tb align-middle">${rent.id()}</td>
+                            <td class="nowrap-tb align-middle">${rent.issuedIdentifier()}</td>
+                            <td class="nowrap-tb align-middle"><p:datetime-formatter datetime="${rent.issuedDateTime()}"/></td>
+                            <td class="nowrap-tb align-middle">${rent.status().status}</td>
                             <td class="nowrap-tb align-middle">
-                                <fmt:formatNumber value="${rent.totalPriceNetto}" minFractionDigits="2" type="currency"/>
+                                <fmt:formatNumber value="${rent.totalPriceNetto()}" minFractionDigits="2" type="currency"/>
                             </td>
                             <td class="nowrap-tb align-middle">
-                                <fmt:formatNumber value="${rent.totalPriceBrutto}" minFractionDigits="2" type="currency"/>
+                                <fmt:formatNumber value="${rent.totalPriceBrutto()}" minFractionDigits="2" type="currency"/>
                             </td>
                             <td class="nowrap-tb align-middle">
-                                <c:if test="${not empty rent.customerId}">
-                                    <a href="${pageContext.request.contextPath}/owner/customer-details?id=${rent.customerId}">
-                                        ${rent.customerName}
+                                <c:if test="${not empty rent.customerId()}">
+                                    <a href="${pageContext.request.contextPath}/owner/customer-details?id=${rent.customerId()}">
+                                        ${rent.customerName()}
                                     </a>
                                 </c:if>
-                                <c:if test="${empty rent.customerId}">${rent.customerName}</c:if>
+                                <c:if test="${empty rent.customerId()}">${rent.customerName()}</c:if>
                             </td>
                             <td class="nowrap-tb align-middle">
-                                <c:if test="${not empty rent.employerId}">
-                                    <a href="${pageContext.request.contextPath}/owner/employer-details?id=${rent.employerId}">
-                                        ${rent.employerName}
+                                <c:if test="${not empty rent.employerId()}">
+                                    <a href="${pageContext.request.contextPath}/owner/employer-details?id=${rent.employerId()}">
+                                        ${rent.employerName()}
                                     </a>
                                 </c:if>
-                                <c:if test="${empty rent.employerId}">${rent.employerName}</c:if>
+                                <c:if test="${empty rent.employerId()}">${rent.employerName()}</c:if>
                             </td>
                             <td class="nowrap-tb align-middle fit">
-                                <a href="${pageContext.request.contextPath}/resources/rent-fvs/${rent.issuedIdentifier.replace('/', '')}.pdf"
+                                <a href="${pageContext.request.contextPath}/resources/rent-fvs/${rent.issuedIdentifier().replace('/', '')}.pdf"
                                     target="_blank" class="btn btn-sm btn-success py-0">
                                     <span type="button" data-bs-toggle="tooltip" data-bs-placement="top"
                                         data-bs-title="Pobierz zestawienie PDF">
                                         <i class="bi bi-filetype-pdf align-middle"></i>
                                     </span>
                                 </a>
-                                <a href="${pageContext.request.contextPath}/owner/rent-details?id=${rent.id}"
+                                <a href="${pageContext.request.contextPath}/owner/rent-details?id=${rent.id()}"
                                     class="btn btn-sm btn-dark py-0">
                                     Szczegóły
                                 </a>

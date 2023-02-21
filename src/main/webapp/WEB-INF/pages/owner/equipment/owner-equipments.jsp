@@ -60,40 +60,40 @@
                     <tbody>
                     <c:forEach items="${equipmentsData}" var="equipment">
                         <tr>
-                            <td class="nowrap-tb align-middle">${equipment.id}</td>
-                            <td class="nowrap-tb align-middle">${equipment.name}</td>
-                            <td class="nowrap-tb align-middle">${equipment.type}</td>
-                            <td class="nowrap-tb align-middle d-none d-lg-table-cell">${equipment.countInStore} szt.</td>
+                            <td class="nowrap-tb align-middle">${equipment.id()}</td>
+                            <td class="nowrap-tb align-middle">${equipment.name()}</td>
+                            <td class="nowrap-tb align-middle">${equipment.type()}</td>
+                            <td class="nowrap-tb align-middle d-none d-lg-table-cell">${equipment.countInStore()} szt.</td>
                             <td class="nowrap-tb align-middle d-none d-lg-table-cell">
-                                <fmt:formatNumber value=" ${equipment.pricePerHour}" minFractionDigits="2" type="currency"/>
+                                <fmt:formatNumber value=" ${equipment.pricePerHour()}" minFractionDigits="2" type="currency"/>
                             </td>
                             <td class="nowrap-tb align-middle d-none d-lg-table-cell">+
-                                <fmt:formatNumber value=" ${equipment.priceForNextHour}" minFractionDigits="2" type="currency"/>
+                                <fmt:formatNumber value=" ${equipment.priceForNextHour()}" minFractionDigits="2" type="currency"/>
                             </td>
                             <td class="nowrap-tb align-middle d-none d-lg-table-cell">
-                                <fmt:formatNumber value=" ${equipment.pricePerDay}" minFractionDigits="2" type="currency"/>
+                                <fmt:formatNumber value=" ${equipment.pricePerDay()}" minFractionDigits="2" type="currency"/>
                             </td>
                             <td class="nowrap-tb align-middle d-none d-lg-table-cell">
-                                <fmt:formatNumber value=" ${equipment.valueCost}" minFractionDigits="2" type="currency"/>
+                                <fmt:formatNumber value=" ${equipment.valueCost()}" minFractionDigits="2" type="currency"/>
                             </td>
                             <td class="nowrap-tb align-middle fit">
                                 <button type="button" class="btn btn-sm btn-danger py-0 px-1" data-bs-toggle="modal"
-                                    data-bs-target="#deleteEquipment${equipment.id}">
+                                    data-bs-target="#deleteEquipment${equipment.id()}">
                                     <span type="button" data-bs-toggle="tooltip" data-bs-placement="top"
                                         data-bs-title="Usuń sprzęt">
                                         <i class="bi bi-x-lg align-middle lh-sm"></i>
                                     </span>
                                 </button>
-                                <a href="${pageContext.request.contextPath}/owner/equipment-details?id=${equipment.id}"
+                                <a href="${pageContext.request.contextPath}/owner/equipment-details?id=${equipment.id()}"
                                     class="btn btn-sm btn-dark py-0">
                                     Szczegóły
                                 </a>
-                                <a href="${pageContext.request.contextPath}/owner/edit-equipment?id=${equipment.id}"
+                                <a href="${pageContext.request.contextPath}/owner/edit-equipment?id=${equipment.id()}"
                                     class="btn btn-sm btn-outline-dark py-0">
                                     Edytuj
                                 </a>
                                 <button type="button" class="btn btn-sm btn-success py-0 px-1" data-bs-toggle="modal"
-                                    data-bs-target="#showBarcode${equipment.id}">
+                                    data-bs-target="#showBarcode${equipment.id()}">
                                     <span type="button" data-bs-toggle="tooltip" data-bs-placement="left"
                                         data-bs-title="Pokaż kod kreskowy">
                                         <i class="bi bi-upc-scan align-middle lh-sm"></i>
@@ -102,12 +102,12 @@
                             </td>
                         </tr>
                         <jsp:include page="/WEB-INF/partials/owner/delete-equipment-modal.partial.jsp">
-                            <jsp:param name="id" value="${equipment.id}"/>
-                            <jsp:param name="name" value="${equipment.name}"/>
+                            <jsp:param name="id" value="${equipment.id()}"/>
+                            <jsp:param name="name" value="${equipment.name()}"/>
                         </jsp:include>
                         <jsp:include page="/WEB-INF/partials/common/common-bar-code-modal.partial.jsp">
-                            <jsp:param name="id" value="${equipment.id}"/>
-                            <jsp:param name="barcode" value="${equipment.barcode}"/>
+                            <jsp:param name="id" value="${equipment.id()}"/>
+                            <jsp:param name="barcode" value="${equipment.barcode()}"/>
                         </jsp:include>
                     </c:forEach>
                     </tbody>

@@ -13,27 +13,12 @@
 
 package pl.polsl.skirentalservice.dto.change_password;
 
-import lombok.*;
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@Data
-@AllArgsConstructor
-public class EmployerDetailsDto {
-    private Long id;
-    private String login;
-    private String fullName;
-    private String emailAddress;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    @Override
-    public String toString() {
-        return '{' +
-            "id=" + id +
-            ", login='" + login + '\'' +
-            ", fullName='" + fullName + '\'' +
-            ", emailAddress='" + emailAddress + '\'' +
-            '}';
-    }
+public record EmployerDetailsDto(
+    Long id,
+    String login,
+    String fullName,
+    String emailAddress
+) {
 }

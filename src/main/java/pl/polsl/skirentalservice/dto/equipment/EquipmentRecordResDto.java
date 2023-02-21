@@ -13,21 +13,19 @@
 
 package pl.polsl.skirentalservice.dto.equipment;
 
-import lombok.*;
 import java.math.BigDecimal;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@Data
-@AllArgsConstructor
-public class EquipmentRecordResDto {
-    private Long id;
-    private String name;
-    private String type;
-    private String barcode;
-    private Integer countInStore;
-    private BigDecimal pricePerHour;
-    private BigDecimal priceForNextHour;
-    private BigDecimal pricePerDay;
-    private BigDecimal valueCost;
+public record EquipmentRecordResDto(
+    Long id,
+    String name,
+    String type,
+    String barcode,
+    Integer countInStore,
+    BigDecimal pricePerHour,
+    BigDecimal priceForNextHour,
+    BigDecimal pricePerDay,
+    BigDecimal valueCost
+) {
 }
