@@ -34,10 +34,11 @@ public class EquipmentTypeDao implements IEquipmentTypeDao {
 
     @Override
     public List<FormSelectTupleDto> findAllEquipmentTypes() {
-        final String jpqlFindEquipmentTypes =
-            "SELECT new pl.polsl.skirentalservice.dto.FormSelectTupleDto(" +
-                "CAST(t.id AS string), t.name" +
-            ") FROM EquipmentTypeEntity t ORDER BY t.id";
+        final String jpqlFindEquipmentTypes = """
+            SELECT new pl.polsl.skirentalservice.dto.FormSelectTupleDto(
+                CAST(t.id AS string), t.name
+            ) FROM EquipmentTypeEntity t ORDER BY t.id
+        """;
         return session.createQuery(jpqlFindEquipmentTypes, FormSelectTupleDto.class)
             .getResultList();
     }
@@ -58,8 +59,9 @@ public class EquipmentTypeDao implements IEquipmentTypeDao {
 
     @Override
     public boolean checkIfEquipmentTypeExistByName(String typeName) {
-        final String jpqlFindTypeAlreadyExist =
-            "SELECT COUNT(t.id) > 0 FROM EquipmentTypeEntity t WHERE LOWER(t.name) = LOWER(:name)";
+        final String jpqlFindTypeAlreadyExist = """
+            SELECT COUNT(t.id) > 0 FROM EquipmentTypeEntity t WHERE LOWER(t.name) = LOWER(:name)
+        """;
         return session.createQuery(jpqlFindTypeAlreadyExist, Boolean.class)
             .setParameter("name", typeName)
             .getSingleResult();
@@ -69,8 +71,9 @@ public class EquipmentTypeDao implements IEquipmentTypeDao {
 
     @Override
     public boolean checkIfEquipmentTypeHasAnyConnections(Object typeId) {
-        final String jpqlFindTypeHasConnections =
-            "SELECT COUNT(e.id) > 0 FROM EquipmentEntity e INNER JOIN e.equipmentType t WHERE t.id = :id";
+        final String jpqlFindTypeHasConnections = """
+            SELECT COUNT(e.id) > 0 FROM EquipmentEntity e INNER JOIN e.equipmentType t WHERE t.id = :id
+        """;
         return session.createQuery(jpqlFindTypeHasConnections, Boolean.class)
             .setParameter("id", typeId)
             .getSingleResult();

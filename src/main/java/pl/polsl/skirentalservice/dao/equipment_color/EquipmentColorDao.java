@@ -34,10 +34,11 @@ public class EquipmentColorDao implements IEquipmentColorDao {
 
     @Override
     public List<FormSelectTupleDto> findAllEquipmentColors() {
-        final String jpqlFindEquipmentColors =
-            "SELECT new pl.polsl.skirentalservice.dto.FormSelectTupleDto(" +
-                "CAST(t.id AS string), t.name" +
-            ") FROM EquipmentColorEntity t ORDER BY t.id";
+        final String jpqlFindEquipmentColors = """
+            SELECT new pl.polsl.skirentalservice.dto.FormSelectTupleDto(
+                CAST(t.id AS string), t.name
+            ) FROM EquipmentColorEntity t ORDER BY t.id
+        """;
         return session.createQuery(jpqlFindEquipmentColors, FormSelectTupleDto.class)
             .getResultList();
     }
@@ -58,8 +59,9 @@ public class EquipmentColorDao implements IEquipmentColorDao {
 
     @Override
     public boolean checkIfEquipmentColorExistByName(String colorName) {
-        final String jpqlFindColorAlreadyExist =
-            "SELECT COUNT(c.id) > 0 FROM EquipmentColorEntity c WHERE LOWER(c.name) = LOWER(:name)";
+        final String jpqlFindColorAlreadyExist = """
+            SELECT COUNT(c.id) > 0 FROM EquipmentColorEntity c WHERE LOWER(c.name) = LOWER(:name)
+        """;
         return session.createQuery(jpqlFindColorAlreadyExist, Boolean.class)
             .setParameter("name", colorName)
             .getSingleResult();
@@ -69,8 +71,9 @@ public class EquipmentColorDao implements IEquipmentColorDao {
 
     @Override
     public boolean checkIfEquipmentColorHasAnyConnections(Object colorId) {
-        final String jpqlFindColorHasConnections =
-            "SELECT COUNT(e.id) > 0 FROM EquipmentEntity e INNER JOIN e.equipmentColor c WHERE c.id = :id";
+        final String jpqlFindColorHasConnections = """
+            SELECT COUNT(e.id) > 0 FROM EquipmentEntity e INNER JOIN e.equipmentColor c WHERE c.id = :id
+        """;
         return session.createQuery(jpqlFindColorHasConnections, Boolean.class)
             .setParameter("id", colorId)
             .getSingleResult();

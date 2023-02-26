@@ -34,13 +34,14 @@ public class OtaTokenDao implements IOtaTokenDao {
 
     @Override
     public Optional<ChangePasswordEmployerDetailsDto> findTokenRelatedToEmployer(String token) {
-        final String jpqlFindToken =
-            "SELECT new pl.polsl.skirentalservice.dto.change_password.ChangePasswordEmployerDetailsDto(" +
-                "e.id, t.id, CONCAT(d.firstName, ' ', d.lastName)" +
-            ") FROM OtaTokenEntity t " +
-            "INNER JOIN t.employer e " +
-            "INNER JOIN e.userDetails d " +
-            "WHERE t.otaToken = :token AND t.isUsed = false AND t.expiredDate >= NOW()";
+        final String jpqlFindToken = """
+            SELECT new pl.polsl.skirentalservice.dto.change_password.ChangePasswordEmployerDetailsDto(
+                e.id, t.id, CONCAT(d.firstName, ' ', d.lastName)
+            ) FROM OtaTokenEntity t
+            INNER JOIN t.employer e
+            INNER JOIN e.userDetails d
+            WHERE t.otaToken = :token AND t.isUsed = false AND t.expiredDate >= NOW()
+        """;
         final var details = session.createQuery(jpqlFindToken, ChangePasswordEmployerDetailsDto.class)
             .setParameter("token", token)
             .getSingleResultOrNull();
@@ -52,10 +53,11 @@ public class OtaTokenDao implements IOtaTokenDao {
 
     @Override
     public Optional<TokenDetailsDto> findTokenDetails(String token) {
-        final String jpqlFindToken =
-            "SELECT new pl.polsl.skirentalservice.dto.change_password.TokenDetailsDto(e.id, t.id) " +
-            "FROM OtaTokenEntity t INNER JOIN t.employer e " +
-            "WHERE t.otaToken = :token AND t.isUsed = false AND t.expiredDate >= NOW()";
+        final String jpqlFindToken = """
+            SELECT new pl.polsl.skirentalservice.dto.change_password.TokenDetailsDto(e.id, t.id)
+            FROM OtaTokenEntity t INNER JOIN t.employer e
+            WHERE t.otaToken = :token AND t.isUsed = false AND t.expiredDate >= NOW()
+        """;
         final var details = session.createQuery(jpqlFindToken, TokenDetailsDto.class)
             .setParameter("token", token)
             .getSingleResultOrNull();
