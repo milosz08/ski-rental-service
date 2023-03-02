@@ -13,23 +13,31 @@
 
 package pl.polsl.skirentalservice.domain.owner.employer;
 
-import org.slf4j.*;
-import org.hibernate.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import jakarta.servlet.http.*;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
-import pl.polsl.skirentalservice.dao.employer.*;
+import pl.polsl.skirentalservice.util.Utils;
+import pl.polsl.skirentalservice.util.PageTitle;
+import pl.polsl.skirentalservice.util.SessionAlert;
+import pl.polsl.skirentalservice.core.db.HibernateUtil;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dao.employer.EmployerDao;
+import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
 
-import static pl.polsl.skirentalservice.exception.NotFoundException.*;
-import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
-import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
-import static pl.polsl.skirentalservice.util.SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT;
-import static pl.polsl.skirentalservice.util.PageTitle.OWNER_EMPLOYER_DETAILS_PAGE;
+import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -37,7 +45,7 @@ import static pl.polsl.skirentalservice.util.PageTitle.OWNER_EMPLOYER_DETAILS_PA
 public class OwnerEmployerDetailsServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerEmployerDetailsServlet.class);
-    private final SessionFactory sessionFactory = getSessionFactory();
+    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -58,14 +66,14 @@ public class OwnerEmployerDetailsServlet extends HttpServlet {
 
                 session.getTransaction().commit();
                 req.setAttribute("employerData", employerDetails);
-                req.setAttribute("title", OWNER_EMPLOYER_DETAILS_PAGE.getName());
+                req.setAttribute("title", PageTitle.OWNER_EMPLOYER_DETAILS_PAGE.getName());
                 req.getRequestDispatcher("/WEB-INF/pages/owner/employer/owner-employer-details.jsp").forward(req, res);
             } catch (RuntimeException ex) {
-                onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
-            httpSession.setAttribute(OWNER_EMPLOYERS_PAGE_ALERT.getName(), alert);
+            httpSession.setAttribute(SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT.getName(), alert);
             res.sendRedirect("/owner/employers");
         }
     }

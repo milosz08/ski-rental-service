@@ -13,15 +13,15 @@
 
 package pl.polsl.skirentalservice.dto.rent;
 
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import pl.polsl.skirentalservice.util.RentStatus;
 import pl.polsl.skirentalservice.core.ValidatorBean;
 import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
-
-import static java.time.LocalDateTime.parse;
-import static java.time.format.DateTimeFormatter.ofPattern;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -48,7 +48,7 @@ public class NewRentDetailsResDto {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public LocalDateTime getParsedIssuedDateTime() {
-        return parse(issuedDateTime.replace('T', ' '), ofPattern("yyyy-MM-dd HH:mm"));
+        return LocalDateTime.parse(issuedDateTime.replace('T', ' '), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

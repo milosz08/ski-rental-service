@@ -14,12 +14,16 @@
 package pl.polsl.skirentalservice.core;
 
 import lombok.Getter;
-import jakarta.ejb.*;
 
-import java.nio.file.*;
+import jakarta.ejb.Startup;
+import jakarta.ejb.Singleton;
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.nio.file.Path;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.io.IOException;
-
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -36,7 +40,7 @@ public class ConfigBean {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     ConfigBean() throws IOException {
-        this.systemVersion = defaultIfEmpty(getClass().getPackage().getImplementationVersion(), "DEVELOPMENT");
+        this.systemVersion = StringUtils.defaultIfEmpty(getClass().getPackage().getImplementationVersion(), "DEVELOPMENT");
         this.circaDateYears = 18;
         this.defPageTitle = "SkiRent System";
         final Path path = Paths.get(System.getProperty("jboss.server.data.dir") + "/ski-rental-service");

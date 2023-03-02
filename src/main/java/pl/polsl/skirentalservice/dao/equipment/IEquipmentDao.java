@@ -13,12 +13,16 @@
 
 package pl.polsl.skirentalservice.dao.equipment;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
-import pl.polsl.skirentalservice.dto.rent.*;
-import pl.polsl.skirentalservice.dto.equipment.*;
 import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
+import pl.polsl.skirentalservice.dto.equipment.EquipmentRecordResDto;
+import pl.polsl.skirentalservice.dto.equipment.EquipmentDetailsResDto;
+import pl.polsl.skirentalservice.dto.equipment.AddEditEquipmentReqDto;
+import pl.polsl.skirentalservice.dto.rent.EquipmentRentRecordResDto;
+import pl.polsl.skirentalservice.dto.rent.RentEquipmentsDetailsResDto;
 import pl.polsl.skirentalservice.dto.deliv_return.RentReturnEquipmentRecordResDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

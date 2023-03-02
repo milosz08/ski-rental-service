@@ -13,12 +13,13 @@
 
 package pl.polsl.skirentalservice.paging.sorter;
 
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+
 import java.util.Map;
-import jakarta.servlet.http.*;
+import java.util.Objects;
 
 import pl.polsl.skirentalservice.util.SessionAttribute;
-
-import static java.util.Objects.*;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -41,10 +42,10 @@ public class ServletSorter {
     public SorterDataDto generateSortingJPQuery(SessionAttribute attribute) {
         final HttpSession session = req.getSession();
         SorterDataDto sortedData = (SorterDataDto) session.getAttribute(attribute.getName());
-        if (isNull(sortedData)) sortedData = new SorterDataDto(fieldsMap, defColumnSort);
+        if (Objects.isNull(sortedData)) sortedData = new SorterDataDto(fieldsMap, defColumnSort);
 
         final String columnName = req.getParameter("sortBy");
-        if (isNull(columnName)) return sortedData;
+        if (Objects.isNull(columnName)) return sortedData;
 
         final ServletSorterField sorterField = sortedData.getFieldsMap().get(columnName);
 
@@ -52,9 +53,9 @@ public class ServletSorter {
             final ServletSorterField field = entry.getValue();
             if (entry.getKey().equals(columnName)) {
                 switch (field.getDirection()) {
-                    case IDLE:  sortedData.setJpql(field.setAscending()); break;
-                    case ASC:   sortedData.setJpql(field.setDescending()); break;
-                    default:    sortedData.setJpql(field.reset(defColumnSort));
+                    case IDLE -> sortedData.setJpql(field.setAscending());
+                    case ASC -> sortedData.setJpql(field.setDescending());
+                    default -> sortedData.setJpql(field.reset(defColumnSort));
                 }
             } else {
                 field.reset(defColumnSort);

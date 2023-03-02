@@ -13,41 +13,50 @@
 
 package pl.polsl.skirentalservice.domain.seller.deliv_return;
 
-import org.slf4j.*;
-import org.hibernate.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 
 import jakarta.ejb.EJB;
-import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
-import pl.polsl.skirentalservice.entity.*;
-import pl.polsl.skirentalservice.dao.rent.*;
-import pl.polsl.skirentalservice.dao.equipment.*;
-import pl.polsl.skirentalservice.core.ConfigBean;
-import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.pdf.ReturnPdfDocument;
-import pl.polsl.skirentalservice.domain.seller.rent.SellerDeleteRentServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
+import java.util.Objects;
 import java.io.IOException;
 
-import static java.util.Objects.isNull;
-import static org.apache.commons.lang3.StringUtils.trimToNull;
+import org.apache.commons.lang3.StringUtils;
 
-import static pl.polsl.skirentalservice.util.Utils.*;
-import static pl.polsl.skirentalservice.util.AlertType.INFO;
-import static pl.polsl.skirentalservice.util.RentStatus.RENTED;
-import static pl.polsl.skirentalservice.exception.NotFoundException.*;
-import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
-import static pl.polsl.skirentalservice.util.SessionAlert.COMMON_RETURNS_PAGE_ALERT;
+import pl.polsl.skirentalservice.util.Utils;
+import pl.polsl.skirentalservice.util.AlertType;
+import pl.polsl.skirentalservice.util.RentStatus;
+import pl.polsl.skirentalservice.util.SessionAlert;
+import pl.polsl.skirentalservice.core.ConfigBean;
+import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dao.rent.RentDao;
+import pl.polsl.skirentalservice.dao.rent.IRentDao;
+import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
+import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
+import pl.polsl.skirentalservice.entity.RentReturnEntity;
+import pl.polsl.skirentalservice.entity.RentEquipmentEntity;
+import pl.polsl.skirentalservice.pdf.ReturnPdfDocument;
+
+import static pl.polsl.skirentalservice.exception.NotFoundException.ReturnNotFoundException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @WebServlet("/seller/delete-return")
 public class SellerDeleteReturnServlet extends HttpServlet {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SellerDeleteRentServlet.class);
-    private final SessionFactory sessionFactory = getSessionFactory();
+    private static final Logger LOGGER = LoggerFactory.getLogger(SellerDeleteReturnServlet.class);
+    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
     @EJB private ConfigBean config;
 
@@ -55,13 +64,13 @@ public class SellerDeleteReturnServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final String returnId = trimToNull(req.getParameter("id"));
-        if (isNull(returnId)) {
+        final String returnId = StringUtils.trimToNull(req.getParameter("id"));
+        if (Objects.isNull(returnId)) {
             res.sendRedirect("/seller/returns");
             return;
         }
         final AlertTupleDto alert = new AlertTupleDto(true);
-        final String userLogin = getLoggedUserLogin(req);
+        final String userLogin = Utils.getLoggedUserLogin(req);
         final HttpSession httpSession = req.getSession();
 
         try (final Session session = sessionFactory.openSession()) {
@@ -72,11 +81,11 @@ public class SellerDeleteReturnServlet extends HttpServlet {
                 final IRentDao rentDao = new RentDao(session);
 
                 final RentReturnEntity rentReturn = session.getReference(RentReturnEntity.class, returnId);
-                if (isNull(rentReturn)) throw new ReturnNotFoundException();
+                if (Objects.isNull(rentReturn)) throw new ReturnNotFoundException();
 
-                rentDao.updateRentStatus(RENTED, rentReturn.getRent().getId());
+                rentDao.updateRentStatus(RentStatus.RENTED, rentReturn.getRent().getId());
                 for (final RentEquipmentEntity equipment : rentReturn.getRent().getEquipments()) {
-                    if (isNull(equipment.getEquipment())) continue;
+                    if (Objects.isNull(equipment.getEquipment())) continue;
                     equipmentDao.decreaseAvailableSelectedEquipmentCount(equipment.getEquipment().getId(),
                         equipment.getCount());
                 }
@@ -84,7 +93,7 @@ public class SellerDeleteReturnServlet extends HttpServlet {
                     rentReturn.getIssuedIdentifier());
                 returnPdfDocument.remove();
 
-                alert.setType(INFO);
+                alert.setType(AlertType.INFO);
                 alert.setMessage(
                     "Usunięcie zwrotu wypożyczenia o numerze <strong>" + rentReturn.getIssuedIdentifier() +
                     "</strong> zakończone pomyślnie."
@@ -94,12 +103,12 @@ public class SellerDeleteReturnServlet extends HttpServlet {
                 LOGGER.info("Rent return with id: {} was succesfuly removed from system by {}. Rent data: {}", returnId,
                     userLogin, rentReturn);
             } catch (RuntimeException ex) {
-                onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
         }
-        httpSession.setAttribute(COMMON_RETURNS_PAGE_ALERT.getName(), alert);
+        httpSession.setAttribute(SessionAlert.COMMON_RETURNS_PAGE_ALERT.getName(), alert);
         res.sendRedirect("/seller/returns");
     }
 }

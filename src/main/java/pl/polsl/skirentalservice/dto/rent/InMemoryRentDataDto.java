@@ -13,20 +13,17 @@
 
 package pl.polsl.skirentalservice.dto.rent;
 
-import lombok.*;
+import lombok.Data;
 
-import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.time.format.DateTimeFormatter;
 
 import pl.polsl.skirentalservice.util.RentStatus;
 import pl.polsl.skirentalservice.dto.PriceUnitsDto;
 import pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto;
-
-import static java.time.LocalDateTime.parse;
-import static java.time.temporal.ChronoUnit.MINUTES;
-
-import static pl.polsl.skirentalservice.util.RentStatus.OPENED;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -59,19 +56,19 @@ public class InMemoryRentDataDto {
     public InMemoryRentDataDto(Long customerId, String customerFullName) {
         this.customerId = customerId;
         this.customerFullName = customerFullName;
-        this.issuedDateTime = LocalDateTime.now().truncatedTo(MINUTES).toString().replace('T', ' ');
-        this.rentStatus = OPENED;
+        this.issuedDateTime = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).toString().replace('T', ' ');
+        this.rentStatus = RentStatus.OPENED;
         this.priceUnits = new PriceUnitsDto();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public LocalDateTime getParsedRentDateTime() {
-        return parse(rentDateTime.replace('T', ' '), formatter);
+        return LocalDateTime.parse(rentDateTime.replace('T', ' '), formatter);
     }
 
     public LocalDateTime getParsedReturnDateTime() {
-        return parse(returnDateTime.replace('T', ' '), formatter);
+        return LocalDateTime.parse(returnDateTime.replace('T', ' '), formatter);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

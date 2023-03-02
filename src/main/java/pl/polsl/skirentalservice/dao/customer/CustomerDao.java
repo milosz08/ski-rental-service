@@ -15,18 +15,17 @@ package pl.polsl.skirentalservice.dao.customer;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.*;
 import org.hibernate.Session;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import pl.polsl.skirentalservice.dto.customer.*;
 import pl.polsl.skirentalservice.dto.PageableDto;
+import pl.polsl.skirentalservice.util.RentStatus;
 import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
 import pl.polsl.skirentalservice.dto.deliv_return.CustomerDetailsReturnResDto;
-
-import static java.util.Optional.*;
-import static java.util.Objects.isNull;
-
-import static pl.polsl.skirentalservice.util.RentStatus.RETURNED;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -57,7 +56,7 @@ public class CustomerDao implements ICustomerDao {
         """;
         return session.createQuery(jpqlCheckIfHasAnyRents, Boolean.class)
             .setParameter("cid", customerId)
-            .setParameter("st", RETURNED)
+            .setParameter("st", RentStatus.RETURNED)
             .getSingleResult();
     }
 
@@ -79,8 +78,8 @@ public class CustomerDao implements ICustomerDao {
         final var customerDetails = session.createQuery(jpqlFindCustomerDetails, CustomerDetailsResDto.class)
             .setParameter("uid", customerId)
             .getSingleResultOrNull();
-        if (isNull(customerDetails)) return empty();
-        return of(customerDetails);
+        if (Objects.isNull(customerDetails)) return Optional.empty();
+        return Optional.of(customerDetails);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -101,8 +100,8 @@ public class CustomerDao implements ICustomerDao {
             .createQuery(jpqlGetCustomerDetails, CustomerDetailsReturnResDto.class)
             .setParameter("rentid", rentId)
             .getSingleResultOrNull();
-        if (isNull(customerDetails)) return empty();
-        return of(customerDetails);
+        if (Objects.isNull(customerDetails)) return Optional.empty();
+        return Optional.of(customerDetails);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -124,8 +123,8 @@ public class CustomerDao implements ICustomerDao {
             .createQuery(jpqlFindCustomerBaseId, AddEditCustomerReqDto.class)
             .setParameter("uid", customerId)
             .getSingleResultOrNull();
-        if (isNull(customerDetails)) return empty();
-        return of(customerDetails);
+        if (Objects.isNull(customerDetails)) return Optional.empty();
+        return Optional.of(customerDetails);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -14,16 +14,19 @@
 package pl.polsl.skirentalservice.core.ssh;
 
 import lombok.NoArgsConstructor;
-import jakarta.xml.bind.annotation.*;
 
-import java.util.*;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAccessType;
 
-import static jakarta.xml.bind.annotation.XmlAccessType.FIELD;
+import java.util.List;
+import java.util.ArrayList;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @NoArgsConstructor
-@XmlAccessorType(FIELD)
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "commands")
 public class JAXBSshCommands {
 

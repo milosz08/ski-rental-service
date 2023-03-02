@@ -13,13 +13,16 @@
 
 package pl.polsl.skirentalservice.dto.equipment;
 
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
-import pl.polsl.skirentalservice.dto.*;
+import pl.polsl.skirentalservice.util.Gender;
 import pl.polsl.skirentalservice.core.ValidatorBean;
-
-import static pl.polsl.skirentalservice.util.Gender.*;
+import pl.polsl.skirentalservice.dto.FormSelectsDto;
+import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
+import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -38,7 +41,7 @@ public class AddEditEquipmentResDto {
     private FormSelectsDto types = new FormSelectsDto();
     private FormSelectsDto brands = new FormSelectsDto();
     private FormSelectsDto colors = new FormSelectsDto();
-    private List<FormSelectTupleDto> genders = getGendersWithUnisex();
+    private List<FormSelectTupleDto> genders = Gender.getGendersWithUnisex();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -55,7 +58,7 @@ public class AddEditEquipmentResDto {
         this.types = validator.validateSelectField(reqDto, "type", this.types, reqDto.getType());
         this.brands = validator.validateSelectField(reqDto, "brand", this.brands, reqDto.getBrand());
         this.colors = validator.validateSelectField(reqDto, "color", this.colors, reqDto.getColor());
-        this.genders = getSelectedGenderWithUnisex(reqDto.getGender());
+        this.genders = Gender.getSelectedGenderWithUnisex(reqDto.getGender());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

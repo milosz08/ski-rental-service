@@ -13,13 +13,18 @@
 
 package pl.polsl.skirentalservice.filter.method;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.*;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.annotation.WebInitParam;
+
+import jakarta.servlet.http.HttpFilter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
-
-import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -34,7 +39,7 @@ public class RedirectOnPostMethodRequestFilter extends HttpFilter {
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
         throws IOException, ServletException {
         final String userId = req.getParameter("id");
-        if (req.getMethod().equals("POST") || !isNumeric(userId)) {
+        if (req.getMethod().equals("POST") || !StringUtils.isNumeric(userId)) {
             res.sendRedirect("/owner/add-equipment");
             return;
         }

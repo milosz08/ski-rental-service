@@ -13,44 +13,57 @@
 
 package pl.polsl.skirentalservice.domain.owner.employer;
 
-import org.slf4j.*;
-import org.hibernate.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+
 import org.modelmapper.ModelMapper;
 
 import jakarta.ejb.EJB;
-import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.util.Map;
+import java.util.Locale;
+import java.util.Objects;
 import java.io.IOException;
 
-import pl.polsl.skirentalservice.ssh.*;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
+
 import pl.polsl.skirentalservice.util.*;
-import pl.polsl.skirentalservice.core.*;
-import pl.polsl.skirentalservice.entity.*;
-import pl.polsl.skirentalservice.core.ssh.*;
-import pl.polsl.skirentalservice.core.mail.*;
-import pl.polsl.skirentalservice.dto.employer.*;
-import pl.polsl.skirentalservice.dao.employer.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.dao.user_details.*;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import pl.polsl.skirentalservice.dto.employer.AddEditEmployerReqDto;
+import pl.polsl.skirentalservice.dto.employer.AddEditEmployerResDto;
+import pl.polsl.skirentalservice.dto.employer.AddEmployerMailPayload;
+import pl.polsl.skirentalservice.core.ConfigBean;
+import pl.polsl.skirentalservice.core.ModelMapperGenerator;
+import pl.polsl.skirentalservice.core.ValidatorBean;
+import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.core.mail.MailSocketBean;
+import pl.polsl.skirentalservice.core.mail.MailRequestPayload;
+import pl.polsl.skirentalservice.core.ssh.SshSocketBean;
+import pl.polsl.skirentalservice.dao.employer.EmployerDao;
+import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
+import pl.polsl.skirentalservice.dao.user_details.UserDetailsDao;
+import pl.polsl.skirentalservice.dao.user_details.IUserDetailsDao;
+import pl.polsl.skirentalservice.entity.RoleEntity;
+import pl.polsl.skirentalservice.entity.EmployerEntity;
+import pl.polsl.skirentalservice.entity.UserDetailsEntity;
+import pl.polsl.skirentalservice.entity.LocationAddressEntity;
+import pl.polsl.skirentalservice.ssh.ExecCommandPerformer;
+import pl.polsl.skirentalservice.ssh.IExecCommandPerformer;
 
-import static java.util.Locale.ENGLISH;
-import static java.util.Objects.isNull;
-import static org.apache.commons.lang3.StringUtils.*;
-import static org.apache.commons.lang3.RandomStringUtils.*;
-
-import static pl.polsl.skirentalservice.util.Utils.*;
-import static pl.polsl.skirentalservice.util.AlertType.INFO;
-import static pl.polsl.skirentalservice.util.SessionAlert.*;
-import static pl.polsl.skirentalservice.util.UserRole.SELLER;
-import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
-import static pl.polsl.skirentalservice.util.PageTitle.OWNER_ADD_EMPLOYER_PAGE;
-import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
-import static pl.polsl.skirentalservice.core.ModelMapperGenerator.getModelMapper;
-import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
+import static pl.polsl.skirentalservice.exception.AlreadyExistException.PeselAlreadyExistException;
+import static pl.polsl.skirentalservice.exception.AlreadyExistException.PhoneNumberAlreadyExistException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -58,11 +71,11 @@ import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAIL
 public class OwnerAddEmployerServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerAddEmployerServlet.class);
-    private final SessionFactory sessionFactory = getSessionFactory();
-    private final ModelMapper modelMapper = getModelMapper();
+    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+    private final ModelMapper modelMapper = ModelMapperGenerator.getModelMapper();
 
     @EJB private ValidatorBean validator;
-    @EJB private MailSocketBean mailSocket;
+    @EJB private MailSocketBean mailSocketBean;
     @EJB private SshSocketBean sshSocket;
     @EJB private ConfigBean config;
 
@@ -70,13 +83,13 @@ public class OwnerAddEmployerServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final AlertTupleDto alert = getAndDestroySessionAlert(req, OWNER_ADD_EMPLOYER_PAGE_ALERT);
-        var resDto = getFromSessionAndDestroy(req, getClass().getName(), AddEditEmployerResDto.class);
-        if (isNull(resDto)) resDto = new AddEditEmployerResDto();
+        final AlertTupleDto alert = Utils.getAndDestroySessionAlert(req, SessionAlert.OWNER_ADD_EMPLOYER_PAGE_ALERT);
+        var resDto = Utils.getFromSessionAndDestroy(req, getClass().getName(), AddEditEmployerResDto.class);
+        if (Objects.isNull(resDto)) resDto = new AddEditEmployerResDto();
         req.setAttribute("alertData", alert);
         req.setAttribute("addEditEmployerData", resDto);
         req.setAttribute("addEditText", "Dodaj");
-        req.setAttribute("title", OWNER_ADD_EMPLOYER_PAGE.getName());
+        req.setAttribute("title", PageTitle.OWNER_ADD_EMPLOYER_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/owner/employer/owner-add-edit-employer.jsp").forward(req, res);
     }
 
@@ -86,7 +99,7 @@ public class OwnerAddEmployerServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         final HttpSession httpSession = req.getSession();
         final AlertTupleDto alert = new AlertTupleDto(true);
-        final String loggedUser = getLoggedUserLogin(req);
+        final String loggedUser = Utils.getLoggedUserLogin(req);
 
         final AddEditEmployerReqDto reqDto = new AddEditEmployerReqDto(req);
         final AddEditEmployerResDto resDto = new AddEditEmployerResDto(validator, reqDto);
@@ -107,33 +120,33 @@ public class OwnerAddEmployerServlet extends HttpServlet {
                 final IUserDetailsDao userDetailsDao = new UserDetailsDao(session);
 
                 if (userDetailsDao.checkIfEmployerWithSamePeselExist(reqDto.getPesel(), null)) {
-                    throw new PeselAlreadyExistException(reqDto.getPesel(), SELLER);
+                    throw new PeselAlreadyExistException(reqDto.getPesel(), UserRole.SELLER);
                 }
                 if (userDetailsDao.checkIfEmployerWithSamePhoneNumberExist(reqDto.getPhoneNumber(), null)) {
-                    throw new PhoneNumberAlreadyExistException(reqDto.getPhoneNumber(), SELLER);
+                    throw new PhoneNumberAlreadyExistException(reqDto.getPhoneNumber(), UserRole.SELLER);
                 }
                 final RoleEntity role = session.get(RoleEntity.class, 1);
-                if (isNull(role)) throw new RuntimeException("Podana rola nie istnieje w systemie.");
+                if (Objects.isNull(role)) throw new RuntimeException("Podana rola nie istnieje w systemie.");
 
                 String login;
                 boolean emailExist;
                 do {
-                    final String withoutAccents = stripAccents(reqDto.getFirstName().substring(0, 3) +
+                    final String withoutAccents = StringUtils.stripAccents(reqDto.getFirstName().substring(0, 3) +
                         reqDto.getLastName().substring(0, 3));
-                    login = withoutAccents.toLowerCase(ENGLISH) + randomNumeric(3);
+                    login = withoutAccents.toLowerCase(Locale.ENGLISH) + RandomStringUtils.randomNumeric(3);
                     emailExist = employerDao.checkIfLoginAlreadyExist(login);
                 } while (emailExist);
 
-                email = login + mailSocket.getDomain();
-                final String mailPassword = randomAlphanumeric(10);
-                final String passwordRaw = randomAlphanumeric(10);
+                email = login + mailSocketBean.getDomain();
+                final String mailPassword = RandomStringUtils.randomAlphanumeric(10);
+                final String passwordRaw = RandomStringUtils.randomAlphanumeric(10);
                 final String passowordDecoded = Utils.generateHash(passwordRaw);
 
                 final UserDetailsEntity userDetails = modelMapper.map(reqDto, UserDetailsEntity.class);
                 userDetails.setBornDate(reqDto.getParsedBornDate());
                 userDetails.setEmailAddress(email);
                 final LocationAddressEntity locationAddress = modelMapper.map(reqDto, LocationAddressEntity.class);
-                locationAddress.setApartmentNr(trimToNull(reqDto.getApartmentNr()));
+                locationAddress.setApartmentNr(StringUtils.trimToNull(reqDto.getApartmentNr()));
                 final EmployerEntity employer = EmployerEntity.builder()
                     .login(login)
                     .password(passowordDecoded)
@@ -144,7 +157,8 @@ public class OwnerAddEmployerServlet extends HttpServlet {
                     .build();
 
                 commandPerformer.createMailbox(email, mailPassword);
-                final var adminDetails = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
+                final var adminDetails = (LoggedUserDataDto) httpSession
+                    .getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
                 final var employerMailDetails = new AddEmployerMailPayload(reqDto, email, mailPassword);
 
                 final MailRequestPayload creatorPayload = MailRequestPayload.builder()
@@ -160,8 +174,8 @@ public class OwnerAddEmployerServlet extends HttpServlet {
                     .templateVars(Map.of("employerLogin", login, "employerPassword", passwordRaw))
                     .build();
 
-                mailSocket.sendMessage(adminDetails.getEmailAddress(), creatorPayload, req);
-                mailSocket.sendMessage(email, requesterPayload, req);
+                mailSocketBean.sendMessage(adminDetails.getEmailAddress(), creatorPayload, req);
+                mailSocketBean.sendMessage(email, requesterPayload, req);
 
                 session.persist(employer);
                 session.getTransaction().commit();
@@ -171,18 +185,18 @@ public class OwnerAddEmployerServlet extends HttpServlet {
                     "zostało wysłane hasło dostępu do konta. Hasło dostępu do skrzynki email użytkownika znajdziesz " +
                     "w przysłanej na Twój adres email wiadomości."
                 );
-                alert.setType(INFO);
-                httpSession.setAttribute(OWNER_EMPLOYERS_PAGE_ALERT.getName(), alert);
+                alert.setType(AlertType.INFO);
+                httpSession.setAttribute(SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT.getName(), alert);
                 httpSession.removeAttribute(getClass().getName());
                 res.sendRedirect("/owner/employers");
             } catch (RuntimeException ex) {
-                if (!isEmpty(email)) commandPerformer.deleteMailbox(email);
-                onHibernateException(session, LOGGER, ex);
+                if (!StringUtils.isEmpty(email)) commandPerformer.deleteMailbox(email);
+                Utils.onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
             httpSession.setAttribute(getClass().getName(), resDto);
-            httpSession.setAttribute(OWNER_ADD_EMPLOYER_PAGE_ALERT.getName(), alert);
+            httpSession.setAttribute(SessionAlert.OWNER_ADD_EMPLOYER_PAGE_ALERT.getName(), alert);
             LOGGER.error("Unable to create employer. Cause: {}", ex.getMessage());
             res.sendRedirect("/owner/add-employer");
         }

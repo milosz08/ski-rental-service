@@ -13,7 +13,8 @@
 
 package pl.polsl.skirentalservice.ssh;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.AllArgsConstructor;
 
 import pl.polsl.skirentalservice.core.ssh.ICommand;
 

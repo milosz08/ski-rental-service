@@ -13,11 +13,11 @@
 
 package pl.polsl.skirentalservice.converter;
 
-import jakarta.persistence.AttributeConverter;
-import pl.polsl.skirentalservice.util.RentStatus;
+import java.util.Objects;
 
-import static java.util.Objects.isNull;
-import static pl.polsl.skirentalservice.util.RentStatus.*;
+import jakarta.persistence.AttributeConverter;
+
+import pl.polsl.skirentalservice.util.RentStatus;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -32,12 +32,11 @@ public class RentStatusConverter implements AttributeConverter<RentStatus, Strin
 
     @Override
     public RentStatus convertToEntityAttribute(String name) {
-        if (isNull(name)) return OPENED;
-        switch (name) {
-            case "otwarty": return OPENED;
-            case "wypożyczony": return RENTED;
-            case "zwrócony": return RETURNED;
-        }
-        return OPENED;
+        if (Objects.isNull(name)) return RentStatus.OPENED;
+        return switch (name) {
+            case "wypożyczony" -> RentStatus.RENTED;
+            case "zwrócony" -> RentStatus.RETURNED;
+            default -> RentStatus.OPENED;
+        };
     }
 }

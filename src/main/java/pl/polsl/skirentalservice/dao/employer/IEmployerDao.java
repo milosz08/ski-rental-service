@@ -13,14 +13,18 @@
 
 package pl.polsl.skirentalservice.dao.employer;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
-import pl.polsl.skirentalservice.dto.*;
-import pl.polsl.skirentalservice.dto.employer.*;
-import pl.polsl.skirentalservice.entity.EmployerEntity;
+import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
+import pl.polsl.skirentalservice.dto.OwnerMailPayloadDto;
+import pl.polsl.skirentalservice.dto.employer.AddEditEmployerReqDto;
+import pl.polsl.skirentalservice.dto.employer.EmployerDetailsResDto;
+import pl.polsl.skirentalservice.dto.employer.EmployerRecordResDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.dto.change_password.EmployerDetailsDto;
+import pl.polsl.skirentalservice.entity.EmployerEntity;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

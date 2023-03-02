@@ -13,19 +13,19 @@
 
 package pl.polsl.skirentalservice.entity;
 
-import lombok.*;
+import lombok.NoArgsConstructor;
+
 import jakarta.persistence.*;
 
-import java.util.*;
+import java.util.Set;
+import java.util.HashSet;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import pl.polsl.skirentalservice.core.db.*;
 import pl.polsl.skirentalservice.util.RentStatus;
+import pl.polsl.skirentalservice.core.db.EntityInjector;
+import pl.polsl.skirentalservice.core.db.AuditableEntity;
 import pl.polsl.skirentalservice.converter.RentStatusConverter;
-
-import static jakarta.persistence.CascadeType.*;
-import static jakarta.persistence.FetchType.LAZY;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -47,15 +47,15 @@ public class RentEntity extends AuditableEntity {
     @Column(name = "status") @Convert(converter = RentStatusConverter.class)
     private RentStatus status;
 
-    @ManyToOne(fetch = LAZY, cascade = { PERSIST, MERGE })
+    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private CustomerEntity customer;
 
-    @ManyToOne(fetch = LAZY, cascade = { PERSIST, MERGE })
+    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "employer_id", referencedColumnName = "id")
     private EmployerEntity employer;
 
-    @OneToMany(fetch = LAZY, cascade = { PERSIST, MERGE, REMOVE }, mappedBy = "rent")
+    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE }, mappedBy = "rent")
     private Set<RentEquipmentEntity> equipments = new HashSet<>();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -13,11 +13,14 @@
 
 package pl.polsl.skirentalservice.dao.customer;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
-import pl.polsl.skirentalservice.dto.customer.*;
 import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
+import pl.polsl.skirentalservice.dto.customer.CustomerRecordResDto;
+import pl.polsl.skirentalservice.dto.customer.AddEditCustomerReqDto;
+import pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto;
 import pl.polsl.skirentalservice.dto.deliv_return.CustomerDetailsReturnResDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -13,34 +13,45 @@
 
 package pl.polsl.skirentalservice.domain;
 
-import org.slf4j.*;
-import org.hibernate.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 
 import jakarta.ejb.EJB;
-import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
-import java.util.*;
-import java.text.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.util.Map;
+import java.util.Locale;
+import java.util.HashMap;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
-import pl.polsl.skirentalservice.dto.*;
-import pl.polsl.skirentalservice.core.*;
-import pl.polsl.skirentalservice.entity.*;
-import pl.polsl.skirentalservice.core.mail.*;
-import pl.polsl.skirentalservice.dao.employer.*;
-import pl.polsl.skirentalservice.dto.change_password.*;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import pl.polsl.skirentalservice.util.*;
+import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.change_password.RequestToChangePasswordReqDto;
+import pl.polsl.skirentalservice.dto.change_password.RequestToChangePasswordResDto;
+import pl.polsl.skirentalservice.core.ValidatorBean;
+import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.core.mail.MailRequestPayload;
+import pl.polsl.skirentalservice.core.mail.MailSocketBean;
+import pl.polsl.skirentalservice.entity.EmployerEntity;
+import pl.polsl.skirentalservice.entity.OtaTokenEntity;
+import pl.polsl.skirentalservice.dao.employer.EmployerDao;
+import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
 
-import static pl.polsl.skirentalservice.util.Utils.*;
-import static pl.polsl.skirentalservice.util.AlertType.INFO;
-import static pl.polsl.skirentalservice.exception.NotFoundException.*;
-import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
-import static pl.polsl.skirentalservice.util.PageTitle.FORGOT_PASSWORD_REQUEST_PAGE;
-import static pl.polsl.skirentalservice.util.SessionAlert.FORGOT_PASSWORD_PAGE_ALERT;
+import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -49,19 +60,19 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ForgotPasswordRequestServlet.class);
     private static final DateFormat DF = new SimpleDateFormat("yyyy-MM-dd, kk:mm:ss", new Locale("pl"));
-    private final SessionFactory sessionFactory = getSessionFactory();
+    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
     @EJB private ValidatorBean validator;
-    @EJB private MailSocketBean mailSocket;
+    @EJB private MailSocketBean mailSocketBean;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        req.setAttribute("alertData", getAndDestroySessionAlert(req, FORGOT_PASSWORD_PAGE_ALERT));
-        req.setAttribute("resetPassData", getFromSessionAndDestroy(req, getClass().getName(),
+        req.setAttribute("alertData", Utils.getAndDestroySessionAlert(req, SessionAlert.FORGOT_PASSWORD_PAGE_ALERT));
+        req.setAttribute("resetPassData", Utils.getFromSessionAndDestroy(req, getClass().getName(),
             RequestToChangePasswordResDto.class));
-        req.setAttribute("title", FORGOT_PASSWORD_REQUEST_PAGE.getName());
+        req.setAttribute("title", PageTitle.FORGOT_PASSWORD_REQUEST_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/forgot-password-request.jsp").forward(req, res);
     }
 
@@ -87,7 +98,7 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
                     throw new UserNotFoundException(reqDto, LOGGER);
                 });
 
-                final String token = randomAlphanumeric(10);
+                final String token = RandomStringUtils.randomAlphanumeric(10);
                 final EmployerEntity employerEntity = session.getReference(EmployerEntity.class, employer.id());
                 final OtaTokenEntity otaToken = new OtaTokenEntity(token, employerEntity);
                 session.persist(otaToken);
@@ -102,21 +113,21 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
                     .templateVars(templateVars)
                     .build();
 
-                mailSocket.sendMessage(employer.emailAddress(), payload, req);
-                alert.setType(INFO);
+                mailSocketBean.sendMessage(employer.emailAddress(), payload, req);
+                alert.setType(AlertType.INFO);
                 alert.setMessage(
                     "Na adres email <strong>" + employer.emailAddress() + "</strong> został przesłany link aktywacyjny."
                 );
-                resDto.getLoginOrEmail().setValue(EMPTY);
+                resDto.getLoginOrEmail().setValue(StringUtils.EMPTY);
                 session.getTransaction().commit();
             } catch (RuntimeException ex) {
-                onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
             httpSession.setAttribute(getClass().getName(), resDto);
         }
-        httpSession.setAttribute(FORGOT_PASSWORD_PAGE_ALERT.getName(), alert);
+        httpSession.setAttribute(SessionAlert.FORGOT_PASSWORD_PAGE_ALERT.getName(), alert);
         res.sendRedirect("/forgot-password-request");
     }
 }

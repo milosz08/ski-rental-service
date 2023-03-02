@@ -13,44 +13,48 @@
 
 package pl.polsl.skirentalservice.domain.seller.rent;
 
-import org.slf4j.*;
-import org.hibernate.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.modelmapper.ModelMapper;
 
 import jakarta.ejb.EJB;
-import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
-import pl.polsl.skirentalservice.dto.*;
-import pl.polsl.skirentalservice.core.*;
-import pl.polsl.skirentalservice.entity.*;
-import pl.polsl.skirentalservice.dto.rent.*;
-import pl.polsl.skirentalservice.core.mail.*;
-import pl.polsl.skirentalservice.dao.employer.*;
-import pl.polsl.skirentalservice.dao.equipment.*;
-import pl.polsl.skirentalservice.pdf.RentPdfDocument;
-import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
-import pl.polsl.skirentalservice.pdf.dto.RentPdfDocumentDataDto;
-import pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.*;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-import static java.util.Objects.isNull;
-import static java.lang.Integer.parseInt;
-import static java.time.LocalDateTime.parse;
+import pl.polsl.skirentalservice.util.*;
+import pl.polsl.skirentalservice.dto.*;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto;
+import pl.polsl.skirentalservice.dto.rent.InMemoryRentDataDto;
+import pl.polsl.skirentalservice.dto.rent.CartSingleEquipmentDataDto;
+import pl.polsl.skirentalservice.core.ConfigBean;
+import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.core.ModelMapperGenerator;
+import pl.polsl.skirentalservice.core.mail.MailSocketBean;
+import pl.polsl.skirentalservice.core.mail.MailRequestPayload;
+import pl.polsl.skirentalservice.dao.employer.EmployerDao;
+import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
+import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
+import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
+import pl.polsl.skirentalservice.entity.*;
+import pl.polsl.skirentalservice.pdf.RentPdfDocument;
+import pl.polsl.skirentalservice.pdf.dto.RentPdfDocumentDataDto;
 
-import static pl.polsl.skirentalservice.util.Utils.*;
-import static pl.polsl.skirentalservice.util.SessionAlert.*;
-import static pl.polsl.skirentalservice.util.AlertType.INFO;
-import static pl.polsl.skirentalservice.util.RentStatus.RENTED;
-import static pl.polsl.skirentalservice.util.SessionAttribute.*;
-import static pl.polsl.skirentalservice.core.ModelMapperGenerator.*;
-import static pl.polsl.skirentalservice.exception.NotFoundException.*;
-import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
-import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
+import static pl.polsl.skirentalservice.exception.AlreadyExistException.TooMuchEquipmentsException;
+import static pl.polsl.skirentalservice.exception.NotFoundException.AnyEquipmentsInCartNotFoundException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -58,10 +62,10 @@ import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
 public class SellerPersistNewRentServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SellerPersistNewRentServlet.class);
-    private final SessionFactory sessionFactory = getSessionFactory();
-    private final ModelMapper modelMapper = getModelMapper();
+    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+    private final ModelMapper modelMapper = ModelMapperGenerator.getModelMapper();
 
-    @EJB private MailSocketBean mailSocket;
+    @EJB private MailSocketBean mailSocketBean;
     @EJB private ConfigBean config;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -69,14 +73,14 @@ public class SellerPersistNewRentServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final HttpSession httpSession = req.getSession();
-        final var rentData = (InMemoryRentDataDto) httpSession.getAttribute(INMEMORY_NEW_RENT_DATA.getName());
-        if (isNull(rentData)) {
+        final var rentData = (InMemoryRentDataDto) httpSession.getAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName());
+        if (Objects.isNull(rentData)) {
             res.sendRedirect("/seller/customers");
             return;
         }
         final AlertTupleDto alert = new AlertTupleDto(true);
-        final String loggedUser = getLoggedUserLogin(req);
-        final var loggedEmployer = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
+        final String loggedUser = Utils.getLoggedUserLogin(req);
+        final var loggedEmployer = (LoggedUserDataDto) httpSession.getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
 
         try (final Session session = sessionFactory.openSession()) {
             if (rentData.getEquipments().isEmpty()) throw new AnyEquipmentsInCartNotFoundException();
@@ -92,7 +96,7 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                 final Set<RentEquipmentEntity> equipmentEntities = new HashSet<>();
                 for (final CartSingleEquipmentDataDto cartData : rentData.getEquipments()) {
                     final Integer eqCount = equipmentDao.findAllEquipmentsInCartCount(cartData.getId());
-                    if (eqCount < parseInt(cartData.getCount())) throw new TooMuchEquipmentsException();
+                    if (eqCount < Integer.parseInt(cartData.getCount())) throw new TooMuchEquipmentsException();
 
                     final RentEquipmentEntity equipment = modelMapper.map(cartData, RentEquipmentEntity.class);
                     final EquipmentEntity refEquipment = session.get(EquipmentEntity.class, cartData.getId());
@@ -106,11 +110,11 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                     equipmentDao.decreaseAvailableSelectedEquipmentCount(cartData.getId(), cartData.getCount());
                 }
                 rent.setId(null);
-                rent.setIssuedDateTime(parse(rentData.getIssuedDateTime().replace(' ', 'T')));
+                rent.setIssuedDateTime(LocalDateTime.parse(rentData.getIssuedDateTime().replace(' ', 'T')));
                 rent.setTotalPrice(rentData.getPriceUnits().getTotalPriceNetto());
                 rent.setTotalDepositPrice(rentData.getPriceUnits().getTotalDepositPriceNetto());
 
-                rent.setStatus(RENTED);
+                rent.setStatus(RentStatus.RENTED);
                 rent.setCustomer(session.get(CustomerEntity.class, rentData.getCustomerId()));
                 rent.setEmployer(session.get(EmployerEntity.class, loggedEmployer.getId()));
                 rent.setEquipments(equipmentEntities);
@@ -128,7 +132,7 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                     emailPayload.getRentEquipments().add(equipment);
                 }
                 final String emailTopic = "SkiRent Service | Nowe wypożyczenie: " + rentData.getIssuedIdentifier();
-                final String description = isNull(rentData.getDescription()) ? "<i>Brak danych</i>" : rentData.getDescription();
+                final String description = Objects.isNull(rentData.getDescription()) ? "<i>Brak danych</i>" : rentData.getDescription();
 
                 final Map<String, Object> templateVars = new HashMap<>();
                 templateVars.put("rentIdentifier", rentData.getIssuedIdentifier());
@@ -156,7 +160,7 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                     .templateVars(templateVars)
                     .attachmentsPaths(Set.of(rentPdfDocument.getPath()))
                     .build();
-                mailSocket.sendMessage(rentData.getCustomerDetails().email(), customerPayload, req);
+                mailSocketBean.sendMessage(rentData.getCustomerDetails().email(), customerPayload, req);
                 LOGGER.info("Successful send rent email message for customer. Payload: {}", customerPayload);
 
                 final MailRequestPayload employerPayload = MailRequestPayload.builder()
@@ -166,7 +170,7 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                     .templateVars(templateVars)
                     .attachmentsPaths(Set.of(rentPdfDocument.getPath()))
                     .build();
-                mailSocket.sendMessage(loggedEmployer.getEmailAddress(), employerPayload, req);
+                mailSocketBean.sendMessage(loggedEmployer.getEmailAddress(), employerPayload, req);
                 LOGGER.info("Successful send rent email message for employer. Payload: {}", employerPayload);
 
                 final Map<String, Object> ownerTemplateVars = new HashMap<>(templateVars);
@@ -180,27 +184,27 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                     .build();
                 for (final OwnerMailPayloadDto owner : employerDao.findAllEmployersMailSenders()) {
                     ownerPayload.setMessageResponder(owner.fullName());
-                    mailSocket.sendMessage(owner.email(), ownerPayload, req);
+                    mailSocketBean.sendMessage(owner.email(), ownerPayload, req);
                 }
                 LOGGER.info("Successful send rent email message for owner/owners. Payload: {}", ownerPayload);
 
                 session.persist(rent);
                 session.getTransaction().commit();
-                alert.setType(INFO);
+                alert.setType(AlertType.INFO);
                 alert.setMessage(
                     "Wypożyczenie o numerze <strong>" + rentData.getIssuedIdentifier() + "</strong> zostało pomyślnie " +
                     "złożone w systemie. Szczegóły złożonego wypożyczenia znajdziesz również w wiadomości email."
                 );
-                httpSession.setAttribute(COMMON_RENTS_PAGE_ALERT.getName(), alert);
-                httpSession.removeAttribute(INMEMORY_NEW_RENT_DATA.getName());
+                httpSession.setAttribute(SessionAlert.COMMON_RENTS_PAGE_ALERT.getName(), alert);
+                httpSession.removeAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName());
                 LOGGER.info("Successfuly persist new rent by: {} in database. Rent data: {}", loggedUser, rentData);
                 res.sendRedirect("/seller/rents");
             } catch (RuntimeException ex) {
-                onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
-            httpSession.setAttribute(SELLER_COMPLETE_RENT_PAGE_ALERT.getName(), alert);
+            httpSession.setAttribute(SessionAlert.SELLER_COMPLETE_RENT_PAGE_ALERT.getName(), alert);
             LOGGER.error("Failure persist new rent by: {} in database. Rent data: {}. Cause: {}", loggedUser, rentData,
                 ex.getMessage());
             res.sendRedirect("/seller/complete-rent-equipments");

@@ -13,26 +13,33 @@
 
 package pl.polsl.skirentalservice.domain.common.equipment;
 
-import org.slf4j.*;
-import org.hibernate.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
-import jakarta.servlet.http.HttpServlet;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import pl.polsl.skirentalservice.dao.equipment.*;
+import pl.polsl.skirentalservice.util.Utils;
+import pl.polsl.skirentalservice.util.PageTitle;
+import pl.polsl.skirentalservice.util.SessionAlert;
+import pl.polsl.skirentalservice.util.SessionAttribute;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
+import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
 
-import static pl.polsl.skirentalservice.exception.NotFoundException.*;
-import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
-import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
-import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
-import static pl.polsl.skirentalservice.util.PageTitle.COMMON_EQUIPMENT_DETAILS_PAGE;
-import static pl.polsl.skirentalservice.util.SessionAlert.COMMON_EQUIPMENTS_PAGE_ALERT;
+import static pl.polsl.skirentalservice.exception.NotFoundException.EquipmentNotFoundException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -40,7 +47,7 @@ import static pl.polsl.skirentalservice.util.SessionAlert.COMMON_EQUIPMENTS_PAGE
 public class CommonEquipmentDetailsServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonEquipmentDetailsServlet.class);
-    private final SessionFactory sessionFactory = getSessionFactory();
+    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -48,7 +55,7 @@ public class CommonEquipmentDetailsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final String equipmentId = req.getParameter("id");
         final HttpSession httpSession = req.getSession();
-        final var userDataDto = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
+        final var userDataDto = (LoggedUserDataDto) httpSession.getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
 
         final AlertTupleDto alert = new AlertTupleDto(true);
         try (final Session session = sessionFactory.openSession()) {
@@ -60,15 +67,15 @@ public class CommonEquipmentDetailsServlet extends HttpServlet {
                 });
 
                 req.setAttribute("equipmentData", equipmentDetails);
-                req.setAttribute("title", COMMON_EQUIPMENT_DETAILS_PAGE.getName());
+                req.setAttribute("title", PageTitle.COMMON_EQUIPMENT_DETAILS_PAGE.getName());
                 req.getRequestDispatcher("/WEB-INF/pages/" + userDataDto.getRoleEng() + "/equipment/" +
                     userDataDto.getRoleEng() + "-equipment-details.jsp").forward(req, res);
             } catch (RuntimeException ex) {
-                onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
-            httpSession.setAttribute(COMMON_EQUIPMENTS_PAGE_ALERT.getName(), alert);
+            httpSession.setAttribute(SessionAlert.COMMON_EQUIPMENTS_PAGE_ALERT.getName(), alert);
             res.sendRedirect("/" + userDataDto.getRoleEng() + "/equipments");
         }
     }

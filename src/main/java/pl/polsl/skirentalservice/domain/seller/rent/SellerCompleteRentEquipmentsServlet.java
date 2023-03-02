@@ -13,42 +13,51 @@
 
 package pl.polsl.skirentalservice.domain.seller.rent;
 
-import org.slf4j.*;
-import org.hibernate.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import jakarta.servlet.http.*;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.util.*;
+import java.util.stream.Collectors;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.stream.Collectors;
 
-import pl.polsl.skirentalservice.dto.*;
-import pl.polsl.skirentalservice.dto.rent.*;
-import pl.polsl.skirentalservice.paging.filter.*;
-import pl.polsl.skirentalservice.paging.sorter.*;
-import pl.polsl.skirentalservice.dao.equipment.*;
+import org.apache.commons.lang3.math.NumberUtils;
+
+import pl.polsl.skirentalservice.core.db.HibernateUtil;
+
+import pl.polsl.skirentalservice.util.*;
+import pl.polsl.skirentalservice.dto.PageableDto;
+import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.PriceUnitsDto;
+import pl.polsl.skirentalservice.dto.rent.AddEditEquipmentCartResDto;
+import pl.polsl.skirentalservice.dto.rent.CartSingleEquipmentDataDto;
+import pl.polsl.skirentalservice.dto.rent.EquipmentRentRecordResDto;
+import pl.polsl.skirentalservice.dto.rent.InMemoryRentDataDto;
+import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
+import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
+import pl.polsl.skirentalservice.paging.filter.FilterColumn;
+import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
+import pl.polsl.skirentalservice.paging.filter.ServletFilter;
+import pl.polsl.skirentalservice.paging.sorter.ServletSorter;
+import pl.polsl.skirentalservice.paging.sorter.SorterDataDto;
+import pl.polsl.skirentalservice.paging.sorter.ServletSorterField;
 import pl.polsl.skirentalservice.paging.pagination.ServletPagination;
 
-import static java.util.Objects.isNull;
-import static java.lang.Long.parseLong;
-import static java.lang.Integer.parseInt;
-import static java.time.Duration.between;
-import static java.util.Comparator.comparing;
-import static java.math.RoundingMode.HALF_UP;
-import static java.util.Objects.requireNonNullElse;
-import static org.apache.commons.lang3.math.NumberUtils.toInt;
-
-import static pl.polsl.skirentalservice.util.Utils.*;
-import static pl.polsl.skirentalservice.util.PageTitle.*;
-import static pl.polsl.skirentalservice.util.AlertType.ERROR;
-import static pl.polsl.skirentalservice.util.SessionAttribute.*;
-import static pl.polsl.skirentalservice.exception.NotFoundException.*;
-import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
-import static pl.polsl.skirentalservice.util.SessionAlert.SELLER_COMPLETE_RENT_PAGE_ALERT;
+import static pl.polsl.skirentalservice.exception.NotFoundException.EquipmentNotFoundException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -56,7 +65,7 @@ import static pl.polsl.skirentalservice.util.SessionAlert.SELLER_COMPLETE_RENT_P
 public class SellerCompleteRentEquipmentsServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SellerCompleteRentEquipmentsServlet.class);
-    private final SessionFactory sessionFactory = getSessionFactory();
+    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
     private final Map<String, ServletSorterField> sorterFieldMap = new HashMap<>();
     private final List<FilterColumn> filterFieldMap = new ArrayList<>();
@@ -80,26 +89,26 @@ public class SellerCompleteRentEquipmentsServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final int page = toInt(requireNonNullElse(req.getParameter("page"), "1"), 1);
-        final int total = toInt(requireNonNullElse(req.getParameter("total"), "10"), 10);
+        final int page = NumberUtils.toInt(Objects.requireNonNullElse(req.getParameter("page"), "1"), 1);
+        final int total = NumberUtils.toInt(Objects.requireNonNullElse(req.getParameter("total"), "10"), 10);
 
-        final var addModalResDto = getFromSessionAndDestroy(req, EQ_ADD_CART_MODAL_DATA.getName(),
+        final var addModalResDto = Utils.getFromSessionAndDestroy(req, SessionAttribute.EQ_ADD_CART_MODAL_DATA.getName(),
             AddEditEquipmentCartResDto.class);
-        final var editModalResDto = getFromSessionAndDestroy(req, EQ_EDIT_CART_MODAL_DATA.getName(),
+        final var editModalResDto = Utils.getFromSessionAndDestroy(req, SessionAttribute.EQ_EDIT_CART_MODAL_DATA.getName(),
             AddEditEquipmentCartResDto.class);
 
         final HttpSession httpSession = req.getSession();
-        final var rentData = (InMemoryRentDataDto) httpSession.getAttribute(INMEMORY_NEW_RENT_DATA.getName());
-        if (isNull(rentData) || !rentData.isAllGood()) {
+        final var rentData = (InMemoryRentDataDto) httpSession.getAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName());
+        if (Objects.isNull(rentData) || !rentData.isAllGood()) {
             res.sendRedirect("/seller/customers");
             return;
         }
         final ServletSorter servletSorter = new ServletSorter(req, "e.id", sorterFieldMap);
-        final SorterDataDto sorterData = servletSorter.generateSortingJPQuery(RENT_EQUIPMENTS_LIST_SORTER);
+        final SorterDataDto sorterData = servletSorter.generateSortingJPQuery(SessionAttribute.RENT_EQUIPMENTS_LIST_SORTER);
         final ServletFilter servletFilter = new ServletFilter(req, filterFieldMap);
-        final FilterDataDto filterData = servletFilter.generateFilterJPQuery(RENT_EQUIPMENTS_LIST_FILTER);
+        final FilterDataDto filterData = servletFilter.generateFilterJPQuery(SessionAttribute.RENT_EQUIPMENTS_LIST_FILTER);
 
-        final AlertTupleDto alert = getAndDestroySessionAlert(req, SELLER_COMPLETE_RENT_PAGE_ALERT);
+        final AlertTupleDto alert = Utils.getAndDestroySessionAlert(req, SessionAlert.SELLER_COMPLETE_RENT_PAGE_ALERT);
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
@@ -115,9 +124,9 @@ public class SellerCompleteRentEquipmentsServlet extends HttpServlet {
                     .stream()
                     .filter(l -> l.getTotalCount() > 0).collect(Collectors.toList());
 
-                final LocalDateTime startTruncated = truncateToTotalHour(rentData.getParsedRentDateTime());
-                final LocalDateTime endTruncated = truncateToTotalHour(rentData.getParsedReturnDateTime());
-                final long totalRentHours = between(startTruncated, endTruncated).toHours();
+                final LocalDateTime startTruncated = Utils.truncateToTotalHour(rentData.getParsedRentDateTime());
+                final LocalDateTime endTruncated = Utils.truncateToTotalHour(rentData.getParsedReturnDateTime());
+                final long totalRentHours = Duration.between(startTruncated, endTruncated).toHours();
                 final long rentDays = totalRentHours / 24;
                 rentData.setDays(rentDays);
                 rentData.setHours(totalRentHours % 24);
@@ -144,41 +153,41 @@ public class SellerCompleteRentEquipmentsServlet extends HttpServlet {
 
                     final BigDecimal taxValue = new BigDecimal(rentData.getTax());
                     final BigDecimal sumPriceBrutto = taxValue
-                        .divide(new BigDecimal(100), 2, HALF_UP).multiply(sumPriceNetto).add(sumPriceNetto)
-                        .setScale(2, HALF_UP);
+                        .divide(new BigDecimal(100), 2, RoundingMode.HALF_UP).multiply(sumPriceNetto).add(sumPriceNetto)
+                        .setScale(2, RoundingMode.HALF_UP);
 
                     final BigDecimal depositPriceNetto = cartDto.getPriceUnits().getTotalDepositPriceNetto();
                     final BigDecimal depositPriceBrutto = taxValue
-                        .divide(new BigDecimal(100), 2, HALF_UP).multiply(depositPriceNetto).add(depositPriceNetto)
-                        .setScale(2, HALF_UP);
+                        .divide(new BigDecimal(100), 2, RoundingMode.HALF_UP).multiply(depositPriceNetto).add(depositPriceNetto)
+                        .setScale(2, RoundingMode.HALF_UP);
 
-                    if (!isNull(editModalResDto) && parseLong(editModalResDto.getEqId()) == recordDto.getId()) {
+                    if (!Objects.isNull(editModalResDto) && Long.parseLong(editModalResDto.getEqId()) == recordDto.getId()) {
                         cartDto.setResDto(editModalResDto);
                     }
                     cartDto.setName(recordDto.getName());
                     cartDto.setPrices(sumPriceNetto, sumPriceBrutto, depositPriceBrutto);
-                    totalCounts += parseInt(cartDto.getCount());
+                    totalCounts += Integer.parseInt(cartDto.getCount());
                     priceUnits.add(sumPriceNetto, sumPriceBrutto, depositPriceNetto, depositPriceBrutto);
                 }
                 rentData.setTotalCount(totalCounts);
                 rentData.setPriceUnits(priceUnits);
-                rentData.getEquipments().sort(comparing(CartSingleEquipmentDataDto::getId));
+                rentData.getEquipments().sort(Comparator.comparing(CartSingleEquipmentDataDto::getId));
 
                 session.getTransaction().commit();
                 req.setAttribute("pagesData", pagination);
                 req.setAttribute("equipmentsData", equipmentsList);
             } catch (RuntimeException ex) {
-                onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
-            alert.setType(ERROR);
+            alert.setType(AlertType.ERROR);
             alert.setMessage(ex.getMessage());
         }
         req.setAttribute("alertData", alert);
         req.setAttribute("sorterData", sorterFieldMap);
         req.setAttribute("filterData", filterData);
         req.setAttribute("addModalResDto", addModalResDto);
-        req.setAttribute("title", SELLER_CREATE_NEW_RENT_PAGE.getName());
+        req.setAttribute("title", PageTitle.SELLER_CREATE_NEW_RENT_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/seller/rent/seller-complete-rent-equipments.jsp").forward(req, res);
     }
 
@@ -186,13 +195,13 @@ public class SellerCompleteRentEquipmentsServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final int page = toInt(requireNonNullElse(req.getParameter("page"), "1"), 1);
-        final int total = toInt(requireNonNullElse(req.getParameter("total"), "10"), 10);
+        final int page = NumberUtils.toInt(Objects.requireNonNullElse(req.getParameter("page"), "1"), 1);
+        final int total = NumberUtils.toInt(Objects.requireNonNullElse(req.getParameter("total"), "10"), 10);
 
         final ServletSorter servletSorter = new ServletSorter(req, "e.id", sorterFieldMap);
-        servletSorter.generateSortingJPQuery(RENT_EQUIPMENTS_LIST_SORTER);
+        servletSorter.generateSortingJPQuery(SessionAttribute.RENT_EQUIPMENTS_LIST_SORTER);
         final ServletFilter servletFilter = new ServletFilter(req, filterFieldMap);
-        servletFilter.generateFilterJPQuery(RENT_EQUIPMENTS_LIST_FILTER);
+        servletFilter.generateFilterJPQuery(SessionAttribute.RENT_EQUIPMENTS_LIST_FILTER);
 
         res.sendRedirect("/seller/complete-rent-equipments?page=" + page + "&total=" + total);
     }

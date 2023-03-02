@@ -13,36 +13,43 @@
 
 package pl.polsl.skirentalservice.domain.seller.customer;
 
-import org.slf4j.*;
-import org.hibernate.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 
 import jakarta.ejb.EJB;
-import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.annotation.WebServlet;
 
-import pl.polsl.skirentalservice.entity.*;
-import pl.polsl.skirentalservice.dao.rent.*;
-import pl.polsl.skirentalservice.dao.customer.*;
-import pl.polsl.skirentalservice.dao.equipment.*;
-import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.core.mail.MailSocketBean;
-import pl.polsl.skirentalservice.dto.rent.InMemoryRentDataDto;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
+import java.util.Objects;
 import java.io.IOException;
 
-import static java.util.Objects.isNull;
-import static org.apache.commons.lang3.math.NumberUtils.toLong;
+import org.apache.commons.lang3.math.NumberUtils;
 
-import static pl.polsl.skirentalservice.util.AlertType.INFO;
-import static pl.polsl.skirentalservice.util.UserRole.SELLER;
-import static pl.polsl.skirentalservice.exception.NotFoundException.*;
-import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
-import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
-import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
-import static pl.polsl.skirentalservice.util.SessionAttribute.INMEMORY_NEW_RENT_DATA;
-import static pl.polsl.skirentalservice.util.SessionAlert.COMMON_CUSTOMERS_PAGE_ALERT;
+import pl.polsl.skirentalservice.util.*;
+import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.rent.InMemoryRentDataDto;
+import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.core.mail.MailSocketBean;
+import pl.polsl.skirentalservice.dao.customer.CustomerDao;
+import pl.polsl.skirentalservice.dao.customer.ICustomerDao;
+import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
+import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
+import pl.polsl.skirentalservice.dao.rent.RentDao;
+import pl.polsl.skirentalservice.dao.rent.IRentDao;
+import pl.polsl.skirentalservice.entity.CustomerEntity;
+import pl.polsl.skirentalservice.entity.RentEntity;
+import pl.polsl.skirentalservice.entity.RentEquipmentEntity;
+
+import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
+import static pl.polsl.skirentalservice.exception.AlreadyExistException.CustomerHasOpenedRentsException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -50,15 +57,15 @@ import static pl.polsl.skirentalservice.util.SessionAlert.COMMON_CUSTOMERS_PAGE_
 public class SellerDeleteCustomerServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SellerDeleteCustomerServlet.class);
-    private final SessionFactory sessionFactory = getSessionFactory();
+    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
-    @EJB private MailSocketBean mailSocket;
+    @EJB private MailSocketBean mailSocketBean;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final Long userId = toLong(req.getParameter("id"));
+        final Long userId = NumberUtils.toLong(req.getParameter("id"));
         final AlertTupleDto alert = new AlertTupleDto(true);
 
         final HttpSession httpSession = req.getSession();
@@ -71,34 +78,35 @@ public class SellerDeleteCustomerServlet extends HttpServlet {
                 final IRentDao rentDao = new RentDao(session);
 
                 final CustomerEntity customerEntity = session.get(CustomerEntity.class, userId);
-                if (isNull(customerEntity)) throw new UserNotFoundException(SELLER);
+                if (Objects.isNull(customerEntity)) throw new UserNotFoundException(UserRole.SELLER);
                 if (customerDao.checkIfCustomerHasAnyActiveRents(userId)) {
                     throw new CustomerHasOpenedRentsException();
                 }
                 for (final RentEntity rentEntity : rentDao.findAllRentsBaseCustomerId(userId)) {
                     for (final RentEquipmentEntity equipment : rentEntity.getEquipments()) {
-                        if (isNull(equipment.getEquipment())) continue;
+                        if (Objects.isNull(equipment.getEquipment())) continue;
                         equipmentDao.increaseAvailableSelectedEquipmentCount(equipment.getEquipment().getId(),
                             equipment.getCount());
                     }
                 }
-                final var rentData = (InMemoryRentDataDto) httpSession.getAttribute(INMEMORY_NEW_RENT_DATA.getName());
-                if (!isNull(rentData) && rentData.getCustomerId().equals(userId)) {
-                    httpSession.removeAttribute(INMEMORY_NEW_RENT_DATA.getName());
+                final var rentData = (InMemoryRentDataDto) httpSession
+                    .getAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName());
+                if (!Objects.isNull(rentData) && rentData.getCustomerId().equals(userId)) {
+                    httpSession.removeAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName());
                 }
                 session.remove(customerEntity);
                 session.getTransaction().commit();
-                alert.setType(INFO);
+                alert.setType(AlertType.INFO);
                 alert.setMessage("Pomyślnie usunięto klienta z ID <strong>#" + userId + "</strong> z systemu.");
                 LOGGER.info("Customer with id: {} was succesfuly removed from system.", userId);
             } catch (RuntimeException ex) {
-                onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
             LOGGER.error("Unable to remove customer with id: {}. Cause: {}", userId, ex.getMessage());
         }
-        httpSession.setAttribute(COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
+        httpSession.setAttribute(SessionAlert.COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
         res.sendRedirect("/seller/customers");
     }
 }

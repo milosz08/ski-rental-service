@@ -13,28 +13,40 @@
 
 package pl.polsl.skirentalservice.core.mail;
 
-import org.slf4j.*;
-import freemarker.template.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import jakarta.ejb.*;
+import jakarta.ejb.EJB;
+import jakarta.ejb.Startup;
+import jakarta.ejb.Singleton;
+
 import jakarta.mail.*;
-import jakarta.xml.bind.*;
-import jakarta.mail.internet.*;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMultipart;
 import jakarta.servlet.http.HttpServletRequest;
 
-import java.io.*;
-import java.text.*;
+import freemarker.template.Template;
+import freemarker.template.Configuration;
+import freemarker.template.TemplateException;
+
 import java.util.*;
+import java.io.File;
+import java.io.Writer;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import pl.polsl.skirentalservice.core.ConfigBean;
 import pl.polsl.skirentalservice.core.JAXBProperty;
 
-import static java.time.Instant.now;
-import static freemarker.template.Configuration.VERSION_2_3_22;
-
-import static pl.polsl.skirentalservice.exception.ServletException.*;
-import static pl.polsl.skirentalservice.core.mail.JakartaMailAuthenticator.findProperty;
+import static pl.polsl.skirentalservice.exception.ServletException.UnableToSendEmailException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -58,13 +70,13 @@ public class MailSocketBean {
 
     MailSocketBean() {
         try {
-            freemarkerConfig = new Configuration(VERSION_2_3_22);
+            freemarkerConfig = new Configuration(Configuration.VERSION_2_3_22);
             freemarkerConfig.setClassForTemplateLoading(MailSocketBean.class, FREEMARKER_PATH);
             LOGGER.info("Successful loaded freemarker template engine cache path. Cache path: {}", FREEMARKER_PATH);
 
             final JAXBContext jaxbContext = JAXBContext.newInstance(JAXBMailConfig.class);
             final var config = (JAXBMailConfig) jaxbContext.createUnmarshaller()
-                .unmarshal(getClass().getResource(MAIL_CFG));
+                .unmarshal(MailSocketBean.class.getResource(MAIL_CFG));
             configProperties = config.getProperties();
 
             final Properties properties = new Properties();
@@ -99,7 +111,7 @@ public class MailSocketBean {
 
             final Map<String, Object> addtlnPayloadProps = new HashMap<>(payload.getTemplateVars());
             addtlnPayloadProps.put("messageResponder", payload.getMessageResponder());
-            addtlnPayloadProps.put("serverUtcTime", now().toString());
+            addtlnPayloadProps.put("serverUtcTime", Instant.now().toString());
             addtlnPayloadProps.put("baseServletPath", getBaseReqPath(req));
             addtlnPayloadProps.put("currentYear", String.valueOf(LocalDate.now().getYear()));
             addtlnPayloadProps.put("systemVersion", config.getSystemVersion());
@@ -109,7 +121,7 @@ public class MailSocketBean {
             for (int i = 0; i < sendToAddresses.length; i++) {
                 sendToAddresses[i] = new InternetAddress(sendTo.get(i));
             }
-            message.setFrom(new InternetAddress(findProperty(configProperties, "mail.smtp.user"),
+            message.setFrom(new InternetAddress(JakartaMailAuthenticator.findProperty(configProperties, "mail.smtp.user"),
                 config.getDefPageTitle()));
             message.setRecipients(Message.RecipientType.TO, sendToAddresses);
 

@@ -15,20 +15,22 @@ package pl.polsl.skirentalservice.dao.employer;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.*;
 import org.hibernate.Session;
 
-import pl.polsl.skirentalservice.dto.*;
-import pl.polsl.skirentalservice.dto.employer.*;
-import pl.polsl.skirentalservice.entity.EmployerEntity;
-import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import pl.polsl.skirentalservice.util.RentStatus;
+import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
+import pl.polsl.skirentalservice.dto.OwnerMailPayloadDto;
+import pl.polsl.skirentalservice.dto.employer.AddEditEmployerReqDto;
+import pl.polsl.skirentalservice.dto.employer.EmployerDetailsResDto;
+import pl.polsl.skirentalservice.dto.employer.EmployerRecordResDto;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.dto.change_password.EmployerDetailsDto;
-
-import static java.util.Optional.*;
-import static java.util.Objects.isNull;
-
-import static pl.polsl.skirentalservice.util.RentStatus.RETURNED;
+import pl.polsl.skirentalservice.entity.EmployerEntity;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -48,8 +50,8 @@ public class EmployerDao implements IEmployerDao {
         final String password = session.createQuery(jpqlFindEmployer, String.class)
             .setParameter("loginOrEmail", loginOrEmail)
             .getSingleResultOrNull();
-        if (isNull(password)) return empty();
-        return of(password);
+        if (Objects.isNull(password)) return Optional.empty();
+        return Optional.of(password);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -63,8 +65,8 @@ public class EmployerDao implements IEmployerDao {
         final EmployerEntity employer = session.createQuery(jpqlFindEmployer, EmployerEntity.class)
             .setParameter("employerId", employerId)
             .getSingleResultOrNull();
-        if (isNull(employer)) return empty();
-        return of(employer);
+        if (Objects.isNull(employer)) return Optional.empty();
+        return Optional.of(employer);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,8 +85,8 @@ public class EmployerDao implements IEmployerDao {
         final LoggedUserDataDto employer = session.createQuery(jpqlSelectEmployer, LoggedUserDataDto.class)
             .setParameter("loginOrEmail", loginOrEmail)
             .getSingleResultOrNull();
-        if (isNull(employer)) return empty();
-        return of(employer);
+        if (Objects.isNull(employer)) return Optional.empty();
+        return Optional.of(employer);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -101,8 +103,8 @@ public class EmployerDao implements IEmployerDao {
         final var employer = session.createQuery(jpqlEmployerDetails, EmployerDetailsDto.class)
             .setParameter("loginOrEmail", loginOrEmail)
             .getSingleResultOrNull();
-        if (isNull(employer)) return empty();
-        return of(employer);
+        if (Objects.isNull(employer)) return Optional.empty();
+        return Optional.of(employer);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -125,8 +127,8 @@ public class EmployerDao implements IEmployerDao {
         final var employerDetails = session.createQuery(jpqlFindEmployerDetails, EmployerDetailsResDto.class)
             .setParameter("eid", employerId)
             .getSingleResultOrNull();
-        if (isNull(employerDetails)) return empty();
-        return of(employerDetails);
+        if (Objects.isNull(employerDetails)) return Optional.empty();
+        return Optional.of(employerDetails);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147,8 +149,8 @@ public class EmployerDao implements IEmployerDao {
             .createQuery(jpqlFindEmployerBaseId, AddEditEmployerReqDto.class)
             .setParameter("uid", employerId)
             .getSingleResultOrNull();
-        if (isNull(employerDetails)) return empty();
-        return of(employerDetails);
+        if (Objects.isNull(employerDetails)) return Optional.empty();
+        return Optional.of(employerDetails);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -194,7 +196,7 @@ public class EmployerDao implements IEmployerDao {
         """;
         return session.createQuery(jpqlCheckIfHasAnyRents, Boolean.class)
             .setParameter("eid", employerId)
-            .setParameter("st", RETURNED)
+            .setParameter("st", RentStatus.RETURNED)
             .getSingleResult();
     }
 

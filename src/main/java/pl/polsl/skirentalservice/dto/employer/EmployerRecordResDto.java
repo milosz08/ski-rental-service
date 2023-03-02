@@ -13,7 +13,10 @@
 
 package pl.polsl.skirentalservice.dto.employer;
 
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
 import java.time.LocalDate;
 
 import pl.polsl.skirentalservice.util.Gender;

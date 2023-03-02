@@ -15,13 +15,13 @@ package pl.polsl.skirentalservice.dao.equipment_brand;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.*;
 import org.hibernate.Session;
 
-import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
-import static java.util.Optional.*;
-import static java.util.Objects.isNull;
+import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -51,8 +51,8 @@ public class EquipmentBrandDao implements IEquipmentBrandDao {
         final String brandName = session.createQuery(jqplFindNameOfBrand, String.class)
             .setParameter("id", brandId)
             .getSingleResultOrNull();
-        if (isNull(brandName)) return empty();
-        return of(brandName);
+        if (Objects.isNull(brandName)) return Optional.empty();
+        return Optional.of(brandName);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

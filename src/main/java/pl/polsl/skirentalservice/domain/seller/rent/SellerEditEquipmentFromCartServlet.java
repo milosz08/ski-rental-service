@@ -13,30 +13,40 @@
 
 package pl.polsl.skirentalservice.domain.seller.rent;
 
-import org.slf4j.*;
-import org.hibernate.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 
 import jakarta.ejb.EJB;
-import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
-import pl.polsl.skirentalservice.dto.rent.*;
-import pl.polsl.skirentalservice.dao.equipment.*;
-import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.core.ValidatorBean;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
+import java.util.Objects;
 import java.io.IOException;
 import java.math.BigDecimal;
 
-import static java.util.Objects.isNull;
-import static java.lang.Integer.parseInt;
+import pl.polsl.skirentalservice.util.Utils;
+import pl.polsl.skirentalservice.util.SessionAttribute;
+import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.rent.InMemoryRentDataDto;
+import pl.polsl.skirentalservice.dto.rent.AddEditEquipmentCartReqDto;
+import pl.polsl.skirentalservice.dto.rent.AddEditEquipmentCartResDto;
+import pl.polsl.skirentalservice.dto.rent.CartSingleEquipmentDataDto;
+import pl.polsl.skirentalservice.core.ValidatorBean;
+import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
+import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
 
-import static pl.polsl.skirentalservice.util.Utils.*;
-import static pl.polsl.skirentalservice.util.SessionAttribute.*;
-import static pl.polsl.skirentalservice.exception.NotFoundException.*;
-import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
-import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
+import static pl.polsl.skirentalservice.exception.NotFoundException.EquipmentNotFoundException;
+import static pl.polsl.skirentalservice.exception.NotFoundException.EquipmentInCartNotFoundException;
+import static pl.polsl.skirentalservice.exception.AlreadyExistException.TooMuchEquipmentsException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -44,7 +54,7 @@ import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
 public class SellerEditEquipmentFromCartServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SellerEditEquipmentFromCartServlet.class);
-    private final SessionFactory sessionFactory = getSessionFactory();
+    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
     @EJB private ValidatorBean validator;
 
@@ -60,22 +70,22 @@ public class SellerEditEquipmentFromCartServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final HttpSession httpSession = req.getSession();
-        final var rentData = (InMemoryRentDataDto) httpSession.getAttribute(INMEMORY_NEW_RENT_DATA.getName());
-        if (isNull(rentData)) {
+        final var rentData = (InMemoryRentDataDto) httpSession.getAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName());
+        if (Objects.isNull(rentData)) {
             res.sendRedirect("/seller/customers");
             return;
         }
         final String equipmentId = req.getParameter("equipmentId");
         final String redirPag = req.getParameter("redirPag");
         final AlertTupleDto alert = new AlertTupleDto(true);
-        final String loggedUser = getLoggedUserLogin(req);
+        final String loggedUser = Utils.getLoggedUserLogin(req);
 
         final AddEditEquipmentCartReqDto reqDto = new AddEditEquipmentCartReqDto(req);
         final AddEditEquipmentCartResDto resDto = new AddEditEquipmentCartResDto(validator, reqDto);
         if (validator.someFieldsAreInvalid(reqDto)) {
             resDto.setModalImmediatelyOpen(true);
             resDto.setEqId(equipmentId);
-            httpSession.setAttribute(EQ_EDIT_CART_MODAL_DATA.getName(), resDto);
+            httpSession.setAttribute(SessionAttribute.EQ_EDIT_CART_MODAL_DATA.getName(), resDto);
             res.sendRedirect("/seller/complete-rent-equipments" + redirPag);
             return;
         }
@@ -89,7 +99,7 @@ public class SellerEditEquipmentFromCartServlet extends HttpServlet {
                 final CartSingleEquipmentDataDto cartData = rentData.getEquipments().stream()
                     .filter(e -> e.getId().equals(equipmentDetails.getId())).findFirst()
                     .orElseThrow(() -> { throw new EquipmentInCartNotFoundException(); });
-                if (equipmentDetails.getTotalCount() < parseInt(reqDto.getCount())) {
+                if (equipmentDetails.getTotalCount() < Integer.parseInt(reqDto.getCount())) {
                     throw new TooMuchEquipmentsException();
                 }
                 cartData.setCount(reqDto.getCount());
@@ -101,14 +111,14 @@ public class SellerEditEquipmentFromCartServlet extends HttpServlet {
                 LOGGER.info("Successfuly edit equipment from memory-persist data container by: {}. Data: {}", loggedUser,
                     cartData);
             } catch (RuntimeException ex) {
-                onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
             resDto.setModalImmediatelyOpen(true);
             resDto.setEqId(equipmentId);
             resDto.setAlert(alert);
-            httpSession.setAttribute(EQ_EDIT_CART_MODAL_DATA.getName(), resDto);
+            httpSession.setAttribute(SessionAttribute.EQ_EDIT_CART_MODAL_DATA.getName(), resDto);
             LOGGER.error("Failure edit equipment from memory-persist data container by: {}. Cause: {}", loggedUser,
                 ex.getMessage());
         }

@@ -15,15 +15,18 @@ package pl.polsl.skirentalservice.dao.return_deliv;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.*;
 import org.hibernate.Session;
 
-import pl.polsl.skirentalservice.dto.PageableDto;
-import pl.polsl.skirentalservice.dto.deliv_return.*;
-import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
-import static java.util.Optional.*;
-import static java.util.Objects.isNull;
+import pl.polsl.skirentalservice.dto.PageableDto;
+import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
+import pl.polsl.skirentalservice.dto.deliv_return.ReturnRentDetailsResDto;
+import pl.polsl.skirentalservice.dto.deliv_return.OwnerRentReturnRecordResDto;
+import pl.polsl.skirentalservice.dto.deliv_return.ReturnAlreadyExistPayloadDto;
+import pl.polsl.skirentalservice.dto.deliv_return.SellerRentReturnRecordResDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -45,8 +48,8 @@ public class ReturnDao implements IReturnDao {
             .createQuery(jpqlFindReturn, ReturnAlreadyExistPayloadDto.class)
             .setParameter("rid", rentId)
             .getSingleResultOrNull();
-        if (isNull(returnAlreadyExist)) return empty();
-        return of(returnAlreadyExist);
+        if (Objects.isNull(returnAlreadyExist)) return Optional.empty();
+        return Optional.of(returnAlreadyExist);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,8 +78,8 @@ public class ReturnDao implements IReturnDao {
             .setParameter("eid", employerId)
             .setParameter("ralias", roleAlias)
             .getSingleResultOrNull();
-        if (isNull(returnDetails)) return empty();
-        return of(returnDetails);
+        if (Objects.isNull(returnDetails)) return Optional.empty();
+        return Optional.of(returnDetails);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

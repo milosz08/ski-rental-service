@@ -13,23 +13,26 @@
 
 package pl.polsl.skirentalservice.core.db;
 
-import org.slf4j.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.reflections.util.*;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 
-import java.util.*;
+import java.util.Set;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
 
 import liquibase.Liquibase;
-import liquibase.database.*;
+import liquibase.database.Database;
+import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 
-import org.hibernate.*;
+import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.service.ServiceRegistry;
@@ -43,7 +46,7 @@ public class HibernateUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(HibernateUtil.class);
     private static final String LIQUIBASE_CONF = "db/db.changelog.xml";
     private static final String HIBERNATE_CONF = "db/hibernate.cfg.xml";
-    private static final String DB_AUTH_PROP = "/db/hibernate.properties";
+    private static final String DB_AUTH_PROP = "db/hibernate.properties";
 
     private static final SessionFactory sessionFactory = buildSessionFactory();
 

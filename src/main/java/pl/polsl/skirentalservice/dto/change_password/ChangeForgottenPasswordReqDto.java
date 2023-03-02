@@ -13,14 +13,16 @@
 
 package pl.polsl.skirentalservice.dto.change_password;
 
-import lombok.*;
-import jakarta.validation.constraints.*;
+import lombok.Data;
+
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.servlet.http.HttpServletRequest;
 
-import pl.polsl.skirentalservice.core.IReqValidatePojo;
+import org.apache.commons.lang3.StringUtils;
 
-import static org.apache.commons.lang3.StringUtils.trimToEmpty;
-import static pl.polsl.skirentalservice.util.Regex.PASSWORD_REQ;
+import pl.polsl.skirentalservice.util.Regex;
+import pl.polsl.skirentalservice.core.IReqValidatePojo;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -28,18 +30,18 @@ import static pl.polsl.skirentalservice.util.Regex.PASSWORD_REQ;
 public class ChangeForgottenPasswordReqDto implements IReqValidatePojo {
 
     @NotEmpty(message = "Pole hasła nie może być puste.")
-    @Pattern(regexp = PASSWORD_REQ, message = "Nieprawidłowa wartość/wartości w polu hasło.")
+    @Pattern(regexp = Regex.PASSWORD_REQ, message = "Nieprawidłowa wartość/wartości w polu hasło.")
     private String password;
 
     @NotEmpty(message = "Pole powtórzonego hasła nie może być puste.")
-    @Pattern(regexp = PASSWORD_REQ, message = "Nieprawidłowa wartość/wartości w polu powtórzonego hasła.")
+    @Pattern(regexp = Regex.PASSWORD_REQ, message = "Nieprawidłowa wartość/wartości w polu powtórzonego hasła.")
     private String passwordRepeat;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public ChangeForgottenPasswordReqDto(HttpServletRequest req) {
-        this.password = trimToEmpty(req.getParameter("password"));
-        this.passwordRepeat = trimToEmpty(req.getParameter("passwordRepeat"));
+        this.password = StringUtils.trimToEmpty(req.getParameter("password"));
+        this.passwordRepeat = StringUtils.trimToEmpty(req.getParameter("passwordRepeat"));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47,8 +49,8 @@ public class ChangeForgottenPasswordReqDto implements IReqValidatePojo {
     @Override
     public String toString() {
         return '{' +
-            "password='" + password + '\'' +
-            ", passwordRepeat='" + passwordRepeat + '\'' +
+            "password='" + password +
+            ", passwordRepeat='" + passwordRepeat +
             '}';
     }
 }

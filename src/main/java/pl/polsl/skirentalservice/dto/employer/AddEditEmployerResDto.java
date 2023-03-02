@@ -13,15 +13,15 @@
 
 package pl.polsl.skirentalservice.dto.employer;
 
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.*;
+import java.util.List;
 
-import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.util.Gender;
 import pl.polsl.skirentalservice.core.ValidatorBean;
-
-import static pl.polsl.skirentalservice.util.Gender.*;
+import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
+import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -55,7 +55,7 @@ public class AddEditEmployerResDto {
         this.apartmentNr = validator.validateField(reqDto, "apartmentNr", reqDto.getApartmentNr());
         this.city = validator.validateField(reqDto, "city", reqDto.getCity());
         this.postalCode = validator.validateField(reqDto, "postalCode", reqDto.getPostalCode());
-        this.genders = getSelectedGender(reqDto.getGender());
+        this.genders = Gender.getSelectedGender(reqDto.getGender());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

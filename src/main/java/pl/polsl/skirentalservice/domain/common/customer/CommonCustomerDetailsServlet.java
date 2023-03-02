@@ -13,25 +13,33 @@
 
 package pl.polsl.skirentalservice.domain.common.customer;
 
-import org.slf4j.*;
-import org.hibernate.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import jakarta.servlet.http.*;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
-import pl.polsl.skirentalservice.dao.customer.*;
-import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
-import pl.polsl.skirentalservice.exception.NotFoundException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import static pl.polsl.skirentalservice.util.PageTitle.*;
-import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
-import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
-import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
-import static pl.polsl.skirentalservice.util.SessionAlert.COMMON_CUSTOMERS_PAGE_ALERT;
+import pl.polsl.skirentalservice.util.Utils;
+import pl.polsl.skirentalservice.util.PageTitle;
+import pl.polsl.skirentalservice.util.SessionAlert;
+import pl.polsl.skirentalservice.util.SessionAttribute;
+import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.dao.customer.CustomerDao;
+import pl.polsl.skirentalservice.dao.customer.ICustomerDao;
+
+import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -39,7 +47,7 @@ import static pl.polsl.skirentalservice.util.SessionAlert.COMMON_CUSTOMERS_PAGE_
 public class CommonCustomerDetailsServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonCustomerDetailsServlet.class);
-    private final SessionFactory sessionFactory = getSessionFactory();
+    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -47,7 +55,7 @@ public class CommonCustomerDetailsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final String userId = req.getParameter("id");
         final HttpSession httpSession = req.getSession();
-        final var userDataDto = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
+        final var userDataDto = (LoggedUserDataDto) httpSession.getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
 
         final AlertTupleDto alert = new AlertTupleDto(true);
         try (final Session session = sessionFactory.openSession()) {
@@ -56,21 +64,21 @@ public class CommonCustomerDetailsServlet extends HttpServlet {
                 final ICustomerDao customerDao = new CustomerDao(session);
 
                 final var customerDetails = customerDao.findCustomerDetails(userId).orElseThrow(() -> {
-                    throw new NotFoundException.UserNotFoundException(userId);
+                    throw new UserNotFoundException(userId);
                 });
 
                 session.getTransaction().commit();
                 req.setAttribute("customerData", customerDetails);
-                req.setAttribute("title", COMMON_CUSTOMER_DETAILS_PAGE.getName());
+                req.setAttribute("title", PageTitle.COMMON_CUSTOMER_DETAILS_PAGE.getName());
 
                 req.getRequestDispatcher("/WEB-INF/pages/" + userDataDto.getRoleEng() + "/customer/" +
                     userDataDto.getRoleEng() + "-customer-details.jsp").forward(req, res);
             } catch (RuntimeException ex) {
-                onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
-            httpSession.setAttribute(COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
+            httpSession.setAttribute(SessionAlert.COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
             res.sendRedirect("/" + userDataDto.getRoleEng() + "/customers");
         }
     }

@@ -15,13 +15,13 @@ package pl.polsl.skirentalservice.dao.equipment_type;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.*;
 import org.hibernate.Session;
 
-import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
-import static java.util.Optional.*;
-import static java.util.Objects.isNull;
+import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -51,8 +51,8 @@ public class EquipmentTypeDao implements IEquipmentTypeDao {
         final String typeName = session.createQuery(jqplFindNameOfType, String.class)
             .setParameter("id", typeId)
             .getSingleResultOrNull();
-        if (isNull(typeName)) return empty();
-        return of(typeName);
+        if (Objects.isNull(typeName)) return Optional.empty();
+        return Optional.of(typeName);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

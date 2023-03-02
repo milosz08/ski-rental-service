@@ -13,13 +13,15 @@
 
 package pl.polsl.skirentalservice.entity;
 
-import lombok.*;
+import lombok.NoArgsConstructor;
+
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
-import pl.polsl.skirentalservice.core.db.*;
 import pl.polsl.skirentalservice.util.Gender;
+import pl.polsl.skirentalservice.core.db.EntityInjector;
+import pl.polsl.skirentalservice.core.db.AuditableEntity;
 import pl.polsl.skirentalservice.converter.GenderConverter;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

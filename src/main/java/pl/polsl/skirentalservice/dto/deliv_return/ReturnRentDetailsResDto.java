@@ -13,7 +13,8 @@
 
 package pl.polsl.skirentalservice.dto.deliv_return;
 
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.math.BigDecimal;
 
 import pl.polsl.skirentalservice.util.Gender;

@@ -13,10 +13,12 @@
 
 package pl.polsl.skirentalservice.dto.attribute;
 
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.core.ValidatorBean;
+import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

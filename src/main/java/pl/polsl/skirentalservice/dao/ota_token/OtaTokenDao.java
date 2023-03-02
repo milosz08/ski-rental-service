@@ -15,13 +15,13 @@ package pl.polsl.skirentalservice.dao.ota_token;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.*;
 import org.hibernate.Session;
 
-import pl.polsl.skirentalservice.dto.change_password.*;
+import java.util.Objects;
+import java.util.Optional;
 
-import static java.util.Optional.*;
-import static java.util.Objects.isNull;
+import pl.polsl.skirentalservice.dto.change_password.TokenDetailsDto;
+import pl.polsl.skirentalservice.dto.change_password.ChangePasswordEmployerDetailsDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -45,8 +45,8 @@ public class OtaTokenDao implements IOtaTokenDao {
         final var details = session.createQuery(jpqlFindToken, ChangePasswordEmployerDetailsDto.class)
             .setParameter("token", token)
             .getSingleResultOrNull();
-        if (isNull(details)) return empty();
-        return of(details);
+        if (Objects.isNull(details)) return Optional.empty();
+        return Optional.of(details);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -61,8 +61,8 @@ public class OtaTokenDao implements IOtaTokenDao {
         final var details = session.createQuery(jpqlFindToken, TokenDetailsDto.class)
             .setParameter("token", token)
             .getSingleResultOrNull();
-        if (isNull(details)) return empty();
-        return of(details);
+        if (Objects.isNull(details)) return Optional.empty();
+        return Optional.of(details);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -13,15 +13,18 @@
 
 package pl.polsl.skirentalservice.domain.seller;
 
-import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
-import static pl.polsl.skirentalservice.util.Utils.getAndDestroySessionAlert;
-import static pl.polsl.skirentalservice.util.PageTitle.SELLER_DASHBOARD_PAGE;
-import static pl.polsl.skirentalservice.util.SessionAlert.SELLER_DASHBOARD_PAGE_ALERT;
+import pl.polsl.skirentalservice.util.Utils;
+import pl.polsl.skirentalservice.util.PageTitle;
+import pl.polsl.skirentalservice.util.SessionAlert;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -30,8 +33,8 @@ public class SellerDashboardServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        req.setAttribute("alertData", getAndDestroySessionAlert(req, SELLER_DASHBOARD_PAGE_ALERT));
-        req.setAttribute("title", SELLER_DASHBOARD_PAGE.getName());
+        req.setAttribute("alertData", Utils.getAndDestroySessionAlert(req, SessionAlert.SELLER_DASHBOARD_PAGE_ALERT));
+        req.setAttribute("title", PageTitle.SELLER_DASHBOARD_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/seller/seller-dashboard.jsp").forward(req, res);
     }
 }

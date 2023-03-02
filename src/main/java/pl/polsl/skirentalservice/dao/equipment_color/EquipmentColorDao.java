@@ -15,13 +15,13 @@ package pl.polsl.skirentalservice.dao.equipment_color;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.*;
 import org.hibernate.Session;
 
-import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
-import static java.util.Optional.*;
-import static java.util.Objects.isNull;
+import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -51,8 +51,8 @@ public class EquipmentColorDao implements IEquipmentColorDao {
         final String colorName = session.createQuery(jqplFindNameOfColor, String.class)
             .setParameter("id", colorId)
             .getSingleResultOrNull();
-        if (isNull(colorName)) return empty();
-        return of(colorName);
+        if (Objects.isNull(colorName)) return Optional.empty();
+        return Optional.of(colorName);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

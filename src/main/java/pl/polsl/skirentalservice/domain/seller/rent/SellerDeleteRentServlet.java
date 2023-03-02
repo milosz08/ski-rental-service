@@ -13,31 +13,40 @@
 
 package pl.polsl.skirentalservice.domain.seller.rent;
 
-import org.slf4j.*;
-import org.hibernate.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 
 import jakarta.ejb.EJB;
-import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.util.Objects;
 import java.io.IOException;
 
-import pl.polsl.skirentalservice.entity.*;
-import pl.polsl.skirentalservice.dao.equipment.*;
-import pl.polsl.skirentalservice.core.ConfigBean;
+import org.apache.commons.lang3.math.NumberUtils;
+
+import pl.polsl.skirentalservice.util.Utils;
+import pl.polsl.skirentalservice.util.AlertType;
+import pl.polsl.skirentalservice.util.RentStatus;
+import pl.polsl.skirentalservice.util.SessionAlert;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.core.ConfigBean;
+import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
+import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
+import pl.polsl.skirentalservice.entity.RentEntity;
+import pl.polsl.skirentalservice.entity.RentEquipmentEntity;
 import pl.polsl.skirentalservice.pdf.RentPdfDocument;
-import pl.polsl.skirentalservice.exception.NotFoundException;
 
-import static java.util.Objects.isNull;
-import static org.apache.commons.lang3.math.NumberUtils.toLong;
-
-import static pl.polsl.skirentalservice.util.Utils.*;
-import static pl.polsl.skirentalservice.util.AlertType.INFO;
-import static pl.polsl.skirentalservice.util.RentStatus.RETURNED;
-import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
-import static pl.polsl.skirentalservice.util.SessionAlert.COMMON_RENTS_PAGE_ALERT;
+import static pl.polsl.skirentalservice.exception.NotFoundException.RentNotFoundException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -45,7 +54,7 @@ import static pl.polsl.skirentalservice.util.SessionAlert.COMMON_RENTS_PAGE_ALER
 public class SellerDeleteRentServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SellerDeleteRentServlet.class);
-    private final SessionFactory sessionFactory = getSessionFactory();
+    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
     @EJB private ConfigBean config;
 
@@ -53,24 +62,24 @@ public class SellerDeleteRentServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final Long rentId = toLong(req.getParameter("id"));
+        final Long rentId = NumberUtils.toLong(req.getParameter("id"));
         final AlertTupleDto alert = new AlertTupleDto(true);
 
         final HttpSession httpSession = req.getSession();
-        final String loggedUser = getLoggedUserLogin(req);
+        final String loggedUser = Utils.getLoggedUserLogin(req);
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
                 final IEquipmentDao equipmentDao = new EquipmentDao(session);
 
                 final RentEntity rentEntity = session.getReference(RentEntity.class, rentId);
-                if (isNull(rentEntity)) throw new NotFoundException.RentNotFoundException();
-                if (rentEntity.getStatus().equals(RETURNED)) throw new RuntimeException(
+                if (Objects.isNull(rentEntity)) throw new RentNotFoundException();
+                if (rentEntity.getStatus().equals(RentStatus.RETURNED)) throw new RuntimeException(
                     "Usunięcie wypożyczenia ze statusem <strong>wypożyczone</strong> nie jest możliwe. Aby usunąć " +
                     "niechciane wypożyczenie, usuń przypisany do niego dokument zwrotu."
                 );
                 for (final RentEquipmentEntity equipment : rentEntity.getEquipments()) {
-                    if (isNull(equipment.getEquipment())) continue;
+                    if (Objects.isNull(equipment.getEquipment())) continue;
                     equipmentDao.increaseAvailableSelectedEquipmentCount(equipment.getEquipment().getId(),
                         equipment.getCount());
                 }
@@ -81,7 +90,7 @@ public class SellerDeleteRentServlet extends HttpServlet {
 
                 session.remove(rentEntity);
                 session.getTransaction().commit();
-                alert.setType(INFO);
+                alert.setType(AlertType.INFO);
                 alert.setMessage(
                     "Pomyślnie usunięto wypożyczenie <strong>" + rentEntity.getIssuedIdentifier() + "</strong> " +
                     "z systemu."
@@ -89,13 +98,13 @@ public class SellerDeleteRentServlet extends HttpServlet {
                 LOGGER.info("Rent with id: {} was succesfuly removed from system by {}. Rent data: {}", rentId,
                     loggedUser, rentEntity);
             } catch (RuntimeException ex) {
-                onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
             LOGGER.error("Unable to remove rent with id: {} by {}. Cause: {}", rentId, loggedUser, ex.getMessage());
         }
-        httpSession.setAttribute(COMMON_RENTS_PAGE_ALERT.getName(), alert);
+        httpSession.setAttribute(SessionAlert.COMMON_RENTS_PAGE_ALERT.getName(), alert);
         res.sendRedirect("/seller/rents");
     }
 }

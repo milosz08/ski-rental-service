@@ -13,9 +13,11 @@
 
 package pl.polsl.skirentalservice.dto;
 
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.*;
+import java.util.Set;
+import java.util.HashSet;
 import java.math.BigDecimal;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

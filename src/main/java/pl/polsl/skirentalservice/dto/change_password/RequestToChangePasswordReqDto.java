@@ -13,15 +13,16 @@
 
 package pl.polsl.skirentalservice.dto.change_password;
 
-import lombok.*;
+import lombok.Data;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.servlet.http.HttpServletRequest;
 
-import pl.polsl.skirentalservice.core.IReqValidatePojo;
+import org.apache.commons.lang3.StringUtils;
 
-import static org.apache.commons.lang3.StringUtils.trimToEmpty;
-import static pl.polsl.skirentalservice.util.Regex.LOGIN_EMAIL;
+import pl.polsl.skirentalservice.util.Regex;
+import pl.polsl.skirentalservice.core.IReqValidatePojo;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -29,13 +30,13 @@ import static pl.polsl.skirentalservice.util.Regex.LOGIN_EMAIL;
 public class RequestToChangePasswordReqDto implements IReqValidatePojo {
 
     @NotEmpty(message = "Pole loginu/adresu email nie może być puste.")
-    @Pattern(regexp = LOGIN_EMAIL, message = "Nieprawidłowa wartość/wartości w polu login/adres email.")
+    @Pattern(regexp = Regex.LOGIN_EMAIL, message = "Nieprawidłowa wartość/wartości w polu login/adres email.")
     private String loginOrEmail;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public RequestToChangePasswordReqDto(HttpServletRequest req) {
-        this.loginOrEmail = trimToEmpty(req.getParameter("loginOrEmail"));
+        this.loginOrEmail = StringUtils.trimToEmpty(req.getParameter("loginOrEmail"));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,7 +44,7 @@ public class RequestToChangePasswordReqDto implements IReqValidatePojo {
     @Override
     public String toString() {
         return '{' +
-            "loginOrEmail='" + loginOrEmail + '\'' +
+            "loginOrEmail='" + loginOrEmail +
             '}';
     }
 }

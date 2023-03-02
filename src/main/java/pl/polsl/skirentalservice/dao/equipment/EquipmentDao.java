@@ -15,19 +15,21 @@ package pl.polsl.skirentalservice.dao.equipment;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.*;
 import org.hibernate.Session;
 
-import pl.polsl.skirentalservice.dto.rent.*;
-import pl.polsl.skirentalservice.dto.equipment.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import pl.polsl.skirentalservice.util.RentStatus;
 import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
+import pl.polsl.skirentalservice.dto.rent.EquipmentRentRecordResDto;
+import pl.polsl.skirentalservice.dto.rent.RentEquipmentsDetailsResDto;
+import pl.polsl.skirentalservice.dto.equipment.EquipmentRecordResDto;
+import pl.polsl.skirentalservice.dto.equipment.AddEditEquipmentReqDto;
+import pl.polsl.skirentalservice.dto.equipment.EquipmentDetailsResDto;
 import pl.polsl.skirentalservice.dto.deliv_return.RentReturnEquipmentRecordResDto;
-
-import static java.util.Optional.*;
-import static java.util.Objects.isNull;
-
-import static pl.polsl.skirentalservice.util.RentStatus.RETURNED;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -80,8 +82,8 @@ public class EquipmentDao implements IEquipmentDao{
             .createQuery(jpqlEquipmentDetails, EquipmentRentRecordResDto.class)
             .setParameter("id", equipmentId)
             .getSingleResultOrNull();
-        if (isNull(equipmentDetails)) return empty();
-        return of(equipmentDetails);
+        if (Objects.isNull(equipmentDetails)) return Optional.empty();
+        return Optional.of(equipmentDetails);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -102,8 +104,8 @@ public class EquipmentDao implements IEquipmentDao{
             .createQuery(jpqlFindEquipmentBaseId, AddEditEquipmentReqDto.class)
             .setParameter("eid", equipmentId)
             .getSingleResultOrNull();
-        if (isNull(equipmentDetails)) return empty();
-        return of(equipmentDetails);
+        if (Objects.isNull(equipmentDetails)) return Optional.empty();
+        return Optional.of(equipmentDetails);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -126,8 +128,8 @@ public class EquipmentDao implements IEquipmentDao{
             .createQuery(jpqlFindEquipmentDetails, EquipmentDetailsResDto.class)
             .setParameter("eid", equipmentId)
             .getSingleResultOrNull();
-        if (isNull(equipmentDetails)) return empty();
-        return of(equipmentDetails);
+        if (Objects.isNull(equipmentDetails)) return Optional.empty();
+        return Optional.of(equipmentDetails);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -174,7 +176,7 @@ public class EquipmentDao implements IEquipmentDao{
             WHERE eq.id = :eid AND r.status <> :rst
         """;
         return session.createQuery(jpqlFindHasConnections, Boolean.class)
-            .setParameter("eid", equipmentId).setParameter("rst", RETURNED)
+            .setParameter("eid", equipmentId).setParameter("rst", RentStatus.RETURNED)
             .getSingleResult();
     }
 

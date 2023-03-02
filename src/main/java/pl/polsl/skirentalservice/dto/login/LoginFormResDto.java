@@ -13,7 +13,8 @@
 
 package pl.polsl.skirentalservice.dto.login;
 
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import pl.polsl.skirentalservice.core.ValidatorBean;
 import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;

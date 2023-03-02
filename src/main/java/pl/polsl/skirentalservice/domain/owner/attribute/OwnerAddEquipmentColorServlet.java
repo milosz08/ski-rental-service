@@ -13,28 +13,36 @@
 
 package pl.polsl.skirentalservice.domain.owner.attribute;
 
-import org.slf4j.*;
-import org.hibernate.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 
 import jakarta.ejb.EJB;
-import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
-import pl.polsl.skirentalservice.core.ValidatorBean;
-import pl.polsl.skirentalservice.dao.equipment_color.*;
-import pl.polsl.skirentalservice.entity.EquipmentColorEntity;
+import org.apache.commons.lang3.StringUtils;
+
+import pl.polsl.skirentalservice.util.Utils;
+import pl.polsl.skirentalservice.util.AlertType;
+import pl.polsl.skirentalservice.util.SessionAttribute;
 import pl.polsl.skirentalservice.dto.attribute.AttributeValidatorPayloadDto;
+import pl.polsl.skirentalservice.core.ValidatorBean;
+import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.dao.equipment_color.EquipmentColorDao;
+import pl.polsl.skirentalservice.dao.equipment_color.IEquipmentColorDao;
+import pl.polsl.skirentalservice.entity.EquipmentColorEntity;
 
-import static org.apache.commons.lang3.StringUtils.*;
-
-import static pl.polsl.skirentalservice.util.Utils.*;
-import static pl.polsl.skirentalservice.util.AlertType.INFO;
-import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
-import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
-import static pl.polsl.skirentalservice.util.SessionAttribute.EQ_COLORS_MODAL_DATA;
+import static pl.polsl.skirentalservice.exception.AlreadyExistException.EquipmentColorAlreadyExistException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -42,7 +50,7 @@ import static pl.polsl.skirentalservice.util.SessionAttribute.EQ_COLORS_MODAL_DA
 public class OwnerAddEquipmentColorServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerAddEquipmentColorServlet.class);
-    private final SessionFactory sessionFactory = getSessionFactory();
+    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
     @EJB private ValidatorBean validator;
 
@@ -50,12 +58,12 @@ public class OwnerAddEquipmentColorServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final AttributeValidatorPayloadDto payload = validateEquipmentAttribute(req, validator);
-        final String loggedUser = getLoggedUserLogin(req);
+        final AttributeValidatorPayloadDto payload = Utils.validateEquipmentAttribute(req, validator);
+        final String loggedUser = Utils.getLoggedUserLogin(req);
         final HttpSession httpSession = req.getSession();
         if (payload.isInvalid()) {
-            httpSession.setAttribute(EQ_COLORS_MODAL_DATA.getName(), payload.resDto());
-            res.sendRedirect(defaultIfBlank(req.getParameter("redirect"), "/owner/add-equipment"));
+            httpSession.setAttribute(SessionAttribute.EQ_COLORS_MODAL_DATA.getName(), payload.resDto());
+            res.sendRedirect(StringUtils.defaultIfBlank(req.getParameter("redirect"), "/owner/add-equipment"));
             return;
         }
         try (final Session session = sessionFactory.openSession()) {
@@ -69,7 +77,7 @@ public class OwnerAddEquipmentColorServlet extends HttpServlet {
                 final EquipmentColorEntity colorEntity = new EquipmentColorEntity(payload.reqDto().getName());
                 session.persist(colorEntity);
 
-                payload.alert().setType(INFO);
+                payload.alert().setType(AlertType.INFO);
                 payload.alert().setMessage(
                     "Nastąpiło pomyślne dodanie nowego koloru sprzętu narciarskiego: <strong>" +
                     payload.reqDto().getName() + "</strong>."
@@ -78,7 +86,7 @@ public class OwnerAddEquipmentColorServlet extends HttpServlet {
                 LOGGER.info("Successful added new equipment color by: {}. Color: {}", loggedUser,
                     payload.reqDto().getName());
             } catch (RuntimeException ex) {
-                onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             payload.alert().setMessage(ex.getMessage());
@@ -87,8 +95,8 @@ public class OwnerAddEquipmentColorServlet extends HttpServlet {
         payload.alert().setActive(true);
         payload.resDto().setAlert(payload.alert());
         payload.resDto().setModalImmediatelyOpen(true);
-        payload.resDto().getName().setValue(EMPTY);
-        httpSession.setAttribute(EQ_COLORS_MODAL_DATA.getName(), payload.resDto());
-        res.sendRedirect(defaultIfBlank(req.getParameter("redirect"), "/owner/add-equipment"));
+        payload.resDto().getName().setValue(StringUtils.EMPTY);
+        httpSession.setAttribute(SessionAttribute.EQ_COLORS_MODAL_DATA.getName(), payload.resDto());
+        res.sendRedirect(StringUtils.defaultIfBlank(req.getParameter("redirect"), "/owner/add-equipment"));
     }
 }

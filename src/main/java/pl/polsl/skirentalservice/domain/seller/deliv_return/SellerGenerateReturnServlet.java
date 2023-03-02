@@ -13,52 +13,66 @@
 
 package pl.polsl.skirentalservice.domain.seller.deliv_return;
 
-import org.slf4j.*;
-import org.hibernate.*;
-import org.modelmapper.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+
+import org.modelmapper.TypeToken;
+import org.modelmapper.ModelMapper;
 
 import jakarta.ejb.EJB;
-import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
-import pl.polsl.skirentalservice.dto.*;
-import pl.polsl.skirentalservice.util.*;
-import pl.polsl.skirentalservice.entity.*;
-import pl.polsl.skirentalservice.pdf.dto.*;
-import pl.polsl.skirentalservice.dao.rent.*;
-import pl.polsl.skirentalservice.core.mail.*;
-import pl.polsl.skirentalservice.dao.customer.*;
-import pl.polsl.skirentalservice.dao.employer.*;
-import pl.polsl.skirentalservice.dao.equipment.*;
-import pl.polsl.skirentalservice.core.ConfigBean;
-import pl.polsl.skirentalservice.dao.return_deliv.*;
-import pl.polsl.skirentalservice.dto.deliv_return.*;
-import pl.polsl.skirentalservice.pdf.ReturnPdfDocument;
-import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.*;
 import java.io.IOException;
+import java.math.RoundingMode;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
-import static java.util.Objects.isNull;
-import static java.time.Duration.between;
-import static java.math.RoundingMode.HALF_UP;
-import static java.time.temporal.ChronoUnit.MINUTES;
-import static org.apache.commons.lang3.StringUtils.trimToNull;
+import org.apache.commons.lang3.StringUtils;
 
-import static pl.polsl.skirentalservice.util.SessionAlert.*;
-import static pl.polsl.skirentalservice.util.UserRole.USER;
-import static pl.polsl.skirentalservice.util.AlertType.INFO;
-import static pl.polsl.skirentalservice.util.RentStatus.RETURNED;
-import static pl.polsl.skirentalservice.exception.DateException.*;
-import static pl.polsl.skirentalservice.exception.NotFoundException.*;
-import static pl.polsl.skirentalservice.util.Utils.truncateToTotalHour;
-import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
-import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
-import static pl.polsl.skirentalservice.core.ModelMapperGenerator.getModelMapper;
-import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
+import pl.polsl.skirentalservice.util.*;
+import pl.polsl.skirentalservice.dto.*;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import pl.polsl.skirentalservice.dto.deliv_return.CustomerDetailsReturnResDto;
+import pl.polsl.skirentalservice.dto.deliv_return.RentReturnDetailsResDto;
+import pl.polsl.skirentalservice.dto.deliv_return.RentReturnEquipmentRecordResDto;
+import pl.polsl.skirentalservice.dto.deliv_return.ReturnAlreadyExistPayloadDto;
+import pl.polsl.skirentalservice.core.ConfigBean;
+import pl.polsl.skirentalservice.core.ModelMapperGenerator;
+import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.core.mail.MailSocketBean;
+import pl.polsl.skirentalservice.core.mail.MailRequestPayload;
+import pl.polsl.skirentalservice.dao.rent.RentDao;
+import pl.polsl.skirentalservice.dao.rent.IRentDao;
+import pl.polsl.skirentalservice.dao.customer.CustomerDao;
+import pl.polsl.skirentalservice.dao.customer.ICustomerDao;
+import pl.polsl.skirentalservice.dao.employer.EmployerDao;
+import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
+import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
+import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
+import pl.polsl.skirentalservice.dao.return_deliv.ReturnDao;
+import pl.polsl.skirentalservice.dao.return_deliv.IReturnDao;
+import pl.polsl.skirentalservice.entity.*;
+import pl.polsl.skirentalservice.pdf.ReturnPdfDocument;
+import pl.polsl.skirentalservice.pdf.dto.PdfEquipmentDataDto;
+import pl.polsl.skirentalservice.pdf.dto.ReturnPdfDocumentDataDto;
+
+import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
+import static pl.polsl.skirentalservice.exception.NotFoundException.RentNotFoundException;
+import static pl.polsl.skirentalservice.exception.NotFoundException.EquipmentNotFoundException;
+import static pl.polsl.skirentalservice.exception.DateException.ReturnDateBeforeRentDateException;
+import static pl.polsl.skirentalservice.exception.AlreadyExistException.ReturnDocumentAlreadyExistException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -66,10 +80,10 @@ import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAIL
 public class SellerGenerateReturnServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SellerGenerateReturnServlet.class);
-    private final SessionFactory sessionFactory = getSessionFactory();
-    private final ModelMapper modelMapper = getModelMapper();
+    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+    private final ModelMapper modelMapper = ModelMapperGenerator.getModelMapper();
 
-    @EJB private MailSocketBean mailSocket;
+    @EJB private MailSocketBean mailSocketBean;
     @EJB private ConfigBean config;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -77,11 +91,11 @@ public class SellerGenerateReturnServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final String rentId = req.getParameter("rentId");
-        final String description = trimToNull(req.getParameter("description"));
+        final String description = StringUtils.trimToNull(req.getParameter("description"));
 
         final AlertTupleDto alert = new AlertTupleDto(true);
         final HttpSession httpSession = req.getSession();
-        final var userDataDto = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
+        final var userDataDto = (LoggedUserDataDto) httpSession.getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
 
         try (final Session session = sessionFactory.openSession()) {
             try {
@@ -110,15 +124,15 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                     .findAllEquipmentsConnectedWithRentReturn(rentId);
                 if (equipmentsList.isEmpty()) throw new EquipmentNotFoundException();
 
-                final LocalDateTime generatedBrief = LocalDateTime.now().truncatedTo(MINUTES);
+                final LocalDateTime generatedBrief = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
                 final String returnIssuerIdentifier = rentDetails.issuedIdentifier().replace("WY", "ZW");
                 if (rentDetails.rentDateTime().isAfter(generatedBrief)) {
                     throw new ReturnDateBeforeRentDateException();
                 }
 
-                final LocalDateTime startTruncated = truncateToTotalHour(rentDetails.rentDateTime());
-                final LocalDateTime endTruncated = truncateToTotalHour(generatedBrief);
-                final long totalRentHours = between(startTruncated, endTruncated).toHours();
+                final LocalDateTime startTruncated = Utils.truncateToTotalHour(rentDetails.rentDateTime());
+                final LocalDateTime endTruncated = Utils.truncateToTotalHour(generatedBrief);
+                final long totalRentHours = Duration.between(startTruncated, endTruncated).toHours();
                 final long rentDays = totalRentHours / 24;
 
                 final RentEntity rentEntity = session.get(RentEntity.class, rentId);
@@ -143,13 +157,13 @@ public class SellerGenerateReturnServlet extends HttpServlet {
 
                     final BigDecimal taxValue = new BigDecimal(rentDetails.tax());
                     final BigDecimal sumPriceBrutto = taxValue
-                        .divide(new BigDecimal(100), 2, HALF_UP).multiply(sumPriceNetto).add(sumPriceNetto)
-                        .setScale(2, HALF_UP);
+                        .divide(new BigDecimal(100), 2, RoundingMode.HALF_UP).multiply(sumPriceNetto).add(sumPriceNetto)
+                        .setScale(2, RoundingMode.HALF_UP);
 
                     final BigDecimal depositPriceBrutto = taxValue
-                        .divide(new BigDecimal(100), 2, HALF_UP).multiply(eqDto.depositPriceNetto())
+                        .divide(new BigDecimal(100), 2, RoundingMode.HALF_UP).multiply(eqDto.depositPriceNetto())
                         .add(eqDto.depositPriceNetto())
-                        .setScale(2, HALF_UP);
+                        .setScale(2, RoundingMode.HALF_UP);
 
                     final EquipmentEntity equipmentEntity = session
                         .getReference(EquipmentEntity.class, eqDto.equipmentId());
@@ -181,17 +195,17 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 rentReturn.setEquipments(rentEquipmentEntities);
                 rentReturn.setRent(rentEntity);
 
-                rentDao.updateRentStatus(RETURNED, rentId);
+                rentDao.updateRentStatus(RentStatus.RETURNED, rentId);
 
                 final CustomerDetailsReturnResDto customerDetails = customerDao.findCustomerDetailsForReturnDocument(rentId)
-                    .orElseThrow(() -> { throw new UserNotFoundException(USER); });
+                    .orElseThrow(() -> { throw new UserNotFoundException(UserRole.USER); });
 
                 final var emailPayload = modelMapper.map(rentDetails, RentReturnEmailPayloadDataDto.class);
                 modelMapper.map(customerDetails, emailPayload);
 
                 final BigDecimal totalSumPriceBrutto = new BigDecimal(emailPayload.getTax())
-                    .divide(new BigDecimal(100), 2, HALF_UP).multiply(totalSumPriceNetto).add(totalSumPriceNetto)
-                    .setScale(2, HALF_UP);
+                    .divide(new BigDecimal(100), 2, RoundingMode.HALF_UP).multiply(totalSumPriceNetto).add(totalSumPriceNetto)
+                    .setScale(2, RoundingMode.HALF_UP);
                 emailPayload.setReturnDate(generatedBrief.toString());
                 emailPayload.setTotalPriceNetto(totalSumPriceNetto);
                 emailPayload.setRentTime(rentDays +  " dni, " + totalRentHours + " godzin");
@@ -205,7 +219,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 final Map<String, Object> templateVars = new HashMap<>();
                 templateVars.put("rentIdentifier", rentDetails.issuedIdentifier());
                 templateVars.put("returnIdentifier", rentReturn.getIssuedIdentifier());
-                templateVars.put("additionalDescription", isNull(description) ? "<i>Brak danych</i>" : description);
+                templateVars.put("additionalDescription", Objects.isNull(description) ? "<i>Brak danych</i>" : description);
                 templateVars.put("data", emailPayload);
 
                 final ReturnPdfDocumentDataDto returnPdfDataDto = modelMapper.map(rentDetails, ReturnPdfDocumentDataDto.class);
@@ -238,7 +252,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                     .templateVars(templateVars)
                     .attachmentsPaths(Set.of(returnPdfDocument.getPath()))
                     .build();
-                mailSocket.sendMessage(emailPayload.getEmail(), customerPayload, req);
+                mailSocketBean.sendMessage(emailPayload.getEmail(), customerPayload, req);
                 LOGGER.info("Successful send rent-return email message for customer. Payload: {}", customerPayload);
 
                 final MailRequestPayload employerPayload = MailRequestPayload.builder()
@@ -248,7 +262,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                     .templateVars(templateVars)
                     .attachmentsPaths(Set.of(returnPdfDocument.getPath()))
                     .build();
-                mailSocket.sendMessage(userDataDto.getEmailAddress(), employerPayload, req);
+                mailSocketBean.sendMessage(userDataDto.getEmailAddress(), employerPayload, req);
                 LOGGER.info("Successful send rent-return email message for employer. Payload: {}", employerPayload);
 
                 final Map<String, Object> ownerTemplateVars = new HashMap<>(templateVars);
@@ -262,26 +276,26 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                     .build();
                 for (final OwnerMailPayloadDto owner : employerDao.findAllEmployersMailSenders()) {
                     ownerPayload.setMessageResponder(owner.fullName());
-                    mailSocket.sendMessage(owner.email(), ownerPayload, req);
+                    mailSocketBean.sendMessage(owner.email(), ownerPayload, req);
                 }
                 LOGGER.info("Successful send rent-return email message for owner/owners. Payload: {}", ownerPayload);
 
                 session.persist(rentReturn);
                 session.getTransaction().commit();
-                alert.setType(INFO);
+                alert.setType(AlertType.INFO);
                 alert.setMessage(
                     "Generowanie zwrotu o numerze <strong>" + returnIssuerIdentifier + "</strong> dla wypożyczenia o " +
                     "numerze <strong>" + rentDetails.issuedIdentifier() + "</strong> zakończone sukcesem. Potwierdzenie " +
                     "wraz z podsumowaniem zostało wysłane również na adres email."
                 );
-                httpSession.setAttribute(COMMON_RETURNS_PAGE_ALERT.getName(), alert);
+                httpSession.setAttribute(SessionAlert.COMMON_RETURNS_PAGE_ALERT.getName(), alert);
                 res.sendRedirect("/seller/returns");
             } catch (RuntimeException ex) {
                 Utils.onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
-            httpSession.setAttribute(COMMON_RENTS_PAGE_ALERT.getName(), alert);
+            httpSession.setAttribute(SessionAlert.COMMON_RENTS_PAGE_ALERT.getName(), alert);
             res.sendRedirect("/seller/rents");
         }
     }

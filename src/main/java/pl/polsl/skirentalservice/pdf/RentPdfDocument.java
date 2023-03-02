@@ -13,19 +13,21 @@
 
 package pl.polsl.skirentalservice.pdf;
 
-import org.slf4j.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.itextpdf.layout.Document;
 import com.itextpdf.kernel.pdf.PdfWriter;
 
 import java.io.File;
-import java.util.*;
-import java.nio.file.*;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Map;
+import java.util.Objects;
+import java.util.LinkedHashMap;
 
 import pl.polsl.skirentalservice.pdf.dto.RentPdfDocumentDataDto;
-
-import static java.io.File.separator;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -53,13 +55,13 @@ public class RentPdfDocument extends PdfHandler implements IPdfGenerator {
 
     @Override
     public void generate() throws RuntimeException {
-        final String filePath = uploadsDir + separator + "rent-fvs" + separator;
+        final String filePath = uploadsDir + File.separator + "rent-fvs" + File.separator;
         try {
             Files.createDirectories(Paths.get(filePath));
         } catch (IOException ex) {
             throw new RuntimeException(ex.getMessage());
         }
-        final String file = filePath + separator + rentPdfDto.getIssuedIdentifier().replaceAll("/", "") + ".pdf";
+        final String file = filePath + File.separator + rentPdfDto.getIssuedIdentifier().replaceAll("/", "") + ".pdf";
         try (final PdfWriter pdfWriter = new PdfWriter(file)) {
             final Document document = createDocument(pdfWriter);
 
@@ -102,7 +104,7 @@ public class RentPdfDocument extends PdfHandler implements IPdfGenerator {
     @Override
     public void remove() throws RuntimeException {
         final String fileName = issuerIdentifier.replaceAll("/", "") + ".pdf";
-        final File deletedPdf = new File(uploadsDir + separator + "rent-fvs" + separator + fileName);
+        final File deletedPdf = new File(uploadsDir + File.separator + "rent-fvs" + File.separator + fileName);
         if (deletedPdf.delete()) {
             LOGGER.info("Pdf FV rent file was sucessfully removed from system.");
         } else {
@@ -115,6 +117,6 @@ public class RentPdfDocument extends PdfHandler implements IPdfGenerator {
     @Override
     public String getPath() {
         final String issuerId = Objects.isNull(rentPdfDto) ? issuerIdentifier : rentPdfDto.getIssuedIdentifier();
-        return uploadsDir + separator + "rent-fvs" + separator + issuerId.replaceAll("/", "") + ".pdf";
+        return uploadsDir + File.separator + "rent-fvs" + File.separator + issuerId.replaceAll("/", "") + ".pdf";
     }
 }

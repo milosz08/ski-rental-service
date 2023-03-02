@@ -13,11 +13,10 @@
 
 package pl.polsl.skirentalservice.converter;
 
+import java.util.Objects;
 import jakarta.persistence.AttributeConverter;
-import pl.polsl.skirentalservice.util.Gender;
 
-import static java.util.Objects.isNull;
-import static pl.polsl.skirentalservice.util.Gender.*;
+import pl.polsl.skirentalservice.util.Gender;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -32,12 +31,11 @@ public class GenderConverter implements AttributeConverter<Gender, String> {
 
     @Override
     public Gender convertToEntityAttribute(String name) {
-        if (isNull(name)) return MALE;
-        switch (name) {
-            case "kobieta": return FEMALE;
-            case "mężczyzna": return MALE;
-            case "unisex": return UNISEX;
-        }
-        return UNISEX;
+        if (Objects.isNull(name)) return Gender.MALE;
+        return switch (name) {
+            case "kobieta" -> Gender.FEMALE;
+            case "mężczyzna" -> Gender.MALE;
+            default -> Gender.UNISEX;
+        };
     }
 }

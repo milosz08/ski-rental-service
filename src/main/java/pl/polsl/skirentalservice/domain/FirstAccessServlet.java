@@ -13,32 +13,37 @@
 
 package pl.polsl.skirentalservice.domain;
 
-import org.slf4j.*;
-import org.hibernate.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 
 import jakarta.ejb.EJB;
-import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.annotation.WebServlet;
 
-import pl.polsl.skirentalservice.ssh.*;
-import pl.polsl.skirentalservice.dao.employer.*;
-import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.core.ValidatorBean;
-import pl.polsl.skirentalservice.dto.first_access.*;
-import pl.polsl.skirentalservice.core.ssh.SshSocketBean;
-import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
-import pl.polsl.skirentalservice.exception.CredentialException.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import static pl.polsl.skirentalservice.util.Utils.*;
-import static pl.polsl.skirentalservice.util.SessionAlert.*;
-import static pl.polsl.skirentalservice.util.AlertType.INFO;
-import static pl.polsl.skirentalservice.util.PageTitle.FIRST_ACCESS_PAGE;
-import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
-import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
+import pl.polsl.skirentalservice.util.*;
+import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import pl.polsl.skirentalservice.dto.first_access.FirstAccessReqDto;
+import pl.polsl.skirentalservice.dto.first_access.FirstAccessResDto;
+import pl.polsl.skirentalservice.core.ValidatorBean;
+import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.core.ssh.SshSocketBean;
+import pl.polsl.skirentalservice.dao.employer.EmployerDao;
+import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
+import pl.polsl.skirentalservice.ssh.ExecCommandPerformer;
+import pl.polsl.skirentalservice.ssh.IExecCommandPerformer;
+
+import static pl.polsl.skirentalservice.exception.CredentialException.PasswordMismatchException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -46,7 +51,7 @@ import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAIL
 public class FirstAccessServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FirstAccessServlet.class);
-    private final SessionFactory sessionFactory = getSessionFactory();
+    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
     @EJB private ValidatorBean validator;
     @EJB private SshSocketBean sshSocket;
@@ -55,9 +60,9 @@ public class FirstAccessServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        req.setAttribute("alertData", getAndDestroySessionAlert(req, FIRST_ACCESS_PAGE_ALERT));
-        req.setAttribute("firstAccessData", getFromSessionAndDestroy(req, getClass().getName(), FirstAccessResDto.class));
-        req.setAttribute("title", FIRST_ACCESS_PAGE.getName());
+        req.setAttribute("alertData", Utils.getAndDestroySessionAlert(req, SessionAlert.FIRST_ACCESS_PAGE_ALERT));
+        req.setAttribute("firstAccessData", Utils.getFromSessionAndDestroy(req, getClass().getName(), FirstAccessResDto.class));
+        req.setAttribute("title", PageTitle.FIRST_ACCESS_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/first-access.jsp").forward(req, res);
     }
 
@@ -68,7 +73,7 @@ public class FirstAccessServlet extends HttpServlet {
         final AlertTupleDto alert = new AlertTupleDto(true);
 
         final HttpSession httpSession = req.getSession();
-        final var userDataDto = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
+        final var userDataDto = (LoggedUserDataDto) httpSession.getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
 
         final FirstAccessReqDto reqDto = new FirstAccessReqDto(req);
         final FirstAccessResDto resDto = new FirstAccessResDto(validator, reqDto);
@@ -88,26 +93,26 @@ public class FirstAccessServlet extends HttpServlet {
                 session.beginTransaction();
 
                 final IEmployerDao employerDao = new EmployerDao(session);
-                employerDao.updateEmployerFirstAccessPassword(generateHash(reqDto.getPassword()), userDataDto.getId());
+                employerDao.updateEmployerFirstAccessPassword(Utils.generateHash(reqDto.getPassword()), userDataDto.getId());
 
                 final IExecCommandPerformer commandPerformer = new ExecCommandPerformer(sshSocket);
                 commandPerformer.updateMailboxPassword(userDataDto.getEmailAddress(), reqDto.getEmailPassword());
 
-                alert.setType(INFO);
+                alert.setType(AlertType.INFO);
                 alert.setMessage("Twoje nowe hasło do konta oraz do poczty zostało pomyślnie ustawione.");
                 userDataDto.setIsFirstAccess(false);
-                httpSession.setAttribute(SELLER_DASHBOARD_PAGE_ALERT.getName(), alert);
+                httpSession.setAttribute(SessionAlert.SELLER_DASHBOARD_PAGE_ALERT.getName(), alert);
                 LOGGER.info("Successful changed default account password and mailbox password for user: {}", userDataDto);
                 session.getTransaction().commit();
                 httpSession.removeAttribute(getClass().getName());
                 res.sendRedirect("/seller/dashboard");
             } catch (RuntimeException ex) {
-                onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
             httpSession.setAttribute(getClass().getName(), resDto);
-            httpSession.setAttribute(FIRST_ACCESS_PAGE_ALERT.getName(), alert);
+            httpSession.setAttribute(SessionAlert.FIRST_ACCESS_PAGE_ALERT.getName(), alert);
             res.sendRedirect("/first-access");
         }
     }

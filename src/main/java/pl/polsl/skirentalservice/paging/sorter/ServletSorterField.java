@@ -13,9 +13,7 @@
 
 package pl.polsl.skirentalservice.paging.sorter;
 
-import lombok.*;
-
-import static pl.polsl.skirentalservice.paging.sorter.SortDirection.*;
+import lombok.Getter;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -29,26 +27,26 @@ public class ServletSorterField {
 
     public ServletSorterField(String jpql) {
         this.jpql = jpql;
-        this.direction = IDLE;
+        this.direction = SortDirection.IDLE;
         this.chevronBts = "down-up text-secondary";
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     String setAscending() {
-        direction = ASC;
+        direction = SortDirection.ASC;
         chevronBts = "down";
         return jpql + " ASC";
     }
 
     String setDescending() {
-        direction = DESC;
+        direction = SortDirection.DESC;
         chevronBts = "up";
         return jpql + " DESC";
     }
 
     String reset(String defColumn) {
-        direction = IDLE;
+        direction = SortDirection.IDLE;
         chevronBts = "down-up text-secondary";
         return defColumn + " ASC";
     }

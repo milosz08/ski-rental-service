@@ -13,13 +13,16 @@
 
 package pl.polsl.skirentalservice.domain;
 
-import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
-import static pl.polsl.skirentalservice.util.PageTitle.NOT_FOUND_4O4_PAGE;
+import pl.polsl.skirentalservice.util.PageTitle;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -28,7 +31,7 @@ public class NotFoundServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        req.setAttribute("title", NOT_FOUND_4O4_PAGE.getName());
+        req.setAttribute("title", PageTitle.NOT_FOUND_4O4_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/_not-found.jsp").forward(req, res);
     }
 }

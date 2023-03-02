@@ -13,27 +13,33 @@
 
 package pl.polsl.skirentalservice.pdf;
 
-import com.itextpdf.kernel.pdf.*;
-import com.itextpdf.kernel.font.*;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.*;
-import com.itextpdf.layout.properties.*;
+import com.itextpdf.io.font.PdfEncodings;
+
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.colors.DeviceRgb;
-import com.itextpdf.layout.borders.SolidBorder;
 
-import pl.polsl.skirentalservice.dto.PriceUnitsDto;
-import pl.polsl.skirentalservice.pdf.dto.PdfEquipmentDataDto;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.borders.Border;
+import com.itextpdf.layout.borders.SolidBorder;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.element.Paragraph;
+
+import com.itextpdf.layout.properties.UnitValue;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.VerticalAlignment;
+import com.itextpdf.layout.properties.HorizontalAlignment;
 
 import java.util.Map;
 import java.util.List;
 import java.io.IOException;
 
-import static com.itextpdf.io.font.PdfEncodings.CP1250;
-import static com.itextpdf.layout.borders.Border.NO_BORDER;
-import static com.itextpdf.layout.properties.TextAlignment.RIGHT;
-import static com.itextpdf.layout.properties.VerticalAlignment.MIDDLE;
-import static com.itextpdf.layout.properties.UnitValue.createPercentArray;
+import pl.polsl.skirentalservice.dto.PriceUnitsDto;
+import pl.polsl.skirentalservice.pdf.dto.PdfEquipmentDataDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -51,7 +57,7 @@ public class PdfHandler {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     protected Document createDocument(PdfWriter pdfWriter) throws IOException {
-        final PdfFont pdfFont = PdfFontFactory.createFont(FONT_PATH, CP1250);
+        final PdfFont pdfFont = PdfFontFactory.createFont(FONT_PATH, PdfEncodings.CP1250);
         final PdfDocument pdfDocument = new PdfDocument(pdfWriter);
         pdfDocument.setDefaultPageSize(PageSize.A4);
         return new Document(pdfDocument).setFont(pdfFont).setFontSize(9);
@@ -60,9 +66,9 @@ public class PdfHandler {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     protected Table generateHeader(String text, String identifier, String date) {
-        final Table headerTable = flexTable(createPercentArray(new float[] { 60, 40 }));
+        final Table headerTable = flexTable(UnitValue.createPercentArray(new float[] { 60, 40 }));
         headerTable.addCell(new Cell().add(new Paragraph("DOKUMENT\n" + text.toUpperCase())
-            .setFontSize(13f).setFixedLeading(14f).setVerticalAlignment(MIDDLE)).setBorder(NO_BORDER));
+            .setFontSize(13f).setFixedLeading(14f).setVerticalAlignment(VerticalAlignment.MIDDLE)).setBorder(Border.NO_BORDER));
 
         final Table headerLeftTable = flexTable(2);
         headerLeftTable.addCell(cellWithParagraph("Nr " + text + ":").setFontColor(SECONDARY_COLOR));
@@ -70,7 +76,7 @@ public class PdfHandler {
         headerLeftTable.addCell(cellWithParagraph("Data " + text + ":").setFontColor(SECONDARY_COLOR));
         headerLeftTable.addCell(cellWithParagraph(date));
 
-        headerTable.addCell(new Cell().add(headerLeftTable).setBorder(NO_BORDER));
+        headerTable.addCell(new Cell().add(headerLeftTable).setBorder(Border.NO_BORDER));
         return headerTable;
     }
 
@@ -79,13 +85,13 @@ public class PdfHandler {
     protected Table generateDetails(Map<String, String> leftDataCells, Map<String, String> rightDataCells, String header) {
         final Table documentDetails = flexTable(2);
 
-        final Cell leftSide = new Cell().setBorder(NO_BORDER).setMarginBottom(5f);
+        final Cell leftSide = new Cell().setBorder(Border.NO_BORDER).setMarginBottom(5f);
         leftSide.add(cellWithParagraph("Dane klienta", 10f));
         for (Map.Entry<String, String> cell : leftDataCells.entrySet()) {
             leftSide.add(dataCellHeader(cell.getKey() + ":"));
             leftSide.add(dataCellContent(cell.getValue()));
         }
-        final Cell rightSide = new Cell().setBorder(NO_BORDER).setMarginBottom(5f);
+        final Cell rightSide = new Cell().setBorder(Border.NO_BORDER).setMarginBottom(5f);
         rightSide.add(cellWithParagraph("Dane " + header, 10f));
         for (Map.Entry<String, String> cell : rightDataCells.entrySet()) {
             rightSide.add(dataCellHeader(cell.getKey() + ":"));
@@ -167,11 +173,11 @@ public class PdfHandler {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private Paragraph priceUnitBruttoParagraph(String text) {
-        return new Paragraph(text).setFontSize(10f).setFixedLeading(5f).setTextAlignment(RIGHT);
+        return new Paragraph(text).setFontSize(10f).setFixedLeading(5f).setTextAlignment(TextAlignment.RIGHT);
     }
 
     private Paragraph priceUnitNettoParagraph(String text) {
-        return new Paragraph(text).setFixedLeading(5f).setFontColor(SECONDARY_COLOR).setTextAlignment(RIGHT);
+        return new Paragraph(text).setFixedLeading(5f).setFontColor(SECONDARY_COLOR).setTextAlignment(TextAlignment.RIGHT);
     }
 
     private Paragraph paragraphWithLeading(String text) {
@@ -180,11 +186,11 @@ public class PdfHandler {
 
     private Cell dataCellHeader(String text) {
         return new Cell().add(new Paragraph(text).setFixedLeading(9f).setMarginTop(8f))
-            .setBorder(NO_BORDER).setFontColor(SECONDARY_COLOR);
+            .setBorder(Border.NO_BORDER).setFontColor(SECONDARY_COLOR);
     }
 
     private Cell dataCellContent(String text) {
-        return new Cell().add(new Paragraph(text).setFixedLeading(9f)).setBorder(NO_BORDER).setFontSize(10f);
+        return new Cell().add(new Paragraph(text).setFixedLeading(9f)).setBorder(Border.NO_BORDER).setFontSize(10f);
     }
 
     private Cell dataTableCellContent(String text) {
@@ -192,7 +198,7 @@ public class PdfHandler {
     }
 
     private Cell cellWithParagraph(String text, float fontSize) {
-        return new Cell().add(new Paragraph(text)).setBorder(NO_BORDER).setFontSize(fontSize);
+        return new Cell().add(new Paragraph(text)).setBorder(Border.NO_BORDER).setFontSize(fontSize);
     }
 
     private Cell cellWithParagraph(String text) {

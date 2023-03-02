@@ -15,18 +15,20 @@ package pl.polsl.skirentalservice.dao.rent;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.*;
 import org.hibernate.Session;
 
-import pl.polsl.skirentalservice.dto.rent.*;
-import pl.polsl.skirentalservice.dto.PageableDto;
-import pl.polsl.skirentalservice.util.RentStatus;
-import pl.polsl.skirentalservice.entity.RentEntity;
-import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
-import pl.polsl.skirentalservice.dto.deliv_return.RentReturnDetailsResDto;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
-import static java.util.Optional.*;
-import static java.util.Objects.isNull;
+import pl.polsl.skirentalservice.util.RentStatus;
+import pl.polsl.skirentalservice.dto.PageableDto;
+import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
+import pl.polsl.skirentalservice.dto.rent.OwnerRentRecordResDto;
+import pl.polsl.skirentalservice.dto.rent.RentDetailsResDto;
+import pl.polsl.skirentalservice.dto.rent.SellerRentRecordResDto;
+import pl.polsl.skirentalservice.dto.deliv_return.RentReturnDetailsResDto;
+import pl.polsl.skirentalservice.entity.RentEntity;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -51,8 +53,8 @@ public class RentDao implements IRentDao {
             .setParameter("rentid", rentId)
             .setParameter("eid", employerId)
             .getSingleResultOrNull();
-        if (isNull(rentDetails)) return empty();
-        return of(rentDetails);
+        if (Objects.isNull(rentDetails)) return Optional.empty();
+        return Optional.of(rentDetails);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,8 +82,8 @@ public class RentDao implements IRentDao {
             .setParameter("eid", employerId)
             .setParameter("ralias", roleAlias)
             .getSingleResultOrNull();
-        if (isNull(equipmentDetails)) return empty();
-        return of(equipmentDetails);
+        if (Objects.isNull(equipmentDetails)) return Optional.empty();
+        return Optional.of(equipmentDetails);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

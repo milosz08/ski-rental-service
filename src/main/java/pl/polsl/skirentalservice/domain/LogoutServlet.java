@@ -13,18 +13,21 @@
 
 package pl.polsl.skirentalservice.domain;
 
-import org.slf4j.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import jakarta.servlet.http.*;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.annotation.WebServlet;
+
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+import pl.polsl.skirentalservice.util.SessionAttribute;
 import pl.polsl.skirentalservice.dto.logout.LogoutModalDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
-
-import static pl.polsl.skirentalservice.util.SessionAttribute.*;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -38,9 +41,9 @@ public class LogoutServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
         final HttpSession httpSession = req.getSession(false);
-        final var detailsDto = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
-        httpSession.removeAttribute(LOGGED_USER_DETAILS.getName());
-        httpSession.setAttribute(LOGOUT_MODAL.getName(), new LogoutModalDto(true));
+        final var detailsDto = (LoggedUserDataDto) httpSession.getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
+        httpSession.removeAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
+        httpSession.setAttribute(SessionAttribute.LOGOUT_MODAL.getName(), new LogoutModalDto(true));
         LOGGER.info("Successful logout from user account. Account data: {}", detailsDto);
         res.sendRedirect("/login");
     }

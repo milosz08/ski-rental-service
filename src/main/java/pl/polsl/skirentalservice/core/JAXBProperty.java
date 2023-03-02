@@ -14,14 +14,17 @@
 package pl.polsl.skirentalservice.core;
 
 import lombok.NoArgsConstructor;
-import jakarta.xml.bind.annotation.*;
 
-import static jakarta.xml.bind.annotation.XmlAccessType.FIELD;
+import jakarta.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAccessType;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @NoArgsConstructor
-@XmlAccessorType(FIELD)
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "property")
 public class JAXBProperty {
 

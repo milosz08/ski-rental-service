@@ -13,30 +13,40 @@
 
 package pl.polsl.skirentalservice.domain;
 
-import org.slf4j.*;
-import org.hibernate.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 
 import jakarta.ejb.EJB;
-import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.util.Objects;
 import java.io.IOException;
 
-import pl.polsl.skirentalservice.core.*;
-import pl.polsl.skirentalservice.dao.employer.*;
-import pl.polsl.skirentalservice.dao.ota_token.*;
+import pl.polsl.skirentalservice.util.Utils;
+import pl.polsl.skirentalservice.util.AlertType;
+import pl.polsl.skirentalservice.util.PageTitle;
+import pl.polsl.skirentalservice.util.SessionAlert;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.dto.change_password.*;
-import pl.polsl.skirentalservice.exception.CredentialException.*;
+import pl.polsl.skirentalservice.dto.change_password.ChangeForgottenPasswordReqDto;
+import pl.polsl.skirentalservice.dto.change_password.ChangeForgottenPasswordResDto;
+import pl.polsl.skirentalservice.core.ValidatorBean;
+import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.dao.employer.EmployerDao;
+import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
+import pl.polsl.skirentalservice.dao.ota_token.OtaTokenDao;
+import pl.polsl.skirentalservice.dao.ota_token.IOtaTokenDao;
 
-import static java.util.Objects.isNull;
-
-import static pl.polsl.skirentalservice.util.Utils.*;
-import static pl.polsl.skirentalservice.util.SessionAlert.*;
-import static pl.polsl.skirentalservice.util.AlertType.INFO;
-import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
-import static pl.polsl.skirentalservice.util.PageTitle.CHANGE_FORGOTTEN_PASSWORD_PAGE;
+import static pl.polsl.skirentalservice.exception.CredentialException.OtaTokenNotFoundException;
+import static pl.polsl.skirentalservice.exception.CredentialException.PasswordMismatchException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -44,7 +54,7 @@ import static pl.polsl.skirentalservice.util.PageTitle.CHANGE_FORGOTTEN_PASSWORD
 public class ChangeForgottenPasswordServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChangeForgottenPasswordServlet.class);
-    private final SessionFactory sessionFactory = getSessionFactory();
+    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
     @EJB private ValidatorBean validator;
 
@@ -52,8 +62,8 @@ public class ChangeForgottenPasswordServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        AlertTupleDto alert = getAndDestroySessionAlert(req, CHANGE_FORGOTTEN_PASSWORD_PAGE_ALERT);
-        if (isNull(alert)) alert = new AlertTupleDto();
+        AlertTupleDto alert = Utils.getAndDestroySessionAlert(req, SessionAlert.CHANGE_FORGOTTEN_PASSWORD_PAGE_ALERT);
+        if (Objects.isNull(alert)) alert = new AlertTupleDto();
         final String token = req.getParameter("token");
 
         try (final Session session = sessionFactory.openSession()) {
@@ -67,17 +77,17 @@ public class ChangeForgottenPasswordServlet extends HttpServlet {
                 req.setAttribute("employerData", details);
                 session.getTransaction().commit();
             } catch (RuntimeException ex) {
-                onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setActive(true);
             alert.setDisableContent(true);
             alert.setMessage(ex.getMessage());
         }
-        req.setAttribute("changePassData", getFromSessionAndDestroy(req, getClass().getName(),
+        req.setAttribute("changePassData", Utils.getFromSessionAndDestroy(req, getClass().getName(),
             ChangeForgottenPasswordResDto.class));
         req.setAttribute("alertData", alert);
-        req.setAttribute("title", CHANGE_FORGOTTEN_PASSWORD_PAGE.getName());
+        req.setAttribute("title", PageTitle.CHANGE_FORGOTTEN_PASSWORD_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/change-forgotten-password.jsp").forward(req, res);
     }
 
@@ -109,24 +119,24 @@ public class ChangeForgottenPasswordServlet extends HttpServlet {
                 final var details = otaTokenDao.findTokenDetails(token).orElseThrow(() -> {
                     throw new OtaTokenNotFoundException(req, token, LOGGER);
                 });
-                employerDao.updateEmployerPassword(generateHash(reqDto.getPassword()), details.id());
+                employerDao.updateEmployerPassword(Utils.generateHash(reqDto.getPassword()), details.id());
                 otaTokenDao.manuallyExpiredOtaToken(details.tokenId());
 
                 session.getTransaction().commit();
                 alert.setMessage("Hasło do Twojego konta zostało pomyślnie zmienione.");
-                alert.setType(INFO);
+                alert.setType(AlertType.INFO);
                 LOGGER.info("Successful change password for employer account. Details: {}", details);
-                httpSession.setAttribute(LOGIN_PAGE_ALERT.getName(), alert);
+                httpSession.setAttribute(SessionAlert.LOGIN_PAGE_ALERT.getName(), alert);
                 httpSession.removeAttribute(getClass().getName());
                 res.sendRedirect("/login");
             } catch (RuntimeException ex) {
-                onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             if (!(ex instanceof PasswordMismatchException)) alert.setDisableContent(true);
             alert.setMessage(ex.getMessage());
             httpSession.setAttribute(getClass().getName(), resDto);
-            httpSession.setAttribute(CHANGE_FORGOTTEN_PASSWORD_PAGE_ALERT.getName(), alert);
+            httpSession.setAttribute(SessionAlert.CHANGE_FORGOTTEN_PASSWORD_PAGE_ALERT.getName(), alert);
             res.sendRedirect("/change-forgotten-password?token=" + token);
         }
     }

@@ -15,17 +15,18 @@ package pl.polsl.skirentalservice.dto.rent;
 
 import lombok.Data;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.servlet.http.HttpServletRequest;
 
-import pl.polsl.skirentalservice.core.IReqValidatePojo;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static java.time.LocalDateTime.parse;
-import static org.apache.commons.lang3.StringUtils.*;
-import static pl.polsl.skirentalservice.util.Regex.*;
+import pl.polsl.skirentalservice.util.Regex;
+import pl.polsl.skirentalservice.core.IReqValidatePojo;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -37,15 +38,15 @@ public class NewRentDetailsReqDto implements IReqValidatePojo {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @NotEmpty(message = "Pole daty wypożyczenia nie może być puste.")
-    @Pattern(regexp = DATE_TIME, message = "Nieprawidłowa wartość w polu data wypożyczenia.")
+    @Pattern(regexp = Regex.DATE_TIME, message = "Nieprawidłowa wartość w polu data wypożyczenia.")
     private String rentDateTime;
 
     @NotEmpty(message = "Pole daty zwrotu wypożyczenia nie może być puste.")
-    @Pattern(regexp = DATE_TIME, message = "Nieprawidłowa wartość w polu data zwrotu wypożyczenia.")
+    @Pattern(regexp = Regex.DATE_TIME, message = "Nieprawidłowa wartość w polu data zwrotu wypożyczenia.")
     private String returnDateTime;
 
     @NotEmpty(message = "Pole wartości procentowej podatku nie może być puste.")
-    @Pattern(regexp = TAX, message = "Nieprawidłowa wartość w polu wartości procentowej podatku.")
+    @Pattern(regexp = Regex.TAX, message = "Nieprawidłowa wartość w polu wartości procentowej podatku.")
     private String tax;
 
     @Size(max = 200, message = "Pole dodatkowych uwag do składanego wypożyczenia może mieć maksymalnie 200 znaków.")
@@ -54,20 +55,20 @@ public class NewRentDetailsReqDto implements IReqValidatePojo {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public NewRentDetailsReqDto(HttpServletRequest req) {
-        this.rentDateTime = trimToEmpty(req.getParameter("rentDateTime"));
-        this.returnDateTime = trimToEmpty(req.getParameter("returnDateTime"));
-        this.tax = trimToEmpty(req.getParameter("tax")).replace(',', '.');
-        this.description = trimToNull(req.getParameter("description"));
+        this.rentDateTime = StringUtils.trimToEmpty(req.getParameter("rentDateTime"));
+        this.returnDateTime = StringUtils.trimToEmpty(req.getParameter("returnDateTime"));
+        this.tax = StringUtils.trimToEmpty(req.getParameter("tax")).replace(',', '.');
+        this.description = StringUtils.trimToNull(req.getParameter("description"));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public LocalDateTime getParsedRentDateTime() {
-        return parse(rentDateTime.replace('T', ' '), formatter);
+        return LocalDateTime.parse(rentDateTime.replace('T', ' '), formatter);
     }
 
     public LocalDateTime getParsedReturnDateTime() {
-        return parse(returnDateTime.replace('T', ' '), formatter);
+        return LocalDateTime.parse(returnDateTime.replace('T', ' '), formatter);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

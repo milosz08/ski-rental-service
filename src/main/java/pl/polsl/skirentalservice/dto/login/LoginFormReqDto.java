@@ -13,14 +13,16 @@
 
 package pl.polsl.skirentalservice.dto.login;
 
-import lombok.*;
-import jakarta.validation.constraints.*;
+import lombok.Data;
+
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.servlet.http.HttpServletRequest;
 
-import pl.polsl.skirentalservice.core.IReqValidatePojo;
+import org.apache.commons.lang3.StringUtils;
 
-import static pl.polsl.skirentalservice.util.Regex.*;
-import static org.apache.commons.lang3.StringUtils.trimToEmpty;
+import pl.polsl.skirentalservice.util.Regex;
+import pl.polsl.skirentalservice.core.IReqValidatePojo;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -28,18 +30,18 @@ import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 public class LoginFormReqDto implements IReqValidatePojo {
 
     @NotEmpty(message = "Pole loginu/adresu email nie może być puste.")
-    @Pattern(regexp = LOGIN_EMAIL, message = "Nieprawidłowa wartość/wartości w polu login.")
+    @Pattern(regexp = Regex.LOGIN_EMAIL, message = "Nieprawidłowa wartość/wartości w polu login.")
     private String loginOrEmail;
 
     @NotEmpty(message = "Pole hasła nie może być puste.")
-    @Pattern(regexp = PASSWORD_AVLB, message = "Nieprawidłowa wartość/wartości w polu hasło.")
+    @Pattern(regexp = Regex.PASSWORD_AVLB, message = "Nieprawidłowa wartość/wartości w polu hasło.")
     private String password;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public LoginFormReqDto(HttpServletRequest req) {
-        this.loginOrEmail = trimToEmpty(req.getParameter("loginOrEmail"));
-        this.password = trimToEmpty(req.getParameter("password"));
+        this.loginOrEmail = StringUtils.trimToEmpty(req.getParameter("loginOrEmail"));
+        this.password = StringUtils.trimToEmpty(req.getParameter("password"));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47,8 +49,8 @@ public class LoginFormReqDto implements IReqValidatePojo {
     @Override
     public String toString() {
         return '{' +
-            "loginOrEmail='" + loginOrEmail + '\'' +
-            ", password='" + password + '\'' +
+            "loginOrEmail='" + loginOrEmail +
+            ", password='" + password +
             '}';
     }
 }

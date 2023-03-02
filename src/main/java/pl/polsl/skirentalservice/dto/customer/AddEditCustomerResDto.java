@@ -13,14 +13,15 @@
 
 package pl.polsl.skirentalservice.dto.customer;
 
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
-import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.util.Gender;
 import pl.polsl.skirentalservice.core.ValidatorBean;
-
-import static pl.polsl.skirentalservice.util.Gender.*;
+import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
+import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -54,7 +55,10 @@ public class AddEditCustomerResDto {
         this.apartmentNr = validator.validateField(reqDto, "apartmentNr", reqDto.getApartmentNr());
         this.city = validator.validateField(reqDto, "city", reqDto.getCity());
         this.postalCode = validator.validateField(reqDto, "postalCode", reqDto.getPostalCode());
-        this.genders = List.of(MALE.convertToTuple(reqDto.getGender()), FEMALE.convertToTuple(reqDto.getGender()));
+        this.genders = List.of(
+            Gender.MALE.convertToTuple(reqDto.getGender()),
+            Gender.FEMALE.convertToTuple(reqDto.getGender())
+        );
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
