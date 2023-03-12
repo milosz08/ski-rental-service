@@ -13,18 +13,18 @@
 
 package pl.polsl.skirentalservice.entity;
 
-import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
-import java.util.*;
+import jakarta.persistence.*;
+
+import java.util.Set;
+import java.util.HashSet;
 import java.math.BigDecimal;
 
-import pl.polsl.skirentalservice.core.db.*;
 import pl.polsl.skirentalservice.util.Gender;
+import pl.polsl.skirentalservice.core.db.EntityInjector;
+import pl.polsl.skirentalservice.core.db.AuditableEntity;
 import pl.polsl.skirentalservice.converter.GenderConverter;
-
-import static jakarta.persistence.CascadeType.*;
-import static jakarta.persistence.FetchType.LAZY;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -49,19 +49,19 @@ public class EquipmentEntity extends AuditableEntity {
     @Convert(converter = GenderConverter.class) @Column(name = "gender")
     private Gender gender;
 
-    @ManyToOne(fetch = LAZY, cascade = { PERSIST, MERGE })
+    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "type_id", referencedColumnName = "id")
     private EquipmentTypeEntity equipmentType;
 
-    @ManyToOne(fetch = LAZY, cascade = { PERSIST, MERGE })
+    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "brand_id", referencedColumnName = "id")
     private EquipmentBrandEntity equipmentBrand;
 
-    @ManyToOne(fetch = LAZY, cascade = { PERSIST, MERGE })
+    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "color_id", referencedColumnName = "id")
     private EquipmentColorEntity equipmentColor;
 
-    @OneToMany(fetch = LAZY, cascade = { PERSIST, MERGE }, mappedBy = "equipment")
+    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "equipment")
     private Set<RentEquipmentEntity> rentsEquipments = new HashSet<>();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

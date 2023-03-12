@@ -16,12 +16,11 @@ package pl.polsl.skirentalservice.entity;
 import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 
-import pl.polsl.skirentalservice.core.db.*;
-
-import static jakarta.persistence.CascadeType.*;
-import static jakarta.persistence.FetchType.LAZY;
+import pl.polsl.skirentalservice.core.db.EntityInjector;
+import pl.polsl.skirentalservice.core.db.AuditableEntity;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -36,11 +35,11 @@ public class RentEquipmentEntity extends AuditableEntity {
     @Column(name = "description")       private String description;
     @Column(name = "deposit_price")     private BigDecimal depositPrice;
 
-    @ManyToOne(fetch = LAZY, cascade = { PERSIST, MERGE, REMOVE })
+    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     @JoinColumn(name = "rent_id", referencedColumnName = "id")
     private RentEntity rent;
 
-    @ManyToOne(fetch = LAZY, cascade = { PERSIST, MERGE })
+    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "equipment_id", referencedColumnName = "id")
     private EquipmentEntity equipment;
 

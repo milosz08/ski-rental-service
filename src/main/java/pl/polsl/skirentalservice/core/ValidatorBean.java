@@ -13,10 +13,14 @@
 
 package pl.polsl.skirentalservice.core;
 
-import jakarta.ejb.*;
-import jakarta.validation.*;
+import jakarta.ejb.Startup;
+import jakarta.ejb.Singleton;
 
 import java.util.Set;
+
+import jakarta.validation.Validator;
+import jakarta.validation.Validation;
+import jakarta.validation.ConstraintViolation;
 
 import pl.polsl.skirentalservice.dto.*;
 

@@ -13,7 +13,8 @@
 
 package pl.polsl.skirentalservice.dto.deliv_return;
 
-import lombok.*;
+import lombok.Data;
+import lombok.AllArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

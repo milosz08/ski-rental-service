@@ -13,10 +13,12 @@
 
 package pl.polsl.skirentalservice.entity;
 
-import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
-import pl.polsl.skirentalservice.core.db.*;
+import jakarta.persistence.*;
+
+import pl.polsl.skirentalservice.core.db.EntityInjector;
+import pl.polsl.skirentalservice.core.db.AuditableEntity;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

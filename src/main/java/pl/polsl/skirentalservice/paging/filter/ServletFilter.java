@@ -13,13 +13,15 @@
 
 package pl.polsl.skirentalservice.paging.filter;
 
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+
 import java.util.List;
-import jakarta.servlet.http.*;
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
 
 import pl.polsl.skirentalservice.util.SessionAttribute;
-
-import static java.util.Objects.isNull;
-import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -40,11 +42,11 @@ public class ServletFilter {
     public FilterDataDto generateFilterJPQuery(SessionAttribute attribute) {
         final HttpSession session = req.getSession();
         FilterDataDto filterData = (FilterDataDto) session.getAttribute(attribute.getName());
-        if (isNull(filterData)) filterData = new FilterDataDto(fields);
+        if (Objects.isNull(filterData)) filterData = new FilterDataDto(fields);
 
-        final String searchText = trimToEmpty(req.getParameter("searchText"));
+        final String searchText = StringUtils.trimToEmpty(req.getParameter("searchText"));
         final String searchByValue = req.getParameter("searchBy");
-        if (isNull(searchByValue)) return filterData;
+        if (Objects.isNull(searchByValue)) return filterData;
 
         for (final FilterColumn select : filterData.getSearchBy()) {
             if (select.getValue().equals(searchByValue)) {

@@ -13,13 +13,15 @@
 
 package pl.polsl.skirentalservice.entity;
 
-import java.util.*;
-import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
-import pl.polsl.skirentalservice.core.db.*;
+import jakarta.persistence.*;
 
-import static jakarta.persistence.FetchType.LAZY;
+import java.util.Set;
+import java.util.HashSet;
+
+import pl.polsl.skirentalservice.core.db.EntityInjector;
+import pl.polsl.skirentalservice.core.db.AuditableEntity;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -31,7 +33,7 @@ public class EquipmentColorEntity extends AuditableEntity {
 
     @Column(name = "name")  private String name;
 
-    @OneToMany(mappedBy = "equipmentColor", fetch = LAZY)
+    @OneToMany(mappedBy = "equipmentColor", fetch = FetchType.LAZY)
     private Set<EquipmentEntity> equipments = new HashSet<>();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

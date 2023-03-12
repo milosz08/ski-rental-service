@@ -13,38 +13,45 @@
 
 package pl.polsl.skirentalservice.domain.seller.customer;
 
-import org.slf4j.*;
-import org.hibernate.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.modelmapper.ModelMapper;
 
 import jakarta.ejb.EJB;
-import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
-import pl.polsl.skirentalservice.core.*;
-import pl.polsl.skirentalservice.entity.*;
-import pl.polsl.skirentalservice.dto.customer.*;
-import pl.polsl.skirentalservice.dao.customer.*;
-import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.dao.user_details.*;
-import pl.polsl.skirentalservice.core.ValidatorBean;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
+import java.util.Objects;
 import java.io.IOException;
 import java.time.LocalDate;
 
-import static java.util.Objects.isNull;
+import pl.polsl.skirentalservice.util.*;
+import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.customer.AddEditCustomerReqDto;
+import pl.polsl.skirentalservice.dto.customer.AddEditCustomerResDto;
+import pl.polsl.skirentalservice.core.ConfigBean;
+import pl.polsl.skirentalservice.core.ValidatorBean;
+import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.core.ModelMapperGenerator;
+import pl.polsl.skirentalservice.dao.customer.CustomerDao;
+import pl.polsl.skirentalservice.dao.customer.ICustomerDao;
+import pl.polsl.skirentalservice.dao.user_details.IUserDetailsDao;
+import pl.polsl.skirentalservice.dao.user_details.UserDetailsDao;
+import pl.polsl.skirentalservice.entity.CustomerEntity;
 
-import static pl.polsl.skirentalservice.util.Utils.*;
-import static pl.polsl.skirentalservice.util.UserRole.USER;
-import static pl.polsl.skirentalservice.util.AlertType.INFO;
-import static pl.polsl.skirentalservice.util.SessionAlert.*;
-import static pl.polsl.skirentalservice.exception.DateException.*;
-import static pl.polsl.skirentalservice.core.ModelMapperGenerator.*;
-import static pl.polsl.skirentalservice.exception.NotFoundException.*;
-import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
-import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
-import static pl.polsl.skirentalservice.util.PageTitle.SELLER_EDIT_CUSTOMER_PAGE;
+import static pl.polsl.skirentalservice.exception.DateException.DateInFutureException;
+import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
+import static pl.polsl.skirentalservice.exception.AlreadyExistException.PeselAlreadyExistException;
+import static pl.polsl.skirentalservice.exception.AlreadyExistException.PhoneNumberAlreadyExistException;
+import static pl.polsl.skirentalservice.exception.AlreadyExistException.EmailAddressAlreadyExistException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -52,8 +59,8 @@ import static pl.polsl.skirentalservice.util.PageTitle.SELLER_EDIT_CUSTOMER_PAGE
 public class SellerEditCustomerServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SellerEditCustomerServlet.class);
-    private final SessionFactory sessionFactory = getSessionFactory();
-    private final ModelMapper modelMapper = getModelMapper();
+    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+    private final ModelMapper modelMapper = ModelMapperGenerator.getModelMapper();
 
     @EJB private ValidatorBean validator;
     @EJB private ConfigBean config;
@@ -65,10 +72,10 @@ public class SellerEditCustomerServlet extends HttpServlet {
         final String customerId = req.getParameter("id");
         final HttpSession httpSession = req.getSession();
 
-        final AlertTupleDto alert = getAndDestroySessionAlert(req, SELLER_EDIT_CUSTOMER_PAGE_ALERT);
+        final AlertTupleDto alert = Utils.getAndDestroySessionAlert(req, SessionAlert.SELLER_EDIT_CUSTOMER_PAGE_ALERT);
         var resDto = (AddEditCustomerResDto) httpSession.getAttribute(getClass().getName());
 
-        if (isNull(resDto)) {
+        if (Objects.isNull(resDto)) {
             try (final Session session = sessionFactory.openSession()) {
                 try {
                     session.beginTransaction();
@@ -81,18 +88,18 @@ public class SellerEditCustomerServlet extends HttpServlet {
                     resDto = new AddEditCustomerResDto(validator, customerDetails);
                     session.getTransaction().commit();
                 } catch (RuntimeException ex) {
-                    if (!isNull(session)) onHibernateException(session, LOGGER, ex);
+                    if (!Objects.isNull(session)) Utils.onHibernateException(session, LOGGER, ex);
                 }
             } catch (RuntimeException ex) {
                 alert.setMessage(ex.getMessage());
-                httpSession.setAttribute(COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
+                httpSession.setAttribute(SessionAlert.COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
                 res.sendRedirect("/seller/customers");
             }
         }
         req.setAttribute("alertData", alert);
         req.setAttribute("addEditCustomerData", resDto);
         req.setAttribute("addEditText", "Edytuj");
-        req.setAttribute("title", SELLER_EDIT_CUSTOMER_PAGE.getName());
+        req.setAttribute("title", PageTitle.SELLER_EDIT_CUSTOMER_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/seller/customer/seller-add-edit-customer.jsp").forward(req, res);
     }
 
@@ -103,7 +110,7 @@ public class SellerEditCustomerServlet extends HttpServlet {
         final String customerId = req.getParameter("id");
         final AlertTupleDto alert = new AlertTupleDto(true);
         final HttpSession httpSession = req.getSession();
-        final String loggedUser = getLoggedUserLogin(req);
+        final String loggedUser = Utils.getLoggedUserLogin(req);
 
         final AddEditCustomerReqDto reqDto = new AddEditCustomerReqDto(req);
         final AddEditCustomerResDto resDto = new AddEditCustomerResDto(validator, reqDto);
@@ -121,38 +128,38 @@ public class SellerEditCustomerServlet extends HttpServlet {
                 final IUserDetailsDao userDetailsDao = new UserDetailsDao(session);
 
                 final CustomerEntity updatableCustomer = session.get(CustomerEntity.class, customerId);
-                if (isNull(updatableCustomer)) throw new UserNotFoundException(customerId);
+                if (Objects.isNull(updatableCustomer)) throw new UserNotFoundException(customerId);
 
                 if (userDetailsDao.checkIfCustomerWithSamePeselExist(reqDto.getPesel(), customerId)) {
-                    throw new PeselAlreadyExistException(reqDto.getPesel(), USER);
+                    throw new PeselAlreadyExistException(reqDto.getPesel(), UserRole.USER);
                 }
                 if (userDetailsDao.checkIfCustomerWithSamePhoneNumberExist(reqDto.getPhoneNumber(), customerId)) {
-                    throw new PhoneNumberAlreadyExistException(reqDto.getPhoneNumber(), USER);
+                    throw new PhoneNumberAlreadyExistException(reqDto.getPhoneNumber(), UserRole.USER);
                 }
                 if (userDetailsDao.checkIfCustomerWithSameEmailExist(reqDto.getEmailAddress(), customerId)) {
-                    throw new EmailAddressAlreadyExistException(reqDto.getEmailAddress(), USER);
+                    throw new EmailAddressAlreadyExistException(reqDto.getEmailAddress(), UserRole.USER);
                 }
 
-                onUpdateNullableTransactTurnOn();
+                ModelMapperGenerator.onUpdateNullableTransactTurnOn();
                 modelMapper.map(reqDto, updatableCustomer.getUserDetails());
                 modelMapper.map(reqDto, updatableCustomer.getLocationAddress());
-                onUpdateNullableTransactTurnOff();
+                ModelMapperGenerator.onUpdateNullableTransactTurnOff();
 
                 session.getTransaction().commit();
 
-                alert.setType(INFO);
+                alert.setType(AlertType.INFO);
                 alert.setMessage("Dane klienta z ID <strong>#" + customerId + "</strong> zostały pomyślnie zaktualizowane.");
-                httpSession.setAttribute(COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
+                httpSession.setAttribute(SessionAlert.COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
                 httpSession.removeAttribute(getClass().getName());
                 LOGGER.info("Customer with id: {} was successfuly updated. Data: {}", customerId, reqDto);
                 res.sendRedirect("/seller/customers");
             } catch (RuntimeException ex) {
-                onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
             httpSession.setAttribute(getClass().getName(), resDto);
-            httpSession.setAttribute(SELLER_EDIT_CUSTOMER_PAGE.getName(), alert);
+            httpSession.setAttribute(SessionAlert.SELLER_EDIT_CUSTOMER_PAGE_ALERT.getName(), alert);
             LOGGER.error("Unable to edit existing customer with id: {}. Cause: {}", customerId, ex.getMessage());
             res.sendRedirect("/seller/edit-customer?id=" + customerId);
         }

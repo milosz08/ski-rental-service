@@ -13,19 +13,22 @@
 
 package pl.polsl.skirentalservice.filter.guard;
 
-import jakarta.servlet.http.*;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.annotation.*;
-import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.annotation.WebInitParam;
 
+import jakarta.servlet.http.HttpFilter;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.util.Objects;
 import java.io.IOException;
 
+import pl.polsl.skirentalservice.util.UserRole;
+import pl.polsl.skirentalservice.util.SessionAttribute;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
-
-import static java.util.Objects.isNull;
-import static pl.polsl.skirentalservice.util.UserRole.OWNER;
-import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -38,12 +41,12 @@ public class RedirectOnFirstAccessFilter extends HttpFilter {
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
         throws IOException, ServletException {
         final HttpSession httpSession = req.getSession();
-        final var userDetails = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
-        if (isNull(userDetails)) {
+        final var userDetails = (LoggedUserDataDto) httpSession.getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
+        if (Objects.isNull(userDetails)) {
             res.sendRedirect("/login");
             return;
         }
-        if (!userDetails.getIsFirstAccess() || userDetails.getRoleAlias().equals(OWNER.getAlias())) {
+        if (!userDetails.getIsFirstAccess() || userDetails.getRoleAlias().equals(UserRole.OWNER.getAlias())) {
             res.sendRedirect("/" + userDetails.getRoleEng() + "/dashboard");
             return;
         }

@@ -15,13 +15,13 @@ package pl.polsl.skirentalservice.dao.ota_token;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.*;
 import org.hibernate.Session;
 
-import pl.polsl.skirentalservice.dto.change_password.*;
+import java.util.Objects;
+import java.util.Optional;
 
-import static java.util.Optional.*;
-import static java.util.Objects.isNull;
+import pl.polsl.skirentalservice.dto.change_password.TokenDetailsDto;
+import pl.polsl.skirentalservice.dto.change_password.ChangePasswordEmployerDetailsDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -34,33 +34,35 @@ public class OtaTokenDao implements IOtaTokenDao {
 
     @Override
     public Optional<ChangePasswordEmployerDetailsDto> findTokenRelatedToEmployer(String token) {
-        final String jpqlFindToken =
-            "SELECT new pl.polsl.skirentalservice.dto.change_password.ChangePasswordEmployerDetailsDto(" +
-                "e.id, t.id, CONCAT(d.firstName, ' ', d.lastName)" +
-            ") FROM OtaTokenEntity t " +
-            "INNER JOIN t.employer e " +
-            "INNER JOIN e.userDetails d " +
-            "WHERE t.otaToken = :token AND t.isUsed = false AND t.expiredDate >= NOW()";
+        final String jpqlFindToken = """
+            SELECT new pl.polsl.skirentalservice.dto.change_password.ChangePasswordEmployerDetailsDto(
+                e.id, t.id, CONCAT(d.firstName, ' ', d.lastName)
+            ) FROM OtaTokenEntity t
+            INNER JOIN t.employer e
+            INNER JOIN e.userDetails d
+            WHERE t.otaToken = :token AND t.isUsed = false AND t.expiredDate >= NOW()
+        """;
         final var details = session.createQuery(jpqlFindToken, ChangePasswordEmployerDetailsDto.class)
             .setParameter("token", token)
             .getSingleResultOrNull();
-        if (isNull(details)) return empty();
-        return of(details);
+        if (Objects.isNull(details)) return Optional.empty();
+        return Optional.of(details);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public Optional<TokenDetailsDto> findTokenDetails(String token) {
-        final String jpqlFindToken =
-            "SELECT new pl.polsl.skirentalservice.dto.change_password.TokenDetailsDto(e.id, t.id) " +
-            "FROM OtaTokenEntity t INNER JOIN t.employer e " +
-            "WHERE t.otaToken = :token AND t.isUsed = false AND t.expiredDate >= NOW()";
+        final String jpqlFindToken = """
+            SELECT new pl.polsl.skirentalservice.dto.change_password.TokenDetailsDto(e.id, t.id)
+            FROM OtaTokenEntity t INNER JOIN t.employer e
+            WHERE t.otaToken = :token AND t.isUsed = false AND t.expiredDate >= NOW()
+        """;
         final var details = session.createQuery(jpqlFindToken, TokenDetailsDto.class)
             .setParameter("token", token)
             .getSingleResultOrNull();
-        if (isNull(details)) return empty();
-        return of(details);
+        if (Objects.isNull(details)) return Optional.empty();
+        return Optional.of(details);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

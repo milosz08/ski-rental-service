@@ -13,31 +13,36 @@
 
 package pl.polsl.skirentalservice.domain;
 
-import org.slf4j.*;
-import org.hibernate.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 
 import jakarta.ejb.EJB;
-import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
-import pl.polsl.skirentalservice.dto.*;
-import pl.polsl.skirentalservice.core.*;
 import pl.polsl.skirentalservice.util.*;
-import pl.polsl.skirentalservice.dto.login.*;
-import pl.polsl.skirentalservice.dao.employer.*;
+import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.login.LoginFormReqDto;
+import pl.polsl.skirentalservice.dto.login.LoginFormResDto;
 import pl.polsl.skirentalservice.dto.logout.LogoutModalDto;
+import pl.polsl.skirentalservice.core.ValidatorBean;
+import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.dao.employer.EmployerDao;
+import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
 
-import static pl.polsl.skirentalservice.util.Utils.*;
-import static pl.polsl.skirentalservice.util.SessionAttribute.*;
-import static pl.polsl.skirentalservice.util.PageTitle.LOGIN_PAGE;
-import static pl.polsl.skirentalservice.exception.NotFoundException.*;
-import static pl.polsl.skirentalservice.exception.CredentialException.*;
-import static pl.polsl.skirentalservice.util.SessionAlert.LOGIN_PAGE_ALERT;
-import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
+import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
+import static pl.polsl.skirentalservice.exception.CredentialException.InvalidCredentialsException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -45,7 +50,7 @@ import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
 public class LoginServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoginServlet.class);
-    private final SessionFactory sessionFactory = getSessionFactory();
+    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
     @EJB private ValidatorBean validator;
 
@@ -53,11 +58,12 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final LogoutModalDto logoutModal = getFromSessionAndDestroy(req, LOGOUT_MODAL.getName(), LogoutModalDto.class);
+        final LogoutModalDto logoutModal = Utils.getFromSessionAndDestroy(req, SessionAttribute.LOGOUT_MODAL.getName(),
+            LogoutModalDto.class);
         req.setAttribute("logoutModal", logoutModal);
-        req.setAttribute("alertData", getAndDestroySessionAlert(req, LOGIN_PAGE_ALERT));
-        req.setAttribute("loginData", getFromSessionAndDestroy(req, getClass().getName(), LoginFormResDto.class));
-        req.setAttribute("title", LOGIN_PAGE.getName());
+        req.setAttribute("alertData", Utils.getAndDestroySessionAlert(req, SessionAlert.LOGIN_PAGE_ALERT));
+        req.setAttribute("loginData", Utils.getFromSessionAndDestroy(req, getClass().getName(), LoginFormResDto.class));
+        req.setAttribute("title", PageTitle.LOGIN_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(req, res);
     }
 
@@ -90,7 +96,7 @@ public class LoginServlet extends HttpServlet {
                     throw new UserNotFoundException(reqDto, LOGGER);
                 });
                 session.getTransaction().commit();
-                httpSession.setAttribute(LOGGED_USER_DETAILS.getName(), employer);
+                httpSession.setAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName(), employer);
                 httpSession.removeAttribute(getClass().getName());
                 LOGGER.info("Successful logged on {} account. Account data: {}", employer.getRoleEng(), employer);
                 if (employer.getIsFirstAccess() && employer.getRoleAlias().equals(UserRole.SELLER.getAlias())) {
@@ -99,12 +105,12 @@ public class LoginServlet extends HttpServlet {
                 }
                 res.sendRedirect("/" + employer.getRoleEng() + "/dashboard");
             } catch (RuntimeException ex) {
-                onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
             httpSession.setAttribute(getClass().getName(), resDto);
-            httpSession.setAttribute(LOGIN_PAGE_ALERT.getName(), alert);
+            httpSession.setAttribute(SessionAlert.LOGIN_PAGE_ALERT.getName(), alert);
             res.sendRedirect("/login");
         }
     }

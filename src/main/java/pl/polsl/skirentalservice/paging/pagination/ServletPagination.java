@@ -13,8 +13,11 @@
 
 package pl.polsl.skirentalservice.paging.pagination;
 
-import lombok.*;
-import java.util.*;
+import lombok.Data;
+
+import java.util.List;
+import java.util.Arrays;
+import java.util.ArrayList;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -13,14 +13,15 @@
 
 package pl.polsl.skirentalservice.entity;
 
-import java.util.*;
-import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
-import pl.polsl.skirentalservice.core.db.*;
+import jakarta.persistence.*;
 
-import static jakarta.persistence.CascadeType.*;
-import static jakarta.persistence.FetchType.LAZY;
+import java.util.Set;
+import java.util.HashSet;
+
+import pl.polsl.skirentalservice.core.db.EntityInjector;
+import pl.polsl.skirentalservice.core.db.AuditableEntity;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -30,15 +31,15 @@ import static jakarta.persistence.FetchType.LAZY;
 @NoArgsConstructor
 public class CustomerEntity extends AuditableEntity {
 
-    @OneToOne(fetch = LAZY, cascade = { PERSIST, MERGE, REMOVE })
+    @OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     @JoinColumn(name = "user_details_id", referencedColumnName = "id")
     private UserDetailsEntity userDetails;
 
-    @OneToOne(fetch = LAZY, cascade = { PERSIST, MERGE, REMOVE })
+    @OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     @JoinColumn(name = "location_address_id", referencedColumnName = "id")
     private LocationAddressEntity locationAddress;
 
-    @OneToMany(fetch = LAZY, cascade = { PERSIST, MERGE }, mappedBy = "customer")
+    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "customer")
     private Set<RentEntity> rents = new HashSet<>();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

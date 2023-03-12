@@ -16,14 +16,13 @@ package pl.polsl.skirentalservice.core.ssh;
 import lombok.NoArgsConstructor;
 
 import jakarta.xml.bind.annotation.*;
-import jakarta.xml.bind.annotation.adapters.*;
-
-import static jakarta.xml.bind.annotation.XmlAccessType.FIELD;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.NormalizedStringAdapter;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @NoArgsConstructor
-@XmlAccessorType(FIELD)
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "command")
 public class JAXBSshCommand {
 
@@ -53,8 +52,8 @@ public class JAXBSshCommand {
     @Override
     public String toString() {
         return "{" +
-            "executableFor='" + executableFor + '\'' +
-            ", execScript='" + execScript + '\'' +
+            "executableFor='" + executableFor +
+            ", execScript='" + execScript +
             '}';
     }
 }

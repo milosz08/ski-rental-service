@@ -14,19 +14,25 @@
 package pl.polsl.skirentalservice.domain;
 
 import jakarta.ejb.EJB;
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.FileInputStream;
+import java.util.Objects;
+
 import pl.polsl.skirentalservice.core.ConfigBean;
-
-import java.io.*;
-
-import static java.io.File.separator;
-import static java.util.Objects.isNull;
-import static jakarta.servlet.http.HttpServletResponse.*;
-import static org.apache.commons.lang3.StringUtils.substringAfter;
-
-import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
+import pl.polsl.skirentalservice.util.SessionAttribute;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -40,22 +46,22 @@ public class GetStaticResourceServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final HttpSession httpSession = req.getSession();
-        if (isNull(httpSession.getAttribute(LOGGED_USER_DETAILS.getName()))) {
-            res.sendError(SC_FORBIDDEN);
+        if (Objects.isNull(httpSession.getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName()))) {
+            res.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
-        final String resourcePath = substringAfter(req.getRequestURI(), "/resources/");
-        final String absPath = config.getUploadsDir() + separator + resourcePath;
+        final String resourcePath = StringUtils.substringAfter(req.getRequestURI(), "/resources/");
+        final String absPath = config.getUploadsDir() + File.separator + resourcePath;
         final ServletContext servletContext = req.getServletContext();
         final String mime = servletContext.getMimeType(absPath);
-        if (isNull(mime)) {
-            res.sendError(SC_INTERNAL_SERVER_ERROR);
+        if (Objects.isNull(mime)) {
+            res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
         res.setContentType(mime);
         final File file = new File(absPath);
         if (!file.exists()) {
-            res.sendError(SC_NOT_FOUND);
+            res.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
         res.setContentLength((int) file.length());

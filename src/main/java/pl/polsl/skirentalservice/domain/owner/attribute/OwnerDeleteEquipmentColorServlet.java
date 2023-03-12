@@ -13,27 +13,35 @@
 
 package pl.polsl.skirentalservice.domain.owner.attribute;
 
-import org.slf4j.*;
-import org.hibernate.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import jakarta.servlet.http.*;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
+import org.apache.commons.lang3.StringUtils;
+
+import pl.polsl.skirentalservice.util.Utils;
+import pl.polsl.skirentalservice.util.AlertType;
+import pl.polsl.skirentalservice.util.SessionAttribute;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.dao.equipment_color.*;
 import pl.polsl.skirentalservice.dto.attribute.AttributeModalResDto;
+import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.dao.equipment_color.EquipmentColorDao;
+import pl.polsl.skirentalservice.dao.equipment_color.IEquipmentColorDao;
 
-import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
-
-import static pl.polsl.skirentalservice.util.Utils.*;
-import static pl.polsl.skirentalservice.util.AlertType.INFO;
-import static pl.polsl.skirentalservice.exception.NotFoundException.*;
-import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
-import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
-import static pl.polsl.skirentalservice.util.SessionAttribute.EQ_COLORS_MODAL_DATA;
+import static pl.polsl.skirentalservice.exception.NotFoundException.EquipmentColorNotFoundException;
+import static pl.polsl.skirentalservice.exception.AlreadyExistException.EquipmentColorHasConnectionsException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -41,14 +49,14 @@ import static pl.polsl.skirentalservice.util.SessionAttribute.EQ_COLORS_MODAL_DA
 public class OwnerDeleteEquipmentColorServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerDeleteEquipmentColorServlet.class);
-    private final SessionFactory sessionFactory = getSessionFactory();
+    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final String colorId = req.getParameter("id");
-        final String loggedUser = getLoggedUserLogin(req);
+        final String loggedUser = Utils.getLoggedUserLogin(req);
 
         final AlertTupleDto alert = new AlertTupleDto(true);
         final HttpSession httpSession = req.getSession();
@@ -74,21 +82,21 @@ public class OwnerDeleteEquipmentColorServlet extends HttpServlet {
                 }
                 equipmentDetailsDao.deleteEquipmentColorById(colorId);
 
-                alert.setType(INFO);
+                alert.setType(AlertType.INFO);
                 alert.setMessage(
                     "Usuwanie koloru sprzętu narciarskiego: <strong>" + deletedColor + "</strong> zakończone sukcesem."
                 );
                 session.getTransaction().commit();
                 LOGGER.info("Successful deleted equipment color by: {}. Color: {}", loggedUser, deletedColor);
             } catch (RuntimeException ex) {
-                onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setActive(true);
             alert.setMessage(ex.getMessage());
             LOGGER.error("Failure delete equipment color by: {}. Cause: {}", loggedUser, ex.getMessage());
         }
-        httpSession.setAttribute(EQ_COLORS_MODAL_DATA.getName(), resDto);
-        res.sendRedirect(defaultIfBlank(req.getParameter("redirect"), "/owner/add-equipment"));
+        httpSession.setAttribute(SessionAttribute.EQ_COLORS_MODAL_DATA.getName(), resDto);
+        res.sendRedirect(StringUtils.defaultIfBlank(req.getParameter("redirect"), "/owner/add-equipment"));
     }
 }

@@ -13,38 +13,46 @@
 
 package pl.polsl.skirentalservice.domain.seller.rent;
 
-import org.slf4j.*;
-import org.hibernate.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 
 import jakarta.ejb.EJB;
-import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
-import pl.polsl.skirentalservice.dto.rent.*;
-import pl.polsl.skirentalservice.dao.customer.*;
-import pl.polsl.skirentalservice.dao.employer.*;
-import pl.polsl.skirentalservice.dao.equipment.*;
-import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.core.ValidatorBean;
-import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
+import java.util.Objects;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
-import static java.util.Objects.isNull;
-import static org.apache.commons.lang3.math.NumberUtils.toLong;
-import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 
-import static pl.polsl.skirentalservice.util.Utils.*;
-import static pl.polsl.skirentalservice.util.UserRole.*;
-import static pl.polsl.skirentalservice.util.SessionAlert.*;
-import static pl.polsl.skirentalservice.util.AlertType.INFO;
-import static pl.polsl.skirentalservice.util.SessionAttribute.*;
-import static pl.polsl.skirentalservice.exception.DateException.*;
-import static pl.polsl.skirentalservice.exception.NotFoundException.*;
-import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
-import static pl.polsl.skirentalservice.util.PageTitle.SELLER_CREATE_NEW_RENT_PAGE;
+import pl.polsl.skirentalservice.util.*;
+import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import pl.polsl.skirentalservice.dto.rent.InMemoryRentDataDto;
+import pl.polsl.skirentalservice.dto.rent.NewRentDetailsReqDto;
+import pl.polsl.skirentalservice.dto.rent.NewRentDetailsResDto;
+import pl.polsl.skirentalservice.core.ValidatorBean;
+import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.dao.customer.CustomerDao;
+import pl.polsl.skirentalservice.dao.customer.ICustomerDao;
+import pl.polsl.skirentalservice.dao.employer.EmployerDao;
+import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
+import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
+import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
+
+import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
+import static pl.polsl.skirentalservice.exception.DateException.RentDateBeforeIssuedDateException;
+import static pl.polsl.skirentalservice.exception.DateException.ReturnDateBeforeRentDateException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -52,7 +60,7 @@ import static pl.polsl.skirentalservice.util.PageTitle.SELLER_CREATE_NEW_RENT_PA
 public class SellerCreateNewRentServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SellerCreateNewRentServlet.class);
-    private final SessionFactory sessionFactory = getSessionFactory();
+    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
     @EJB private ValidatorBean validator;
 
@@ -60,16 +68,16 @@ public class SellerCreateNewRentServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final Long customerId = toLong(req.getParameter("id"));
+        final Long customerId = NumberUtils.toLong(req.getParameter("id"));
         final HttpSession httpSession = req.getSession();
 
-        var alert = getAndDestroySessionAlert(req, SELLER_CREATE_NEW_RENT_PAGE_ALERT);
-        var resDto = getFromSessionAndDestroy(req, getClass().getName(), NewRentDetailsResDto.class);
+        var alert = Utils.getAndDestroySessionAlert(req, SessionAlert.SELLER_CREATE_NEW_RENT_PAGE_ALERT);
+        var resDto = Utils.getFromSessionAndDestroy(req, getClass().getName(), NewRentDetailsResDto.class);
 
-        var inMemoryRentData = (InMemoryRentDataDto) httpSession.getAttribute(INMEMORY_NEW_RENT_DATA.getName());
-        var loggedUser = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
+        var inMemoryRentData = (InMemoryRentDataDto) httpSession.getAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName());
+        var loggedUser = (LoggedUserDataDto) httpSession.getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
 
-        if (!isNull(inMemoryRentData) && !inMemoryRentData.getCustomerId().equals(customerId)) {
+        if (!Objects.isNull(inMemoryRentData) && !inMemoryRentData.getCustomerId().equals(customerId)) {
             alert.setActive(true);
             alert.setMessage(
                 "W pamięci systemu istnieje już otwarte zgłoszenie wypożyczenia dla klienta " +
@@ -77,7 +85,7 @@ public class SellerCreateNewRentServlet extends HttpServlet {
                 "' class='alert-link'>" + inMemoryRentData.getCustomerFullName() + "</a>. Aby stworzyć nowe wypożyczenie, " +
                 "zamknij poprzednie lub usuń z pamięci systemu."
             );
-            httpSession.setAttribute(COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
+            httpSession.setAttribute(SessionAlert.COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
             res.sendRedirect("/seller/customers");
             return;
         }
@@ -92,32 +100,32 @@ public class SellerCreateNewRentServlet extends HttpServlet {
                 final String getAllCounts = "SELECT SUM(e.availableCount) FROM EquipmentEntity e";
                 final Long isSomeEquipmentsAvaialble = session.createQuery(getAllCounts, Long.class)
                     .getSingleResultOrNull();
-                if (isNull(isSomeEquipmentsAvaialble) || isSomeEquipmentsAvaialble < 0) {
+                if (Objects.isNull(isSomeEquipmentsAvaialble) || isSomeEquipmentsAvaialble < 0) {
                     alert.setActive(true);
                     alert.setMessage("Aby stworzyć wypożyczenie musi być dostępny przynajmniej jeden sprzęt w " +
                         "ilości jednej sztuki na stanie.");
-                    httpSession.setAttribute(COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
+                    httpSession.setAttribute(SessionAlert.COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
                     res.sendRedirect("/seller/customers");
                     return;
                 }
                 final var customerDetails = customerDao.findCustomerDetails(customerId).orElseThrow(() -> {
-                    throw new UserNotFoundException(USER);
+                    throw new UserNotFoundException(UserRole.USER);
                 });
                 req.setAttribute("customerData", customerDetails);
 
                 final var employerDetails = employerDao.findEmployerPageDetails(loggedUser.getId()).orElseThrow(() -> {
-                    throw new UserNotFoundException(SELLER);
+                    throw new UserNotFoundException(UserRole.SELLER);
                 });
                 req.setAttribute("employerData", employerDetails);
 
-                if (isNull(inMemoryRentData)) {
+                if (Objects.isNull(inMemoryRentData)) {
                     inMemoryRentData = new InMemoryRentDataDto(customerId, customerDetails.fullName());
                     final LocalDateTime now = LocalDateTime.now();
                     final String issuerStaticPart = "WY/" + now.getYear() + "/" + now.getMonth().getValue() + "/";
                     final String issuerUsers = "/" + employerDetails.id() + "/" + customerId;
                     boolean founded = false;
                     while (true) {
-                        final String randomizer = randomNumeric(4);
+                        final String randomizer = RandomStringUtils.randomNumeric(4);
                         final String jpqlFindExistingIssuer =
                             "SELECT COUNT(r.id) > 0 FROM RentEntity r WHERE SUBSTRING(r.issuedIdentifier, 4, 4) = :issuer";
                         final Boolean existinIssuerExist = session.createQuery(jpqlFindExistingIssuer, Boolean.class)
@@ -126,12 +134,12 @@ public class SellerCreateNewRentServlet extends HttpServlet {
                         inMemoryRentData.setIssuedIdentifier(issuerStaticPart + randomizer + issuerUsers);
                         if (!existinIssuerExist) break;
                     }
-                    httpSession.setAttribute(INMEMORY_NEW_RENT_DATA.getName(), inMemoryRentData);
+                    httpSession.setAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName(), inMemoryRentData);
                 }
                 inMemoryRentData.setAllGood(false);
                 inMemoryRentData.setCustomerDetails(customerDetails);
 
-                if (isNull(resDto)) {
+                if (Objects.isNull(resDto)) {
                     resDto = new NewRentDetailsResDto();
                     resDto.getTax().setValue(inMemoryRentData.getTax());
                     resDto.getRentDateTime().setValue(inMemoryRentData.getRentDateTime());
@@ -143,7 +151,7 @@ public class SellerCreateNewRentServlet extends HttpServlet {
                 resDto.setRentStatus(inMemoryRentData.getRentStatus());
                 session.getTransaction().commit();
             } catch (RuntimeException ex) {
-                onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setActive(true);
@@ -151,7 +159,7 @@ public class SellerCreateNewRentServlet extends HttpServlet {
         }
         req.setAttribute("alertData", alert);
         req.setAttribute("rentDetails", resDto);
-        req.setAttribute("title", SELLER_CREATE_NEW_RENT_PAGE.getName());
+        req.setAttribute("title", PageTitle.SELLER_CREATE_NEW_RENT_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/seller/rent/seller-create-new-rent.jsp").forward(req, res);
     }
 
@@ -163,7 +171,7 @@ public class SellerCreateNewRentServlet extends HttpServlet {
         final AlertTupleDto alert = new AlertTupleDto(true);
         final HttpSession httpSession = req.getSession();
 
-        var inMemoryRentData = (InMemoryRentDataDto) httpSession.getAttribute(INMEMORY_NEW_RENT_DATA.getName());
+        var inMemoryRentData = (InMemoryRentDataDto) httpSession.getAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName());
         final NewRentDetailsReqDto reqDto = new NewRentDetailsReqDto(req);
         final NewRentDetailsResDto resDto = new NewRentDetailsResDto(validator, reqDto);
         try {
@@ -188,13 +196,13 @@ public class SellerCreateNewRentServlet extends HttpServlet {
             resDto.setIssuedIdentifier(inMemoryRentData.getIssuedIdentifier());
             resDto.setRentStatus(inMemoryRentData.getRentStatus());
 
-            alert.setType(INFO);
+            alert.setType(AlertType.INFO);
             alert.setMessage("Podstawowe ustawienia nowego wypożyczenia zostały zapisane.");
-            httpSession.setAttribute(SELLER_COMPLETE_RENT_PAGE_ALERT.getName(), alert);
+            httpSession.setAttribute(SessionAlert.SELLER_COMPLETE_RENT_PAGE_ALERT.getName(), alert);
             res.sendRedirect("/seller/complete-rent-equipments");
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
-            httpSession.setAttribute(SELLER_CREATE_NEW_RENT_PAGE_ALERT.getName(), alert);
+            httpSession.setAttribute(SessionAlert.SELLER_CREATE_NEW_RENT_PAGE_ALERT.getName(), alert);
             httpSession.setAttribute(getClass().getName(), resDto);
             res.sendRedirect("/seller/create-new-rent?id=" + customerId);
         }

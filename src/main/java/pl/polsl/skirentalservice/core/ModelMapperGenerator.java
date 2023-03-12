@@ -13,9 +13,10 @@
 
 package pl.polsl.skirentalservice.core;
 
-import org.modelmapper.*;
-import org.modelmapper.convention.*;
+import org.modelmapper.Conditions;
+import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration;
+import org.modelmapper.convention.MatchingStrategies;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

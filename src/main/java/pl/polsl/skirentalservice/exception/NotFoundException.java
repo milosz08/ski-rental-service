@@ -15,11 +15,11 @@ package pl.polsl.skirentalservice.exception;
 
 import org.slf4j.Logger;
 
+import org.apache.commons.lang3.StringUtils;
+
 import pl.polsl.skirentalservice.util.UserRole;
 import pl.polsl.skirentalservice.dto.login.LoginFormReqDto;
 import pl.polsl.skirentalservice.dto.change_password.RequestToChangePasswordReqDto;
-
-import static org.apache.commons.lang3.StringUtils.capitalize;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -41,7 +41,7 @@ public class NotFoundException {
         }
 
         public UserNotFoundException(UserRole role) {
-            super(capitalize(role.getName()) + " nie istnieje w systemie.");
+            super(StringUtils.capitalize(role.getName()) + " nie istnieje w systemie.");
         }
     }
 

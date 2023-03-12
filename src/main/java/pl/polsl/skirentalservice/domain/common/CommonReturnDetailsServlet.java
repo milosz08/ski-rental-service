@@ -13,30 +13,37 @@
 
 package pl.polsl.skirentalservice.domain.common;
 
-import org.slf4j.*;
-import org.hibernate.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import jakarta.servlet.http.*;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
-import pl.polsl.skirentalservice.dao.equipment.*;
-import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.dao.return_deliv.*;
-import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
-import pl.polsl.skirentalservice.dto.rent.RentEquipmentsDetailsResDto;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.List;
 import java.io.IOException;
 
-import static java.lang.String.valueOf;
+import pl.polsl.skirentalservice.util.Utils;
+import pl.polsl.skirentalservice.util.PageTitle;
+import pl.polsl.skirentalservice.util.SessionAlert;
+import pl.polsl.skirentalservice.util.SessionAttribute;
+import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import pl.polsl.skirentalservice.dto.rent.RentEquipmentsDetailsResDto;
+import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
+import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
+import pl.polsl.skirentalservice.dao.return_deliv.IReturnDao;
+import pl.polsl.skirentalservice.dao.return_deliv.ReturnDao;
 
-import static pl.polsl.skirentalservice.exception.NotFoundException.*;
-import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
-import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
-import static pl.polsl.skirentalservice.util.PageTitle.COMMON_RETURN_DETAILS_PAGE;
-import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
-import static pl.polsl.skirentalservice.util.SessionAlert.COMMON_RETURNS_PAGE_ALERT;
+import static pl.polsl.skirentalservice.exception.NotFoundException.ReturnNotFoundException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -44,7 +51,7 @@ import static pl.polsl.skirentalservice.util.SessionAlert.COMMON_RETURNS_PAGE_AL
 public class CommonReturnDetailsServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonReturnDetailsServlet.class);
-    private final SessionFactory sessionFactory = getSessionFactory();
+    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -52,7 +59,7 @@ public class CommonReturnDetailsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final String returnId = req.getParameter("id");
         final HttpSession httpSession = req.getSession();
-        final var userDataDto = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
+        final var userDataDto = (LoggedUserDataDto) httpSession.getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
 
         final AlertTupleDto alert = new AlertTupleDto(true);
         try (final Session session = sessionFactory.openSession()) {
@@ -63,7 +70,7 @@ public class CommonReturnDetailsServlet extends HttpServlet {
                 final IEquipmentDao equipmentDao = new EquipmentDao(session);
 
                 final var returnDetails = returnDao
-                    .findReturnDetails(returnId, userDataDto.getId(), valueOf(userDataDto.getRoleAlias()))
+                    .findReturnDetails(returnId, userDataDto.getId(), String.valueOf(userDataDto.getRoleAlias()))
                     .orElseThrow(() -> { throw new ReturnNotFoundException(); });
 
                 final List<RentEquipmentsDetailsResDto> allReturnEquipments = equipmentDao
@@ -75,15 +82,15 @@ public class CommonReturnDetailsServlet extends HttpServlet {
                 req.setAttribute("totalSum", totalSum);
                 req.setAttribute("equipmentsReturnDetailsData", allReturnEquipments);
                 req.setAttribute("returnDetailsData", returnDetails);
-                req.setAttribute("title", COMMON_RETURN_DETAILS_PAGE.getName());
+                req.setAttribute("title", PageTitle.COMMON_RETURN_DETAILS_PAGE.getName());
                 req.getRequestDispatcher("/WEB-INF/pages/" + userDataDto.getRoleEng() + "/deliv_return/" +
                     userDataDto.getRoleEng() + "-return-details.jsp").forward(req, res);
             } catch (RuntimeException ex) {
-                onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
-            httpSession.setAttribute(COMMON_RETURNS_PAGE_ALERT.getName(), alert);
+            httpSession.setAttribute(SessionAlert.COMMON_RETURNS_PAGE_ALERT.getName(), alert);
             res.sendRedirect("/" + userDataDto.getRoleEng() + "/returns");
         }
     }

@@ -13,33 +13,40 @@
 
 package pl.polsl.skirentalservice.domain.seller.deliv_return;
 
-import org.slf4j.*;
-import org.hibernate.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import jakarta.servlet.http.*;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
-import pl.polsl.skirentalservice.dto.*;
-import pl.polsl.skirentalservice.paging.filter.*;
-import pl.polsl.skirentalservice.paging.sorter.*;
-import pl.polsl.skirentalservice.dao.return_deliv.*;
-import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
-import pl.polsl.skirentalservice.paging.pagination.ServletPagination;
-import pl.polsl.skirentalservice.dto.deliv_return.SellerRentReturnRecordResDto;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.*;
 import java.io.IOException;
 
-import static java.util.Objects.requireNonNullElse;
-import static org.apache.commons.lang3.math.NumberUtils.toInt;
+import org.apache.commons.lang3.math.NumberUtils;
 
-import static pl.polsl.skirentalservice.util.Utils.*;
-import static pl.polsl.skirentalservice.util.AlertType.ERROR;
-import static pl.polsl.skirentalservice.util.SessionAttribute.*;
-import static pl.polsl.skirentalservice.util.PageTitle.COMMON_RETURNS_PAGE;
-import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
-import static pl.polsl.skirentalservice.util.SessionAlert.COMMON_RETURNS_PAGE_ALERT;
+import pl.polsl.skirentalservice.util.*;
+import pl.polsl.skirentalservice.dto.PageableDto;
+import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import pl.polsl.skirentalservice.dto.deliv_return.SellerRentReturnRecordResDto;
+import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.dao.return_deliv.ReturnDao;
+import pl.polsl.skirentalservice.dao.return_deliv.IReturnDao;
+import pl.polsl.skirentalservice.paging.filter.FilterColumn;
+import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
+import pl.polsl.skirentalservice.paging.filter.ServletFilter;
+import pl.polsl.skirentalservice.paging.sorter.ServletSorter;
+import pl.polsl.skirentalservice.paging.sorter.SorterDataDto;
+import pl.polsl.skirentalservice.paging.sorter.ServletSorterField;
+import pl.polsl.skirentalservice.paging.pagination.ServletPagination;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -47,7 +54,7 @@ import static pl.polsl.skirentalservice.util.SessionAlert.COMMON_RETURNS_PAGE_AL
 public class SellerReturnsServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SellerReturnsServlet.class);
-    private final SessionFactory sessionFactory = getSessionFactory();
+    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
     private final Map<String, ServletSorterField> sorterFieldMap = new HashMap<>();
     private final List<FilterColumn> filterFieldMap = new ArrayList<>();
@@ -71,18 +78,18 @@ public class SellerReturnsServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final int page = toInt(requireNonNullElse(req.getParameter("page"), "1"), 1);
-        final int total = toInt(requireNonNullElse(req.getParameter("total"), "10"), 10);
+        final int page = NumberUtils.toInt(Objects.requireNonNullElse(req.getParameter("page"), "1"), 1);
+        final int total = NumberUtils.toInt(Objects.requireNonNullElse(req.getParameter("total"), "10"), 10);
 
         final ServletSorter servletSorter = new ServletSorter(req, "r.id", sorterFieldMap);
-        final SorterDataDto sorterData = servletSorter.generateSortingJPQuery(RETURNS_LIST_SORTER);
+        final SorterDataDto sorterData = servletSorter.generateSortingJPQuery(SessionAttribute.RETURNS_LIST_SORTER);
         final ServletFilter servletFilter = new ServletFilter(req, filterFieldMap);
-        final FilterDataDto filterData = servletFilter.generateFilterJPQuery(RETURNS_LIST_FILTER);
+        final FilterDataDto filterData = servletFilter.generateFilterJPQuery(SessionAttribute.RETURNS_LIST_FILTER);
 
         final HttpSession httpSession = req.getSession();
-        final var loggedEmployer = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
+        final var loggedEmployer = (LoggedUserDataDto) httpSession.getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
 
-        final AlertTupleDto alert = getAndDestroySessionAlert(req, COMMON_RETURNS_PAGE_ALERT);
+        final AlertTupleDto alert = Utils.getAndDestroySessionAlert(req, SessionAlert.COMMON_RETURNS_PAGE_ALERT);
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
@@ -103,16 +110,16 @@ public class SellerReturnsServlet extends HttpServlet {
                 req.setAttribute("pagesData", pagination);
                 req.setAttribute("returnsData", returnsList);
             } catch (RuntimeException ex) {
-                onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
-            alert.setType(ERROR);
+            alert.setType(AlertType.ERROR);
             alert.setMessage(ex.getMessage());
         }
         req.setAttribute("alertData", alert);
         req.setAttribute("sorterData", sorterFieldMap);
         req.setAttribute("filterData", filterData);
-        req.setAttribute("title", COMMON_RETURNS_PAGE.getName());
+        req.setAttribute("title", PageTitle.COMMON_RETURNS_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/seller/deliv_return/seller-returns.jsp").forward(req, res);
     }
 
@@ -120,13 +127,13 @@ public class SellerReturnsServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final int page = toInt(requireNonNullElse(req.getParameter("page"), "1"), 1);
-        final int total = toInt(requireNonNullElse(req.getParameter("total"), "10"), 10);
+        final int page = NumberUtils.toInt(Objects.requireNonNullElse(req.getParameter("page"), "1"), 1);
+        final int total = NumberUtils.toInt(Objects.requireNonNullElse(req.getParameter("total"), "10"), 10);
 
         final ServletSorter servletSorter = new ServletSorter(req, "r.id", sorterFieldMap);
-        servletSorter.generateSortingJPQuery(RETURNS_LIST_SORTER);
+        servletSorter.generateSortingJPQuery(SessionAttribute.RETURNS_LIST_SORTER);
         final ServletFilter servletFilter = new ServletFilter(req, filterFieldMap);
-        servletFilter.generateFilterJPQuery(RETURNS_LIST_FILTER);
+        servletFilter.generateFilterJPQuery(SessionAttribute.RETURNS_LIST_FILTER);
 
         res.sendRedirect("/seller/returns?page=" + page + "&total=" + total);
     }

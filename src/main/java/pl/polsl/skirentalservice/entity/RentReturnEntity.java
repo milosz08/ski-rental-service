@@ -13,17 +13,17 @@
 
 package pl.polsl.skirentalservice.entity;
 
-import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
-import pl.polsl.skirentalservice.core.db.*;
+import jakarta.persistence.*;
 
-import java.util.*;
+import java.util.Set;
+import java.util.HashSet;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import static jakarta.persistence.CascadeType.*;
-import static jakarta.persistence.FetchType.LAZY;
+import pl.polsl.skirentalservice.core.db.EntityInjector;
+import pl.polsl.skirentalservice.core.db.AuditableEntity;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -39,11 +39,11 @@ public class RentReturnEntity extends AuditableEntity {
     @Column(name = "total_price")                   private BigDecimal totalPrice;
     @Column(name = "total_deposit_price")           private BigDecimal totalDepositPrice;
 
-    @OneToOne(fetch = LAZY, cascade = { PERSIST, MERGE })
+    @OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "rent_id", referencedColumnName = "id")
     private RentEntity rent;
 
-    @OneToMany(fetch = LAZY, cascade = { PERSIST, MERGE }, mappedBy = "rentReturn")
+    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "rentReturn")
     private Set<RentReturnEquipmentEntity> equipments = new HashSet<>();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

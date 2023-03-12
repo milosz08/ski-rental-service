@@ -13,8 +13,10 @@
 
 package pl.polsl.skirentalservice.dto;
 
-import lombok.*;
-import java.util.*;
+import lombok.Data;
+
+import java.util.List;
+import java.util.ArrayList;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -14,7 +14,9 @@
 package pl.polsl.skirentalservice.dao.ota_token;
 
 import java.util.Optional;
-import pl.polsl.skirentalservice.dto.change_password.*;
+
+import pl.polsl.skirentalservice.dto.change_password.TokenDetailsDto;
+import pl.polsl.skirentalservice.dto.change_password.ChangePasswordEmployerDetailsDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

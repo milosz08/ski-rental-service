@@ -13,18 +13,22 @@
 
 package pl.polsl.skirentalservice.core.mail;
 
-import lombok.*;
-import java.util.*;
-import jakarta.xml.bind.annotation.*;
+import lombok.NoArgsConstructor;
+
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+
+import java.util.List;
+import java.util.ArrayList;
 
 import pl.polsl.skirentalservice.core.JAXBProperty;
-
-import static jakarta.xml.bind.annotation.XmlAccessType.FIELD;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @NoArgsConstructor
-@XmlAccessorType(FIELD)
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "mail-configuration")
 class JAXBMailConfig {
 

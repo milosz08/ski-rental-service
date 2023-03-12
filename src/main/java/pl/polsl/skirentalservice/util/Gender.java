@@ -13,8 +13,12 @@
 
 package pl.polsl.skirentalservice.util;
 
-import lombok.*;
-import java.util.*;
+import lombok.Getter;
+import lombok.AllArgsConstructor;
+
+import java.util.List;
+import java.util.Arrays;
+import java.util.ArrayList;
 
 import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
 

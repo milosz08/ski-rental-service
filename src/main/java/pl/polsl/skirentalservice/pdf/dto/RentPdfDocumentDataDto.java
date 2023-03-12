@@ -14,7 +14,9 @@
 package pl.polsl.skirentalservice.pdf.dto;
 
 import lombok.Data;
-import java.util.*;
+
+import java.util.List;
+import java.util.ArrayList;
 
 import pl.polsl.skirentalservice.dto.PriceUnitsDto;
 

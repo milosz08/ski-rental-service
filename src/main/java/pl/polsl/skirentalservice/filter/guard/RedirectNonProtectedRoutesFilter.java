@@ -13,16 +13,21 @@
 
 package pl.polsl.skirentalservice.filter.guard;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.*;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.annotation.WebInitParam;
 
-import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import jakarta.servlet.http.HttpFilter;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
+import java.util.Objects;
 import java.io.IOException;
 
-import static java.util.Objects.isNull;
-import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
+import pl.polsl.skirentalservice.util.SessionAttribute;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -37,8 +42,9 @@ public class RedirectNonProtectedRoutesFilter extends HttpFilter {
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
         throws IOException, ServletException {
         final HttpSession httpSession = req.getSession();
-        final var loggedUserDetailsDto = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
-        if (!isNull(loggedUserDetailsDto)) {
+        final var loggedUserDetailsDto = (LoggedUserDataDto) httpSession
+            .getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
+        if (!Objects.isNull(loggedUserDetailsDto)) {
             res.sendRedirect("/" + loggedUserDetailsDto.getRoleEng() + "/dashboard");
             return;
         }

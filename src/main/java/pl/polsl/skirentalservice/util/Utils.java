@@ -14,22 +14,23 @@
 package pl.polsl.skirentalservice.util;
 
 import org.slf4j.Logger;
-import org.hibernate.Session;
 
-import jakarta.servlet.http.*;
+import org.hibernate.Session;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 
-import pl.polsl.skirentalservice.dto.*;
-import pl.polsl.skirentalservice.dto.attribute.*;
-import pl.polsl.skirentalservice.core.ValidatorBean;
-import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
 
+import java.util.Objects;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
-import static java.util.Objects.isNull;
-import static java.time.temporal.ChronoUnit.HOURS;
-
-import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
+import pl.polsl.skirentalservice.core.ValidatorBean;
+import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import pl.polsl.skirentalservice.dto.attribute.AttributeModalReqDto;
+import pl.polsl.skirentalservice.dto.attribute.AttributeModalResDto;
+import pl.polsl.skirentalservice.dto.attribute.AttributeValidatorPayloadDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -38,7 +39,7 @@ public class Utils {
     public static <T> T getFromSessionAndDestroy(HttpServletRequest req, String propertyName, Class<T> mappedClazz) {
         final HttpSession session = req.getSession();
         final T property = mappedClazz.cast(session.getAttribute(propertyName));
-        if (isNull(property)) return null;
+        if (Objects.isNull(property)) return null;
         session.removeAttribute(propertyName);
         return property;
     }
@@ -47,7 +48,7 @@ public class Utils {
 
     public static AlertTupleDto getAndDestroySessionAlert(HttpServletRequest req, SessionAlert sessionAlert) {
         final AlertTupleDto alert = getFromSessionAndDestroy(req, sessionAlert.getName(), AlertTupleDto.class);
-        if (isNull(alert)) return new AlertTupleDto();
+        if (Objects.isNull(alert)) return new AlertTupleDto();
         return alert;
     }
 
@@ -67,7 +68,8 @@ public class Utils {
 
     public static String getLoggedUserLogin(HttpServletRequest req) {
         final HttpSession httpSession = req.getSession();
-        final LoggedUserDataDto loggedUser = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
+        final LoggedUserDataDto loggedUser = (LoggedUserDataDto) httpSession
+            .getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
         return loggedUser.getLogin();
     }
 
@@ -119,6 +121,6 @@ public class Utils {
         if (minutes >= 30) {
             localDateTime = localDateTime.plusHours(1);
         }
-        return localDateTime.truncatedTo(HOURS);
+        return localDateTime.truncatedTo(ChronoUnit.HOURS);
     }
 }

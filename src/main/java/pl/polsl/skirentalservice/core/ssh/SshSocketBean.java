@@ -13,22 +13,26 @@
 
 package pl.polsl.skirentalservice.core.ssh;
 
-import org.slf4j.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import org.apache.commons.text.StringSubstitutor;
+
+import jakarta.ejb.Startup;
+import jakarta.ejb.Singleton;
+import jakarta.xml.bind.JAXBContext;
 
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.channel.direct.Session;
 
-import jakarta.ejb.*;
-import jakarta.xml.bind.*;
-
-import java.io.*;
 import java.util.Map;
-
-import static java.util.Objects.requireNonNull;
+import java.util.Objects;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -65,8 +69,8 @@ public class SshSocketBean {
             });
         final StringSubstitutor substitutor = new StringSubstitutor(entries);
         final JAXBSshProperties properties = config.getProperties();
-        final String knownHosts = requireNonNull(getClass().getResource(properties.getSshKnownHosts())).getFile();
-        final String rsaKey = requireNonNull(getClass().getResource(properties.getSshRsa())).getFile();
+        final String knownHosts = Objects.requireNonNull(getClass().getResource(properties.getSshKnownHosts())).getFile();
+        final String rsaKey = Objects.requireNonNull(getClass().getResource(properties.getSshRsa())).getFile();
         T mappedTo;
         try (final SSHClient sshClient = new SSHClient()) {
             sshClient.loadKnownHosts(new File(knownHosts));

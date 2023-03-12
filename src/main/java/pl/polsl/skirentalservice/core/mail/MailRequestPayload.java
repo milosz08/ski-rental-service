@@ -13,8 +13,12 @@
 
 package pl.polsl.skirentalservice.core.mail;
 
-import lombok.*;
-import java.util.*;
+import lombok.Data;
+import lombok.Builder;
+import lombok.AllArgsConstructor;
+
+import java.util.Map;
+import java.util.Set;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

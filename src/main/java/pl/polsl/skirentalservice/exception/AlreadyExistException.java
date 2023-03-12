@@ -13,9 +13,10 @@
 
 package pl.polsl.skirentalservice.exception;
 
+import org.apache.commons.lang3.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
+
 import pl.polsl.skirentalservice.util.UserRole;
-import static org.apache.commons.lang3.StringUtils.capitalize;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -23,7 +24,8 @@ public class AlreadyExistException {
 
     public static class PeselAlreadyExistException extends RuntimeException {
         public PeselAlreadyExistException(String pesel, UserRole role) {
-            super(capitalize(role.getName()) + " z numerem PESEL <strong>" + pesel + "</strong> istnieje już w systemie.");
+            super(StringUtils.capitalize(role.getName()) + " z numerem PESEL <strong>" + pesel +
+                "</strong> istnieje już w systemie.");
         }
     }
 
@@ -31,8 +33,8 @@ public class AlreadyExistException {
 
     public static class PhoneNumberAlreadyExistException extends RuntimeException {
         public PhoneNumberAlreadyExistException(String phoneNumber, UserRole role) {
-            super(capitalize(role.getName()) + " z numerem telefonu <strong>" + phoneNumber + "</strong> istnieje " +
-                "już w systemie.");
+            super(StringUtils.capitalize(role.getName()) + " z numerem telefonu <strong>" + phoneNumber +
+                "</strong> istnieje już w systemie.");
         }
     }
 
@@ -40,8 +42,8 @@ public class AlreadyExistException {
 
     public static class EmailAddressAlreadyExistException extends RuntimeException {
         public EmailAddressAlreadyExistException(String emailAddress, UserRole role) {
-            super(capitalize(role.getName()) + " z adresem email <strong>" + emailAddress + "</strong> istnieje " +
-                "już w systemie.");
+            super(StringUtils.capitalize(role.getName()) + " z adresem email <strong>" + emailAddress +
+                "</strong> istnieje już w systemie.");
         }
     }
 

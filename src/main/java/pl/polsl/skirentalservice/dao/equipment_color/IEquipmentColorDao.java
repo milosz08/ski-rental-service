@@ -13,7 +13,9 @@
 
 package pl.polsl.skirentalservice.dao.equipment_color;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+
 import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

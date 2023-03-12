@@ -13,23 +13,32 @@
 
 package pl.polsl.skirentalservice.filter.parameter;
 
-import org.slf4j.*;
-import org.hibernate.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.*;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.annotation.WebInitParam;
 
-import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import jakarta.servlet.http.HttpFilter;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 
 import java.io.IOException;
 
-import static pl.polsl.skirentalservice.exception.NotFoundException.*;
-import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
-import static pl.polsl.skirentalservice.util.PageTitle.COMMON_RENTS_PAGE;
-import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
-import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
+import pl.polsl.skirentalservice.util.Utils;
+import pl.polsl.skirentalservice.util.PageTitle;
+import pl.polsl.skirentalservice.util.SessionAttribute;
+import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+
+import static pl.polsl.skirentalservice.exception.NotFoundException.RentNotFoundException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -40,7 +49,7 @@ import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAIL
 public class RedirectWhenRentIsNotCreatedByEmployerFilter extends HttpFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RedirectWhenRentIsNotCreatedByEmployerFilter.class);
-    private final SessionFactory sessionFactory = getSessionFactory();
+    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -51,7 +60,8 @@ public class RedirectWhenRentIsNotCreatedByEmployerFilter extends HttpFilter {
         final AlertTupleDto alert = new AlertTupleDto(true);
 
         final HttpSession httpSession = req.getSession();
-        final var loggedUserDataDto = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
+        final var loggedUserDataDto = (LoggedUserDataDto) httpSession
+            .getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
 
         try (final Session session = sessionFactory.openSession()) {
             try {
@@ -65,11 +75,11 @@ public class RedirectWhenRentIsNotCreatedByEmployerFilter extends HttpFilter {
 
                 session.getTransaction().commit();
             } catch (RuntimeException ex) {
-                onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, LOGGER, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
-            httpSession.setAttribute(COMMON_RENTS_PAGE.getName(), alert);
+            httpSession.setAttribute(PageTitle.COMMON_RENTS_PAGE.getName(), alert);
             res.sendRedirect("/seller/rents");
             return;
         }

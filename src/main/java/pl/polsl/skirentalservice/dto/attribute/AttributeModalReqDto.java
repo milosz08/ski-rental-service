@@ -14,12 +14,14 @@
 package pl.polsl.skirentalservice.dto.attribute;
 
 import lombok.Data;
-import jakarta.validation.constraints.*;
+
+import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.servlet.http.HttpServletRequest;
 
-import pl.polsl.skirentalservice.core.IReqValidatePojo;
+import org.apache.commons.lang3.StringUtils;
 
-import static org.apache.commons.lang3.StringUtils.trimToEmpty;
+import pl.polsl.skirentalservice.core.IReqValidatePojo;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -33,7 +35,7 @@ public class AttributeModalReqDto implements IReqValidatePojo {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public AttributeModalReqDto(HttpServletRequest req) {
-        this.name = trimToEmpty(req.getParameter("name"));
+        this.name = StringUtils.trimToEmpty(req.getParameter("name"));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -41,7 +43,7 @@ public class AttributeModalReqDto implements IReqValidatePojo {
     @Override
     public String toString() {
         return "{" +
-            "name='" + name + '\'' +
+            "name='" + name +
             '}';
     }
 }

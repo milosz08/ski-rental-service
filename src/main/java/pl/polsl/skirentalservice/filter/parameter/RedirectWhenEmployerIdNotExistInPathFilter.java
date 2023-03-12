@@ -13,13 +13,18 @@
 
 package pl.polsl.skirentalservice.filter.parameter;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.*;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.annotation.WebInitParam;
+
+import jakarta.servlet.http.HttpFilter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
-
-import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -34,7 +39,7 @@ public class RedirectWhenEmployerIdNotExistInPathFilter extends HttpFilter {
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
         throws IOException, ServletException {
         final String employerId = req.getParameter("id");
-        if (!isNumeric(employerId)) {
+        if (!StringUtils.isNumeric(employerId)) {
             res.sendRedirect("/owner/employers");
             return;
         }

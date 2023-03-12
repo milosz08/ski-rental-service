@@ -13,27 +13,36 @@
 
 package pl.polsl.skirentalservice.domain.owner.employer;
 
-import org.slf4j.*;
-import org.hibernate.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 
 import jakarta.ejb.EJB;
-import jakarta.servlet.http.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
-import pl.polsl.skirentalservice.ssh.*;
-import pl.polsl.skirentalservice.dao.employer.*;
+import pl.polsl.skirentalservice.util.Utils;
+import pl.polsl.skirentalservice.util.AlertType;
+import pl.polsl.skirentalservice.util.SessionAlert;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.core.db.HibernateUtil;
 import pl.polsl.skirentalservice.core.ssh.SshSocketBean;
+import pl.polsl.skirentalservice.dao.employer.EmployerDao;
+import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
+import pl.polsl.skirentalservice.ssh.ExecCommandPerformer;
+import pl.polsl.skirentalservice.ssh.IExecCommandPerformer;
 
-import static pl.polsl.skirentalservice.util.AlertType.INFO;
-import static pl.polsl.skirentalservice.exception.NotFoundException.*;
-import static pl.polsl.skirentalservice.util.Utils.onHibernateException;
-import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
-import static pl.polsl.skirentalservice.core.db.HibernateUtil.getSessionFactory;
-import static pl.polsl.skirentalservice.util.SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT;
+import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
+import static pl.polsl.skirentalservice.exception.AlreadyExistException.EmployerHasOpenedRentsException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -41,7 +50,7 @@ import static pl.polsl.skirentalservice.util.SessionAlert.OWNER_EMPLOYERS_PAGE_A
 public class OwnerDeleteEmployerServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerAddEmployerServlet.class);
-    private final SessionFactory sessionFactory = getSessionFactory();
+    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
     @EJB private SshSocketBean sshSocket;
 
@@ -67,7 +76,7 @@ public class OwnerDeleteEmployerServlet extends HttpServlet {
                 commandPerformer.deleteMailbox(deletingEmployer.getEmailAddress());
                 session.remove(deletingEmployer);
 
-                alert.setType(INFO);
+                alert.setType(AlertType.INFO);
                 alert.setMessage(
                     "Pomyślnie usunięto pracownika z ID <strong>#" + userId + "</strong> z systemu wraz z " +
                     "jego skrzynką pocztową."
@@ -75,13 +84,13 @@ public class OwnerDeleteEmployerServlet extends HttpServlet {
                 session.getTransaction().commit();
                 LOGGER.info("Employer with id: {} was succesfuly removed from system.", userId);
             } catch (RuntimeException ex) {
-                onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, LOGGER, ex);
             }
         } catch (Exception ex) {
             alert.setMessage(ex.getMessage());
             LOGGER.error("Unable to remove employer with id: {}. Cause: {}", userId, ex.getMessage());
         }
-        httpSession.setAttribute(OWNER_EMPLOYERS_PAGE_ALERT.getName(), alert);
+        httpSession.setAttribute(SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT.getName(), alert);
         res.sendRedirect("/owner/employers");
     }
 }

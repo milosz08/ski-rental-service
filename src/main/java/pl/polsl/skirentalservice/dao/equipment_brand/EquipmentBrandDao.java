@@ -15,13 +15,13 @@ package pl.polsl.skirentalservice.dao.equipment_brand;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.*;
 import org.hibernate.Session;
 
-import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
-import static java.util.Optional.*;
-import static java.util.Objects.isNull;
+import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -34,10 +34,11 @@ public class EquipmentBrandDao implements IEquipmentBrandDao {
 
     @Override
     public List<FormSelectTupleDto> findAllEquipmentBrands() {
-        final String jpqlFindEquipmentBrands =
-            "SELECT new pl.polsl.skirentalservice.dto.FormSelectTupleDto(" +
-                "CAST(t.id AS string), t.name" +
-            ") FROM EquipmentBrandEntity t ORDER BY t.id";
+        final String jpqlFindEquipmentBrands = """
+            SELECT new pl.polsl.skirentalservice.dto.FormSelectTupleDto(
+                CAST(t.id AS string), t.name
+            ) FROM EquipmentBrandEntity t ORDER BY t.id
+        """;
         return session.createQuery(jpqlFindEquipmentBrands, FormSelectTupleDto.class)
             .getResultList();
     }
@@ -50,16 +51,17 @@ public class EquipmentBrandDao implements IEquipmentBrandDao {
         final String brandName = session.createQuery(jqplFindNameOfBrand, String.class)
             .setParameter("id", brandId)
             .getSingleResultOrNull();
-        if (isNull(brandName)) return empty();
-        return of(brandName);
+        if (Objects.isNull(brandName)) return Optional.empty();
+        return Optional.of(brandName);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public boolean checkIfEquipmentBrandExistByName(String brandName) {
-        final String jpqlFindBrandAlreadyExist =
-            "SELECT COUNT(b.id) > 0 FROM EquipmentBrandEntity b WHERE LOWER(b.name) = LOWER(:name)";
+        final String jpqlFindBrandAlreadyExist = """
+            SELECT COUNT(b.id) > 0 FROM EquipmentBrandEntity b WHERE LOWER(b.name) = LOWER(:name)
+        """;
         return session.createQuery(jpqlFindBrandAlreadyExist, Boolean.class)
             .setParameter("name", brandName)
             .getSingleResult();
@@ -69,8 +71,9 @@ public class EquipmentBrandDao implements IEquipmentBrandDao {
 
     @Override
     public boolean checkIfEquipmentBrandHasAnyConnections(Object brandId) {
-        final String jpqlFindBrandHasConnections =
-            "SELECT COUNT(e.id) > 0 FROM EquipmentEntity e INNER JOIN e.equipmentBrand b WHERE b.id = :id";
+        final String jpqlFindBrandHasConnections = """
+            SELECT COUNT(e.id) > 0 FROM EquipmentEntity e INNER JOIN e.equipmentBrand b WHERE b.id = :id
+        """;
         return session.createQuery(jpqlFindBrandHasConnections, Boolean.class)
             .setParameter("id", brandId)
             .getSingleResult();

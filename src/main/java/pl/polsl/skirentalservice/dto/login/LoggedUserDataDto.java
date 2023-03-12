@@ -13,7 +13,9 @@
 
 package pl.polsl.skirentalservice.dto.login;
 
-import lombok.*;
+import lombok.Data;
+import lombok.AllArgsConstructor;
+
 import pl.polsl.skirentalservice.util.Gender;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

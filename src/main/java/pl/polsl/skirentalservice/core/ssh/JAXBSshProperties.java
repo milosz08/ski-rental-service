@@ -14,14 +14,16 @@
 package pl.polsl.skirentalservice.core.ssh;
 
 import lombok.NoArgsConstructor;
-import jakarta.xml.bind.annotation.*;
 
-import static jakarta.xml.bind.annotation.XmlAccessType.FIELD;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAccessType;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @NoArgsConstructor
-@XmlAccessorType(FIELD)
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "properties")
 public class JAXBSshProperties {
 
@@ -69,10 +71,10 @@ public class JAXBSshProperties {
     @Override
     public String toString() {
         return "{" +
-            "sshHost='" + sshHost + '\'' +
-            ", sshLogin='" + sshLogin + '\'' +
-            ", sshRsa='" + sshRsa + '\'' +
-            ", sshKnownHosts='" + sshKnownHosts + '\'' +
+            "sshHost='" + sshHost +
+            ", sshLogin='" + sshLogin +
+            ", sshRsa='" + sshRsa +
+            ", sshKnownHosts='" + sshKnownHosts +
             '}';
     }
 }

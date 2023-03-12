@@ -13,16 +13,22 @@
 
 package pl.polsl.skirentalservice.filter.parameter;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.*;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.annotation.WebInitParam;
+
+import jakarta.servlet.http.HttpFilter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 
+import pl.polsl.skirentalservice.util.SessionAttribute;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
-
-import static org.apache.commons.lang3.StringUtils.isNumeric;
-import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -40,8 +46,9 @@ public class RedirectWhenCustomerIdNotExistInPathFilter extends HttpFilter {
         throws IOException, ServletException {
         final String customerId = req.getParameter("id");
         final HttpSession httpSession = req.getSession();
-        final var loggedUserDataDto = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
-        if (!isNumeric(customerId)) {
+        final var loggedUserDataDto = (LoggedUserDataDto) httpSession
+            .getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
+        if (!StringUtils.isNumeric(customerId)) {
             res.sendRedirect("/" + loggedUserDataDto.getRoleEng() + "/customers");
             return;
         }

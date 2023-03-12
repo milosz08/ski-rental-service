@@ -13,7 +13,9 @@
 
 package pl.polsl.skirentalservice.core.mail;
 
-import jakarta.mail.*;
+import jakarta.mail.Authenticator;
+import jakarta.mail.PasswordAuthentication;
+
 import java.util.List;
 
 import pl.polsl.skirentalservice.core.JAXBProperty;

@@ -13,7 +13,9 @@
 
 package pl.polsl.skirentalservice.dto.logout;
 
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

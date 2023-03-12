@@ -13,15 +13,16 @@
 
 package pl.polsl.skirentalservice.entity;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
-import pl.polsl.skirentalservice.core.db.*;
-
-import static jakarta.persistence.CascadeType.*;
-import static jakarta.persistence.FetchType.LAZY;
+import pl.polsl.skirentalservice.core.db.EntityInjector;
+import pl.polsl.skirentalservice.core.db.AuditableEntity;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -38,15 +39,15 @@ public class EmployerEntity extends AuditableEntity {
     @Column(name = "hired_date")                            private LocalDate hiredDate;
     @Column(name = "first_access", insertable = false)      private Boolean firstAccess;
 
-    @OneToOne(fetch = LAZY, cascade = { PERSIST, MERGE, REMOVE })
+    @OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     @JoinColumn(name = "user_details_id", referencedColumnName = "id")
     private UserDetailsEntity userDetails;
 
-    @OneToOne(fetch = LAZY, cascade = { PERSIST, MERGE, REMOVE })
+    @OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     @JoinColumn(name = "location_address_id", referencedColumnName = "id")
     private LocationAddressEntity locationAddress;
 
-    @OneToOne(fetch = LAZY, cascade = { PERSIST, MERGE })
+    @OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     private RoleEntity role;
 

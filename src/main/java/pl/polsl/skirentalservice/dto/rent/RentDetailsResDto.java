@@ -13,12 +13,16 @@
 
 package pl.polsl.skirentalservice.dto.rent;
 
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
-import java.time.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-import pl.polsl.skirentalservice.util.*;
+import pl.polsl.skirentalservice.util.Gender;
+import pl.polsl.skirentalservice.util.RentStatus;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

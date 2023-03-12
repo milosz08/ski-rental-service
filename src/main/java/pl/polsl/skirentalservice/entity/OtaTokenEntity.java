@@ -13,15 +13,13 @@
 
 package pl.polsl.skirentalservice.entity;
 
-import lombok.*;
+import lombok.NoArgsConstructor;
+
 import jakarta.persistence.*;
-
-import pl.polsl.skirentalservice.core.db.*;
-
 import java.time.LocalDateTime;
 
-import static jakarta.persistence.CascadeType.*;
-import static jakarta.persistence.FetchType.LAZY;
+import pl.polsl.skirentalservice.core.db.EntityInjector;
+import pl.polsl.skirentalservice.core.db.AuditableEntity;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -35,7 +33,7 @@ public class OtaTokenEntity extends AuditableEntity {
     @Column(name = "expired_at", insertable = false, updatable = false)  private LocalDateTime expiredDate;
     @Column(name = "is_used", insertable = false)                        private Boolean isUsed;
 
-    @ManyToOne(cascade = { MERGE, PERSIST }, fetch = LAZY)
+    @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST }, fetch = FetchType.LAZY)
     @JoinColumn(name = "employer_id", referencedColumnName = "id")
     private EmployerEntity employer;
 

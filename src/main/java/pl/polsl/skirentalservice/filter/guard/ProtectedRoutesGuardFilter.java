@@ -13,19 +13,24 @@
 
 package pl.polsl.skirentalservice.filter.guard;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.*;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.annotation.WebInitParam;
 
+import jakarta.servlet.http.HttpFilter;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.util.Objects;
 import java.io.IOException;
 
+import org.apache.commons.lang3.StringUtils;
+
+import pl.polsl.skirentalservice.util.UserRole;
+import pl.polsl.skirentalservice.util.SessionAttribute;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
-
-import static java.util.Objects.isNull;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
-import static pl.polsl.skirentalservice.util.UserRole.*;
-import static pl.polsl.skirentalservice.util.SessionAttribute.LOGGED_USER_DETAILS;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -39,20 +44,21 @@ public class ProtectedRoutesGuardFilter extends HttpFilter {
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
         throws IOException, ServletException {
         final HttpSession httpSession = req.getSession();
-        final LoggedUserDataDto userData = (LoggedUserDataDto) httpSession.getAttribute(LOGGED_USER_DETAILS.getName());
+        final LoggedUserDataDto userData = (LoggedUserDataDto) httpSession
+            .getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
         String redirectToPath = "";
-        if (isNull(userData)) {
+        if (Objects.isNull(userData)) {
             redirectToPath = "/login";
         } else {
-            if (userData.getRoleAlias().equals(SELLER.getAlias()) && req.getRequestURI().contains("/owner")) {
+            if (userData.getRoleAlias().equals(UserRole.SELLER.getAlias()) && req.getRequestURI().contains("/owner")) {
                 redirectToPath = "/seller/dashboard";
-            } else if (userData.getRoleAlias().equals(OWNER.getAlias()) && req.getRequestURI().contains("/seller")) {
+            } else if (userData.getRoleAlias().equals(UserRole.OWNER.getAlias()) && req.getRequestURI().contains("/seller")) {
                 redirectToPath = "/owner/dashboard";
-            } else if (userData.getIsFirstAccess() && userData.getRoleAlias().equals(SELLER.getAlias())) {
+            } else if (userData.getIsFirstAccess() && userData.getRoleAlias().equals(UserRole.SELLER.getAlias())) {
                 redirectToPath = "/first-access";
             }
         }
-        if (!isBlank(redirectToPath)) {
+        if (!StringUtils.isBlank(redirectToPath)) {
             res.sendRedirect(redirectToPath);
             return;
         }

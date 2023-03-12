@@ -15,27 +15,28 @@ package pl.polsl.skirentalservice.dto.first_access;
 
 import lombok.Data;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.servlet.http.HttpServletRequest;
 
-import pl.polsl.skirentalservice.core.IReqValidatePojo;
+import org.apache.commons.lang3.StringUtils;
 
-import static org.apache.commons.lang3.StringUtils.trimToEmpty;
-import static pl.polsl.skirentalservice.util.Regex.PASSWORD_REQ;
+import pl.polsl.skirentalservice.util.Regex;
+import pl.polsl.skirentalservice.core.IReqValidatePojo;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Data
 public class FirstAccessReqDto implements IReqValidatePojo {
 
-    @Pattern(regexp = PASSWORD_REQ, message = "Hasło musi zawierać co najmniej 8 znaków, jedną wielką literę, jedną " +
+    @Pattern(regexp = Regex.PASSWORD_REQ, message = "Hasło musi zawierać co najmniej 8 znaków, jedną wielką literę, jedną " +
         "cyfrę i znak specjalny (spośród #?!@$%^&*).")
     private String password;
 
     @NotEmpty(message = "Pole powtórzonego hasła nie może być puste.")
     private String passwordRep;
 
-    @Pattern(regexp = PASSWORD_REQ, message = "Hasło musi zawierać co najmniej 8 znaków, jedną wielką literę, " +
+    @Pattern(regexp = Regex.PASSWORD_REQ, message = "Hasło musi zawierać co najmniej 8 znaków, jedną wielką literę, " +
         "jedną cyfrę i znak specjalny (spośród #?!@$%^&*).")
     private String emailPassword;
 
@@ -45,10 +46,10 @@ public class FirstAccessReqDto implements IReqValidatePojo {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public FirstAccessReqDto(HttpServletRequest req) {
-        this.password = trimToEmpty(req.getParameter("password"));
-        this.passwordRep = trimToEmpty(req.getParameter("passwordRep"));
-        this.emailPassword = trimToEmpty(req.getParameter("emailPassword"));
-        this.emailPasswordRep = trimToEmpty(req.getParameter("emailPasswordRep"));
+        this.password = StringUtils.trimToEmpty(req.getParameter("password"));
+        this.passwordRep = StringUtils.trimToEmpty(req.getParameter("passwordRep"));
+        this.emailPassword = StringUtils.trimToEmpty(req.getParameter("emailPassword"));
+        this.emailPasswordRep = StringUtils.trimToEmpty(req.getParameter("emailPasswordRep"));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,10 +57,10 @@ public class FirstAccessReqDto implements IReqValidatePojo {
     @Override
     public String toString() {
         return "{" +
-            "password='" + password + '\'' +
-            ", passwordRep='" + passwordRep + '\'' +
-            ", emailPassword='" + emailPassword + '\'' +
-            ", emailPasswordRep='" + emailPasswordRep + '\'' +
+            "password='" + password +
+            ", passwordRep='" + passwordRep +
+            ", emailPassword='" + emailPassword +
+            ", emailPasswordRep='" + emailPasswordRep +
             '}';
     }
 }
