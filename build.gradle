@@ -14,7 +14,7 @@
 plugins {
     id 'java'
     id 'war'
-    id 'co.uzzu.dotenv.gradle' version '2.0.0'
+    alias libs.plugins.dotenv.gradle
 }
 
 repositories {
@@ -26,82 +26,48 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
-ext {
-    // dependencies versions
-    jakartaApiVersion           = '5.0.0'
-    jakartaMailApiVersion       = '2.1.0'
-    jakartaJAXBVersion          = '4.0.0'
-    jaxbRuntimeVersion          = '4.0.1'
-    junitVersion                = '5.9.0'
-    lombokVersion               = '1.18.24'
-    mySqlVersion                = '8.0.31'
-    hibernateVersion            = '6.1.6.Final'
-    hibernateValidatorVersion   = '8.0.0.Final'
-    liquibaseVersion            = '4.18.0'
-    liquibaseSlf4jVersion       = '4.1.0'
-    jstlVersion                 = '3.0.1'
-    ejbVersion                  = '4.0.1'
-    loggerVersion               = '2.0.6'
-    reflectionsVersion          = '0.10.2'
-    bcryptVersion               = '0.9.0'
-    freemarkerVersion           = '2.3.31'
-    apacheCommonsVersion        = '1.10.0'
-    modelMapperVersion          = '3.1.1'
-    sshjVersion                 = '0.34.0'
-    commonsCodecVersion         = '1.15'
-    commonsValidatorVersion     = '1.7'
-    apacheCommonsLang3Version   = '3.12.0'
-    gsonVersion                 = '2.10.1'
-    barcodeVersion              = '2.1'
-    iTextVersion                = '7.2.5'
-
-    // webjars
-    bootstrapVersion            = '5.2.3'
-    bootstrapIconsVersion       = '1.10.2'
-    popperJsVersion             = '1.16.1'
-    jqueryVersion               = '3.6.2'
-}
-
 java.sourceCompatibility = JavaVersion.VERSION_17
 java.targetCompatibility = JavaVersion.VERSION_17
 
+// NOTE: all 3rd part libraries in /gradle/libs.versions.toml file
+
 dependencies {
-    implementation      "org.webjars.bower:jquery:${jqueryVersion}"
-    implementation      "org.webjars.npm:popper.js:${popperJsVersion}"
-    implementation      "org.webjars:bootstrap:${bootstrapVersion}"
-    implementation      "org.webjars.npm:bootstrap-icons:${bootstrapIconsVersion}"
+    implementation          libs.jquery
+    implementation          libs.popperjs
+    implementation          libs.bootstrap
+    implementation          libs.bootstrap.icons
 
-    implementation      "org.slf4j:slf4j-api:${loggerVersion}"
-    implementation      "com.mattbertolini:liquibase-slf4j:${liquibaseSlf4jVersion}"
-    implementation      "org.projectlombok:lombok:${lombokVersion}"
-    implementation      "org.reflections:reflections:${reflectionsVersion}"
-    implementation      "at.favre.lib:bcrypt:${bcryptVersion}"
-    implementation      "org.freemarker:freemarker:${freemarkerVersion}"
-    implementation      "org.apache.commons:commons-text:${apacheCommonsVersion}"
-    implementation      "org.modelmapper:modelmapper:${modelMapperVersion}"
-    implementation      "com.hierynomus:sshj:${sshjVersion}"
-    implementation      "commons-codec:commons-codec:${commonsCodecVersion}"
-    implementation      "commons-validator:commons-validator:${commonsValidatorVersion}"
-    implementation      "com.google.code.gson:gson:${gsonVersion}"
-    implementation      "net.sf.barcode4j:barcode4j:${barcodeVersion}"
-    implementation      "com.itextpdf:itext7-core:${iTextVersion}"
+    implementation          libs.slf4j
+    implementation          libs.slf4j.liquibase
+    implementation          libs.lombok
+    implementation          libs.reflections
+    implementation          libs.bcrypt
+    implementation          libs.freemarker
+    implementation          libs.commons.text
+    implementation          libs.modelmapper
+    implementation          libs.sshj
+    implementation          libs.commons.codec
+    implementation          libs.commons.validator
+    implementation          libs.gson
+    implementation          libs.barcode4j
+    implementation          libs.itext
 
-    implementation      "mysql:mysql-connector-java:${mySqlVersion}"
-    implementation      "org.hibernate:hibernate-core:${hibernateVersion}"
-    implementation      "org.hibernate.validator:hibernate-validator:${hibernateValidatorVersion}"
-    implementation      "org.liquibase:liquibase-core:${liquibaseVersion}"
-    implementation      "org.hibernate.orm:hibernate-c3p0:${hibernateVersion}"
+    implementation          libs.mysql.driver
+    implementation          libs.hibernate.core
+    implementation          libs.hibernate.validator
+    implementation          libs.liquibase.core
+    implementation          libs.hibernate.c3p0
 
-    implementation      "jakarta.ejb:jakarta.ejb-api:${ejbVersion}"
-    implementation      "org.glassfish.web:jakarta.servlet.jsp.jstl:${jstlVersion}"
-    implementation      "jakarta.xml.bind:jakarta.xml.bind-api:${jakartaJAXBVersion}"
-    implementation      "org.glassfish.jaxb:jaxb-runtime:${jaxbRuntimeVersion}"
-    implementation      "jakarta.mail:jakarta.mail-api:${jakartaMailApiVersion}"
-    compileOnly         "jakarta.servlet:jakarta.servlet-api:${jakartaApiVersion}"
+    implementation          libs.jakarta.ejb
+    implementation          libs.jakarta.servlet.jsp.jstl
+    implementation          libs.jakarta.xml.bind.api
+    implementation          libs.jaxb.runtime
+    implementation          libs.jakarta.mail.api
+    compileOnly             libs.jakarta.servlet.api
 
-    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-    testImplementation  "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
-    testRuntimeOnly     "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+    annotationProcessor     libs.lombok
+    testImplementation      libs.junit.api
+    testRuntimeOnly         libs.junit.engine
 }
 
 tasks.register('copyRsa', Copy) {

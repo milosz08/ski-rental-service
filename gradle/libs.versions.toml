@@ -1,0 +1,88 @@
+#
+# Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
+# Silesian University of Technology
+#
+#  File name: build.gradle.kts
+#  Last modified: 22.12.2022, 22:24
+#  Project name: ski-rental-service
+#
+# This project was written for the purpose of a subject taken in the study of Computer Science.
+# This project is not commercial in any way and does not represent a viable business model
+# of the application. Project created for educational purposes only.
+#
+
+# libs.versions.toml
+# refer to build.gradle 3rd part libraries script file
+
+[versions]
+slf4j                       = '2.0.6'
+slf4jLiquibase              = '4.1.0'
+lombok                      = '1.18.24'
+reflections                 = '0.10.2'
+bcrypt                      = '0.9.0'
+freemarker                  = '2.3.31'
+commonsText                 = '1.10.0'
+modelmapper                 = '3.1.1'
+sshj                        = '0.34.0'
+commonsCodec                = '1.15'
+commonsValidator            = '1.7'
+gson                        = '2.10.1'
+barcode4j                   = '2.1'
+itext                       = '7.2.5'
+mysqlDriver                 = '8.0.31'
+hibernate                   = '6.1.6.Final'
+hibernateValidator          = '8.0.0.Final'
+liquibase                   = '4.18.0'
+jakartaServlet              = '5.0.0'
+jakartaEJB                  = '4.0.1'
+jakartaJAXB                 = '4.0.0'
+jakartaMail                 = '2.1.0'
+jstlRuntime                 = '3.0.1'
+jUnit                       = '5.9.0'
+
+bootstrap                   = '5.2.3'
+bootstrapIcons              = '1.10.2'
+popperJS                    = '1.16.1'
+jQuery                      = '3.6.2'
+
+dotenvGradle                = '2.0.0'
+
+[libraries]
+slf4j                       = { module = 'org.slf4j:slf4j-api',                             version.ref = 'slf4j' }
+lombok                      = { module = 'org.projectlombok:lombok',                        version.ref = 'lombok' }
+reflections                 = { module = 'org.reflections:reflections',                     version.ref = 'reflections' }
+bcrypt                      = { module = 'at.favre.lib:bcrypt',                             version.ref = 'bcrypt' }
+freemarker                  = { module = 'org.freemarker:freemarker',                       version.ref = 'freemarker' }
+commons-text                = { module = 'org.apache.commons:commons-text',                 version.ref = 'commonsText' }
+commons-codec               = { module = 'commons-codec:commons-codec',                     version.ref = 'commonsCodec' }
+commons-validator           = { module = 'commons-validator:commons-validator',             version.ref = 'commonsValidator' }
+modelmapper                 = { module = 'org.modelmapper:modelmapper',                     version.ref = 'modelmapper' }
+sshj                        = { module = 'com.hierynomus:sshj',                             version.ref = 'sshj' }
+gson                        = { module = 'com.google.code.gson:gson',                       version.ref = 'gson' }
+barcode4j                   = { module = 'net.sf.barcode4j:barcode4j',                      version.ref = 'barcode4j' }
+itext                       = { module = 'com.itextpdf:itext7-core',                        version.ref = 'itext' }
+
+mysql-driver                = { module = 'mysql:mysql-connector-java',                      version.ref = 'mysqlDriver' }
+hibernate-core              = { module = 'org.hibernate:hibernate-core',                    version.ref = 'hibernate' }
+hibernate-c3p0              = { module = 'org.hibernate.orm:hibernate-c3p0',                version.ref = 'hibernate' }
+hibernate-validator         = { module = 'org.hibernate.validator:hibernate-validator',     version.ref = 'hibernateValidator' }
+liquibase-core              = { module = 'org.liquibase:liquibase-core',                    version.ref = 'liquibase' }
+slf4j-liquibase             = { module = 'com.mattbertolini:liquibase-slf4j',               version.ref = 'slf4jLiquibase' }
+
+jakarta-ejb                 = { module = 'jakarta.ejb:jakarta.ejb-api',                     version.ref = 'jakartaEJB' }
+jakarta-servlet-jsp-jstl    = { module = 'org.glassfish.web:jakarta.servlet.jsp.jstl',      version.ref = 'jstlRuntime' }
+jakarta-xml-bind-api        = { module = 'jakarta.xml.bind:jakarta.xml.bind-api',           version.ref = 'jakartaJAXB' }
+jaxb-runtime                = { module = 'org.glassfish.jaxb:jaxb-runtime',                 version.ref = 'jakartaJAXB' }
+jakarta-mail-api            = { module = 'jakarta.mail:jakarta.mail-api',                   version.ref = 'jakartaMail' }
+jakarta-servlet-api         = { module = 'jakarta.servlet:jakarta.servlet-api',             version.ref = 'jakartaServlet' }
+
+junit-api                   = { module = 'org.junit.jupiter:junit-jupiter-api',             version.ref = 'jUnit' }
+junit-engine                = { module = 'org.junit.jupiter:junit-jupiter-engine',          version.ref = 'jUnit' }
+
+jquery                      = { module = 'org.webjars.bower:jquery',                        version.ref = 'jQuery' }
+popperjs                    = { module = 'org.webjars.npm:popper.js',                       version.ref = 'popperJS' }
+bootstrap                   = { module = 'org.webjars:bootstrap',                           version.ref = 'bootstrap' }
+bootstrap-icons             = { module = 'org.webjars.npm:bootstrap-icons',                 version.ref = 'bootstrapIcons' }
+
+[plugins]
+dotenv-gradle               = { id     = 'co.uzzu.dotenv.gradle',                           version.ref = 'dotenvGradle' }
