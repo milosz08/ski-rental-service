@@ -61,6 +61,7 @@ $ ./gradlew run copyRsa            # move private key and known_hosts.dat file i
 $ ./gradlew run processResources   # replacement values from .env file into xml configuration files
 ```
 8. By default, application listen on `127.0.0.1:8080` and Wildfly admin dashboard is available on `127.0.0.1:9990`.
+> NOTE: Default admin account password: `admin123@`. Default seller password: `seller123@`.
 
 <a name="manage-mailboxes-via-ssh"></a>
 ## Manage mailboxes via SSH
