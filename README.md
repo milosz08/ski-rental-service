@@ -20,7 +20,7 @@ Simple enterprise-class application for managing a ski rental company. The softw
 
 To install the program on your computer, use the command below (or use the build-in GIT system in your IDE environment):
 ```
-$ git clone https://github.com/Milosz08/SUoT_SkiRental_Service ski-rental-service
+$ git clone https://github.com/Milosz08/ski-rental-service
 ```
 
 <a name="prepare-runtime-configuration"></a>
