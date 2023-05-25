@@ -3,8 +3,8 @@
 [![Generic badge](https://img.shields.io/badge/Build%20with-Gradle-green.svg)](https://gradle.org/)&nbsp;&nbsp;
 [![Generic badge](https://img.shields.io/badge/Web%20Server-Wildfly/JBOSS%20-brown.svg)](https://www.wildfly.org/)&nbsp;&nbsp;
 [![Generic badge](https://img.shields.io/badge/Packaging-WAR-yellow.svg)](https://en.wikipedia.org/wiki/WAR_(file_format))&nbsp;&nbsp;
-<br><br>
-More info about this project you will find [on my personal website](https://miloszgilga.pl/project/ski-rental-service).
+<br>
+> More info about this project you will find [on my personal website](https://miloszgilga.pl/project/ski-rental-service).
 
 Simple enterprise-class application for managing a ski rental company. The software is closed (only people in the enterprise can use it). This project was made for a subject in college programming course. Created only for learning purposes. Jakarta EE and EJB specifications were used in the development. This application can be run on an application server that supports Jakarta EE and EJB, such as JBOSS/Wildfly or GlassFish.
 
