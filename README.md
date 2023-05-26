@@ -14,7 +14,8 @@ Simple enterprise-class application for managing a ski rental company. The softw
 * [Clone and install](#clone-and-install)
 * [Prepare runtime configuration](#prepare-runtime-configuration)
 * [Manage Mailboxes via SSH](#manage-mailboxes-via-ssh)
-* [Application stack](#application-stack)
+* [Tech stack](#tech-stack)
+* [Author](#author)
 * [Project status](#project-status)
 
 <a name="clone-and-install"></a>
@@ -95,8 +96,8 @@ in `src/main/resources/ssh/ssh.cfg.xml`
 </ssh-configuration>
 ```
 
-<a name="application-stack"></a>
-## Application stack
+<a name="tech-stack"></a>
+## Tech stack
 * [Jakarta EE](https://jakarta.ee/release/10/)
 * [EJB (Enterprise JavaBean)](https://www.oracle.com/java/technologies/enterprise-javabeans-technology.html)
 * [JSP/JSTL](https://www.oracle.com/java/technologies/jspt.html)
@@ -104,6 +105,10 @@ in `src/main/resources/ssh/ssh.cfg.xml`
 * [MySQL](https://www.mysql.com/)
 * [Hibernate](https://hibernate.org/)
 * [Liquibase](https://www.liquibase.org/)
+
+<a name="author"></a>
+## Author
+Created by Miłosz Gilga. If you have any questions about this application, send message: [personal@miloszgilga.pl](mailto:personal@miloszgilga.pl).
 
 <a name="project-status"></a>
 ## Project status
