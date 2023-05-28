@@ -3,7 +3,9 @@
 [![Generic badge](https://img.shields.io/badge/Build%20with-Gradle-green.svg)](https://gradle.org/)&nbsp;&nbsp;
 [![Generic badge](https://img.shields.io/badge/Web%20Server-Wildfly/JBOSS%20-brown.svg)](https://www.wildfly.org/)&nbsp;&nbsp;
 [![Generic badge](https://img.shields.io/badge/Packaging-WAR-yellow.svg)](https://en.wikipedia.org/wiki/WAR_(file_format))&nbsp;&nbsp;
-<br><br>
+<br>
+> More info about this project you will find [on my personal website](https://miloszgilga.pl/project/ski-rental-service).
+
 Simple enterprise-class application for managing a ski rental company. The software is closed (only people in the enterprise can use it). This project was made for a subject in college programming course. Created only for learning purposes. Jakarta EE and EJB specifications were used in the development. This application can be run on an application server that supports Jakarta EE and EJB, such as JBOSS/Wildfly or GlassFish.
 
 > DISCLAIMER: I realize that the specification of servlets, JSP pages and monolithic applications is no longer a standard today. This application was created only for learning purposes and familiarization with older "legacy" technologies.
@@ -12,7 +14,8 @@ Simple enterprise-class application for managing a ski rental company. The softw
 * [Clone and install](#clone-and-install)
 * [Prepare runtime configuration](#prepare-runtime-configuration)
 * [Manage Mailboxes via SSH](#manage-mailboxes-via-ssh)
-* [Application stack](#application-stack)
+* [Tech stack](#tech-stack)
+* [Author](#author)
 * [Project status](#project-status)
 
 <a name="clone-and-install"></a>
@@ -20,7 +23,7 @@ Simple enterprise-class application for managing a ski rental company. The softw
 
 To install the program on your computer, use the command below (or use the build-in GIT system in your IDE environment):
 ```
-$ git clone https://github.com/Milosz08/SUoT_SkiRental_Service ski-rental-service
+$ git clone https://github.com/Milosz08/ski-rental-service
 ```
 
 <a name="prepare-runtime-configuration"></a>
@@ -49,11 +52,11 @@ SMTP_PASS           = xxxxx -> insert here SMTP mail server password
 SSH_HOST            = xxxxx -> SSH host
 SSH_LOGIN           = xxxxx -> SSH login
 ```
-3. Create directory in `wildfly-27.0.1.Final/standalone/data` with name `ski-rental-service` and create another directory in previous directory with name `bar-codes` and move two sample codes from directory `sample-bar-codes` in project root. 
-4. To start application, download Wildfly/JBOSS application server from here:
+3. To start application, download Wildfly/JBOSS application server from here:
 * [download for Windows/x86](https://github.com/wildfly/wildfly/releases/download/27.0.1.Final/wildfly-27.0.1.Final.zip)
 * [download for MacOS/UNIX](https://github.com/wildfly/wildfly/releases/download/27.0.1.Final/wildfly-27.0.1.Final.tar.gz)
-5. Create new user in Wildfly application server by running `add-user.sh` (for UNIX) or `add-user.bat` (for windows) in `bin` directory in Wildfly application server folder.
+4. Create new user in Wildfly application server by running `add-user.sh` (for UNIX) or `add-user.bat` (for windows) in `bin` directory in Wildfly application server folder.
+5. Create directory in `wildfly-27.0.1.Final/standalone/data` with name `ski-rental-service` and create another directory in previous directory with name `bar-codes` and move two sample codes from directory `sample-bar-codes` in project root.
 6. Configure runtime server in your IDE [example for IntellijIDEA](https://medium.com/geekculture/how-to-configure-and-deploy-webapps-with-wildfly-application-server-in-intellij-idea-f104a6c2a0db).
 7. Run grade build with `copyRsa` task and `processResources` and initiate application (via Gradle Wrapper):
 ```
@@ -61,6 +64,7 @@ $ ./gradlew run copyRsa            # move private key and known_hosts.dat file i
 $ ./gradlew run processResources   # replacement values from .env file into xml configuration files
 ```
 8. By default, application listen on `127.0.0.1:8080` and Wildfly admin dashboard is available on `127.0.0.1:9990`.
+> NOTE: Default admin account password: `admin123@`. Default seller password: `seller123@`.
 
 <a name="manage-mailboxes-via-ssh"></a>
 ## Manage mailboxes via SSH
@@ -92,8 +96,8 @@ in `src/main/resources/ssh/ssh.cfg.xml`
 </ssh-configuration>
 ```
 
-<a name="application-stack"></a>
-## Application stack
+<a name="tech-stack"></a>
+## Tech stack
 * [Jakarta EE](https://jakarta.ee/release/10/)
 * [EJB (Enterprise JavaBean)](https://www.oracle.com/java/technologies/enterprise-javabeans-technology.html)
 * [JSP/JSTL](https://www.oracle.com/java/technologies/jspt.html)
@@ -101,6 +105,10 @@ in `src/main/resources/ssh/ssh.cfg.xml`
 * [MySQL](https://www.mysql.com/)
 * [Hibernate](https://hibernate.org/)
 * [Liquibase](https://www.liquibase.org/)
+
+<a name="author"></a>
+## Author
+Created by Miłosz Gilga. If you have any questions about this application, send message: [personal@miloszgilga.pl](mailto:personal@miloszgilga.pl).
 
 <a name="project-status"></a>
 ## Project status
