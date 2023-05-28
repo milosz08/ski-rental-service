@@ -18,3 +18,5 @@ out/
 id_rsa
 id_rsa.pub
 known_hosts.dat
+.idea/discord.xml
+.idea/workspace.xml

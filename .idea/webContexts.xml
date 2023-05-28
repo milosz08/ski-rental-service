@@ -3,25 +3,7 @@
   <component name="WebContextManager">
     <option name="state">
       <map>
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/pages/forgot-password-request.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/pages/login.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/pages/owner-dashboard.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/pages" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/pages/owner/employer/owner-employers.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/pages/owner/equipment/owner-add-equipment.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/pages/owner/equipment/owner-equipments.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/pages/owner/equipment" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/pages/owner/owner-employers.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/pages/test-view.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/pages" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/partials/owner-footer.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/partials" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/partials/owner-header.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/partials" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/tags/generic-left-nav.wrapper.tag" value="file://$PROJECT_DIR$/src/main/webapp" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/tags/generic-owner.wrapper.tag" value="file://$PROJECT_DIR$/src/main/webapp" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/tags/generic-page.tag" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/tags" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/tags/generic-seller.wrapper.tag" value="file://$PROJECT_DIR$/src/main/webapp" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/tags/owner-wrapper.tag" value="file://$PROJECT_DIR$/src/main/webapp" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/tags/owner-wrapper.wrapper.tag" value="file://$PROJECT_DIR$/src/main/webapp" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/tags/seller-wrapper.tag" value="file://$PROJECT_DIR$/src/main/webapp" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/tags/seller-wrapper.wrapper.tag" value="file://$PROJECT_DIR$/src/main/webapp" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/index.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/pages/seller/seller-dashboard.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/pages/seller" />
       </map>
     </option>
   </component>
