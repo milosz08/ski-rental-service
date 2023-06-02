@@ -77,9 +77,8 @@ public class OwnerEditEmployerServlet extends HttpServlet {
                     session.beginTransaction();
                     final IEmployerDao employerDao = new EmployerDao(session);
 
-                    final var employerDetails = employerDao.findEmployerEditPageDetails(userId).orElseThrow(() -> {
-                        throw new UserNotFoundException(userId);
-                    });
+                    final var employerDetails = employerDao.findEmployerEditPageDetails(userId)
+                        .orElseThrow(() -> new UserNotFoundException(userId));
                     resDto = new AddEditEmployerResDto(validator, employerDetails);
 
                     session.getTransaction().commit();

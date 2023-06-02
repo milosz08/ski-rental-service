@@ -63,9 +63,8 @@ public class CommonCustomerDetailsServlet extends HttpServlet {
                 session.beginTransaction();
                 final ICustomerDao customerDao = new CustomerDao(session);
 
-                final var customerDetails = customerDao.findCustomerDetails(userId).orElseThrow(() -> {
-                    throw new UserNotFoundException(userId);
-                });
+                final var customerDetails = customerDao.findCustomerDetails(userId)
+                    .orElseThrow(() -> new UserNotFoundException(userId));
 
                 session.getTransaction().commit();
                 req.setAttribute("customerData", customerDetails);

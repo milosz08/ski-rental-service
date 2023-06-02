@@ -117,7 +117,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 }
 
                 final RentReturnDetailsResDto rentDetails = rentDao.findRentReturnDetails(rentId, userDataDto.getId())
-                    .orElseThrow(() -> { throw new RentNotFoundException(); });
+                    .orElseThrow(RentNotFoundException::new);
 
                 final List<RentReturnEquipmentRecordResDto> equipmentsList = equipmentDao
                     .findAllEquipmentsConnectedWithRentReturn(rentId);
@@ -197,7 +197,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 rentDao.updateRentStatus(RentStatus.RETURNED, rentId);
 
                 final CustomerDetailsReturnResDto customerDetails = customerDao.findCustomerDetailsForReturnDocument(rentId)
-                    .orElseThrow(() -> { throw new UserNotFoundException(UserRole.USER); });
+                    .orElseThrow(() -> new UserNotFoundException(UserRole.USER));
 
                 final var emailPayload = modelMapper.map(rentDetails, RentReturnEmailPayloadDataDto.class);
                 modelMapper.map(customerDetails, emailPayload);

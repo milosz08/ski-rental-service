@@ -158,7 +158,9 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
                 final BufferedImage barcodeBufferedImage = canvas.getBufferedImage();
 
                 final File barCodesDir = new File(config.getUploadsDir() + File.separator + "bar-codes");
-                barCodesDir.mkdir();
+                if (!barCodesDir.mkdir()) {
+                    throw new RuntimeException("Nieudane zapisanie kodu kreskowego sprzętu.");
+                }
                 final File outputFile = new File(barCodesDir, generatedBarcode + ".png");
                 if (outputFile.createNewFile()) {
                     ImageIO.write(barcodeBufferedImage, "png", outputFile);

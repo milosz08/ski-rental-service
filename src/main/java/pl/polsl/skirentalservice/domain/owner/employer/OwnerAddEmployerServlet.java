@@ -98,7 +98,6 @@ public class OwnerAddEmployerServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         final HttpSession httpSession = req.getSession();
         final AlertTupleDto alert = new AlertTupleDto(true);
-        final String loggedUser = Utils.getLoggedUserLogin(req);
 
         final AddEditEmployerReqDto reqDto = new AddEditEmployerReqDto(req);
         final AddEditEmployerResDto resDto = new AddEditEmployerResDto(validator, reqDto);
@@ -136,7 +135,7 @@ public class OwnerAddEmployerServlet extends HttpServlet {
                     emailExist = employerDao.checkIfLoginAlreadyExist(login);
                 } while (emailExist);
 
-                email = login + mailSocketBean.getDomain();
+                email = login + mailSocket.getDomain();
                 final String mailPassword = RandomStringUtils.randomAlphanumeric(10);
                 final String passwordRaw = RandomStringUtils.randomAlphanumeric(10);
                 final String passowordDecoded = Utils.generateHash(passwordRaw);

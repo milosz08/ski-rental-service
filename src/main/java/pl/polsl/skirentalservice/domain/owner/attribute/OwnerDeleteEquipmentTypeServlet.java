@@ -70,9 +70,8 @@ public class OwnerDeleteEquipmentTypeServlet extends HttpServlet {
                 session.beginTransaction();
                 final IEquipmentTypeDao equipmentDetailsDao = new EquipmentTypeDao(session);
 
-                final String deletedType = equipmentDetailsDao.getEquipmentTypeNameById(typeId).orElseThrow(() -> {
-                    throw new EquipmentTypeNotFoundException();
-                });
+                final String deletedType = equipmentDetailsDao.getEquipmentTypeNameById(typeId)
+                    .orElseThrow(EquipmentTypeNotFoundException::new);
 
                 resDto.getActiveFirstPage().setActive(false);
                 resDto.getActiveSecondPage().setActive(true);

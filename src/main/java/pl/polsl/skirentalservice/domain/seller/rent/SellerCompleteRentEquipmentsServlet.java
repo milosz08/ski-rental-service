@@ -137,7 +137,7 @@ public class SellerCompleteRentEquipmentsServlet extends HttpServlet {
                 for (final CartSingleEquipmentDataDto cartDto : rentData.getEquipments()) {
                     final EquipmentRentRecordResDto recordDto = equipmentsList.stream()
                         .filter(e -> e.getId().equals(cartDto.getId())).findFirst()
-                        .orElseThrow(() -> { throw new EquipmentNotFoundException(cartDto.getId().toString()); });
+                        .orElseThrow(() -> new EquipmentNotFoundException(cartDto.getId().toString()));
 
                     recordDto.setDisabled(true);
                     final BigDecimal totalPriceDays = recordDto.getPricePerDay().multiply(new BigDecimal(rentDays));

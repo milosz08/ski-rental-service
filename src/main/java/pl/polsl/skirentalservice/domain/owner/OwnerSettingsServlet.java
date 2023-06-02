@@ -81,7 +81,7 @@ public class OwnerSettingsServlet extends HttpServlet {
                     final IEmployerDao employerDao = new EmployerDao(session);
 
                     final var employerDetails = employerDao.findEmployerEditPageDetails(ownerDetailsDto.getId())
-                        .orElseThrow(() -> { throw new UserNotFoundException(UserRole.OWNER); });
+                        .orElseThrow(() -> new UserNotFoundException(UserRole.OWNER));
                     resDto = new AddEditEmployerResDto(validator, employerDetails);
 
                     session.getTransaction().commit();

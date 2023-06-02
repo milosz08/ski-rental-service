@@ -77,8 +77,6 @@ public class Utils {
 
     public static AttributeValidatorPayloadDto validateEquipmentAttribute(HttpServletRequest req, ValidatorSingleton validator) {
         final AlertTupleDto alert = new AlertTupleDto();
-        final HttpSession httpSession = req.getSession();
-
         final AttributeModalReqDto reqDto = new AttributeModalReqDto(req);
         final AttributeModalResDto resDto = new AttributeModalResDto(validator, reqDto, alert);
 

@@ -60,9 +60,8 @@ public class OwnerEmployerDetailsServlet extends HttpServlet {
                 session.beginTransaction();
                 final IEmployerDao employerDao = new EmployerDao(session);
 
-                final var employerDetails = employerDao.findEmployerPageDetails(userId).orElseThrow(() -> {
-                    throw new UserNotFoundException(userId);
-                });
+                final var employerDetails = employerDao.findEmployerPageDetails(userId)
+                    .orElseThrow(() -> new UserNotFoundException(userId));
 
                 session.getTransaction().commit();
                 req.setAttribute("employerData", employerDetails);

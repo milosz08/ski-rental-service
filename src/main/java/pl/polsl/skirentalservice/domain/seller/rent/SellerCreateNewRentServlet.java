@@ -107,14 +107,12 @@ public class SellerCreateNewRentServlet extends HttpServlet {
                     res.sendRedirect("/seller/customers");
                     return;
                 }
-                final var customerDetails = customerDao.findCustomerDetails(customerId).orElseThrow(() -> {
-                    throw new UserNotFoundException(UserRole.USER);
-                });
+                final var customerDetails = customerDao.findCustomerDetails(customerId)
+                    .orElseThrow(() -> new UserNotFoundException(UserRole.USER));
                 req.setAttribute("customerData", customerDetails);
 
-                final var employerDetails = employerDao.findEmployerPageDetails(loggedUser.getId()).orElseThrow(() -> {
-                    throw new UserNotFoundException(UserRole.SELLER);
-                });
+                final var employerDetails = employerDao.findEmployerPageDetails(loggedUser.getId())
+                    .orElseThrow(() -> new UserNotFoundException(UserRole.SELLER));
                 req.setAttribute("employerData", employerDetails);
 
                 if (Objects.isNull(inMemoryRentData)) {
@@ -122,7 +120,6 @@ public class SellerCreateNewRentServlet extends HttpServlet {
                     final LocalDateTime now = LocalDateTime.now();
                     final String issuerStaticPart = "WY/" + now.getYear() + "/" + now.getMonth().getValue() + "/";
                     final String issuerUsers = "/" + employerDetails.id() + "/" + customerId;
-                    boolean founded = false;
                     while (true) {
                         final String randomizer = RandomStringUtils.randomNumeric(4);
                         final String jpqlFindExistingIssuer =

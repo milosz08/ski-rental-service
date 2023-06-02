@@ -89,9 +89,8 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
                 session.beginTransaction();
                 final IEmployerDao employerDao = new EmployerDao(session);
 
-                final var employer = employerDao.findEmployerDetails(reqDto.getLoginOrEmail()).orElseThrow(() -> {
-                    throw new UserNotFoundException(reqDto, LOGGER);
-                });
+                final var employer = employerDao.findEmployerDetails(reqDto.getLoginOrEmail())
+                    .orElseThrow(() -> new UserNotFoundException(reqDto, LOGGER));
 
                 final String token = RandomStringUtils.randomAlphanumeric(10);
                 final EmployerEntity employerEntity = session.getReference(EmployerEntity.class, employer.id());

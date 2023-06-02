@@ -13,9 +13,6 @@
 
 package pl.polsl.skirentalservice.ssh;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Map;
 
 import pl.polsl.skirentalservice.core.ssh.SshSocketSingleton;

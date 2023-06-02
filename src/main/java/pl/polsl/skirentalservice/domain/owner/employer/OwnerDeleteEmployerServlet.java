@@ -66,9 +66,8 @@ public class OwnerDeleteEmployerServlet extends HttpServlet {
                 session.beginTransaction();
                 final IEmployerDao employerDao = new EmployerDao(session);
 
-                final var deletingEmployer = employerDao.findEmployerBasedId(userId).orElseThrow(() -> {
-                    throw new UserNotFoundException(userId);
-                });
+                final var deletingEmployer = employerDao.findEmployerBasedId(userId)
+                    .orElseThrow(() -> new UserNotFoundException(userId));
                 if (employerDao.checkIfEmployerHasOpenedRents(userId)) throw new EmployerHasOpenedRentsException();
 
                 final IExecCommandPerformer commandPerformer = new ExecCommandPerformer(sshSocket);

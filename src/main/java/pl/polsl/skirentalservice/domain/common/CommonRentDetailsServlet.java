@@ -71,7 +71,7 @@ public class CommonRentDetailsServlet extends HttpServlet {
 
                 final var rentDetails = rentDao
                     .findRentDetails(rentId, userDataDto.getId(), String.valueOf(userDataDto.getRoleAlias()))
-                    .orElseThrow(() -> { throw new RentNotFoundException(); });
+                    .orElseThrow(RentNotFoundException::new);
 
                 final List<RentEquipmentsDetailsResDto> allRentEquipments = equipmentDao
                     .findAllEquipmentsConnectedWithRent(rentId);

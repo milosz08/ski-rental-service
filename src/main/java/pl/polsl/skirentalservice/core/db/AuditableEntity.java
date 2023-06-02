@@ -27,7 +27,7 @@ public abstract class AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")                                                    private Long id;
+    @Column(name = "id")                                                    private Long id;
 
     @Column(name = "created_at", insertable = false, updatable = false)     private Date createdAt;
     @Column(name = "updated_at", insertable = false, updatable = false)     private Date updatedAt;

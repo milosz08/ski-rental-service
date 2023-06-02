@@ -60,10 +60,8 @@ public class SshSocketSingleton {
     public <T> T executeCommand(ICommand com, Map<String, String> entries, Class<T> mapTo) throws RuntimeException {
         final JAXBSshCommand command = config.getCommands().getCommands().stream()
             .filter(c -> c.getExecutableFor().equals(com.getCommandName())).findFirst()
-            .orElseThrow(() -> {
-                throw new RuntimeException("Command with executable for " + com.getCommandName()
-                    + " does not exist in XML scope.");
-            });
+            .orElseThrow(() -> new RuntimeException("Command with executable for " + com.getCommandName()
+                + " does not exist in XML scope."));
         final StringSubstitutor substitutor = new StringSubstitutor(entries);
         final JAXBSshProperties properties = config.getProperties();
         final String knownHosts = Objects.requireNonNull(getClass().getResource(properties.getSshKnownHosts())).getFile();

@@ -81,9 +81,8 @@ public class SellerEditCustomerServlet extends HttpServlet {
                     session.beginTransaction();
                     final ICustomerDao customerDao = new CustomerDao(session);
 
-                    final var customerDetails = customerDao.findCustomerEditPageDetails(customerId).orElseThrow(() -> {
-                        throw new UserNotFoundException(customerId);
-                    });
+                    final var customerDetails = customerDao.findCustomerEditPageDetails(customerId)
+                        .orElseThrow(() -> new UserNotFoundException(customerId));
 
                     resDto = new AddEditCustomerResDto(validator, customerDetails);
                     session.getTransaction().commit();
@@ -110,7 +109,6 @@ public class SellerEditCustomerServlet extends HttpServlet {
         final String customerId = req.getParameter("id");
         final AlertTupleDto alert = new AlertTupleDto(true);
         final HttpSession httpSession = req.getSession();
-        final String loggedUser = Utils.getLoggedUserLogin(req);
 
         final AddEditCustomerReqDto reqDto = new AddEditCustomerReqDto(req);
         final AddEditCustomerResDto resDto = new AddEditCustomerResDto(validator, reqDto);

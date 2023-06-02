@@ -78,7 +78,7 @@ public class SellerDeleteEquipmentFromCartServlet extends HttpServlet {
 
                 final CartSingleEquipmentDataDto cartData = rentData.getEquipments().stream()
                     .filter(e -> e.getId().toString().equals(equipmentId)).findFirst()
-                    .orElseThrow(() -> { throw new EquipmentInCartNotFoundException(); });
+                    .orElseThrow(EquipmentInCartNotFoundException::new);
 
                 final List<CartSingleEquipmentDataDto> equipmentsWithoutSelected = rentData.getEquipments().stream()
                     .filter(e -> !e.getId().equals(Long.parseLong(equipmentId)))

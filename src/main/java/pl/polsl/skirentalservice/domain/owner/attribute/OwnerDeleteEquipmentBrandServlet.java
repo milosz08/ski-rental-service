@@ -70,9 +70,8 @@ public class OwnerDeleteEquipmentBrandServlet extends HttpServlet {
                 session.beginTransaction();
                 final IEquipmentBrandDao equipmentDetailsDao = new EquipmentBrandDao(session);
 
-                final String deletedBrand = equipmentDetailsDao.getEquipmentBrandNameById(brandId).orElseThrow(() -> {
-                    throw new EquipmentBrandNotFoundException();
-                });
+                final String deletedBrand = equipmentDetailsDao.getEquipmentBrandNameById(brandId)
+                    .orElseThrow(EquipmentBrandNotFoundException::new);
 
                 resDto.getActiveFirstPage().setActive(false);
                 resDto.getActiveSecondPage().setActive(true);

@@ -85,15 +85,13 @@ public class LoginServlet extends HttpServlet {
                 session.beginTransaction();
                 final IEmployerDao employerDao = new EmployerDao(session);
 
-                final String password = employerDao.findEmployerPassword(reqDto.getLoginOrEmail()).orElseThrow(() -> {
-                    throw new UserNotFoundException(reqDto, LOGGER);
-                });
+                final String password = employerDao.findEmployerPassword(reqDto.getLoginOrEmail())
+                    .orElseThrow(() -> new UserNotFoundException(reqDto, LOGGER));
                 if (!(BCrypt.verifyer().verify(reqDto.getPassword().toCharArray(), password).verified)) {
                     throw new InvalidCredentialsException(reqDto, LOGGER);
                 }
-                final var employer = employerDao.findLoggedEmployerDetails(reqDto.getLoginOrEmail()).orElseThrow(() -> {
-                    throw new UserNotFoundException(reqDto, LOGGER);
-                });
+                final var employer = employerDao.findLoggedEmployerDetails(reqDto.getLoginOrEmail())
+                    .orElseThrow(() -> new UserNotFoundException(reqDto, LOGGER));
                 session.getTransaction().commit();
                 httpSession.setAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName(), employer);
                 httpSession.removeAttribute(getClass().getName());

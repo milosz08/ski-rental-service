@@ -92,12 +92,11 @@ public class SellerEditEquipmentFromCartServlet extends HttpServlet {
             try {
                 final IEquipmentDao equipmentDao = new EquipmentDao(session);
 
-                final var equipmentDetails = equipmentDao.findEquipmentDetails(equipmentId).orElseThrow(() -> {
-                    throw new EquipmentNotFoundException(equipmentId);
-                });
+                final var equipmentDetails = equipmentDao.findEquipmentDetails(equipmentId)
+                    .orElseThrow(() -> new EquipmentNotFoundException(equipmentId));
                 final CartSingleEquipmentDataDto cartData = rentData.getEquipments().stream()
                     .filter(e -> e.getId().equals(equipmentDetails.getId())).findFirst()
-                    .orElseThrow(() -> { throw new EquipmentInCartNotFoundException(); });
+                    .orElseThrow(EquipmentInCartNotFoundException::new);
                 if (equipmentDetails.getTotalCount() < Integer.parseInt(reqDto.getCount())) {
                     throw new TooMuchEquipmentsException();
                 }

@@ -62,9 +62,8 @@ public class CommonProfileServlet extends HttpServlet {
                 session.beginTransaction();
                 final IEmployerDao employerDao = new EmployerDao(session);
 
-                final var employerDetails = employerDao.findEmployerPageDetails(userDataDto.getId()).orElseThrow(() -> {
-                    throw new UserNotFoundException(String.valueOf(userDataDto.getId()));
-                });
+                final var employerDetails = employerDao.findEmployerPageDetails(userDataDto.getId())
+                    .orElseThrow(() -> new UserNotFoundException(String.valueOf(userDataDto.getId())));
 
                 session.getTransaction().commit();
                 req.setAttribute("alertData", alert);

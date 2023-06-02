@@ -71,7 +71,7 @@ public class CommonReturnDetailsServlet extends HttpServlet {
 
                 final var returnDetails = returnDao
                     .findReturnDetails(returnId, userDataDto.getId(), String.valueOf(userDataDto.getRoleAlias()))
-                    .orElseThrow(() -> { throw new ReturnNotFoundException(); });
+                    .orElseThrow(ReturnNotFoundException::new);
 
                 final List<RentEquipmentsDetailsResDto> allReturnEquipments = equipmentDao
                     .findAllEquipmentsConnectedWithReturn(returnId);

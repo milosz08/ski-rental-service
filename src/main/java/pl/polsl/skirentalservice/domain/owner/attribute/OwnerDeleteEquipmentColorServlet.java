@@ -70,9 +70,8 @@ public class OwnerDeleteEquipmentColorServlet extends HttpServlet {
                 session.beginTransaction();
                 final IEquipmentColorDao equipmentDetailsDao = new EquipmentColorDao(session);
 
-                final String deletedColor = equipmentDetailsDao.getEquipmentColorNameById(colorId).orElseThrow(() -> {
-                    throw new EquipmentColorNotFoundException();
-                });
+                final String deletedColor = equipmentDetailsDao.getEquipmentColorNameById(colorId)
+                    .orElseThrow(EquipmentColorNotFoundException::new);
 
                 resDto.getActiveFirstPage().setActive(false);
                 resDto.getActiveSecondPage().setActive(true);

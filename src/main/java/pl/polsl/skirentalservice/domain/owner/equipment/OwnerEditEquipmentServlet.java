@@ -86,7 +86,7 @@ public class OwnerEditEquipmentServlet extends HttpServlet {
                     final IEquipmentColorDao equipmentColorDao = new EquipmentColorDao(session);
 
                     final var equipmentDetails = equipmentDao.findAddEditEquipmentDetails(equipmentId)
-                        .orElseThrow(() -> { throw new EquipmentNotFoundException(equipmentId); });
+                        .orElseThrow(() -> new EquipmentNotFoundException(equipmentId));
 
                     resDto = new AddEditEquipmentResDto(validator, equipmentDetails);
                     resDto.insertTypesSelects(equipmentTypeDao.findAllEquipmentTypes());

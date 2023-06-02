@@ -92,9 +92,8 @@ public class SellerAddEquipmentToCartServlet extends HttpServlet {
             try {
                 final IEquipmentDao equipmentDao = new EquipmentDao(session);
 
-                final var eqDetails = equipmentDao.findEquipmentDetails(equipmentId).orElseThrow(() -> {
-                    throw new EquipmentNotFoundException(equipmentId);
-                });
+                final var eqDetails = equipmentDao.findEquipmentDetails(equipmentId)
+                    .orElseThrow(() -> new EquipmentNotFoundException(equipmentId));
                 if (rentData.getEquipments().stream().anyMatch(e -> e.getId().equals(eqDetails.getId()))) {
                     throw new EquipmentInCartAlreadyExistException();
                 }

@@ -70,9 +70,8 @@ public class ChangeForgottenPasswordServlet extends HttpServlet {
                 session.beginTransaction();
                 final IOtaTokenDao otaTokenDao = new OtaTokenDao(session);
 
-                final var details = otaTokenDao.findTokenRelatedToEmployer(token).orElseThrow(() -> {
-                    throw new OtaTokenNotFoundException(req, token, LOGGER);
-                });
+                final var details = otaTokenDao.findTokenRelatedToEmployer(token)
+                    .orElseThrow(() -> new OtaTokenNotFoundException(req, token, LOGGER));
                 req.setAttribute("employerData", details);
                 session.getTransaction().commit();
             } catch (RuntimeException ex) {
@@ -115,9 +114,8 @@ public class ChangeForgottenPasswordServlet extends HttpServlet {
                 final IOtaTokenDao otaTokenDao = new OtaTokenDao(session);
                 final IEmployerDao employerDao = new EmployerDao(session);
 
-                final var details = otaTokenDao.findTokenDetails(token).orElseThrow(() -> {
-                    throw new OtaTokenNotFoundException(req, token, LOGGER);
-                });
+                final var details = otaTokenDao.findTokenDetails(token)
+                    .orElseThrow(() -> new OtaTokenNotFoundException(req, token, LOGGER));
                 employerDao.updateEmployerPassword(Utils.generateHash(reqDto.getPassword()), details.id());
                 otaTokenDao.manuallyExpiredOtaToken(details.tokenId());
 

@@ -62,9 +62,8 @@ public class CommonEquipmentDetailsServlet extends HttpServlet {
             try {
                 final IEquipmentDao equipmentDao = new EquipmentDao(session);
 
-                final var equipmentDetails = equipmentDao.findEquipmentDetailsPage(equipmentId).orElseThrow(() -> {
-                    throw new EquipmentNotFoundException(equipmentId);
-                });
+                final var equipmentDetails = equipmentDao.findEquipmentDetailsPage(equipmentId)
+                    .orElseThrow(() -> new EquipmentNotFoundException(equipmentId));
 
                 req.setAttribute("equipmentData", equipmentDetails);
                 req.setAttribute("title", PageTitle.COMMON_EQUIPMENT_DETAILS_PAGE.getName());
