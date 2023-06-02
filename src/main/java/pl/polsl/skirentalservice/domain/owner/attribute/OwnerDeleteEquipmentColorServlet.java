@@ -36,7 +36,7 @@ import pl.polsl.skirentalservice.util.AlertType;
 import pl.polsl.skirentalservice.util.SessionAttribute;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.attribute.AttributeModalResDto;
-import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.dao.equipment_color.EquipmentColorDao;
 import pl.polsl.skirentalservice.dao.equipment_color.IEquipmentColorDao;
 
@@ -49,7 +49,7 @@ import static pl.polsl.skirentalservice.exception.AlreadyExistException.Equipmen
 public class OwnerDeleteEquipmentColorServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerDeleteEquipmentColorServlet.class);
-    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

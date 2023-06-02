@@ -22,6 +22,7 @@ import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
 import java.util.Set;
+import java.util.Objects;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
 
@@ -41,18 +42,18 @@ import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-public class HibernateUtil {
+public class HibernateDbSingleton {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HibernateUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HibernateDbSingleton.class);
     private static final String LIQUIBASE_CONF = "db/db.changelog.xml";
     private static final String HIBERNATE_CONF = "db/hibernate.cfg.xml";
-    private static final String DB_AUTH_PROP = "db/hibernate.properties";
 
-    private static final SessionFactory sessionFactory = buildSessionFactory();
+    private SessionFactory sessionFactory;
+    private static volatile HibernateDbSingleton instance;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private static SessionFactory buildSessionFactory() {
+    private HibernateDbSingleton() {
         try {
             final Configuration configurationHib = new Configuration().configure(HIBERNATE_CONF);
 
@@ -82,18 +83,26 @@ public class HibernateUtil {
             liquibase.getDatabase().setDatabaseChangeLogLockTableName("_liquibase_changelog_lock");
             liquibase.update();
 
-            return configurationHib.buildSessionFactory(serviceRegistry);
+            sessionFactory = configurationHib.buildSessionFactory(serviceRegistry);
         } catch (SQLException ex) {
             LOGGER.error("Unable to connect with database. Exception: {}", ex.getMessage());
         } catch (LiquibaseException ex) {
             LOGGER.error("Unable to load Liquibase configuration. Exception: {}", ex.getMessage());
         }
-        return null;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static SessionFactory getSessionFactory() {
+    public SessionFactory getSessionFactory() {
         return sessionFactory;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static synchronized HibernateDbSingleton getInstance() {
+        if (Objects.isNull(instance)) {
+            instance = new HibernateDbSingleton();
+        }
+        return instance;
     }
 }

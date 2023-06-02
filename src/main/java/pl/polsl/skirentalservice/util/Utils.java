@@ -25,7 +25,7 @@ import java.util.Objects;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-import pl.polsl.skirentalservice.core.ValidatorBean;
+import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.dto.attribute.AttributeModalReqDto;
@@ -75,7 +75,7 @@ public class Utils {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static AttributeValidatorPayloadDto validateEquipmentAttribute(HttpServletRequest req, ValidatorBean validator) {
+    public static AttributeValidatorPayloadDto validateEquipmentAttribute(HttpServletRequest req, ValidatorSingleton validator) {
         final AlertTupleDto alert = new AlertTupleDto();
         final HttpSession httpSession = req.getSession();
 

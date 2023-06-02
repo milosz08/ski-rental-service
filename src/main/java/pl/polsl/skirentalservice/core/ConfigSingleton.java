@@ -15,11 +15,9 @@ package pl.polsl.skirentalservice.core;
 
 import lombok.Getter;
 
-import jakarta.ejb.Startup;
-import jakarta.ejb.Singleton;
-
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Objects;
 import java.nio.file.Path;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -28,23 +26,36 @@ import java.io.IOException;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Getter
-@Startup
-@Singleton(name = "ConfigFactoryBean")
-public class ConfigBean {
+public class ConfigSingleton {
 
     private final String systemVersion;
     private final int circaDateYears;
     private final String defPageTitle;
     private final String uploadsDir;
 
+    private static volatile ConfigSingleton instance;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ConfigBean() throws IOException {
+    private ConfigSingleton() throws IOException {
         this.systemVersion = StringUtils.defaultIfEmpty(getClass().getPackage().getImplementationVersion(), "DEVELOPMENT");
         this.circaDateYears = 18;
         this.defPageTitle = "SkiRent System";
         final Path path = Paths.get(System.getProperty("jboss.server.data.dir") + "/ski-rental-service");
         Files.createDirectories(path);
         this.uploadsDir = path.toString();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static synchronized ConfigSingleton getInstance() {
+        if (Objects.isNull(instance)) {
+            try {
+                instance = new ConfigSingleton();
+            } catch (IOException ex) {
+                throw new RuntimeException();
+            }
+        }
+        return instance;
     }
 }

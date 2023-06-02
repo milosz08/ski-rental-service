@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
-import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
@@ -37,8 +36,8 @@ import pl.polsl.skirentalservice.util.Utils;
 import pl.polsl.skirentalservice.util.AlertType;
 import pl.polsl.skirentalservice.util.RentStatus;
 import pl.polsl.skirentalservice.util.SessionAlert;
-import pl.polsl.skirentalservice.core.ConfigBean;
-import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.core.ConfigSingleton;
+import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dao.rent.RentDao;
 import pl.polsl.skirentalservice.dao.rent.IRentDao;
@@ -56,9 +55,9 @@ import static pl.polsl.skirentalservice.exception.NotFoundException.ReturnNotFou
 public class SellerDeleteReturnServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SellerDeleteReturnServlet.class);
-    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
-    @EJB private ConfigBean config;
+    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
+    private final ConfigSingleton config = ConfigSingleton.getInstance();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

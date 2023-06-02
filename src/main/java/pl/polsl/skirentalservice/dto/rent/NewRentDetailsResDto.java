@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import pl.polsl.skirentalservice.util.RentStatus;
-import pl.polsl.skirentalservice.core.ValidatorBean;
+import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -38,7 +38,7 @@ public class NewRentDetailsResDto {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public NewRentDetailsResDto(ValidatorBean validator, NewRentDetailsReqDto reqDto) {
+    public NewRentDetailsResDto(ValidatorSingleton validator, NewRentDetailsReqDto reqDto) {
         this.rentDateTime = validator.validateField(reqDto, "rentDateTime", reqDto.getRentDateTime());
         this.returnDateTime = validator.validateField(reqDto, "returnDateTime", reqDto.getReturnDateTime());
         this.tax = validator.validateField(reqDto, "tax", reqDto.getTax());

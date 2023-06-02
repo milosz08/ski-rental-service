@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
-import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
@@ -39,8 +38,8 @@ import pl.polsl.skirentalservice.dto.rent.InMemoryRentDataDto;
 import pl.polsl.skirentalservice.dto.rent.AddEditEquipmentCartReqDto;
 import pl.polsl.skirentalservice.dto.rent.AddEditEquipmentCartResDto;
 import pl.polsl.skirentalservice.dto.rent.CartSingleEquipmentDataDto;
-import pl.polsl.skirentalservice.core.ValidatorBean;
-import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.core.ValidatorSingleton;
+import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
 import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
 
@@ -54,9 +53,9 @@ import static pl.polsl.skirentalservice.exception.AlreadyExistException.TooMuchE
 public class SellerEditEquipmentFromCartServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SellerEditEquipmentFromCartServlet.class);
-    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
-    @EJB private ValidatorBean validator;
+    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
+    private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

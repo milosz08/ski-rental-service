@@ -23,7 +23,6 @@ import org.modelmapper.ModelMapper;
 import org.krysalis.barcode4j.impl.upcean.EAN13Bean;
 import org.krysalis.barcode4j.output.bitmap.BitmapCanvasProvider;
 
-import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
@@ -41,9 +40,9 @@ import java.awt.image.BufferedImage;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import pl.polsl.skirentalservice.util.*;
-import pl.polsl.skirentalservice.core.ConfigBean;
-import pl.polsl.skirentalservice.core.ValidatorBean;
-import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.core.ConfigSingleton;
+import pl.polsl.skirentalservice.core.ValidatorSingleton;
+import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.core.ModelMapperGenerator;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.equipment.AddEditEquipmentReqDto;
@@ -69,11 +68,12 @@ import static pl.polsl.skirentalservice.exception.AlreadyExistException.Equipmen
 public class OwnerAddEquipmentServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerAddEquipmentServlet.class);
-    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
-    private final ModelMapper modelMapper = ModelMapperGenerator.getModelMapper();
 
-    @EJB private ValidatorBean validator;
-    @EJB private ConfigBean config;
+    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
+    private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
+    private final ConfigSingleton config = ConfigSingleton.getInstance();
+
+    private final ModelMapper modelMapper = ModelMapperGenerator.getModelMapper();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

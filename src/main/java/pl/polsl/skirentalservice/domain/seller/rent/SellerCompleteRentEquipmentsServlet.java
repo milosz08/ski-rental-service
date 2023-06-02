@@ -37,7 +37,7 @@ import java.time.LocalDateTime;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
-import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 
 import pl.polsl.skirentalservice.util.*;
 import pl.polsl.skirentalservice.dto.PageableDto;
@@ -65,7 +65,7 @@ import static pl.polsl.skirentalservice.exception.NotFoundException.EquipmentNot
 public class SellerCompleteRentEquipmentsServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SellerCompleteRentEquipmentsServlet.class);
-    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
 
     private final Map<String, ServletSorterField> sorterFieldMap = new HashMap<>();
     private final List<FilterColumn> filterFieldMap = new ArrayList<>();

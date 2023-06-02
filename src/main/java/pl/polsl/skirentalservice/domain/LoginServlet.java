@@ -20,7 +20,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 
-import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
@@ -36,8 +35,8 @@ import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.login.LoginFormReqDto;
 import pl.polsl.skirentalservice.dto.login.LoginFormResDto;
 import pl.polsl.skirentalservice.dto.logout.LogoutModalDto;
-import pl.polsl.skirentalservice.core.ValidatorBean;
-import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.core.ValidatorSingleton;
+import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.dao.employer.EmployerDao;
 import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
 
@@ -50,9 +49,9 @@ import static pl.polsl.skirentalservice.exception.CredentialException.InvalidCre
 public class LoginServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoginServlet.class);
-    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
-    @EJB private ValidatorBean validator;
+    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
+    private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -13,29 +13,27 @@
 
 package pl.polsl.skirentalservice.core;
 
-import jakarta.ejb.Startup;
-import jakarta.ejb.Singleton;
-
 import java.util.Set;
+import java.util.Objects;
 
 import jakarta.validation.Validator;
 import jakarta.validation.Validation;
+import jakarta.validation.ValidatorFactory;
 import jakarta.validation.ConstraintViolation;
 
 import pl.polsl.skirentalservice.dto.*;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@Startup
-@Singleton(name = "HibernateValidatorFactoryBean")
-public class ValidatorBean {
+public class ValidatorSingleton {
 
     private final Validator validator;
+    private static volatile ValidatorSingleton instance;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ValidatorBean() {
-        final jakarta.validation.ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+    private ValidatorSingleton() {
+        final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
         this.validator = validatorFactory.getValidator();
     }
 
@@ -76,5 +74,14 @@ public class ValidatorBean {
 
     public Validator getValidator() {
         return validator;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static synchronized ValidatorSingleton getInstance() {
+        if (Objects.isNull(instance)) {
+            instance = new ValidatorSingleton();
+        }
+        return instance;
     }
 }

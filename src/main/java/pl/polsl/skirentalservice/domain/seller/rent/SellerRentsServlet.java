@@ -37,7 +37,7 @@ import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.dto.rent.SellerRentRecordResDto;
-import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.dao.rent.RentDao;
 import pl.polsl.skirentalservice.dao.rent.IRentDao;
 import pl.polsl.skirentalservice.paging.filter.FilterColumn;
@@ -54,7 +54,7 @@ import pl.polsl.skirentalservice.paging.pagination.ServletPagination;
 public class SellerRentsServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SellerRentsServlet.class);
-    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
 
     private final Map<String, ServletSorterField> sorterFieldMap = new HashMap<>();
     private final List<FilterColumn> filterFieldMap = new ArrayList<>();

@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 import pl.polsl.skirentalservice.util.Gender;
-import pl.polsl.skirentalservice.core.ValidatorBean;
+import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
 import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
 
@@ -43,7 +43,7 @@ public class AddEditCustomerResDto {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public AddEditCustomerResDto(ValidatorBean validator, AddEditCustomerReqDto reqDto) {
+    public AddEditCustomerResDto(ValidatorSingleton validator, AddEditCustomerReqDto reqDto) {
         this.firstName = validator.validateField(reqDto, "firstName", reqDto.getFirstName());
         this.lastName = validator.validateField(reqDto, "lastName", reqDto.getLastName());
         this.pesel = validator.validateField(reqDto, "pesel", reqDto.getPesel());

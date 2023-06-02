@@ -20,7 +20,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.modelmapper.ModelMapper;
 
-import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
@@ -37,9 +36,9 @@ import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.dto.employer.AddEditEmployerReqDto;
 import pl.polsl.skirentalservice.dto.employer.AddEditEmployerResDto;
-import pl.polsl.skirentalservice.core.ConfigBean;
-import pl.polsl.skirentalservice.core.ValidatorBean;
-import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.core.ConfigSingleton;
+import pl.polsl.skirentalservice.core.ValidatorSingleton;
+import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.core.ModelMapperGenerator;
 import pl.polsl.skirentalservice.dao.employer.EmployerDao;
 import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
@@ -57,11 +56,12 @@ import static pl.polsl.skirentalservice.exception.AlreadyExistException.PhoneNum
 public class OwnerSettingsServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerSettingsServlet.class);
-    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
-    private final ModelMapper modelMapper = ModelMapperGenerator.getModelMapper();
 
-    @EJB private ValidatorBean validator;
-    @EJB private ConfigBean config;
+    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
+    private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
+    private final ConfigSingleton config = ConfigSingleton.getInstance();
+
+    private final ModelMapper modelMapper = ModelMapperGenerator.getModelMapper();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

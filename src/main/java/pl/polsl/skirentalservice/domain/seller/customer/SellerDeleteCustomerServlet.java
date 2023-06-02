@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
-import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
@@ -36,8 +35,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import pl.polsl.skirentalservice.util.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.rent.InMemoryRentDataDto;
-import pl.polsl.skirentalservice.core.db.HibernateUtil;
-import pl.polsl.skirentalservice.core.mail.MailSocketBean;
+import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.dao.customer.CustomerDao;
 import pl.polsl.skirentalservice.dao.customer.ICustomerDao;
 import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
@@ -57,9 +55,7 @@ import static pl.polsl.skirentalservice.exception.AlreadyExistException.Customer
 public class SellerDeleteCustomerServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SellerDeleteCustomerServlet.class);
-    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
-
-    @EJB private MailSocketBean mailSocketBean;
+    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

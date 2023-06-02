@@ -34,7 +34,9 @@ import java.io.IOException;
 import pl.polsl.skirentalservice.util.Utils;
 import pl.polsl.skirentalservice.util.PageTitle;
 import pl.polsl.skirentalservice.util.SessionAttribute;
-import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
+import pl.polsl.skirentalservice.dao.rent.IRentDao;
+import pl.polsl.skirentalservice.dao.rent.RentDao;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 
@@ -49,7 +51,7 @@ import static pl.polsl.skirentalservice.exception.NotFoundException.RentNotFound
 public class RedirectWhenRentIsNotCreatedByEmployerFilter extends HttpFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RedirectWhenRentIsNotCreatedByEmployerFilter.class);
-    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

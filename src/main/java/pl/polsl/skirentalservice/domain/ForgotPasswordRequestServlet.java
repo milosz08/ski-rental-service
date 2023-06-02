@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
-import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
@@ -29,11 +28,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.Map;
-import java.util.Locale;
 import java.util.HashMap;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -42,10 +38,10 @@ import pl.polsl.skirentalservice.util.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.change_password.RequestToChangePasswordReqDto;
 import pl.polsl.skirentalservice.dto.change_password.RequestToChangePasswordResDto;
-import pl.polsl.skirentalservice.core.ValidatorBean;
-import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.core.ValidatorSingleton;
+import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.core.mail.MailRequestPayload;
-import pl.polsl.skirentalservice.core.mail.MailSocketBean;
+import pl.polsl.skirentalservice.core.mail.MailSocketSingleton;
 import pl.polsl.skirentalservice.entity.EmployerEntity;
 import pl.polsl.skirentalservice.entity.OtaTokenEntity;
 import pl.polsl.skirentalservice.dao.employer.EmployerDao;
@@ -59,11 +55,10 @@ import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFound
 public class ForgotPasswordRequestServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ForgotPasswordRequestServlet.class);
-    private static final DateFormat DF = new SimpleDateFormat("yyyy-MM-dd, kk:mm:ss", new Locale("pl"));
-    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
-    @EJB private ValidatorBean validator;
-    @EJB private MailSocketBean mailSocketBean;
+    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
+    private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
+    private final MailSocketSingleton mailSocket = MailSocketSingleton.getInstance();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -113,7 +108,7 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
                     .templateVars(templateVars)
                     .build();
 
-                mailSocketBean.sendMessage(employer.emailAddress(), payload, req);
+                mailSocket.sendMessage(employer.emailAddress(), payload, req);
                 alert.setType(AlertType.INFO);
                 alert.setMessage(
                     "Na adres email <strong>" + employer.emailAddress() + "</strong> został przesłany link aktywacyjny."

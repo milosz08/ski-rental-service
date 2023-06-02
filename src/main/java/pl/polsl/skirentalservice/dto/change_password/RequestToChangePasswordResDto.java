@@ -16,7 +16,7 @@ package pl.polsl.skirentalservice.dto.change_password;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import pl.polsl.skirentalservice.core.ValidatorBean;
+import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -28,7 +28,7 @@ public class RequestToChangePasswordResDto {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public RequestToChangePasswordResDto(ValidatorBean validator, RequestToChangePasswordReqDto reqDto) {
+    public RequestToChangePasswordResDto(ValidatorSingleton validator, RequestToChangePasswordReqDto reqDto) {
         this.loginOrEmail = validator.validateField(reqDto, "loginOrEmail", reqDto.getLoginOrEmail());
     }
 

@@ -13,7 +13,6 @@
 
 package pl.polsl.skirentalservice.domain;
 
-import jakarta.ejb.EJB;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -31,7 +30,7 @@ import java.io.OutputStream;
 import java.io.FileInputStream;
 import java.util.Objects;
 
-import pl.polsl.skirentalservice.core.ConfigBean;
+import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.util.SessionAttribute;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -39,7 +38,7 @@ import pl.polsl.skirentalservice.util.SessionAttribute;
 @WebServlet("/resources/*")
 public class GetStaticResourceServlet extends HttpServlet {
 
-    @EJB private ConfigBean config;
+    private final ConfigSingleton config = ConfigSingleton.getInstance();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

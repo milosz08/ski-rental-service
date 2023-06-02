@@ -28,7 +28,7 @@ import java.time.format.DateTimeFormatter;
 
 import pl.polsl.skirentalservice.util.Regex;
 import pl.polsl.skirentalservice.util.Gender;
-import pl.polsl.skirentalservice.core.ConfigBean;
+import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.core.IReqValidatePojo;
 import pl.polsl.skirentalservice.exception.DateException;
 
@@ -121,7 +121,7 @@ public class AddEditEmployerReqDto implements IReqValidatePojo {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public void validateDates(ConfigBean config) {
+    public void validateDates(ConfigSingleton config) {
         if (getParsedBornDate().isAfter(LocalDate.now().minusYears(config.getCircaDateYears()))) {
             throw new DateException.DateInFutureException("data urodzenia", config.getCircaDateYears());
         }

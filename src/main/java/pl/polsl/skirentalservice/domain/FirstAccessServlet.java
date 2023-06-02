@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
-import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
@@ -35,9 +34,9 @@ import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.dto.first_access.FirstAccessReqDto;
 import pl.polsl.skirentalservice.dto.first_access.FirstAccessResDto;
-import pl.polsl.skirentalservice.core.ValidatorBean;
-import pl.polsl.skirentalservice.core.db.HibernateUtil;
-import pl.polsl.skirentalservice.core.ssh.SshSocketBean;
+import pl.polsl.skirentalservice.core.ValidatorSingleton;
+import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
+import pl.polsl.skirentalservice.core.ssh.SshSocketSingleton;
 import pl.polsl.skirentalservice.dao.employer.EmployerDao;
 import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
 import pl.polsl.skirentalservice.ssh.ExecCommandPerformer;
@@ -51,10 +50,10 @@ import static pl.polsl.skirentalservice.exception.CredentialException.PasswordMi
 public class FirstAccessServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FirstAccessServlet.class);
-    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
-    @EJB private ValidatorBean validator;
-    @EJB private SshSocketBean sshSocket;
+    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
+    private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
+    private final SshSocketSingleton sshSocket = SshSocketSingleton.getInstance();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

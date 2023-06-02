@@ -20,7 +20,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.modelmapper.ModelMapper;
 
-import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 
@@ -40,10 +39,10 @@ import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto;
 import pl.polsl.skirentalservice.dto.rent.InMemoryRentDataDto;
 import pl.polsl.skirentalservice.dto.rent.CartSingleEquipmentDataDto;
-import pl.polsl.skirentalservice.core.ConfigBean;
-import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.core.ConfigSingleton;
+import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.core.ModelMapperGenerator;
-import pl.polsl.skirentalservice.core.mail.MailSocketBean;
+import pl.polsl.skirentalservice.core.mail.MailSocketSingleton;
 import pl.polsl.skirentalservice.core.mail.MailRequestPayload;
 import pl.polsl.skirentalservice.dao.employer.EmployerDao;
 import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
@@ -62,11 +61,12 @@ import static pl.polsl.skirentalservice.exception.NotFoundException.AnyEquipment
 public class SellerPersistNewRentServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SellerPersistNewRentServlet.class);
-    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
-    private final ModelMapper modelMapper = ModelMapperGenerator.getModelMapper();
 
-    @EJB private MailSocketBean mailSocketBean;
-    @EJB private ConfigBean config;
+    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
+    private final MailSocketSingleton mailSocket = MailSocketSingleton.getInstance();
+    private final ConfigSingleton config = ConfigSingleton.getInstance();
+
+    private final ModelMapper modelMapper = ModelMapperGenerator.getModelMapper();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -160,7 +160,7 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                     .templateVars(templateVars)
                     .attachmentsPaths(Set.of(rentPdfDocument.getPath()))
                     .build();
-                mailSocketBean.sendMessage(rentData.getCustomerDetails().email(), customerPayload, req);
+                mailSocket.sendMessage(rentData.getCustomerDetails().email(), customerPayload, req);
                 LOGGER.info("Successful send rent email message for customer. Payload: {}", customerPayload);
 
                 final MailRequestPayload employerPayload = MailRequestPayload.builder()
@@ -170,7 +170,7 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                     .templateVars(templateVars)
                     .attachmentsPaths(Set.of(rentPdfDocument.getPath()))
                     .build();
-                mailSocketBean.sendMessage(loggedEmployer.getEmailAddress(), employerPayload, req);
+                mailSocket.sendMessage(loggedEmployer.getEmailAddress(), employerPayload, req);
                 LOGGER.info("Successful send rent email message for employer. Payload: {}", employerPayload);
 
                 final Map<String, Object> ownerTemplateVars = new HashMap<>(templateVars);
@@ -184,7 +184,7 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                     .build();
                 for (final OwnerMailPayloadDto owner : employerDao.findAllEmployersMailSenders()) {
                     ownerPayload.setMessageResponder(owner.fullName());
-                    mailSocketBean.sendMessage(owner.email(), ownerPayload, req);
+                    mailSocket.sendMessage(owner.email(), ownerPayload, req);
                 }
                 LOGGER.info("Successful send rent email message for owner/owners. Payload: {}", ownerPayload);
 

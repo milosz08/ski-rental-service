@@ -16,10 +16,6 @@ package pl.polsl.skirentalservice.core.mail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.ejb.EJB;
-import jakarta.ejb.Startup;
-import jakarta.ejb.Singleton;
-
 import jakarta.mail.*;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -40,25 +36,19 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
-import pl.polsl.skirentalservice.core.ConfigBean;
 import pl.polsl.skirentalservice.core.JAXBProperty;
+import pl.polsl.skirentalservice.core.ConfigSingleton;
 
 import static pl.polsl.skirentalservice.exception.ServletException.UnableToSendEmailException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@Startup
-@Singleton(name = "MailSocketFactoryBean")
-public class MailSocketBean {
+public class MailSocketSingleton {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MailSocketBean.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MailSocketSingleton.class);
+    private static final ConfigSingleton config = ConfigSingleton.getInstance();
 
-    @EJB private ConfigBean config;
-
-    private static final DateFormat DF = new SimpleDateFormat("yyyy-MM-dd, kk:mm:ss", new Locale("pl"));
     private static final String MAIL_CFG = "/mail/mail.cfg.xml";
     private static final String FREEMARKER_PATH = "/mail/templates";
 
@@ -66,17 +56,19 @@ public class MailSocketBean {
     private Configuration freemarkerConfig;
     private List<JAXBProperty> configProperties;
 
+    private static volatile MailSocketSingleton instance;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    MailSocketBean() {
+    private MailSocketSingleton() {
         try {
             freemarkerConfig = new Configuration(Configuration.VERSION_2_3_22);
-            freemarkerConfig.setClassForTemplateLoading(MailSocketBean.class, FREEMARKER_PATH);
+            freemarkerConfig.setClassForTemplateLoading(MailSocketSingleton.class, FREEMARKER_PATH);
             LOGGER.info("Successful loaded freemarker template engine cache path. Cache path: {}", FREEMARKER_PATH);
 
             final JAXBContext jaxbContext = JAXBContext.newInstance(JAXBMailConfig.class);
             final var config = (JAXBMailConfig) jaxbContext.createUnmarshaller()
-                .unmarshal(MailSocketBean.class.getResource(MAIL_CFG));
+                .unmarshal(MailSocketSingleton.class.getResource(MAIL_CFG));
             configProperties = config.getProperties();
 
             final Properties properties = new Properties();
@@ -171,5 +163,14 @@ public class MailSocketBean {
         final boolean isHttp = req.getScheme().equals("http") && req.getServerPort() == 80;
         final boolean isHttps = req.getScheme().equals("https") && req.getServerPort() == 443;
         return req.getScheme() + "://" + req.getServerName() + (isHttp || isHttps ? "" : ":" + req.getServerPort());
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static synchronized MailSocketSingleton getInstance() {
+        if (Objects.isNull(instance)) {
+            instance = new MailSocketSingleton();
+        }
+        return instance;
     }
 }

@@ -20,8 +20,6 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import org.apache.commons.text.StringSubstitutor;
 
-import jakarta.ejb.Startup;
-import jakarta.ejb.Singleton;
 import jakarta.xml.bind.JAXBContext;
 
 import net.schmizz.sshj.SSHClient;
@@ -36,18 +34,17 @@ import java.io.StringReader;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@Startup
-@Singleton(name = "SshSocketFactoryBean")
-public class SshSocketBean {
+public class SshSocketSingleton {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SshSocketBean.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SshSocketSingleton.class);
     private static final String SSH_CFG = "/ssh/ssh.cfg.xml";
 
     private JAXBSshConfig config;
+    private static volatile SshSocketSingleton instance;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SshSocketBean() {
+    private SshSocketSingleton() {
         try {
             final JAXBContext jaxbContext = JAXBContext.newInstance(JAXBSshConfig.class);
             this.config = (JAXBSshConfig) jaxbContext.createUnmarshaller().unmarshal(getClass().getResource(SSH_CFG));
@@ -90,5 +87,14 @@ public class SshSocketBean {
             throw new RuntimeException(ex.getMessage());
         }
         return mappedTo;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public static synchronized SshSocketSingleton getInstance() {
+        if (Objects.isNull(instance)) {
+            instance = new SshSocketSingleton();
+        }
+        return instance;
     }
 }

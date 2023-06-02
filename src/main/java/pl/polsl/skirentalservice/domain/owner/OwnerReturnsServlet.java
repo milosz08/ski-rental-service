@@ -32,7 +32,7 @@ import java.io.IOException;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import pl.polsl.skirentalservice.util.*;
-import pl.polsl.skirentalservice.core.db.HibernateUtil;
+import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.deliv_return.OwnerRentReturnRecordResDto;
@@ -52,7 +52,7 @@ import pl.polsl.skirentalservice.paging.pagination.ServletPagination;
 public class OwnerReturnsServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerReturnsServlet.class);
-    private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
 
     private final Map<String, ServletSorterField> sorterFieldMap = new HashMap<>();
     private final List<FilterColumn> filterFieldMap = new ArrayList<>();

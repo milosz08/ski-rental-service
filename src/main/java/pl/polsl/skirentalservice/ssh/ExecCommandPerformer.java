@@ -18,19 +18,18 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-import pl.polsl.skirentalservice.core.ssh.SshSocketBean;
+import pl.polsl.skirentalservice.core.ssh.SshSocketSingleton;
 import pl.polsl.skirentalservice.core.ssh.CommandPerformException;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 public class ExecCommandPerformer implements IExecCommandPerformer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExecCommandPerformer.class);
-    private final SshSocketBean sshSocket;
+    private final SshSocketSingleton sshSocket;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public ExecCommandPerformer(SshSocketBean sshSocket) {
+    public ExecCommandPerformer(SshSocketSingleton sshSocket) {
         this.sshSocket = sshSocket;
     }
 
