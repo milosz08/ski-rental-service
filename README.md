@@ -4,8 +4,8 @@
 [![](https://img.shields.io/badge/Web%20Container-Apche%20Tomcat%2010.1.8-brown.svg)](https://www.wildfly.org/)&nbsp;&nbsp;
 [![](https://img.shields.io/badge/Packaging-WAR-yellow.svg)](https://en.wikipedia.org/wiki/WAR_(file_format))&nbsp;&nbsp;
 <br>
-> More info about this project you will find [on my personal website](https://miloszgilga.pl/project/ski-rental-service).<br>
-> See project demo at [ski.miloszgilga.pl](https://ski.miloszgilga.pl).
+> More info about this project you will find [on my personal website](https://miloszgilga.pl/project/ski-rental-service)<br>
+> See project demo at [ski.miloszgilga.pl](https://ski.miloszgilga.pl)
 
 Simple enterprise-class application for managing a ski rental company. The software is closed (only people in the 
 enterprise can use it). This project was made for a subject in college programming course. Created only for learning 
