@@ -44,6 +44,7 @@ public interface IEquipmentDao {
     List<RentEquipmentsDetailsResDto> findAllEquipmentsConnectedWithReturn(Object returnId);
     List<RentEquipmentsDetailsResDto> findAllEquipmentsConnectedWithRent(Object rentId);
 
+    Long getCountIfSomeEquipmentsAreAvailable();
     Long findAllEquipmentsCount(FilterDataDto filterData);
     Integer findAllEquipmentsInCartCount(Object equipmentId);
 

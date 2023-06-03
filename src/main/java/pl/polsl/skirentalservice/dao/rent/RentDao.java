@@ -89,6 +89,31 @@ public class RentDao implements IRentDao {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
+    public boolean checkIfRentIsFromEmployer(Object rentId, Object employerId) {
+        final String jpqlFindRentEmployer = """
+            SELECT COUNT(r.id) > 0 FROM RentEntity r INNER JOIN r.employer e WHERE e.id = :eid AND r.id = :rid
+        """;
+        return session.createQuery(jpqlFindRentEmployer, Boolean.class)
+            .setParameter("eid", employerId)
+            .setParameter("rid", rentId)
+            .getSingleResult();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    @Override
+    public boolean checkIfIssuerExist(Object issuer) {
+        final String jpqlFindExistingIssuer = """
+            SELECT COUNT(r.id) > 0 FROM RentEntity r WHERE SUBSTRING(r.issuedIdentifier, 4, 4) = :issuer
+        """;
+        return session.createQuery(jpqlFindExistingIssuer, Boolean.class)
+            .setParameter("issuer", issuer)
+            .getSingleResult();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    @Override
     public void updateRentStatus(RentStatus rentStatus, Object rentId) {
         final String jpqlUpdateRentStatus = "UPDATE RentEntity r SET r.status = :rst WHERE r.id = :rentid";
         session.createMutationQuery(jpqlUpdateRentStatus)

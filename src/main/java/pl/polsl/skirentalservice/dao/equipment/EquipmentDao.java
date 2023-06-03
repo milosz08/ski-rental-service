@@ -180,6 +180,12 @@ public class EquipmentDao implements IEquipmentDao{
             .getSingleResult();
     }
 
+    @Override
+    public Long getCountIfSomeEquipmentsAreAvailable() {
+        final String getAllCounts = "SELECT SUM(e.availableCount) FROM EquipmentEntity e";
+        return session.createQuery(getAllCounts, Long.class).getSingleResultOrNull();
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override

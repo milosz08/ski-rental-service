@@ -42,6 +42,8 @@ import pl.polsl.skirentalservice.dto.rent.NewRentDetailsReqDto;
 import pl.polsl.skirentalservice.dto.rent.NewRentDetailsResDto;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
+import pl.polsl.skirentalservice.dao.rent.RentDao;
+import pl.polsl.skirentalservice.dao.rent.IRentDao;
 import pl.polsl.skirentalservice.dao.customer.CustomerDao;
 import pl.polsl.skirentalservice.dao.customer.ICustomerDao;
 import pl.polsl.skirentalservice.dao.employer.EmployerDao;
@@ -95,10 +97,9 @@ public class SellerCreateNewRentServlet extends HttpServlet {
                 final ICustomerDao customerDao = new CustomerDao(session);
                 final IEmployerDao employerDao = new EmployerDao(session);
                 final IEquipmentDao equipmentDao = new EquipmentDao(session);
+                final IRentDao rentDao = new RentDao(session);
 
-                final String getAllCounts = "SELECT SUM(e.availableCount) FROM EquipmentEntity e";
-                final Long isSomeEquipmentsAvaialble = session.createQuery(getAllCounts, Long.class)
-                    .getSingleResultOrNull();
+                final Long isSomeEquipmentsAvaialble = equipmentDao.getCountIfSomeEquipmentsAreAvailable();
                 if (Objects.isNull(isSomeEquipmentsAvaialble) || isSomeEquipmentsAvaialble < 0) {
                     alert.setActive(true);
                     alert.setMessage("Aby stworzyć wypożyczenie musi być dostępny przynajmniej jeden sprzęt w " +
@@ -122,13 +123,8 @@ public class SellerCreateNewRentServlet extends HttpServlet {
                     final String issuerUsers = "/" + employerDetails.id() + "/" + customerId;
                     while (true) {
                         final String randomizer = RandomStringUtils.randomNumeric(4);
-                        final String jpqlFindExistingIssuer =
-                            "SELECT COUNT(r.id) > 0 FROM RentEntity r WHERE SUBSTRING(r.issuedIdentifier, 4, 4) = :issuer";
-                        final Boolean existinIssuerExist = session.createQuery(jpqlFindExistingIssuer, Boolean.class)
-                            .setParameter("issuer", randomizer)
-                            .getSingleResult();
                         inMemoryRentData.setIssuedIdentifier(issuerStaticPart + randomizer + issuerUsers);
-                        if (!existinIssuerExist) break;
+                        if (!rentDao.checkIfIssuerExist(randomizer)) break;
                     }
                     httpSession.setAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName(), inMemoryRentData);
                 }

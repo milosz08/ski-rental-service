@@ -31,6 +31,8 @@ public interface IRentDao {
     Optional<RentReturnDetailsResDto> findRentReturnDetails(Object rentId, Object employerId);
     Optional<RentDetailsResDto> findRentDetails(Object rentId, Object employerId, String roleAlias);
 
+    boolean checkIfRentIsFromEmployer(Object rentId, Object employerId);
+    boolean checkIfIssuerExist(Object issuer);
     void updateRentStatus(RentStatus rentStatus, Object rentId);
 
     Long findAllRentsCount(FilterDataDto filterData);

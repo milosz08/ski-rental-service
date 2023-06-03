@@ -69,12 +69,10 @@ public class RedirectWhenRentIsNotCreatedByEmployerFilter extends HttpFilter {
             try {
                 session.beginTransaction();
 
-                final String jpqlFindRentEmployer =
-                    "SELECT COUNT(r.id) > 0 FROM RentEntity r INNER JOIN r.employer e WHERE e.id = :eid";
-                final Boolean rentIsCreatedByEmployer = session.createQuery(jpqlFindRentEmployer, Boolean.class)
-                    .setParameter("eid", loggedUserDataDto.getId()).getSingleResult();
-                if (!rentIsCreatedByEmployer) throw new RentNotFoundException();
-
+                final IRentDao rentDao = new RentDao(session);
+                if (!rentDao.checkIfRentIsFromEmployer(rentId, loggedUserDataDto.getId())) {
+                    throw new RentNotFoundException();
+                }
                 session.getTransaction().commit();
             } catch (RuntimeException ex) {
                 Utils.onHibernateException(session, LOGGER, ex);
