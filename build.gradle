@@ -14,8 +14,13 @@
 plugins {
     id 'java'
     id 'war'
+    alias libs.plugins.ssh.gradle
     alias libs.plugins.dotenv.gradle
 }
+
+def warFileName = 'ROOT'
+def catalinaBase = env.isPresent('CICD_CATALINA_BASE') ? env.CICD_CATALINA_BASE.value : '/opt/tomcat/'
+def projectBase = env.isPresent('CICD_PROJECT_BASE') ? env.CICD_PROJECT_BASE.value : 'webapps/ski-rental-service/'
 
 repositories {
     mavenCentral()
@@ -29,6 +34,19 @@ tasks.withType(JavaCompile).configureEach {
 java.sourceCompatibility = JavaVersion.VERSION_17
 java.targetCompatibility = JavaVersion.VERSION_17
 
+ssh.settings {
+    dryRun = project.hasProperty('dryRun')
+}
+
+remotes {
+    webServer {
+        host = env.CICD_HOST.value
+        user = env.CICD_USER.value
+        identity = file('id_rsa_pem')
+        knownHosts = file('known_hosts.dat')
+    }
+}
+
 // NOTE: all 3rd part libraries in /gradle/libs.versions.toml file
 
 dependencies {
@@ -38,6 +56,7 @@ dependencies {
     implementation          libs.bootstrap.icons
 
     implementation          libs.slf4j
+    implementation          libs.slf4j.simple
     implementation          libs.slf4j.liquibase
     implementation          libs.lombok
     implementation          libs.reflections
@@ -58,16 +77,24 @@ dependencies {
     implementation          libs.liquibase.core
     implementation          libs.hibernate.c3p0
 
-    implementation          libs.jakarta.ejb
-    implementation          libs.jakarta.servlet.jsp.jstl
-    implementation          libs.jakarta.xml.bind.api
     implementation          libs.jaxb.runtime
-    implementation          libs.jakarta.mail.api
+    implementation          libs.jakarta.mail
+    implementation          libs.jakarta.activation
+    implementation          libs.jakarta.xml.bind.api
+    implementation          libs.jakarta.servlet.jstl
+    implementation          libs.jakarta.servlet.jstl.api
+    implementation          libs.jakarta.servlet.jsp.api
     compileOnly             libs.jakarta.servlet.api
+
+    implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
 
     annotationProcessor     libs.lombok
     testImplementation      libs.junit.api
     testRuntimeOnly         libs.junit.engine
+}
+
+configurations.all {
+    exclude group: 'org.eclipse.angus', module: 'angus-activation'
 }
 
 tasks.register('copyRsa', Copy) {
@@ -96,8 +123,27 @@ processResources {
                 'ssh_login': env.SSH_LOGIN.value,
         ]
     }
+    dependsOn copyRsa
 }
 
-tasks.war {
+war {
+    archiveFileName = "${warFileName}.war"
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    dependsOn processResources
 }
+
+task deployToTomcat(dependsOn: war) {
+    group = 'deployment'
+    def fullPath = "${catalinaBase}${projectBase}"
+    doLast {
+        ssh.run {
+            session(remotes.webServer) {
+                execute "sudo rm -rf ${fullPath}*"
+                put from: "${buildDir}/libs/${warFileName}.war", into: fullPath
+                execute 'sudo systemctl restart tomcat'
+            }
+        }
+    }
+}
+
+build.dependsOn processResources

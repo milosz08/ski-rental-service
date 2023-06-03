@@ -33,11 +33,12 @@ mysqlDriver                 = '8.0.31'
 hibernate                   = '6.1.6.Final'
 hibernateValidator          = '8.0.0.Final'
 liquibase                   = '4.18.0'
-jakartaServlet              = '5.0.0'
-jakartaEJB                  = '4.0.1'
+jakartaServlet              = '6.0.0'
 jakartaJAXB                 = '4.0.0'
-jakartaMail                 = '2.1.0'
-jstlRuntime                 = '3.0.1'
+jakartaMail                 = '2.0.1'
+jspApi                      = '3.0.0'
+jstl                        = '3.0.1'
+jstlApi                     = '3.0.0'
 jUnit                       = '5.9.0'
 
 bootstrap                   = '5.2.3'
@@ -46,43 +47,48 @@ popperJS                    = '1.16.1'
 jQuery                      = '3.6.2'
 
 dotenvGradle                = '2.0.0'
+sshGradle                   = '2.11.2'
 
 [libraries]
-slf4j                       = { module = 'org.slf4j:slf4j-api',                             version.ref = 'slf4j' }
-lombok                      = { module = 'org.projectlombok:lombok',                        version.ref = 'lombok' }
-reflections                 = { module = 'org.reflections:reflections',                     version.ref = 'reflections' }
-bcrypt                      = { module = 'at.favre.lib:bcrypt',                             version.ref = 'bcrypt' }
-freemarker                  = { module = 'org.freemarker:freemarker',                       version.ref = 'freemarker' }
-commons-text                = { module = 'org.apache.commons:commons-text',                 version.ref = 'commonsText' }
-commons-codec               = { module = 'commons-codec:commons-codec',                     version.ref = 'commonsCodec' }
-commons-validator           = { module = 'commons-validator:commons-validator',             version.ref = 'commonsValidator' }
-modelmapper                 = { module = 'org.modelmapper:modelmapper',                     version.ref = 'modelmapper' }
-sshj                        = { module = 'com.hierynomus:sshj',                             version.ref = 'sshj' }
-gson                        = { module = 'com.google.code.gson:gson',                       version.ref = 'gson' }
-barcode4j                   = { module = 'net.sf.barcode4j:barcode4j',                      version.ref = 'barcode4j' }
-itext                       = { module = 'com.itextpdf:itext7-core',                        version.ref = 'itext' }
+slf4j                       = { module = 'org.slf4j:slf4j-api',                                     version.ref = 'slf4j' }
+slf4j-simple                = { module = 'org.slf4j:slf4j-simple',                                  version.ref = 'slf4j' }
+lombok                      = { module = 'org.projectlombok:lombok',                                version.ref = 'lombok' }
+reflections                 = { module = 'org.reflections:reflections',                             version.ref = 'reflections' }
+bcrypt                      = { module = 'at.favre.lib:bcrypt',                                     version.ref = 'bcrypt' }
+freemarker                  = { module = 'org.freemarker:freemarker',                               version.ref = 'freemarker' }
+commons-text                = { module = 'org.apache.commons:commons-text',                         version.ref = 'commonsText' }
+commons-codec               = { module = 'commons-codec:commons-codec',                             version.ref = 'commonsCodec' }
+commons-validator           = { module = 'commons-validator:commons-validator',                     version.ref = 'commonsValidator' }
+modelmapper                 = { module = 'org.modelmapper:modelmapper',                             version.ref = 'modelmapper' }
+sshj                        = { module = 'com.hierynomus:sshj',                                     version.ref = 'sshj' }
+gson                        = { module = 'com.google.code.gson:gson',                               version.ref = 'gson' }
+barcode4j                   = { module = 'net.sf.barcode4j:barcode4j',                              version.ref = 'barcode4j' }
+itext                       = { module = 'com.itextpdf:itext7-core',                                version.ref = 'itext' }
 
-mysql-driver                = { module = 'mysql:mysql-connector-java',                      version.ref = 'mysqlDriver' }
-hibernate-core              = { module = 'org.hibernate:hibernate-core',                    version.ref = 'hibernate' }
-hibernate-c3p0              = { module = 'org.hibernate.orm:hibernate-c3p0',                version.ref = 'hibernate' }
-hibernate-validator         = { module = 'org.hibernate.validator:hibernate-validator',     version.ref = 'hibernateValidator' }
-liquibase-core              = { module = 'org.liquibase:liquibase-core',                    version.ref = 'liquibase' }
-slf4j-liquibase             = { module = 'com.mattbertolini:liquibase-slf4j',               version.ref = 'slf4jLiquibase' }
+mysql-driver                = { module = 'mysql:mysql-connector-java',                              version.ref = 'mysqlDriver' }
+hibernate-core              = { module = 'org.hibernate:hibernate-core',                            version.ref = 'hibernate' }
+hibernate-c3p0              = { module = 'org.hibernate.orm:hibernate-c3p0',                        version.ref = 'hibernate' }
+hibernate-validator         = { module = 'org.hibernate.validator:hibernate-validator',             version.ref = 'hibernateValidator' }
+liquibase-core              = { module = 'org.liquibase:liquibase-core',                            version.ref = 'liquibase' }
+slf4j-liquibase             = { module = 'com.mattbertolini:liquibase-slf4j',                       version.ref = 'slf4jLiquibase' }
 
-jakarta-ejb                 = { module = 'jakarta.ejb:jakarta.ejb-api',                     version.ref = 'jakartaEJB' }
-jakarta-servlet-jsp-jstl    = { module = 'org.glassfish.web:jakarta.servlet.jsp.jstl',      version.ref = 'jstlRuntime' }
-jakarta-xml-bind-api        = { module = 'jakarta.xml.bind:jakarta.xml.bind-api',           version.ref = 'jakartaJAXB' }
-jaxb-runtime                = { module = 'org.glassfish.jaxb:jaxb-runtime',                 version.ref = 'jakartaJAXB' }
-jakarta-mail-api            = { module = 'jakarta.mail:jakarta.mail-api',                   version.ref = 'jakartaMail' }
-jakarta-servlet-api         = { module = 'jakarta.servlet:jakarta.servlet-api',             version.ref = 'jakartaServlet' }
+jakarta-xml-bind-api        = { module = 'jakarta.xml.bind:jakarta.xml.bind-api',                   version.ref = 'jakartaJAXB' }
+jaxb-runtime                = { module = 'org.glassfish.jaxb:jaxb-runtime',                         version.ref = 'jakartaJAXB' }
+jakarta-mail                = { module = 'com.sun.mail:jakarta.mail',                               version.ref = 'jakartaMail' }
+jakarta-activation          = { module = 'com.sun.activation:jakarta.activation',                   version.ref = 'jakartaMail' }
+jakarta-servlet-api         = { module = 'jakarta.servlet:jakarta.servlet-api',                     version.ref = 'jakartaServlet' }
+jakarta-servlet-jsp-api     = { module = 'jakarta.servlet.jsp:jakarta.servlet.jsp-api',             version.ref = 'jspApi' }
+jakarta-servlet-jstl        = { module = 'org.glassfish.web:jakarta.servlet.jsp.jstl',              version.ref = 'jstl' }
+jakarta-servlet-jstl-api    = { module = 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api',   version.ref = 'jstlApi' }
 
-junit-api                   = { module = 'org.junit.jupiter:junit-jupiter-api',             version.ref = 'jUnit' }
-junit-engine                = { module = 'org.junit.jupiter:junit-jupiter-engine',          version.ref = 'jUnit' }
+junit-api                   = { module = 'org.junit.jupiter:junit-jupiter-api',                     version.ref = 'jUnit' }
+junit-engine                = { module = 'org.junit.jupiter:junit-jupiter-engine',                  version.ref = 'jUnit' }
 
-jquery                      = { module = 'org.webjars.bower:jquery',                        version.ref = 'jQuery' }
-popperjs                    = { module = 'org.webjars.npm:popper.js',                       version.ref = 'popperJS' }
-bootstrap                   = { module = 'org.webjars:bootstrap',                           version.ref = 'bootstrap' }
-bootstrap-icons             = { module = 'org.webjars.npm:bootstrap-icons',                 version.ref = 'bootstrapIcons' }
+jquery                      = { module = 'org.webjars.bower:jquery',                                version.ref = 'jQuery' }
+popperjs                    = { module = 'org.webjars.npm:popper.js',                               version.ref = 'popperJS' }
+bootstrap                   = { module = 'org.webjars:bootstrap',                                   version.ref = 'bootstrap' }
+bootstrap-icons             = { module = 'org.webjars.npm:bootstrap-icons',                         version.ref = 'bootstrapIcons' }
 
 [plugins]
-dotenv-gradle               = { id     = 'co.uzzu.dotenv.gradle',                           version.ref = 'dotenvGradle' }
+dotenv-gradle               = { id     = 'co.uzzu.dotenv.gradle',                                   version.ref = 'dotenvGradle' }
+ssh-gradle                  = { id     = 'org.hidetake.ssh',                                        version.ref = 'sshGradle' }

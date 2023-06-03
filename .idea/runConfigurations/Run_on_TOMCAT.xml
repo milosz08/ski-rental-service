@@ -1,34 +1,27 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="JBoss/WildFly" type="JBossConfiguration" factoryName="Local" APPLICATION_SERVER_NAME="JBoss/WildFly 27.0.1.Final" ALTERNATIVE_JRE_ENABLED="true" ALTERNATIVE_JRE_PATH="corretto-17">
+  <configuration default="false" name="Run on TOMCAT" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 10.1.8" ALTERNATIVE_JRE_ENABLED="true" ALTERNATIVE_JRE_PATH="corretto-17">
     <option name="OPEN_IN_BROWSER" value="false" />
+    <option name="BROWSER_ID" value="98ca6316-2f89-46d9-a9e5-fa9e2b0625b3" />
     <option name="COMMON_VM_ARGUMENTS" value="-Duser.language=pl -Duser.country=PL -Dfile.encoding=UTF8" />
-    <option name="UPDATING_POLICY" value="redeploy-artifacts" />
+    <option name="UPDATING_POLICY" value="restart-server" />
     <deployment>
-      <artifact name="Gradle : ski-rental-service.war (exploded)">
-        <settings />
+      <artifact name="Gradle : ROOT.war (exploded)">
+        <settings>
+          <option name="CONTEXT_PATH" value="/" />
+        </settings>
       </artifact>
     </deployment>
     <server-settings>
-      <option name="SERVER" />
-      <option name="BINDING_SET_NAME" value="" />
-      <option name="DOMAIN" value="false" />
-      <option name="SERVER_GROUP" />
-      <option name="USERNAME" value="" />
-      <option name="CREDENTIAL_ALIAS" value="a023b24a-d11b-42c7-888c-2f0846d0a47d" />
+      <option name="BASE_DIRECTORY_NAME" value="f43f2a47-19b2-4974-a0bb-7d0701554c74" />
+      <option name="JNDI_PORT" value="8083" />
     </server-settings>
-    <predefined_log_file enabled="true" id="JBoss" />
-    <extension name="net.ashald.envfile">
-      <option name="IS_ENABLED" value="false" />
-      <option name="IS_SUBST" value="false" />
-      <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
-      <option name="IS_IGNORE_MISSING_FILES" value="false" />
-      <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
-      <ENTRIES>
-        <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
-      </ENTRIES>
-    </extension>
+    <predefined_log_file enabled="true" id="Tomcat" />
+    <predefined_log_file enabled="true" id="Tomcat Catalina" />
+    <predefined_log_file id="Tomcat Manager" />
+    <predefined_log_file id="Tomcat Host Manager" />
+    <predefined_log_file id="Tomcat Localhost Access" />
     <RunnerSettings RunnerId="Debug">
-      <option name="DEBUG_PORT" value="7648" />
+      <option name="DEBUG_PORT" value="11176" />
     </RunnerSettings>
     <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Cover">
       <option name="USE_ENV_VARIABLES" value="true" />
@@ -60,6 +53,21 @@
         <option name="PROGRAM_PARAMETERS" value="" />
       </SHUTDOWN>
     </ConfigurationWrapper>
+    <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Profile">
+      <option name="USE_ENV_VARIABLES" value="true" />
+      <STARTUP>
+        <option name="USE_DEFAULT" value="true" />
+        <option name="SCRIPT" value="" />
+        <option name="VM_PARAMETERS" value="" />
+        <option name="PROGRAM_PARAMETERS" value="" />
+      </STARTUP>
+      <SHUTDOWN>
+        <option name="USE_DEFAULT" value="true" />
+        <option name="SCRIPT" value="" />
+        <option name="VM_PARAMETERS" value="" />
+        <option name="PROGRAM_PARAMETERS" value="" />
+      </SHUTDOWN>
+    </ConfigurationWrapper>
     <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Run">
       <option name="USE_ENV_VARIABLES" value="true" />
       <STARTUP>
@@ -77,10 +85,8 @@
     </ConfigurationWrapper>
     <method v="2">
       <option name="Make" enabled="true" />
-      <option name="Gradle.BeforeRunTask" enabled="true" tasks="copyRsa" externalProjectPath="$PROJECT_DIR$" vmOptions="" scriptParameters="" />
-      <option name="Gradle.BeforeRunTask" enabled="true" tasks="processResources" externalProjectPath="$PROJECT_DIR$" vmOptions="" scriptParameters="" />
       <option name="BuildArtifacts" enabled="true">
-        <artifact name="Gradle : ski-rental-service.war (exploded)" />
+        <artifact name="Gradle : ROOT.war (exploded)" />
       </option>
     </method>
   </configuration>

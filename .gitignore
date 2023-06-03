@@ -16,7 +16,7 @@ out/
 .DS_Store
 .env
 id_rsa
-id_rsa.pub
+id_rsa_pem
 known_hosts.dat
 .idea/discord.xml
 .idea/workspace.xml

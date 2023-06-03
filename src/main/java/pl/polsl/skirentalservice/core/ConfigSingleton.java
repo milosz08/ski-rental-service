@@ -41,7 +41,7 @@ public class ConfigSingleton {
         this.systemVersion = StringUtils.defaultIfEmpty(getClass().getPackage().getImplementationVersion(), "DEVELOPMENT");
         this.circaDateYears = 18;
         this.defPageTitle = "SkiRent System";
-        final Path path = Paths.get(System.getProperty("jboss.server.data.dir") + "/ski-rental-service");
+        final Path path = Paths.get(System.getProperty("catalina.base") + "/uploads/ski-rental-service");
         Files.createDirectories(path);
         this.uploadsDir = path.toString();
     }
