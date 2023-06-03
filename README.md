@@ -51,7 +51,7 @@ $ ssh-copy-id -i ~/.ssh/id_rsa.pub login@server
 
 2. Before you run the application, create `.env` file via this command:
 ```
-$ grep -v '^#' .env.sample | cp .env
+$ grep -vE '^\s*$|^#' .env.sample > .env
 ```
 and fill with database, SMTP and SSH server connection details:
 ```properties
