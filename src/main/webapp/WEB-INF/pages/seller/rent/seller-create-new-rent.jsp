@@ -1,11 +1,11 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ page trimDirectiveWhitespaces="true"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
 <jsp:useBean id="rentDetails" class="pl.polsl.skirentalservice.dto.rent.NewRentDetailsResDto" scope="request"/>
-<jsp:useBean id="customerData" class="pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto" scope="request"/>
-<jsp:useBean id="employerData" class="pl.polsl.skirentalservice.dto.employer.EmployerDetailsResDto" scope="request"/>
+<jsp:useBean id="customerData" type="pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto" scope="request"/>
+<jsp:useBean id="employerData" type="pl.polsl.skirentalservice.dto.employer.EmployerDetailsResDto" scope="request"/>
 
 <p:generic-seller.wrapper>
     <h1 class="fs-2 fw-normal text-dark mb-2">Kreator nowego wypożyczenia</h1>

@@ -2,7 +2,7 @@
 <%@ page trimDirectiveWhitespaces="true"%>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
-<jsp:useBean id="employerData" class="pl.polsl.skirentalservice.dto.employer.EmployerDetailsResDto" scope="request"/>
+<jsp:useBean id="employerData" type="pl.polsl.skirentalservice.dto.employer.EmployerDetailsResDto" scope="request"/>
 
 <p:generic-owner.wrapper>
     <h1 class="fs-2 fw-normal text-dark mb-2">Szczegóły pracownika #${employerData.id()}</h1>

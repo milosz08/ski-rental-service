@@ -1,10 +1,10 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ page trimDirectiveWhitespaces="true"%>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
-<jsp:useBean id="filterData" class="pl.polsl.skirentalservice.paging.filter.FilterDataDto" scope="request"/>
+<jsp:useBean id="filterData" type="pl.polsl.skirentalservice.paging.filter.FilterDataDto" scope="request"/>
 <jsp:useBean id="returnsData" type="java.util.List<pl.polsl.skirentalservice.dto.deliv_return.SellerRentReturnRecordResDto>" scope="request"/>
 <jsp:useBean id="sorterData" type="java.util.Map<java.lang.String, pl.polsl.skirentalservice.paging.sorter.ServletSorterField>" scope="request"/>
 
@@ -104,35 +104,35 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <c:forEach items="${returnsData}" var="return">
+                    <c:forEach items="${returnsData}" var="sReturn">
                         <tr>
-                            <td class="nowrap-tb align-middle">${return.id()}</td>
-                            <td class="nowrap-tb align-middle">${return.issuedIdentifier()}</td>
-                            <td class="nowrap-tb align-middle"><p:datetime-formatter datetime="${return.issuedDateTime()}"/></td>
+                            <td class="nowrap-tb align-middle">${sReturn.id()}</td>
+                            <td class="nowrap-tb align-middle">${sReturn.issuedIdentifier()}</td>
+                            <td class="nowrap-tb align-middle"><p:datetime-formatter datetime="${sReturn.issuedDateTime()}"/></td>
                             <td class="nowrap-tb align-middle">
-                                <fmt:formatNumber value="${return.totalPriceNetto()}" minFractionDigits="2" type="currency"/>
+                                <fmt:formatNumber value="${sReturn.totalPriceNetto()}" minFractionDigits="2" type="currency"/>
                             </td>
                             <td class="nowrap-tb align-middle">
-                                <fmt:formatNumber value="${return.totalPriceBrutto()}" minFractionDigits="2" type="currency"/>
+                                <fmt:formatNumber value="${sReturn.totalPriceBrutto()}" minFractionDigits="2" type="currency"/>
                             </td>
                             <td class="nowrap-tb align-middle">
-                                <a href="${pageContext.request.contextPath}/seller/rent-details?id=${return.rentId()}">
-                                    ${return.rentIssuedIdentifier()}
+                                <a href="${pageContext.request.contextPath}/seller/rent-details?id=${sReturn.rentId()}">
+                                    ${sReturn.rentIssuedIdentifier()}
                                 </a>
                             </td>
                             <td class="nowrap-tb align-middle fit">
                                 <button type="button" class="btn btn-sm btn-danger py-0 px-1" data-bs-toggle="modal"
-                                    data-bs-target="#deleteReturn${return.id()}">
+                                    data-bs-target="#deleteReturn${sReturn.id()}">
                                     <span type="button" data-bs-toggle="tooltip" data-bs-placement="top"
                                         data-bs-title="Usuń zwrot wypożyczenia">
                                         <i class="bi bi-x-lg align-middle lh-sm"></i>
                                     </span>
                                 </button>
-                                <a href="${pageContext.request.contextPath}/seller/return-details?id=${return.id()}"
+                                <a href="${pageContext.request.contextPath}/seller/return-details?id=${sReturn.id()}"
                                     class="btn btn-sm btn-dark py-0">
                                     Szczegóły
                                 </a>
-                                <a href="${pageContext.request.contextPath}/resources/return-fvs/${return.issuedIdentifier().replace('/', '')}.pdf"
+                                <a href="${pageContext.request.contextPath}/resources/return-fvs/${sReturn.issuedIdentifier().replace('/', '')}.pdf"
                                     target="_blank" class="btn btn-sm btn-success py-0">
                                     <span type="button" data-bs-toggle="tooltip" data-bs-placement="top"
                                         data-bs-title="Pobierz zestawienie PDF">
@@ -142,9 +142,9 @@
                             </td>
                         </tr>
                         <jsp:include page="/WEB-INF/partials/seller/delete-return-modal.partial.jsp">
-                            <jsp:param name="id" value="${return.id()}"/>
-                            <jsp:param name="issuedIdentifier" value="${return.issuedIdentifier()}"/>
-                            <jsp:param name="rentIssuedIdentifier" value="${return.rentIssuedIdentifier()}"/>
+                            <jsp:param name="id" value="${sReturn.id()}"/>
+                            <jsp:param name="issuedIdentifier" value="${sReturn.issuedIdentifier()}"/>
+                            <jsp:param name="rentIssuedIdentifier" value="${sReturn.rentIssuedIdentifier()}"/>
                         </jsp:include>
                     </c:forEach>
                     </tbody>

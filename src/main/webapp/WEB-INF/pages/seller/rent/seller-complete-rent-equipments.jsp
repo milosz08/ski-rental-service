@@ -1,11 +1,10 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ page trimDirectiveWhitespaces="true"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
-<jsp:useBean id="filterData" class="pl.polsl.skirentalservice.paging.filter.FilterDataDto" scope="request"/>
-<jsp:useBean id="pagesData" class="pl.polsl.skirentalservice.paging.pagination.ServletPagination" scope="request"/>
+<jsp:useBean id="filterData" type="pl.polsl.skirentalservice.paging.filter.FilterDataDto" scope="request"/>
 <jsp:useBean id="inmemoryNewRentData" type="pl.polsl.skirentalservice.dto.rent.InMemoryRentDataDto" scope="session"/>
 <jsp:useBean id="equipmentsData" type="java.util.List<pl.polsl.skirentalservice.dto.rent.EquipmentRentRecordResDto>" scope="request"/>
 <jsp:useBean id="sorterData" type="java.util.Map<java.lang.String, pl.polsl.skirentalservice.paging.sorter.ServletSorterField>" scope="request"/>

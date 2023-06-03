@@ -1,6 +1,6 @@
 <%@ tag description="Overall Page template" pageEncoding="UTF-8" language="java" %>
 <%@ tag trimDirectiveWhitespaces="true"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
 <jsp:useBean id="title" class="java.lang.String" scope="request"/>
 <fmt:setLocale value="pl_PL" scope="session"/>

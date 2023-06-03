@@ -2,7 +2,7 @@
 <%@ page trimDirectiveWhitespaces="true"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<jsp:useBean id="pagesData" class="pl.polsl.skirentalservice.paging.pagination.ServletPagination" scope="request"/>
+<jsp:useBean id="pagesData" type="pl.polsl.skirentalservice.paging.pagination.ServletPagination" scope="request"/>
 
 <div class="container-fluid mt-3">
     <div class="row">

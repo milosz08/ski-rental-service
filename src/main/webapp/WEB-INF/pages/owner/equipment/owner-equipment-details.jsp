@@ -2,7 +2,7 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
-<jsp:useBean id="equipmentData" class="pl.polsl.skirentalservice.dto.equipment.EquipmentDetailsResDto" scope="request"/>
+<jsp:useBean id="equipmentData" type="pl.polsl.skirentalservice.dto.equipment.EquipmentDetailsResDto" scope="request"/>
 
 <p:generic-owner.wrapper>
     <h1 class="fs-2 fw-normal text-dark mb-2">Szczegóły sprzętu narciarskiego #${equipmentData.id()}</h1>

@@ -1,9 +1,9 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ page trimDirectiveWhitespaces="true"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
-<jsp:useBean id="customerData" class="pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto" scope="request"/>
+<jsp:useBean id="customerData" type="pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto" scope="request"/>
 
 <p:generic-seller.wrapper>
     <h1 class="fs-2 fw-normal text-dark mb-2">Szczegóły klienta #${customerData.id()}</h1>

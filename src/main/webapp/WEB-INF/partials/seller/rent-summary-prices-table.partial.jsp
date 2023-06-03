@@ -2,7 +2,7 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<jsp:useBean id="cartEq" class="pl.polsl.skirentalservice.dto.rent.CartSingleEquipmentDataDto" scope="request"/>
+<jsp:useBean id="cartEq" type="pl.polsl.skirentalservice.dto.rent.CartSingleEquipmentDataDto" scope="request"/>
 
 <td class="nowrap-tb align-middle">${cartEq.id}</td>
 <td class="nowrap-tb align-middle">${cartEq.name}</td>

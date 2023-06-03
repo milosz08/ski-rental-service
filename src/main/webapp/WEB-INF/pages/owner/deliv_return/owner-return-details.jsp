@@ -2,7 +2,7 @@
 <%@ page trimDirectiveWhitespaces="true"%>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
-<jsp:useBean id="returnDetailsData" class="pl.polsl.skirentalservice.dto.deliv_return.ReturnRentDetailsResDto" scope="request"/>
+<jsp:useBean id="returnDetailsData" type="pl.polsl.skirentalservice.dto.deliv_return.ReturnRentDetailsResDto" scope="request"/>
 
 <p:generic-owner.wrapper>
     <h1 class="fs-2 fw-normal text-dark mb-2">Szczegóły zwrotu #${returnDetailsData.id()}</h1>

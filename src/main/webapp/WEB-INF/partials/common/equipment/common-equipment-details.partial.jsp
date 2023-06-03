@@ -1,8 +1,8 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ page trimDirectiveWhitespaces="true" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
-<jsp:useBean id="equipmentData" class="pl.polsl.skirentalservice.dto.equipment.EquipmentDetailsResDto" scope="request"/>
+<jsp:useBean id="equipmentData" type="pl.polsl.skirentalservice.dto.equipment.EquipmentDetailsResDto" scope="request"/>
 
 <div class="container-fluid">
     <div class="row mb-3">

@@ -1,8 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page trimDirectiveWhitespaces="true" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
-<jsp:useBean id="pagesData" class="pl.polsl.skirentalservice.paging.pagination.ServletPagination" scope="request"/>
+<jsp:useBean id="pagesData" type="pl.polsl.skirentalservice.paging.pagination.ServletPagination" scope="request"/>
 <jsp:useBean id="cartEqAdd" class="pl.polsl.skirentalservice.dto.rent.EquipmentRentRecordResDto" scope="request"/>
 <jsp:useBean id="addModalResDto" class="pl.polsl.skirentalservice.dto.rent.AddEditEquipmentCartResDto" scope="request"/>
 

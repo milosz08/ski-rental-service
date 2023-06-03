@@ -3,7 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
-<jsp:useBean id="customerData" class="pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto" scope="request"/>
+<jsp:useBean id="customerData" type="pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto" scope="request"/>
 
 <div class="container-fluid">
     <div class="row">
