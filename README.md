@@ -42,7 +42,7 @@ $ ssh-keygen -t rsa
 * change name and move into project directory:
 ```
 $ mv ~/.ssh/known_hosts ~/.ssh/known_hosts.dat
-$ mv ~/.ssh/id_rsa ~/.ssh/known_hosts.dat [project base dir]
+$ cp ~/.ssh/id_rsa ~/.ssh/known_hosts.dat [project base dir]
 ```
 * move key to SSH server:
 ```
@@ -147,7 +147,7 @@ $ ssh-keygen -t rsa -m PEM
 * move into project directory:
 ```
 $ mv id_rsa id_rsa_pem
-$ mv id_rsa_pem [project base dir]
+$ cp id_rsa_pem [project base dir]
 ```
 * move key to CI/CD server (where you have Tomcat server):
 ```
