@@ -45,7 +45,7 @@ import static pl.polsl.skirentalservice.exception.AlreadyExistException.Equipmen
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@WebServlet("owner/add-equipment-color")
+@WebServlet("/owner/add-equipment-color")
 public class OwnerAddEquipmentColorServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerAddEquipmentColorServlet.class);

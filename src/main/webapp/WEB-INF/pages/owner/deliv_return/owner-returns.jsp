@@ -103,33 +103,33 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <c:forEach items="${returnsData}" var="return">
+                    <c:forEach items="${returnsData}" var="sReturn">
                         <tr>
-                            <td class="nowrap-tb align-middle">${return.id}</td>
-                            <td class="nowrap-tb align-middle">${return.issuedIdentifier}</td>
-                            <td class="nowrap-tb align-middle"><p:datetime-formatter datetime="${return.issuedDateTime}"/></td>
+                            <td class="nowrap-tb align-middle">${sReturn.id}</td>
+                            <td class="nowrap-tb align-middle">${sReturn.issuedIdentifier}</td>
+                            <td class="nowrap-tb align-middle"><p:datetime-formatter datetime="${sReturn.issuedDateTime}"/></td>
                             <td class="nowrap-tb align-middle">
-                                <fmt:formatNumber value="${return.totalPriceNetto}" minFractionDigits="2" type="currency"/>
+                                <fmt:formatNumber value="${sReturn.totalPriceNetto}" minFractionDigits="2" type="currency"/>
                             </td>
                             <td class="nowrap-tb align-middle">
-                                <fmt:formatNumber value="${return.totalPriceBrutto}" minFractionDigits="2" type="currency"/>
+                                <fmt:formatNumber value="${sReturn.totalPriceBrutto}" minFractionDigits="2" type="currency"/>
                             </td>
                             <td class="nowrap-tb align-middle">
-                                <a href="${pageContext.request.contextPath}/owner/rent-details?id=${return.rentId}">
-                                    ${return.rentIssuedIdentifier}
+                                <a href="${pageContext.request.contextPath}/owner/rent-details?id=${sReturn.rentId}">
+                                    ${sReturn.rentIssuedIdentifier}
                                 </a>
                             </td>
                             <td class="nowrap-tb align-middle">
-                                <a href="${pageContext.request.contextPath}/owner/employer-details?id=${return.employerId}">
-                                    ${return.employerFullName}
+                                <a href="${pageContext.request.contextPath}/owner/employer-details?id=${sReturn.employerId}">
+                                    ${sReturn.employerFullName}
                                 </a>
                             </td>
                             <td class="nowrap-tb align-middle fit">
-                                <a href="${pageContext.request.contextPath}/owner/return-details?id=${return.id}"
+                                <a href="${pageContext.request.contextPath}/owner/return-details?id=${sReturn.id}"
                                     class="btn btn-sm btn-dark py-0">
                                     Szczegóły
                                 </a>
-                                <a href="${pageContext.request.contextPath}/resources/return-fvs/${return.issuedIdentifier.replace('/', '')}.pdf"
+                                <a href="${pageContext.request.contextPath}/resources/return-fvs/${sReturn.issuedIdentifier.replace('/', '')}.pdf"
                                     target="_blank" class="btn btn-sm btn-success py-0">
                                     <span type="button" data-bs-toggle="tooltip" data-bs-placement="top"
                                         data-bs-title="Pobierz zestawienie PDF">
