@@ -1,5 +1,5 @@
 # SkiRental Service Web Application
-[![](https://img.shields.io/badge/Made%20with-Jakarta%20EE%2010-1abc9c.svg)](https://jakarta.ee/release/10/)&nbsp;&nbsp;
+[![](https://img.shields.io/badge/Made%20with-Jakarta%20EE-1abc9c.svg)](https://jakarta.ee/release/10/)&nbsp;&nbsp;
 [![](https://img.shields.io/badge/Build%20with-Gradle-green.svg)](https://gradle.org/)&nbsp;&nbsp;
 [![](https://img.shields.io/badge/Web%20Container-Apache%20Tomcat%2010.1.8-brown.svg)](https://www.wildfly.org/)&nbsp;&nbsp;
 [![](https://img.shields.io/badge/Packaging-WAR-yellow.svg)](https://en.wikipedia.org/wiki/WAR_(file_format))&nbsp;&nbsp;
