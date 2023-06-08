@@ -1,7 +1,7 @@
 # SkiRental Service Web Application
-[![](https://img.shields.io/badge/Made%20with-Jakarta%20EE%2010-1abc9c.svg)](https://jakarta.ee/release/10/)&nbsp;&nbsp;
+[![](https://img.shields.io/badge/Made%20with-Jakarta%20EE-1abc9c.svg)](https://jakarta.ee/release/10/)&nbsp;&nbsp;
 [![](https://img.shields.io/badge/Build%20with-Gradle-green.svg)](https://gradle.org/)&nbsp;&nbsp;
-[![](https://img.shields.io/badge/Web%20Container-Apche%20Tomcat%2010.1.8-brown.svg)](https://www.wildfly.org/)&nbsp;&nbsp;
+[![](https://img.shields.io/badge/Web%20Container-Apache%20Tomcat%2010.1.8-brown.svg)](https://www.wildfly.org/)&nbsp;&nbsp;
 [![](https://img.shields.io/badge/Packaging-WAR-yellow.svg)](https://en.wikipedia.org/wiki/WAR_(file_format))&nbsp;&nbsp;
 <br>
 > More info about this project you will find [on my personal website](https://miloszgilga.pl/project/ski-rental-service)
@@ -42,7 +42,7 @@ $ ssh-keygen -t rsa
 * change name and move into project directory:
 ```
 $ mv ~/.ssh/known_hosts ~/.ssh/known_hosts.dat
-$ mv ~/.ssh/id_rsa ~/.ssh/known_hosts.dat [project base dir]
+$ cp ~/.ssh/id_rsa ~/.ssh/known_hosts.dat [project base dir]
 ```
 * move key to SSH server:
 ```
@@ -51,7 +51,7 @@ $ ssh-copy-id -i ~/.ssh/id_rsa.pub login@server
 
 2. Before you run the application, create `.env` file via this command:
 ```
-$ grep -v '^#' .env.sample | cp .env
+$ grep -vE '^\s*$|^#' .env.sample > .env
 ```
 and fill with database, SMTP and SSH server connection details:
 ```properties
@@ -147,7 +147,7 @@ $ ssh-keygen -t rsa -m PEM
 * move into project directory:
 ```
 $ mv id_rsa id_rsa_pem
-$ mv id_rsa_pem [project base dir]
+$ cp id_rsa_pem [project base dir]
 ```
 * move key to CI/CD server (where you have Tomcat server):
 ```
