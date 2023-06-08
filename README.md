@@ -24,6 +24,7 @@ application was created only for learning purposes and familiarization with olde
 * [Tech stack](#tech-stack)
 * [Author](#author)
 * [Project status](#project-status)
+* [License](#license)
 
 <a name="clone-and-install"></a>
 ## Clone and install
@@ -211,3 +212,7 @@ Created by Miłosz Gilga. If you have any questions about this application, send
 <a name="project-status"></a>
 ## Project status
 Project is finished.
+
+<a name="license"></a>
+## License
+This application is on Apache 2.0 License.
