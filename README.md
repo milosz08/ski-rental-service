@@ -11,7 +11,7 @@
 Simple enterprise-class application for managing a ski rental company. The software is closed (only people in the 
 enterprise can use it). This project was made for a subject in college programming course. Created only for learning 
 purposes. Jakarta EE specifications were used in the development. This application can be run on any application 
-servlet container that supports Jakarta EE 9 and Jakarta Servlet API 6, such as Apache Tomcat or Jetty.
+servlet container that supports Java 17, Jakarta EE 9 and Jakarta Servlet API 6, such as Apache Tomcat or Jetty.
 
 I realize that the specification of servlets, JSP pages and monolithic applications is no longer a standard today. This 
 application was created only for learning purposes and familiarization with older "legacy" technologies.
