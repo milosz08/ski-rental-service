@@ -1,31 +1,15 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
- *
- * File name: RoleEntity.java
- * Last modified: 3/12/23, 11:01 AM
- * Project name: ski-rental-service
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
- * file except in compliance with the License. You may obtain a copy of the License at
- *
- *     <http://www.apache.org/license/LICENSE-2.0>
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the license.
+ * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Silesian University of Technology
  */
-
 package pl.polsl.skirentalservice.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.NoArgsConstructor;
-
-import jakarta.persistence.*;
-
-import pl.polsl.skirentalservice.core.db.EntityInjector;
 import pl.polsl.skirentalservice.core.db.AuditableEntity;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+import pl.polsl.skirentalservice.core.db.EntityInjector;
 
 @Entity
 @EntityInjector
@@ -33,11 +17,14 @@ import pl.polsl.skirentalservice.core.db.AuditableEntity;
 @NoArgsConstructor
 public class RoleEntity extends AuditableEntity {
 
-    @Column(name = "role_name")     private String roleName;
-    @Column(name = "alias")         private Character alias;
-    @Column(name = "role_eng")      private String roleEng;
+    @Column(name = "role_name")
+    private String roleName;
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    @Column(name = "alias")
+    private Character alias;
+
+    @Column(name = "role_eng")
+    private String roleEng;
 
     public String getRoleName() {
         return roleName;
@@ -62,8 +49,6 @@ public class RoleEntity extends AuditableEntity {
     void setRoleEng(String roleEng) {
         this.roleEng = roleEng;
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public String toString() {

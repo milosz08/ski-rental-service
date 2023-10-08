@@ -1,33 +1,15 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
- *
- * File name: LocationAddressEntity.java
- * Last modified: 3/12/23, 11:01 AM
- * Project name: ski-rental-service
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
- * file except in compliance with the License. You may obtain a copy of the License at
- *
- *     <http://www.apache.org/license/LICENSE-2.0>
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the license.
+ * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Silesian University of Technology
  */
-
 package pl.polsl.skirentalservice.entity;
 
-import lombok.NoArgsConstructor;
-
-import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-
-import pl.polsl.skirentalservice.core.db.EntityInjector;
+import jakarta.persistence.Table;
+import lombok.NoArgsConstructor;
 import pl.polsl.skirentalservice.core.db.AuditableEntity;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+import pl.polsl.skirentalservice.core.db.EntityInjector;
 
 @Entity
 @EntityInjector
@@ -35,13 +17,20 @@ import pl.polsl.skirentalservice.core.db.AuditableEntity;
 @NoArgsConstructor
 public class LocationAddressEntity extends AuditableEntity {
 
-    @Column(name = "street")        private String street;
-    @Column(name = "building_no")   private String buildingNr;
-    @Column(name = "apartment_no")  private String apartmentNr;
-    @Column(name = "city")          private String city;
-    @Column(name = "postal_code")   private String postalCode;
+    @Column(name = "street")
+    private String street;
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    @Column(name = "building_no")
+    private String buildingNr;
+
+    @Column(name = "apartment_no")
+    private String apartmentNr;
+
+    @Column(name = "city")
+    private String city;
+
+    @Column(name = "postal_code")
+    private String postalCode;
 
     String getStreet() {
         return street;
@@ -82,8 +71,6 @@ public class LocationAddressEntity extends AuditableEntity {
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public String toString() {

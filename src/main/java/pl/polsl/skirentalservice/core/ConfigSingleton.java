@@ -1,34 +1,17 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
- *
- * File name: ConfigSingleton.java
- * Last modified: 6/3/23, 4:29 AM
- * Project name: ski-rental-service
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
- * file except in compliance with the License. You may obtain a copy of the License at
- *
- *     <http://www.apache.org/license/LICENSE-2.0>
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the license.
+ * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Silesian University of Technology
  */
-
 package pl.polsl.skirentalservice.core;
 
 import lombok.Getter;
-
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Objects;
-import java.nio.file.Path;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.io.IOException;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Objects;
 
 @Getter
 public class ConfigSingleton {
@@ -40,8 +23,6 @@ public class ConfigSingleton {
 
     private static volatile ConfigSingleton instance;
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     private ConfigSingleton() throws IOException {
         this.systemVersion = StringUtils.defaultIfEmpty(getClass().getPackage().getImplementationVersion(), "DEVELOPMENT");
         this.circaDateYears = 18;
@@ -50,8 +31,6 @@ public class ConfigSingleton {
         Files.createDirectories(path);
         this.uploadsDir = path.toString();
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public static synchronized ConfigSingleton getInstance() {
         if (Objects.isNull(instance)) {

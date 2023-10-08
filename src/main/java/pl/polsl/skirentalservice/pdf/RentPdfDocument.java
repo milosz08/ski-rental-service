@@ -1,40 +1,22 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
- *
- * File name: RentPdfDocument.java
- * Last modified: 3/12/23, 11:01 AM
- * Project name: ski-rental-service
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
- * file except in compliance with the License. You may obtain a copy of the License at
- *
- *     <http://www.apache.org/license/LICENSE-2.0>
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the license.
+ * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Silesian University of Technology
  */
-
 package pl.polsl.skirentalservice.pdf;
 
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.itextpdf.layout.Document;
-import com.itextpdf.kernel.pdf.PdfWriter;
+import pl.polsl.skirentalservice.pdf.dto.RentPdfDocumentDataDto;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.LinkedHashMap;
-
-import pl.polsl.skirentalservice.pdf.dto.RentPdfDocumentDataDto;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 public class RentPdfDocument extends PdfHandler implements IPdfGenerator {
 
@@ -43,8 +25,6 @@ public class RentPdfDocument extends PdfHandler implements IPdfGenerator {
     private final String uploadsDir;
     private String issuerIdentifier;
     private RentPdfDocumentDataDto rentPdfDto;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public RentPdfDocument(String uploadsDir, RentPdfDocumentDataDto rentPdfDto) {
         this.uploadsDir = uploadsDir;
@@ -55,8 +35,6 @@ public class RentPdfDocument extends PdfHandler implements IPdfGenerator {
         this.uploadsDir = uploadsDir;
         this.issuerIdentifier = issuerIdentifier;
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public void generate() throws RuntimeException {
@@ -104,8 +82,6 @@ public class RentPdfDocument extends PdfHandler implements IPdfGenerator {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     public void remove() throws RuntimeException {
         final String fileName = issuerIdentifier.replaceAll("/", "") + ".pdf";
@@ -116,8 +92,6 @@ public class RentPdfDocument extends PdfHandler implements IPdfGenerator {
             LOGGER.error("Unable to remove pdf FV rent file from system.");
         }
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public String getPath() {

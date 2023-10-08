@@ -1,66 +1,46 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
- *
- * File name: SellerPersistNewRentServlet.java
- * Last modified: 6/3/23, 12:19 AM
- * Project name: ski-rental-service
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
- * file except in compliance with the License. You may obtain a copy of the License at
- *
- *     <http://www.apache.org/license/LICENSE-2.0>
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the license.
+ * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Silesian University of Technology
  */
-
 package pl.polsl.skirentalservice.domain.seller.rent;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.modelmapper.ModelMapper;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-
 import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import java.util.*;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
-import pl.polsl.skirentalservice.util.*;
-import pl.polsl.skirentalservice.dto.*;
-import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
-import pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto;
-import pl.polsl.skirentalservice.dto.rent.InMemoryRentDataDto;
-import pl.polsl.skirentalservice.dto.rent.CartSingleEquipmentDataDto;
+import jakarta.servlet.http.HttpSession;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ConfigSingleton;
-import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.core.ModelMapperGenerator;
-import pl.polsl.skirentalservice.core.mail.MailSocketSingleton;
+import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.core.mail.MailRequestPayload;
+import pl.polsl.skirentalservice.core.mail.MailSocketSingleton;
 import pl.polsl.skirentalservice.dao.employer.EmployerDao;
 import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
 import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
 import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
+import pl.polsl.skirentalservice.dto.*;
+import pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import pl.polsl.skirentalservice.dto.rent.CartSingleEquipmentDataDto;
+import pl.polsl.skirentalservice.dto.rent.InMemoryRentDataDto;
 import pl.polsl.skirentalservice.entity.*;
 import pl.polsl.skirentalservice.pdf.RentPdfDocument;
 import pl.polsl.skirentalservice.pdf.dto.RentPdfDocumentDataDto;
+import pl.polsl.skirentalservice.util.*;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.TooMuchEquipmentsException;
 import static pl.polsl.skirentalservice.exception.NotFoundException.AnyEquipmentsInCartNotFoundException;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @WebServlet("/seller/persist-new-rent")
 public class SellerPersistNewRentServlet extends HttpServlet {
@@ -72,8 +52,6 @@ public class SellerPersistNewRentServlet extends HttpServlet {
     private final ConfigSingleton config = ConfigSingleton.getInstance();
 
     private final ModelMapper modelMapper = ModelMapperGenerator.getModelMapper();
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -130,7 +108,7 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                 final PriceUnitsDto priceUnits = rentData.getPriceUnits();
                 final BigDecimal totalWithTax = priceUnits.getTotalPriceBrutto().add(priceUnits.getTotalDepositPriceBrutto());
                 emailPayload.setTotalPriceWithDepositBrutto(totalWithTax);
-                emailPayload.setRentTime(rentData.getDays() +  " dni, " + rentData.getHours() + " godzin");
+                emailPayload.setRentTime(rentData.getDays() + " dni, " + rentData.getHours() + " godzin");
 
                 for (final CartSingleEquipmentDataDto equipmentDataDto : rentData.getEquipments()) {
                     final var equipment = modelMapper.map(equipmentDataDto, EmailEquipmentPayloadDataDto.class);
@@ -153,7 +131,7 @@ public class SellerPersistNewRentServlet extends HttpServlet {
 
                 modelMapper.map(rentData.getCustomerDetails(), rentPdfDataDto);
                 rentPdfDataDto.setAddress(customerDetails.address() + ", " + customerDetails.cityWithPostCode());
-                rentPdfDataDto.setRentTime(rentData.getDays() +  " dni, " + rentData.getHours() + " godzin");
+                rentPdfDataDto.setRentTime(rentData.getDays() + " dni, " + rentData.getHours() + " godzin");
 
                 final RentPdfDocument rentPdfDocument = new RentPdfDocument(config.getUploadsDir(), rentPdfDataDto);
                 rentPdfDocument.generate();
@@ -198,7 +176,7 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                 alert.setType(AlertType.INFO);
                 alert.setMessage(
                     "Wypożyczenie o numerze <strong>" + rentData.getIssuedIdentifier() + "</strong> zostało pomyślnie " +
-                    "złożone w systemie. Szczegóły złożonego wypożyczenia znajdziesz również w wiadomości email."
+                        "złożone w systemie. Szczegóły złożonego wypożyczenia znajdziesz również w wiadomości email."
                 );
                 httpSession.setAttribute(SessionAlert.COMMON_RENTS_PAGE_ALERT.getName(), alert);
                 httpSession.removeAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName());

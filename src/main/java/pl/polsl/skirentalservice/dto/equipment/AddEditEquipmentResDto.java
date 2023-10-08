@@ -1,35 +1,18 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
- *
- * File name: AddEditEquipmentResDto.java
- * Last modified: 6/2/23, 11:49 PM
- * Project name: ski-rental-service
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
- * file except in compliance with the License. You may obtain a copy of the License at
- *
- *     <http://www.apache.org/license/LICENSE-2.0>
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the license.
+ * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Silesian University of Technology
  */
-
 package pl.polsl.skirentalservice.dto.equipment;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pl.polsl.skirentalservice.core.ValidatorSingleton;
+import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
+import pl.polsl.skirentalservice.dto.FormSelectsDto;
+import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
+import pl.polsl.skirentalservice.util.Gender;
 
 import java.util.List;
-
-import pl.polsl.skirentalservice.util.Gender;
-import pl.polsl.skirentalservice.core.ValidatorSingleton;
-import pl.polsl.skirentalservice.dto.FormSelectsDto;
-import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
-import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @Data
 @NoArgsConstructor
@@ -48,8 +31,6 @@ public class AddEditEquipmentResDto {
     private FormSelectsDto colors = new FormSelectsDto();
     private List<FormSelectTupleDto> genders = Gender.getGendersWithUnisex();
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     public AddEditEquipmentResDto(ValidatorSingleton validator, AddEditEquipmentReqDto reqDto) {
         this.name = validator.validateField(reqDto, "name", reqDto.getName());
         this.model = validator.validateField(reqDto, "model", reqDto.getModel());
@@ -65,8 +46,6 @@ public class AddEditEquipmentResDto {
         this.colors = validator.validateSelectField(reqDto, "color", this.colors, reqDto.getColor());
         this.genders = Gender.getSelectedGenderWithUnisex(reqDto.getGender());
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void insertTypesSelects(List<FormSelectTupleDto> selects) {
         selects.add(0, new FormSelectTupleDto(true, "none", "wybierz typ..."));
@@ -86,15 +65,11 @@ public class AddEditEquipmentResDto {
         setSelectedField(colors);
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     private void setSelectedField(FormSelectsDto attr) {
-        for (final FormSelectTupleDto select: attr.getSelects()) {
+        for (final FormSelectTupleDto select : attr.getSelects()) {
             if (select.getValue().equals(attr.getSelected())) select.setIsSelected("selected");
         }
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public String toString() {

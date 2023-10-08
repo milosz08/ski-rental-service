@@ -1,59 +1,38 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
- *
- * File name: SellerReturnsServlet.java
- * Last modified: 6/3/23, 12:45 AM
- * Project name: ski-rental-service
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
- * file except in compliance with the License. You may obtain a copy of the License at
- *
- *     <http://www.apache.org/license/LICENSE-2.0>
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the license.
+ * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Silesian University of Technology
  */
-
 package pl.polsl.skirentalservice.domain.seller.deliv_return;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-
 import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import java.util.*;
-import java.io.IOException;
-
+import jakarta.servlet.http.HttpSession;
 import org.apache.commons.lang3.math.NumberUtils;
-
-import pl.polsl.skirentalservice.util.*;
-import pl.polsl.skirentalservice.dto.PageableDto;
-import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
-import pl.polsl.skirentalservice.dto.deliv_return.SellerRentReturnRecordResDto;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.return_deliv.ReturnDao;
 import pl.polsl.skirentalservice.dao.return_deliv.IReturnDao;
+import pl.polsl.skirentalservice.dao.return_deliv.ReturnDao;
+import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.PageableDto;
+import pl.polsl.skirentalservice.dto.deliv_return.SellerRentReturnRecordResDto;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.paging.filter.FilterColumn;
 import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
 import pl.polsl.skirentalservice.paging.filter.ServletFilter;
-import pl.polsl.skirentalservice.paging.sorter.ServletSorter;
-import pl.polsl.skirentalservice.paging.sorter.SorterDataDto;
-import pl.polsl.skirentalservice.paging.sorter.ServletSorterField;
 import pl.polsl.skirentalservice.paging.pagination.ServletPagination;
+import pl.polsl.skirentalservice.paging.sorter.ServletSorter;
+import pl.polsl.skirentalservice.paging.sorter.ServletSorterField;
+import pl.polsl.skirentalservice.paging.sorter.SorterDataDto;
+import pl.polsl.skirentalservice.util.*;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+import java.io.IOException;
+import java.util.*;
 
 @WebServlet("/seller/returns")
 public class SellerReturnsServlet extends HttpServlet {
@@ -63,8 +42,6 @@ public class SellerReturnsServlet extends HttpServlet {
 
     private final Map<String, ServletSorterField> sorterFieldMap = new HashMap<>();
     private final List<FilterColumn> filterFieldMap = new ArrayList<>();
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public void init() {
@@ -78,8 +55,6 @@ public class SellerReturnsServlet extends HttpServlet {
         filterFieldMap.add(new FilterColumn("issuedDateTime", "Dacie stworzenia zwrotu", "CAST(r.issuedDateTime AS string)"));
         filterFieldMap.add(new FilterColumn("rentIssuedIdentifier", "Numerze wypożyczenia", "rd.issuedIdentifier"));
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -127,8 +102,6 @@ public class SellerReturnsServlet extends HttpServlet {
         req.setAttribute("title", PageTitle.COMMON_RETURNS_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/seller/deliv_return/seller-returns.jsp").forward(req, res);
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {

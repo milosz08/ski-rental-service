@@ -1,24 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<!--
+  ~ Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+  ~ Silesian University of Technology
+  -->
 <ssh-configuration>
-    <properties>
-        <ssh-host>@ssh_host@</ssh-host>
-        <ssh-login>@ssh_login@</ssh-login>
-        <ssh-rsa>/ssh/id_rsa</ssh-rsa>
-        <ssh-knownHosts>/ssh/known_hosts.dat</ssh-knownHosts>
-    </properties>
-    <commands>
-        <command executableFor="create-mailbox">
-            echo "['--json', 'mail', 'account', 'add', '${email}', '${password}']" | nc -U /var/run/devil2.sock
-        </command>
-        <command executableFor="update-mailbox-password">
-            echo "['--json', 'mail', 'passwd', '${email}', '${newPassword}']" | nc -U /var/run/devil2.sock
-        </command>
-        <command executableFor="delete-mailbox">
-            echo "['--json', 'mail', 'account', 'del', '${email}']" | nc -U /var/run/devil2.sock
-        </command>
-        <command executableFor="set-mailbox-capacity">
-            echo "['--json', 'mail', 'quota', '${email}', '5M' ]" | nc -U /var/run/devil2.sock
-        </command>
-    </commands>
+  <properties>
+    <ssh-host>@ssh_host@</ssh-host>
+    <ssh-login>@ssh_login@</ssh-login>
+    <ssh-rsa>/ssh/id_rsa</ssh-rsa>
+    <ssh-knownHosts>/ssh/known_hosts.dat</ssh-knownHosts>
+  </properties>
+  <commands>
+    <command executableFor="create-mailbox">
+      echo "['--json', 'mail', 'account', 'add', '${email}', '${password}']" | nc -U /var/run/devil2.sock
+    </command>
+    <command executableFor="update-mailbox-password">
+      echo "['--json', 'mail', 'passwd', '${email}', '${newPassword}']" | nc -U /var/run/devil2.sock
+    </command>
+    <command executableFor="delete-mailbox">
+      echo "['--json', 'mail', 'account', 'del', '${email}']" | nc -U /var/run/devil2.sock
+    </command>
+    <command executableFor="set-mailbox-capacity">
+      echo "['--json', 'mail', 'quota', '${email}', '5M' ]" | nc -U /var/run/devil2.sock
+    </command>
+  </commands>
 </ssh-configuration>

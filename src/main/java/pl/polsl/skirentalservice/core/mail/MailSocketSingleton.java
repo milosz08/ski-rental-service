@@ -1,53 +1,34 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
- *
- * File name: MailSocketSingleton.java
- * Last modified: 6/2/23, 11:48 PM
- * Project name: ski-rental-service
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
- * file except in compliance with the License. You may obtain a copy of the License at
- *
- *     <http://www.apache.org/license/LICENSE-2.0>
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the license.
+ * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Silesian University of Technology
  */
-
 package pl.polsl.skirentalservice.core.mail;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import jakarta.mail.*;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
+import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMultipart;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pl.polsl.skirentalservice.core.ConfigSingleton;
+import pl.polsl.skirentalservice.core.JAXBProperty;
 
-import freemarker.template.Template;
-import freemarker.template.Configuration;
-import freemarker.template.TemplateException;
-
-import java.util.*;
 import java.io.File;
-import java.io.Writer;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.time.Instant;
 import java.time.LocalDate;
-
-import pl.polsl.skirentalservice.core.JAXBProperty;
-import pl.polsl.skirentalservice.core.ConfigSingleton;
+import java.util.*;
 
 import static pl.polsl.skirentalservice.exception.ServletException.UnableToSendEmailException;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 public class MailSocketSingleton {
 
@@ -62,8 +43,6 @@ public class MailSocketSingleton {
     private List<JAXBProperty> configProperties;
 
     private static volatile MailSocketSingleton instance;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private MailSocketSingleton() {
         try {
@@ -92,13 +71,9 @@ public class MailSocketSingleton {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     public void sendMessage(String sendTo, MailRequestPayload payload, HttpServletRequest req) {
         sendMessage(List.of(sendTo), payload, req);
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void sendMessage(List<String> sendTo, MailRequestPayload payload, HttpServletRequest req) {
         try {
@@ -154,23 +129,17 @@ public class MailSocketSingleton {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     public String getDomain() {
         return "@" + configProperties.stream()
             .filter(p -> p.getName().equals("mail.smtp.domain"))
             .findFirst().map(JAXBProperty::getValue).orElse("localhost");
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private  String getBaseReqPath(HttpServletRequest req) {
+    private String getBaseReqPath(HttpServletRequest req) {
         final boolean isHttp = req.getScheme().equals("http") && req.getServerPort() == 80;
         final boolean isHttps = req.getScheme().equals("https") && req.getServerPort() == 443;
         return req.getScheme() + "://" + req.getServerName() + (isHttp || isHttps ? "" : ":" + req.getServerPort());
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public static synchronized MailSocketSingleton getInstance() {
         if (Objects.isNull(instance)) {

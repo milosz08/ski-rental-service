@@ -1,43 +1,24 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
- *
- * File name: SshSocketSingleton.java
- * Last modified: 6/3/23, 1:16 AM
- * Project name: ski-rental-service
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
- * file except in compliance with the License. You may obtain a copy of the License at
- *
- *     <http://www.apache.org/license/LICENSE-2.0>
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the license.
+ * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Silesian University of Technology
  */
-
 package pl.polsl.skirentalservice.core.ssh;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
-import org.apache.commons.text.StringSubstitutor;
-
 import jakarta.xml.bind.JAXBContext;
-
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.channel.direct.Session;
+import org.apache.commons.text.StringSubstitutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.Map;
-import java.util.Objects;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+import java.util.Map;
+import java.util.Objects;
 
 public class SshSocketSingleton {
 
@@ -46,8 +27,6 @@ public class SshSocketSingleton {
 
     private JAXBSshConfig config;
     private static volatile SshSocketSingleton instance;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private SshSocketSingleton() {
         try {
@@ -59,8 +38,6 @@ public class SshSocketSingleton {
             LOGGER.error("Unable to load Ssh socket properties from extended XML file: {}", SSH_CFG);
         }
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public <T> T executeCommand(ICommand com, Map<String, String> entries, Class<T> mapTo) throws RuntimeException {
         final JAXBSshCommand command = config.getCommands().getCommands().stream()
@@ -91,8 +68,6 @@ public class SshSocketSingleton {
         }
         return mappedTo;
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public static synchronized SshSocketSingleton getInstance() {
         if (Objects.isNull(instance)) {

@@ -1,66 +1,45 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
- *
- * File name: SellerCreateNewRentServlet.java
- * Last modified: 6/3/23, 7:52 PM
- * Project name: ski-rental-service
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
- * file except in compliance with the License. You may obtain a copy of the License at
- *
- *     <http://www.apache.org/license/LICENSE-2.0>
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the license.
+ * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Silesian University of Technology
  */
-
 package pl.polsl.skirentalservice.domain.seller.rent;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-
 import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import java.util.Objects;
-import java.io.IOException;
-import java.time.LocalDateTime;
-
-import org.apache.commons.lang3.math.NumberUtils;
+import jakarta.servlet.http.HttpSession;
 import org.apache.commons.lang3.RandomStringUtils;
-
-import pl.polsl.skirentalservice.util.*;
-import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
-import pl.polsl.skirentalservice.dto.rent.InMemoryRentDataDto;
-import pl.polsl.skirentalservice.dto.rent.NewRentDetailsReqDto;
-import pl.polsl.skirentalservice.dto.rent.NewRentDetailsResDto;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.rent.RentDao;
-import pl.polsl.skirentalservice.dao.rent.IRentDao;
 import pl.polsl.skirentalservice.dao.customer.CustomerDao;
 import pl.polsl.skirentalservice.dao.customer.ICustomerDao;
 import pl.polsl.skirentalservice.dao.employer.EmployerDao;
 import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
 import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
 import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
+import pl.polsl.skirentalservice.dao.rent.IRentDao;
+import pl.polsl.skirentalservice.dao.rent.RentDao;
+import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import pl.polsl.skirentalservice.dto.rent.InMemoryRentDataDto;
+import pl.polsl.skirentalservice.dto.rent.NewRentDetailsReqDto;
+import pl.polsl.skirentalservice.dto.rent.NewRentDetailsResDto;
+import pl.polsl.skirentalservice.util.*;
 
-import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Objects;
+
 import static pl.polsl.skirentalservice.exception.DateException.RentDateBeforeIssuedDateException;
 import static pl.polsl.skirentalservice.exception.DateException.ReturnDateBeforeRentDateException;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
 
 @WebServlet("/seller/create-new-rent")
 public class SellerCreateNewRentServlet extends HttpServlet {
@@ -69,8 +48,6 @@ public class SellerCreateNewRentServlet extends HttpServlet {
 
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
     private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -87,9 +64,9 @@ public class SellerCreateNewRentServlet extends HttpServlet {
             alert.setActive(true);
             alert.setMessage(
                 "W pamięci systemu istnieje już otwarte zgłoszenie wypożyczenia dla klienta " +
-                "<a href='" + req.getContextPath() + "/seller/create-new-rent?id=" + inMemoryRentData.getCustomerId() +
-                "' class='alert-link'>" + inMemoryRentData.getCustomerFullName() + "</a>. Aby stworzyć nowe wypożyczenie, " +
-                "zamknij poprzednie lub usuń z pamięci systemu."
+                    "<a href='" + req.getContextPath() + "/seller/create-new-rent?id=" + inMemoryRentData.getCustomerId() +
+                    "' class='alert-link'>" + inMemoryRentData.getCustomerFullName() + "</a>. Aby stworzyć nowe wypożyczenie, " +
+                    "zamknij poprzednie lub usuń z pamięci systemu."
             );
             httpSession.setAttribute(SessionAlert.COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
             res.sendRedirect("/seller/customers");
@@ -159,8 +136,6 @@ public class SellerCreateNewRentServlet extends HttpServlet {
         req.setAttribute("title", PageTitle.SELLER_CREATE_NEW_RENT_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/seller/rent/seller-create-new-rent.jsp").forward(req, res);
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {

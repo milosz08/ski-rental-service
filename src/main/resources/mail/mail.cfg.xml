@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<!--
+  ~ Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+  ~ Silesian University of Technology
+  -->
 <mail-configuration>
-    <property name="mail.smtp.host">@smtp_host@</property>
-    <property name="mail.smtp.port">465</property>
-    <property name="mail.smtp.user">@smtp_user@</property>
-    <property name="mail.smtp.pass">@smtp_pass@</property>
-    <property name="mail.smtp.domain">ski.miloszgilga.pl</property>
-    <property name="mail.smtp.socketFactory.port">465</property>
-    <property name="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</property>
-    <property name="mail.smtp.auth">true</property>
-    <property name="mail.smtp.starttls.enable">true</property>
-    <property name="mail.smtp.socketFactory.fallback">false</property>
+  <property name="mail.smtp.host">@smtp_host@</property>
+  <property name="mail.smtp.port">465</property>
+  <property name="mail.smtp.user">@smtp_user@</property>
+  <property name="mail.smtp.pass">@smtp_pass@</property>
+  <property name="mail.smtp.domain">ski.miloszgilga.pl</property>
+  <property name="mail.smtp.socketFactory.port">465</property>
+  <property name="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</property>
+  <property name="mail.smtp.auth">true</property>
+  <property name="mail.smtp.starttls.enable">true</property>
+  <property name="mail.smtp.socketFactory.fallback">false</property>
 </mail-configuration>

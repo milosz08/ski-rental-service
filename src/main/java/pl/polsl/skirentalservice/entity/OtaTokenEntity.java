@@ -1,32 +1,15 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
- *
- * File name: OtaTokenEntity.java
- * Last modified: 3/12/23, 11:01 AM
- * Project name: ski-rental-service
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
- * file except in compliance with the License. You may obtain a copy of the License at
- *
- *     <http://www.apache.org/license/LICENSE-2.0>
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the license.
+ * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Silesian University of Technology
  */
-
 package pl.polsl.skirentalservice.entity;
 
-import lombok.NoArgsConstructor;
-
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
-
-import pl.polsl.skirentalservice.core.db.EntityInjector;
+import lombok.NoArgsConstructor;
 import pl.polsl.skirentalservice.core.db.AuditableEntity;
+import pl.polsl.skirentalservice.core.db.EntityInjector;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+import java.time.LocalDateTime;
 
 @Entity
 @EntityInjector
@@ -34,22 +17,23 @@ import pl.polsl.skirentalservice.core.db.AuditableEntity;
 @NoArgsConstructor
 public class OtaTokenEntity extends AuditableEntity {
 
-    @Column(name = "ota_token", updatable = false)                       private String otaToken;
-    @Column(name = "expired_at", insertable = false, updatable = false)  private LocalDateTime expiredDate;
-    @Column(name = "is_used", insertable = false)                        private Boolean isUsed;
+    @Column(name = "ota_token", updatable = false)
+    private String otaToken;
+
+    @Column(name = "expired_at", insertable = false, updatable = false)
+    private LocalDateTime expiredDate;
+
+    @Column(name = "is_used", insertable = false)
+    private Boolean isUsed;
 
     @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST }, fetch = FetchType.LAZY)
     @JoinColumn(name = "employer_id", referencedColumnName = "id")
     private EmployerEntity employer;
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     public OtaTokenEntity(String otaToken, EmployerEntity employer) {
         this.otaToken = otaToken;
         this.employer = employer;
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     String getOtaToken() {
         return otaToken;
@@ -82,8 +66,6 @@ public class OtaTokenEntity extends AuditableEntity {
     void setEmployer(EmployerEntity employer) {
         this.employer = employer;
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public String toString() {

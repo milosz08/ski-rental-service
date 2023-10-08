@@ -1,34 +1,16 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
- *
- * File name: EquipmentTypeEntity.java
- * Last modified: 3/12/23, 11:01 AM
- * Project name: ski-rental-service
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
- * file except in compliance with the License. You may obtain a copy of the License at
- *
- *     <http://www.apache.org/license/LICENSE-2.0>
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the license.
+ * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Silesian University of Technology
  */
-
 package pl.polsl.skirentalservice.entity;
 
-import lombok.NoArgsConstructor;
-
 import jakarta.persistence.*;
-
-import java.util.Set;
-import java.util.HashSet;
-
-import pl.polsl.skirentalservice.core.db.EntityInjector;
+import lombok.NoArgsConstructor;
 import pl.polsl.skirentalservice.core.db.AuditableEntity;
+import pl.polsl.skirentalservice.core.db.EntityInjector;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @EntityInjector
@@ -36,18 +18,15 @@ import pl.polsl.skirentalservice.core.db.AuditableEntity;
 @NoArgsConstructor
 public class EquipmentTypeEntity extends AuditableEntity {
 
-    @Column(name = "name")  private String name;
+    @Column(name = "name")
+    private String name;
 
     @OneToMany(mappedBy = "equipmentType", fetch = FetchType.LAZY)
     private Set<EquipmentEntity> equipments = new HashSet<>();
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     public EquipmentTypeEntity(String name) {
         this.name = name.toLowerCase();
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public String getName() {
         return name;
@@ -64,8 +43,6 @@ public class EquipmentTypeEntity extends AuditableEntity {
     void setEquipments(Set<EquipmentEntity> equipments) {
         this.equipments = equipments;
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public String toString() {

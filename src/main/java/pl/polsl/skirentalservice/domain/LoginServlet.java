@@ -1,54 +1,34 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
- *
- * File name: LoginServlet.java
- * Last modified: 6/3/23, 1:19 AM
- * Project name: ski-rental-service
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
- * file except in compliance with the License. You may obtain a copy of the License at
- *
- *     <http://www.apache.org/license/LICENSE-2.0>
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the license.
+ * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Silesian University of Technology
  */
-
 package pl.polsl.skirentalservice.domain;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import at.favre.lib.crypto.bcrypt.BCrypt;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-
 import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import java.io.IOException;
-
-import pl.polsl.skirentalservice.util.*;
-import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.dto.login.LoginFormReqDto;
-import pl.polsl.skirentalservice.dto.login.LoginFormResDto;
-import pl.polsl.skirentalservice.dto.logout.LogoutModalDto;
+import jakarta.servlet.http.HttpSession;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.dao.employer.EmployerDao;
 import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
+import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.login.LoginFormReqDto;
+import pl.polsl.skirentalservice.dto.login.LoginFormResDto;
+import pl.polsl.skirentalservice.dto.logout.LogoutModalDto;
+import pl.polsl.skirentalservice.util.*;
 
-import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
+import java.io.IOException;
+
 import static pl.polsl.skirentalservice.exception.CredentialException.InvalidCredentialsException;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
@@ -57,8 +37,6 @@ public class LoginServlet extends HttpServlet {
 
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
     private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -70,8 +48,6 @@ public class LoginServlet extends HttpServlet {
         req.setAttribute("title", PageTitle.LOGIN_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(req, res);
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {

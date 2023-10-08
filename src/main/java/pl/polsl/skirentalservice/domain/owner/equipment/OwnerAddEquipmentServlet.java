@@ -1,57 +1,27 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
- *
- * File name: OwnerAddEquipmentServlet.java
- * Last modified: 6/3/23, 12:34 AM
- * Project name: ski-rental-service
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
- * file except in compliance with the License. You may obtain a copy of the License at
- *
- *     <http://www.apache.org/license/LICENSE-2.0>
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the license.
+ * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Silesian University of Technology
  */
-
 package pl.polsl.skirentalservice.domain.owner.equipment;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.modelmapper.ModelMapper;
-
-import org.krysalis.barcode4j.impl.upcean.EAN13Bean;
-import org.krysalis.barcode4j.output.bitmap.BitmapCanvasProvider;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-
 import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Objects;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-
+import jakarta.servlet.http.HttpSession;
 import org.apache.commons.lang3.RandomStringUtils;
-
-import pl.polsl.skirentalservice.util.*;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.krysalis.barcode4j.impl.upcean.EAN13Bean;
+import org.krysalis.barcode4j.output.bitmap.BitmapCanvasProvider;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ConfigSingleton;
+import pl.polsl.skirentalservice.core.ModelMapperGenerator;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.core.ModelMapperGenerator;
-import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.dto.equipment.AddEditEquipmentReqDto;
-import pl.polsl.skirentalservice.dto.equipment.AddEditEquipmentResDto;
 import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
 import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
 import pl.polsl.skirentalservice.dao.equipment_brand.EquipmentBrandDao;
@@ -60,14 +30,22 @@ import pl.polsl.skirentalservice.dao.equipment_color.EquipmentColorDao;
 import pl.polsl.skirentalservice.dao.equipment_color.IEquipmentColorDao;
 import pl.polsl.skirentalservice.dao.equipment_type.EquipmentTypeDao;
 import pl.polsl.skirentalservice.dao.equipment_type.IEquipmentTypeDao;
-import pl.polsl.skirentalservice.entity.EquipmentEntity;
-import pl.polsl.skirentalservice.entity.EquipmentTypeEntity;
+import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.equipment.AddEditEquipmentReqDto;
+import pl.polsl.skirentalservice.dto.equipment.AddEditEquipmentResDto;
 import pl.polsl.skirentalservice.entity.EquipmentBrandEntity;
 import pl.polsl.skirentalservice.entity.EquipmentColorEntity;
+import pl.polsl.skirentalservice.entity.EquipmentEntity;
+import pl.polsl.skirentalservice.entity.EquipmentTypeEntity;
+import pl.polsl.skirentalservice.util.*;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Objects;
 
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.EquipmentAlreadyExistException;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @WebServlet("/owner/add-equipment")
 public class OwnerAddEquipmentServlet extends HttpServlet {
@@ -79,8 +57,6 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
     private final ConfigSingleton config = ConfigSingleton.getInstance();
 
     private final ModelMapper modelMapper = ModelMapperGenerator.getModelMapper();
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -120,8 +96,6 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
         req.setAttribute("title", PageTitle.OWNER_ADD_EQUIPMENT_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/owner/equipment/owner-add-edit-equipment.jsp").forward(req, res);
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {

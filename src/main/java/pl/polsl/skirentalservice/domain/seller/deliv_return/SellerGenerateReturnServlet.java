@@ -1,84 +1,60 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
- *
- * File name: SellerGenerateReturnServlet.java
- * Last modified: 6/3/23, 12:06 AM
- * Project name: ski-rental-service
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
- * file except in compliance with the License. You may obtain a copy of the License at
- *
- *     <http://www.apache.org/license/LICENSE-2.0>
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the license.
+ * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Silesian University of Technology
  */
-
 package pl.polsl.skirentalservice.domain.seller.deliv_return;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-
-import org.modelmapper.TypeToken;
-import org.modelmapper.ModelMapper;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-
 import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import java.util.*;
-import java.io.IOException;
-import java.math.RoundingMode;
-import java.math.BigDecimal;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-
+import jakarta.servlet.http.HttpSession;
 import org.apache.commons.lang3.StringUtils;
-
-import pl.polsl.skirentalservice.util.*;
-import pl.polsl.skirentalservice.dto.*;
-import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
-import pl.polsl.skirentalservice.dto.deliv_return.CustomerDetailsReturnResDto;
-import pl.polsl.skirentalservice.dto.deliv_return.RentReturnDetailsResDto;
-import pl.polsl.skirentalservice.dto.deliv_return.RentReturnEquipmentRecordResDto;
-import pl.polsl.skirentalservice.dto.deliv_return.ReturnAlreadyExistPayloadDto;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.core.ModelMapperGenerator;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.core.mail.MailSocketSingleton;
 import pl.polsl.skirentalservice.core.mail.MailRequestPayload;
-import pl.polsl.skirentalservice.dao.rent.RentDao;
-import pl.polsl.skirentalservice.dao.rent.IRentDao;
+import pl.polsl.skirentalservice.core.mail.MailSocketSingleton;
 import pl.polsl.skirentalservice.dao.customer.CustomerDao;
 import pl.polsl.skirentalservice.dao.customer.ICustomerDao;
 import pl.polsl.skirentalservice.dao.employer.EmployerDao;
 import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
 import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
 import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
-import pl.polsl.skirentalservice.dao.return_deliv.ReturnDao;
+import pl.polsl.skirentalservice.dao.rent.IRentDao;
+import pl.polsl.skirentalservice.dao.rent.RentDao;
 import pl.polsl.skirentalservice.dao.return_deliv.IReturnDao;
+import pl.polsl.skirentalservice.dao.return_deliv.ReturnDao;
+import pl.polsl.skirentalservice.dto.*;
+import pl.polsl.skirentalservice.dto.deliv_return.CustomerDetailsReturnResDto;
+import pl.polsl.skirentalservice.dto.deliv_return.RentReturnDetailsResDto;
+import pl.polsl.skirentalservice.dto.deliv_return.RentReturnEquipmentRecordResDto;
+import pl.polsl.skirentalservice.dto.deliv_return.ReturnAlreadyExistPayloadDto;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.entity.*;
 import pl.polsl.skirentalservice.pdf.ReturnPdfDocument;
 import pl.polsl.skirentalservice.pdf.dto.PdfEquipmentDataDto;
 import pl.polsl.skirentalservice.pdf.dto.ReturnPdfDocumentDataDto;
+import pl.polsl.skirentalservice.util.*;
 
-import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
-import static pl.polsl.skirentalservice.exception.NotFoundException.RentNotFoundException;
-import static pl.polsl.skirentalservice.exception.NotFoundException.EquipmentNotFoundException;
-import static pl.polsl.skirentalservice.exception.DateException.ReturnDateBeforeRentDateException;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.ReturnDocumentAlreadyExistException;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+import static pl.polsl.skirentalservice.exception.DateException.ReturnDateBeforeRentDateException;
+import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 
 @WebServlet("/seller/generate-return")
 public class SellerGenerateReturnServlet extends HttpServlet {
@@ -89,8 +65,6 @@ public class SellerGenerateReturnServlet extends HttpServlet {
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
     private final MailSocketSingleton mailSocket = MailSocketSingleton.getInstance();
     private final ConfigSingleton config = ConfigSingleton.getInstance();
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -212,7 +186,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                     .setScale(2, RoundingMode.HALF_UP);
                 emailPayload.setReturnDate(generatedBrief.toString());
                 emailPayload.setTotalPriceNetto(totalSumPriceNetto);
-                emailPayload.setRentTime(rentDays +  " dni, " + totalRentHours + " godzin");
+                emailPayload.setRentTime(rentDays + " dni, " + totalRentHours + " godzin");
                 emailPayload.setTotalPriceBrutto(totalSumPriceBrutto);
 
                 final BigDecimal totalWithTax = totalSumPriceBrutto.add(rentDetails.totalDepositPriceBrutto());
@@ -232,7 +206,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
 
                 returnPdfDataDto.setIssuedIdentifier(returnIssuerIdentifier);
                 returnPdfDataDto.setReturnDate(generatedBrief.toString());
-                returnPdfDataDto.setRentTime(rentDays +  " dni, " + totalRentHours + " godzin");
+                returnPdfDataDto.setRentTime(rentDays + " dni, " + totalRentHours + " godzin");
                 returnPdfDataDto.setDescription(description);
 
                 final PriceUnitsDto pdfPrices = returnPdfDataDto.getPriceUnits();
@@ -243,7 +217,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 returnPdfDataDto.setTotalSumPriceBrutto(totalWithTax.toString());
 
                 final List<PdfEquipmentDataDto> pdfEquipmentsData = modelMapper.map(emailEquipmentsPayload,
-                    new TypeToken<List<PdfEquipmentDataDto>>(){}.getType());
+                    new TypeToken<List<PdfEquipmentDataDto>>() { }.getType());
                 returnPdfDataDto.setEquipments(pdfEquipmentsData);
 
                 final ReturnPdfDocument returnPdfDocument = new ReturnPdfDocument(config.getUploadsDir(), returnPdfDataDto);
@@ -289,8 +263,8 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 alert.setType(AlertType.INFO);
                 alert.setMessage(
                     "Generowanie zwrotu o numerze <strong>" + returnIssuerIdentifier + "</strong> dla wypożyczenia o " +
-                    "numerze <strong>" + rentDetails.issuedIdentifier() + "</strong> zakończone sukcesem. Potwierdzenie " +
-                    "wraz z podsumowaniem zostało wysłane również na adres email."
+                        "numerze <strong>" + rentDetails.issuedIdentifier() + "</strong> zakończone sukcesem. Potwierdzenie " +
+                        "wraz z podsumowaniem zostało wysłane również na adres email."
                 );
                 httpSession.setAttribute(SessionAlert.COMMON_RETURNS_PAGE_ALERT.getName(), alert);
                 res.sendRedirect("/seller/returns");

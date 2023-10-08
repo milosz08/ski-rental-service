@@ -1,43 +1,24 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
- *
- * File name: Utils.java
- * Last modified: 6/3/23, 1:00 AM
- * Project name: ski-rental-service
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
- * file except in compliance with the License. You may obtain a copy of the License at
- *
- *     <http://www.apache.org/license/LICENSE-2.0>
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the license.
+ * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Silesian University of Technology
  */
-
 package pl.polsl.skirentalservice.util;
 
-import org.slf4j.Logger;
-
-import org.hibernate.Session;
 import at.favre.lib.crypto.bcrypt.BCrypt;
-
-import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletRequest;
-
-import java.util.Objects;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-
+import jakarta.servlet.http.HttpSession;
+import org.hibernate.Session;
+import org.slf4j.Logger;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.dto.attribute.AttributeModalReqDto;
 import pl.polsl.skirentalservice.dto.attribute.AttributeModalResDto;
 import pl.polsl.skirentalservice.dto.attribute.AttributeValidatorPayloadDto;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 
 public class Utils {
 
@@ -49,27 +30,19 @@ public class Utils {
         return property;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     public static AlertTupleDto getAndDestroySessionAlert(HttpServletRequest req, SessionAlert sessionAlert) {
         final AlertTupleDto alert = getFromSessionAndDestroy(req, sessionAlert.getName(), AlertTupleDto.class);
         if (Objects.isNull(alert)) return new AlertTupleDto();
         return alert;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     public static AttributeModalResDto getAndDestroySessionModalData(HttpServletRequest req, SessionAttribute attribute) {
         return getFromSessionAndDestroy(req, attribute.getName(), AttributeModalResDto.class);
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     public static String generateHash(String preCoded) {
         return BCrypt.withDefaults().hashToString(10, preCoded.toCharArray());
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public static String getLoggedUserLogin(HttpServletRequest req) {
         final HttpSession httpSession = req.getSession();
@@ -77,8 +50,6 @@ public class Utils {
             .getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
         return loggedUser.getLogin();
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public static AttributeValidatorPayloadDto validateEquipmentAttribute(HttpServletRequest req, ValidatorSingleton validator) {
         final AlertTupleDto alert = new AlertTupleDto();
@@ -94,8 +65,6 @@ public class Utils {
             .build();
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     public static void onHibernateException(Session session, Logger logger, RuntimeException ex) {
         if (session.getTransaction().isActive()) {
             logger.info("Some issues appears. Transaction rollback and revert previous state...");
@@ -103,8 +72,6 @@ public class Utils {
         }
         throw ex;
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public static String getBarcodeChecksum(String barcode) {
         int result = 0;
@@ -116,8 +83,6 @@ public class Utils {
         barcode += result;
         return barcode;
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public static LocalDateTime truncateToTotalHour(LocalDateTime localDateTime) {
         int minutes = localDateTime.getMinute();

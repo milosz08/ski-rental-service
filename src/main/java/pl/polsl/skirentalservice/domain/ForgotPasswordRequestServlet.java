@@ -1,60 +1,42 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
- *
- * File name: ForgotPasswordRequestServlet.java
- * Last modified: 6/3/23, 1:15 AM
- * Project name: ski-rental-service
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
- * file except in compliance with the License. You may obtain a copy of the License at
- *
- *     <http://www.apache.org/license/LICENSE-2.0>
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the license.
+ * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Silesian University of Technology
  */
-
 package pl.polsl.skirentalservice.domain;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-
 import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import java.util.Map;
-import java.util.HashMap;
-import java.io.IOException;
-
-import org.apache.commons.lang3.StringUtils;
+import jakarta.servlet.http.HttpSession;
 import org.apache.commons.lang3.RandomStringUtils;
-
-import pl.polsl.skirentalservice.util.*;
-import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.dto.change_password.RequestToChangePasswordReqDto;
-import pl.polsl.skirentalservice.dto.change_password.RequestToChangePasswordResDto;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.core.mail.MailRequestPayload;
 import pl.polsl.skirentalservice.core.mail.MailSocketSingleton;
-import pl.polsl.skirentalservice.entity.EmployerEntity;
-import pl.polsl.skirentalservice.entity.OtaTokenEntity;
 import pl.polsl.skirentalservice.dao.employer.EmployerDao;
 import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
+import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.change_password.RequestToChangePasswordReqDto;
+import pl.polsl.skirentalservice.dto.change_password.RequestToChangePasswordResDto;
+import pl.polsl.skirentalservice.entity.EmployerEntity;
+import pl.polsl.skirentalservice.entity.OtaTokenEntity;
+import pl.polsl.skirentalservice.util.AlertType;
+import pl.polsl.skirentalservice.util.PageTitle;
+import pl.polsl.skirentalservice.util.SessionAlert;
+import pl.polsl.skirentalservice.util.Utils;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @WebServlet("/forgot-password-request")
 public class ForgotPasswordRequestServlet extends HttpServlet {
@@ -65,8 +47,6 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
     private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
     private final MailSocketSingleton mailSocket = MailSocketSingleton.getInstance();
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         req.setAttribute("alertData", Utils.getAndDestroySessionAlert(req, SessionAlert.FORGOT_PASSWORD_PAGE_ALERT));
@@ -75,8 +55,6 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
         req.setAttribute("title", PageTitle.FORGOT_PASSWORD_REQUEST_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/forgot-password-request.jsp").forward(req, res);
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {

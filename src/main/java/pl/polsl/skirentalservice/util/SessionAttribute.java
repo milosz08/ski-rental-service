@@ -1,55 +1,37 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
- *
- * File name: SessionAttribute.java
- * Last modified: 3/12/23, 11:01 AM
- * Project name: ski-rental-service
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
- * file except in compliance with the License. You may obtain a copy of the License at
- *
- *     <http://www.apache.org/license/LICENSE-2.0>
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the license.
+ * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Silesian University of Technology
  */
-
 package pl.polsl.skirentalservice.util;
 
-import lombok.Getter;
 import lombok.AllArgsConstructor;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
 public enum SessionAttribute {
-    EMPLOYERS_LIST_SORTER       ("employers-list-sorter"),
-    EMPLOYERS_LIST_FILTER       ("employers-list-filter"),
-    CUSTOMERS_LIST_SORTER       ("customers-list-sorter"),
-    CUSTOMERS_LIST_FILTER       ("customers-list-filter"),
-    EQUIPMENTS_LIST_SORTER      ("equipments-list-sorter"),
-    EQUIPMENTS_LIST_FILTER      ("equipments-list-filter"),
-    RENT_EQUIPMENTS_LIST_SORTER ("equipments-list-sorter"),
-    RENT_EQUIPMENTS_LIST_FILTER ("equipments-list-filter"),
-    RENTS_LIST_SORTER           ("rents-list-sorter"),
-    RENTS_LIST_FILTER           ("rents-list-filter"),
-    RETURNS_LIST_SORTER         ("returns-list-sorter"),
-    RETURNS_LIST_FILTER         ("returns-list-filter"),
+    EMPLOYERS_LIST_SORTER("employers-list-sorter"),
+    EMPLOYERS_LIST_FILTER("employers-list-filter"),
+    CUSTOMERS_LIST_SORTER("customers-list-sorter"),
+    CUSTOMERS_LIST_FILTER("customers-list-filter"),
+    EQUIPMENTS_LIST_SORTER("equipments-list-sorter"),
+    EQUIPMENTS_LIST_FILTER("equipments-list-filter"),
+    RENT_EQUIPMENTS_LIST_SORTER("equipments-list-sorter"),
+    RENT_EQUIPMENTS_LIST_FILTER("equipments-list-filter"),
+    RENTS_LIST_SORTER("rents-list-sorter"),
+    RENTS_LIST_FILTER("rents-list-filter"),
+    RETURNS_LIST_SORTER("returns-list-sorter"),
+    RETURNS_LIST_FILTER("returns-list-filter"),
 
-    EQ_TYPES_MODAL_DATA         ("equipmentTypeModalData"),
-    EQ_BRANDS_MODAL_DATA        ("equipmentBrandsModalData"),
-    EQ_COLORS_MODAL_DATA        ("equipmentColorsModalData"),
-    EQ_ADD_CART_MODAL_DATA      ("equipmentNewCartModalData"),
-    EQ_EDIT_CART_MODAL_DATA     ("equipmentEditCartModalData"),
+    EQ_TYPES_MODAL_DATA("equipmentTypeModalData"),
+    EQ_BRANDS_MODAL_DATA("equipmentBrandsModalData"),
+    EQ_COLORS_MODAL_DATA("equipmentColorsModalData"),
+    EQ_ADD_CART_MODAL_DATA("equipmentNewCartModalData"),
+    EQ_EDIT_CART_MODAL_DATA("equipmentEditCartModalData"),
 
-    LOGGED_USER_DETAILS         ("loggedUserDetails"),
-    INMEMORY_NEW_RENT_DATA      ("inmemoryNewRentData"),
-    LOGOUT_MODAL                ("logout-modal");
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    LOGGED_USER_DETAILS("loggedUserDetails"),
+    INMEMORY_NEW_RENT_DATA("inmemoryNewRentData"),
+    LOGOUT_MODAL("logout-modal");
 
     private final String name;
 }

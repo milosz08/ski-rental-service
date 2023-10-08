@@ -1,35 +1,8 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
- *
- * File name: HibernateDbSingleton.java
- * Last modified: 6/3/23, 1:15 AM
- * Project name: ski-rental-service
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
- * file except in compliance with the License. You may obtain a copy of the License at
- *
- *     <http://www.apache.org/license/LICENSE-2.0>
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the license.
+ * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Silesian University of Technology
  */
-
 package pl.polsl.skirentalservice.core.db;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.reflections.Reflections;
-import org.reflections.scanners.Scanners;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
-
-import java.util.Set;
-import java.util.Objects;
-import java.sql.SQLException;
-import java.util.stream.Collectors;
 
 import liquibase.Liquibase;
 import liquibase.database.Database;
@@ -37,15 +10,23 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
-
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 import org.hibernate.boot.MetadataSources;
-import org.hibernate.service.ServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
 import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
+import org.hibernate.service.ServiceRegistry;
+import org.reflections.Reflections;
+import org.reflections.scanners.Scanners;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+import java.sql.SQLException;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class HibernateDbSingleton {
 
@@ -55,8 +36,6 @@ public class HibernateDbSingleton {
 
     private SessionFactory sessionFactory;
     private static volatile HibernateDbSingleton instance;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private HibernateDbSingleton() {
         try {
@@ -96,13 +75,9 @@ public class HibernateDbSingleton {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     public SessionFactory getSessionFactory() {
         return sessionFactory;
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public static synchronized HibernateDbSingleton getInstance() {
         if (Objects.isNull(instance)) {

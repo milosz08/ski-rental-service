@@ -1,37 +1,19 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
- *
- * File name: EquipmentEntity.java
- * Last modified: 3/12/23, 11:01 AM
- * Project name: ski-rental-service
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
- * file except in compliance with the License. You may obtain a copy of the License at
- *
- *     <http://www.apache.org/license/LICENSE-2.0>
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the license.
+ * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Silesian University of Technology
  */
-
 package pl.polsl.skirentalservice.entity;
 
-import lombok.NoArgsConstructor;
-
 import jakarta.persistence.*;
-
-import java.util.Set;
-import java.util.HashSet;
-import java.math.BigDecimal;
-
-import pl.polsl.skirentalservice.util.Gender;
-import pl.polsl.skirentalservice.core.db.EntityInjector;
-import pl.polsl.skirentalservice.core.db.AuditableEntity;
+import lombok.NoArgsConstructor;
 import pl.polsl.skirentalservice.converter.GenderConverter;
+import pl.polsl.skirentalservice.core.db.AuditableEntity;
+import pl.polsl.skirentalservice.core.db.EntityInjector;
+import pl.polsl.skirentalservice.util.Gender;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @EntityInjector
@@ -39,19 +21,41 @@ import pl.polsl.skirentalservice.converter.GenderConverter;
 @NoArgsConstructor
 public class EquipmentEntity extends AuditableEntity {
 
-    @Column(name = "name")                          private String name;
-    @Column(name = "model")                         private String model;
-    @Column(name = "description")                   private String description;
-    @Column(name = "barcode")                       private String barcode;
-    @Column(name = "count_in_store")                private Integer countInStore;
-    @Column(name = "available_count")               private Integer availableCount;
-    @Column(name = "size")                          private BigDecimal size;
-    @Column(name = "price_per_hour")                private BigDecimal pricePerHour;
-    @Column(name = "price_for_next_hour")           private BigDecimal priceForNextHour;
-    @Column(name = "price_per_day")                 private BigDecimal pricePerDay;
-    @Column(name = "value_cost")                    private BigDecimal valueCost;
+    @Column(name = "name")
+    private String name;
 
-    @Convert(converter = GenderConverter.class) @Column(name = "gender")
+    @Column(name = "model")
+    private String model;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "barcode")
+    private String barcode;
+
+    @Column(name = "count_in_store")
+    private Integer countInStore;
+
+    @Column(name = "available_count")
+    private Integer availableCount;
+
+    @Column(name = "size")
+    private BigDecimal size;
+
+    @Column(name = "price_per_hour")
+    private BigDecimal pricePerHour;
+
+    @Column(name = "price_for_next_hour")
+    private BigDecimal priceForNextHour;
+
+    @Column(name = "price_per_day")
+    private BigDecimal pricePerDay;
+
+    @Column(name = "value_cost")
+    private BigDecimal valueCost;
+
+    @Convert(converter = GenderConverter.class)
+    @Column(name = "gender")
     private Gender gender;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
@@ -68,8 +72,6 @@ public class EquipmentEntity extends AuditableEntity {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "equipment")
     private Set<RentEquipmentEntity> rentsEquipments = new HashSet<>();
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public String getName() {
         return name;
@@ -198,8 +200,6 @@ public class EquipmentEntity extends AuditableEntity {
     public void setRentsEquipments(Set<RentEquipmentEntity> rentsEquipments) {
         this.rentsEquipments = rentsEquipments;
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public String toString() {

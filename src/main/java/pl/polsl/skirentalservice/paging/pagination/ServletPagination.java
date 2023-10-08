@@ -1,30 +1,14 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
- *
- * File name: ServletPagination.java
- * Last modified: 3/12/23, 11:01 AM
- * Project name: ski-rental-service
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
- * file except in compliance with the License. You may obtain a copy of the License at
- *
- *     <http://www.apache.org/license/LICENSE-2.0>
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the license.
+ * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Silesian University of Technology
  */
-
 package pl.polsl.skirentalservice.paging.pagination;
 
 import lombok.Data;
 
-import java.util.List;
-import java.util.Arrays;
 import java.util.ArrayList;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+import java.util.Arrays;
+import java.util.List;
 
 @Data
 public class ServletPagination {
@@ -39,14 +23,12 @@ public class ServletPagination {
     private List<PaginationPage> pages = new ArrayList<>();
     private List<PaginationPage> selectPages = new ArrayList<>();
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     public ServletPagination(int page, int totalPerPage, long totalRecords) {
         this.allPages = (int) Math.ceil(totalRecords * 1.0 / totalPerPage);
         this.page = page;
         this.totalPerPage = totalPerPage;
         this.totalRecords = totalRecords;
-        this.prevPage = new PaginationPage(page < allPages ? page - 1: page, page == 1 ? "disabled" : "");
+        this.prevPage = new PaginationPage(page < allPages ? page - 1 : page, page == 1 ? "disabled" : "");
         this.nextPage = new PaginationPage(page >= 1 ? page + 1 : page, page == allPages ? "disabled" : "");
         this.fromRecords = (page - 1) * totalPerPage + 1;
         this.toRecords = (page - 1) * totalPerPage + totalPerPage;
@@ -67,8 +49,6 @@ public class ServletPagination {
             selectPages.add(new PaginationPage(i, page == i ? "selected" : ""));
         }
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public boolean checkIfIsInvalid() {
         final int[] pages = { 10, 20, 25, 50, 100 };

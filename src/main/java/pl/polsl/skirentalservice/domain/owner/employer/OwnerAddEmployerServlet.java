@@ -1,75 +1,53 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
- *
- * File name: OwnerAddEmployerServlet.java
- * Last modified: 6/2/23, 11:53 PM
- * Project name: ski-rental-service
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
- * file except in compliance with the License. You may obtain a copy of the License at
- *
- *     <http://www.apache.org/license/LICENSE-2.0>
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the license.
+ * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Silesian University of Technology
  */
-
 package pl.polsl.skirentalservice.domain.owner.employer;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-
-import org.modelmapper.ModelMapper;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-
 import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import java.util.Map;
-import java.util.Locale;
-import java.util.Objects;
-import java.io.IOException;
-
-import org.apache.commons.lang3.StringUtils;
+import jakarta.servlet.http.HttpSession;
 import org.apache.commons.lang3.RandomStringUtils;
-
-import pl.polsl.skirentalservice.util.*;
-import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
-import pl.polsl.skirentalservice.dto.employer.AddEditEmployerReqDto;
-import pl.polsl.skirentalservice.dto.employer.AddEditEmployerResDto;
-import pl.polsl.skirentalservice.dto.employer.AddEmployerMailPayload;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.core.ModelMapperGenerator;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.core.mail.MailSocketSingleton;
 import pl.polsl.skirentalservice.core.mail.MailRequestPayload;
+import pl.polsl.skirentalservice.core.mail.MailSocketSingleton;
 import pl.polsl.skirentalservice.core.ssh.SshSocketSingleton;
 import pl.polsl.skirentalservice.dao.employer.EmployerDao;
 import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
-import pl.polsl.skirentalservice.dao.user_details.UserDetailsDao;
 import pl.polsl.skirentalservice.dao.user_details.IUserDetailsDao;
-import pl.polsl.skirentalservice.entity.RoleEntity;
+import pl.polsl.skirentalservice.dao.user_details.UserDetailsDao;
+import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.employer.AddEditEmployerReqDto;
+import pl.polsl.skirentalservice.dto.employer.AddEditEmployerResDto;
+import pl.polsl.skirentalservice.dto.employer.AddEmployerMailPayload;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.entity.EmployerEntity;
-import pl.polsl.skirentalservice.entity.UserDetailsEntity;
 import pl.polsl.skirentalservice.entity.LocationAddressEntity;
+import pl.polsl.skirentalservice.entity.RoleEntity;
+import pl.polsl.skirentalservice.entity.UserDetailsEntity;
 import pl.polsl.skirentalservice.ssh.ExecCommandPerformer;
 import pl.polsl.skirentalservice.ssh.IExecCommandPerformer;
+import pl.polsl.skirentalservice.util.*;
+
+import java.io.IOException;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.PeselAlreadyExistException;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.PhoneNumberAlreadyExistException;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @WebServlet("/owner/add-employer")
 public class OwnerAddEmployerServlet extends HttpServlet {
@@ -83,8 +61,6 @@ public class OwnerAddEmployerServlet extends HttpServlet {
     private final SshSocketSingleton sshSocket = SshSocketSingleton.getInstance();
     private final ConfigSingleton config = ConfigSingleton.getInstance();
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final AlertTupleDto alert = Utils.getAndDestroySessionAlert(req, SessionAlert.OWNER_ADD_EMPLOYER_PAGE_ALERT);
@@ -96,8 +72,6 @@ public class OwnerAddEmployerServlet extends HttpServlet {
         req.setAttribute("title", PageTitle.OWNER_ADD_EMPLOYER_PAGE.getName());
         req.getRequestDispatcher("/WEB-INF/pages/owner/employer/owner-add-edit-employer.jsp").forward(req, res);
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
@@ -185,8 +159,8 @@ public class OwnerAddEmployerServlet extends HttpServlet {
                 LOGGER.info("Employer with mailbox was successfuly created. User data: {}", employer);
                 alert.setMessage(
                     "Nastąpiło pomyślnie dodanie nowego pracownika. Na adres email <strong>" + email + "</strong> " +
-                    "zostało wysłane hasło dostępu do konta. Hasło dostępu do skrzynki email użytkownika znajdziesz " +
-                    "w przysłanej na Twój adres email wiadomości."
+                        "zostało wysłane hasło dostępu do konta. Hasło dostępu do skrzynki email użytkownika znajdziesz " +
+                        "w przysłanej na Twój adres email wiadomości."
                 );
                 alert.setType(AlertType.INFO);
                 httpSession.setAttribute(SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT.getName(), alert);

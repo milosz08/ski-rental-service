@@ -1,52 +1,32 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <http://miloszgilga.pl>
- *
- * File name: PdfHandler.java
- * Last modified: 3/12/23, 11:01 AM
- * Project name: ski-rental-service
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
- * file except in compliance with the License. You may obtain a copy of the License at
- *
- *     <http://www.apache.org/license/LICENSE-2.0>
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the license.
+ * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Silesian University of Technology
  */
-
 package pl.polsl.skirentalservice.pdf;
 
 import com.itextpdf.io.font.PdfEncodings;
-
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
-import com.itextpdf.kernel.colors.DeviceRgb;
-
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.Cell;
-import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.element.Paragraph;
-
-import com.itextpdf.layout.properties.UnitValue;
-import com.itextpdf.layout.properties.TextAlignment;
-import com.itextpdf.layout.properties.VerticalAlignment;
+import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.HorizontalAlignment;
-
-import java.util.Map;
-import java.util.List;
-import java.io.IOException;
-
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
+import com.itextpdf.layout.properties.VerticalAlignment;
 import pl.polsl.skirentalservice.dto.PriceUnitsDto;
 import pl.polsl.skirentalservice.pdf.dto.PdfEquipmentDataDto;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 public class PdfHandler {
 
@@ -71,7 +51,7 @@ public class PdfHandler {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     protected Table generateHeader(String text, String identifier, String date) {
-        final Table headerTable = flexTable(UnitValue.createPercentArray(new float[] { 60, 40 }));
+        final Table headerTable = flexTable(UnitValue.createPercentArray(new float[]{ 60, 40 }));
         headerTable.addCell(new Cell().add(new Paragraph("DOKUMENT\n" + text.toUpperCase())
             .setFontSize(13f).setFixedLeading(14f).setVerticalAlignment(VerticalAlignment.MIDDLE)).setBorder(Border.NO_BORDER));
 
@@ -169,7 +149,7 @@ public class PdfHandler {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     protected Table generatePricesDivider() {
-        final Table dividerPrice = new Table(new float[] { 150f }).setHorizontalAlignment(HorizontalAlignment.RIGHT);
+        final Table dividerPrice = new Table(new float[]{ 150f }).setHorizontalAlignment(HorizontalAlignment.RIGHT);
         dividerPrice.setBorder(new SolidBorder(SECONDARY_COLOR, .2f));
         dividerPrice.setMargins(8f, 0, 8f, 0);
         return dividerPrice;

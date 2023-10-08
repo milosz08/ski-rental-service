@@ -20,3 +20,4 @@ id_rsa_pem
 known_hosts.dat
 .idea/discord.xml
 .idea/workspace.xml
+.idea/aws.xml
