@@ -20,21 +20,24 @@ import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Utils {
     public static <T> T getFromSessionAndDestroy(HttpServletRequest req, String propertyName, Class<T> mappedClazz) {
         final HttpSession session = req.getSession();
         final T property = mappedClazz.cast(session.getAttribute(propertyName));
-        if (Objects.isNull(property)) return null;
+        if (property == null) {
+            return null;
+        }
         session.removeAttribute(propertyName);
         return property;
     }
 
     public static AlertTupleDto getAndDestroySessionAlert(HttpServletRequest req, SessionAlert sessionAlert) {
         final AlertTupleDto alert = getFromSessionAndDestroy(req, sessionAlert.getName(), AlertTupleDto.class);
-        if (Objects.isNull(alert)) return new AlertTupleDto();
+        if (alert == null) {
+            return new AlertTupleDto();
+        }
         return alert;
     }
 
@@ -72,7 +75,7 @@ public class Utils {
     }
 
     public static void onHibernateException(Session session, Logger logger, RuntimeException ex) {
-        if (session.getTransaction().isActive()) {
+        if (session != null && session.getTransaction().isActive()) {
             logger.info("Some issues appears. Transaction rollback and revert previous state...");
             session.getTransaction().rollback();
         }
