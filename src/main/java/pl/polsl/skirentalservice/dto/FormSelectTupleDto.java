@@ -5,6 +5,7 @@
 package pl.polsl.skirentalservice.dto;
 
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 @Data
 public class FormSelectTupleDto {
@@ -15,7 +16,7 @@ public class FormSelectTupleDto {
     public FormSelectTupleDto(boolean isSelected, String value, String text) {
         this.value = value;
         this.text = text;
-        this.isSelected = isSelected ? "selected" : "";
+        this.isSelected = isSelected ? "selected" : StringUtils.EMPTY;
     }
 
     public FormSelectTupleDto(String value, String text) {

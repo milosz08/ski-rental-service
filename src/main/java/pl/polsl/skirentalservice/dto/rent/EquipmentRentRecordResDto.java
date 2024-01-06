@@ -7,6 +7,7 @@ package pl.polsl.skirentalservice.dto.rent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 
@@ -26,7 +27,7 @@ public class EquipmentRentRecordResDto {
     private String disabled;
 
     public void setDisabled(boolean isDisabled) {
-        this.disabled = isDisabled ? "disabled" : "";
+        this.disabled = isDisabled ? "disabled" : StringUtils.EMPTY;
     }
 
     @Override

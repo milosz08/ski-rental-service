@@ -5,6 +5,7 @@
 package pl.polsl.skirentalservice.dto;
 
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ public class FormSelectsDto {
     public FormSelectsDto() {
         this.selects = new ArrayList<>();
         this.selected = "none";
-        this.errorStyle = "";
-        this.message = "";
+        this.errorStyle = StringUtils.EMPTY;
+        this.message = StringUtils.EMPTY;
     }
 }

@@ -92,8 +92,14 @@ public class AddEditEmployerReqDto implements ReqValidatePojo {
     }
 
     public String getFullAddress() {
-        return StringUtils.joinWith(" ", "ul.", street, buildingNr, StringUtils.isBlank(apartmentNr) ? "" : "/"
-            + apartmentNr, postalCode, city);
+        return StringUtils.joinWith(
+            StringUtils.SPACE,
+            "ul.",
+            street,
+            buildingNr,
+            StringUtils.isBlank(apartmentNr) ? StringUtils.EMPTY : "/" + apartmentNr,
+            postalCode,
+            city);
     }
 
     public void validateDates(ConfigSingleton config) {
