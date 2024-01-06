@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 
 @Slf4j
 public class SshSocketSingleton {
@@ -37,11 +38,10 @@ public class SshSocketSingleton {
         }
     }
 
-    public <T> T executeCommand(SshCommand com, Map<String, String> entries, Class<T> mapTo) throws RuntimeException {
-        final JAXBSshCommand command = config.getCommands().getCommands().stream()
-            .filter(c -> c.getExecutableFor().equals(com.getCommandName())).findFirst()
-            .orElseThrow(() -> new RuntimeException("Command with executable for " + com.getCommandName()
-                + " does not exist in XML scope."));
+    public <T> T executeCommand(
+        Function<JAXBSshCommands, String> commandCallback, Map<String, String> entries, Class<T> mapTo
+    ) throws RuntimeException {
+        final String command = commandCallback.apply(config.getCommands());
         final StringSubstitutor substitutor = new StringSubstitutor(entries);
         final JAXBSshProperties properties = config.getProperties();
         final String knownHosts = Objects.requireNonNull(getClass().getResource(properties.getSshKnownHosts())).getFile();
@@ -52,7 +52,7 @@ public class SshSocketSingleton {
             sshClient.connect(properties.getSshHost());
             sshClient.authPublickey(properties.getSshLogin(), rsaKey);
             final Session session = sshClient.startSession();
-            final Session.Command sessionCommand = session.exec(substitutor.replace(command.getExecScript()));
+            final Session.Command sessionCommand = session.exec(substitutor.replace(command));
             final String response = IOUtils.readFully(sessionCommand.getInputStream()).toString();
             sessionCommand.join();
             session.close();

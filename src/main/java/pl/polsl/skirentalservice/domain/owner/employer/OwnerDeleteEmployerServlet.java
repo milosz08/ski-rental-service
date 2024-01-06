@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.core.ssh.SshSocketSingleton;
 import pl.polsl.skirentalservice.dao.EmployerDao;
 import pl.polsl.skirentalservice.dao.hibernate.EmployerDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
@@ -33,7 +32,6 @@ import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFound
 @WebServlet("/owner/delete-employer")
 public class OwnerDeleteEmployerServlet extends HttpServlet {
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
-    private final SshSocketSingleton sshSocket = SshSocketSingleton.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -50,7 +48,7 @@ public class OwnerDeleteEmployerServlet extends HttpServlet {
                     .orElseThrow(() -> new UserNotFoundException(userId));
                 if (employerDao.checkIfEmployerHasOpenedRents(userId)) throw new EmployerHasOpenedRentsException();
 
-                final ExecCommand commandPerformer = new ExecCommandPerformer(sshSocket);
+                final ExecCommand commandPerformer = new ExecCommandPerformer();
                 commandPerformer.deleteMailbox(deletingEmployer.getEmailAddress());
                 session.remove(deletingEmployer);
 

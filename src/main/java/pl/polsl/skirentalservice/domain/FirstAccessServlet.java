@@ -15,7 +15,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.core.ssh.SshSocketSingleton;
 import pl.polsl.skirentalservice.dao.EmployerDao;
 import pl.polsl.skirentalservice.dao.hibernate.EmployerDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
@@ -35,7 +34,6 @@ import static pl.polsl.skirentalservice.exception.CredentialException.PasswordMi
 public class FirstAccessServlet extends HttpServlet {
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
     private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
-    private final SshSocketSingleton sshSocket = SshSocketSingleton.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -72,7 +70,7 @@ public class FirstAccessServlet extends HttpServlet {
                 final EmployerDao employerDao = new EmployerDaoHib(session);
                 employerDao.updateEmployerFirstAccessPassword(Utils.generateHash(reqDto.getPassword()), userDataDto.getId());
 
-                final ExecCommand commandPerformer = new ExecCommandPerformer(sshSocket);
+                final ExecCommand commandPerformer = new ExecCommandPerformer();
                 commandPerformer.updateMailboxPassword(userDataDto.getEmailAddress(), reqDto.getEmailPassword());
 
                 alert.setType(AlertType.INFO);

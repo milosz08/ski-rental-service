@@ -22,7 +22,6 @@ import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.core.mail.MailRequestPayload;
 import pl.polsl.skirentalservice.core.mail.MailSocketSingleton;
-import pl.polsl.skirentalservice.core.ssh.SshSocketSingleton;
 import pl.polsl.skirentalservice.dao.EmployerDao;
 import pl.polsl.skirentalservice.dao.UserDetailsDao;
 import pl.polsl.skirentalservice.dao.hibernate.EmployerDaoHib;
@@ -54,7 +53,6 @@ public class OwnerAddEmployerServlet extends HttpServlet {
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
     private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
     private final MailSocketSingleton mailSocket = MailSocketSingleton.getInstance();
-    private final SshSocketSingleton sshSocket = SshSocketSingleton.getInstance();
     private final ConfigSingleton config = ConfigSingleton.getInstance();
 
     @Override
@@ -84,7 +82,7 @@ public class OwnerAddEmployerServlet extends HttpServlet {
             return;
         }
 
-        final ExecCommand commandPerformer = new ExecCommandPerformer(sshSocket);
+        final ExecCommand commandPerformer = new ExecCommandPerformer();
         try (final Session session = sessionFactory.openSession()) {
             reqDto.validateDates(config);
             String email = "";
