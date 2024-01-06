@@ -11,6 +11,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum PageTitle {
     NOT_FOUND_4O4_PAGE("404"),
+    INTERNAL_SERVER_ERROR_PAGE("500"),
     LOGIN_PAGE("Logowanie"),
     FIRST_ACCESS_PAGE("Inicjalizacja konta"),
     FORGOT_PASSWORD_REQUEST_PAGE("Resetuj hasło"),
