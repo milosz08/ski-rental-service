@@ -25,7 +25,6 @@ import java.io.IOException;
     "/seller/equipment-details/*",
 }, initParams = @WebInitParam(name = "mood", value = "awake"))
 public class RedirectWhenEquipmentIdNotExistInPathFilter extends HttpFilter {
-
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
         throws IOException, ServletException {

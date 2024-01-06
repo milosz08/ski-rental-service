@@ -21,7 +21,6 @@ import java.io.IOException;
     "/owner/employer-details/*",
 }, initParams = @WebInitParam(name = "mood", value = "awake"))
 public class RedirectWhenEmployerIdNotExistInPathFilter extends HttpFilter {
-
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
         throws IOException, ServletException {

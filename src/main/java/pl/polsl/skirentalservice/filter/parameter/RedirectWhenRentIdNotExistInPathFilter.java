@@ -23,7 +23,6 @@ import java.io.IOException;
     "/seller/rent-details/*",
 }, initParams = @WebInitParam(name = "mood", value = "awake"))
 public class RedirectWhenRentIdNotExistInPathFilter extends HttpFilter {
-
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
         throws IOException, ServletException {

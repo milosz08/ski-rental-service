@@ -19,8 +19,8 @@ import pl.polsl.skirentalservice.core.ssh.SshSocketSingleton;
 import pl.polsl.skirentalservice.dao.EmployerDao;
 import pl.polsl.skirentalservice.dao.hibernate.EmployerDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.ssh.ExecCommand;
 import pl.polsl.skirentalservice.ssh.ExecCommandPerformer;
-import pl.polsl.skirentalservice.ssh.IExecCommandPerformer;
 import pl.polsl.skirentalservice.util.AlertType;
 import pl.polsl.skirentalservice.util.SessionAlert;
 import pl.polsl.skirentalservice.util.Utils;
@@ -53,7 +53,7 @@ public class OwnerDeleteEmployerServlet extends HttpServlet {
                     .orElseThrow(() -> new UserNotFoundException(userId));
                 if (employerDao.checkIfEmployerHasOpenedRents(userId)) throw new EmployerHasOpenedRentsException();
 
-                final IExecCommandPerformer commandPerformer = new ExecCommandPerformer(sshSocket);
+                final ExecCommand commandPerformer = new ExecCommandPerformer(sshSocket);
                 commandPerformer.deleteMailbox(deletingEmployer.getEmailAddress());
                 session.remove(deletingEmployer);
 

@@ -20,7 +20,6 @@ import java.io.IOException;
     "/owner/add-equipment-color",
 }, initParams = @WebInitParam(name = "mood", value = "awake"))
 public class RedirectOnGetMethodRequestFilter extends HttpFilter {
-
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
         throws IOException, ServletException {

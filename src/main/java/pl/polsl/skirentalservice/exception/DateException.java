@@ -7,7 +7,6 @@ package pl.polsl.skirentalservice.exception;
 import java.time.LocalDate;
 
 public class DateException {
-
     public static class DateInFutureException extends RuntimeException {
         public DateInFutureException(String formField, int circaYears) {
             super("Wartość daty w polu <strong>" + formField + "</strong> musi być przed <strong>" +

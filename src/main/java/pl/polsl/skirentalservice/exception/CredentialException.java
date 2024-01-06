@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import pl.polsl.skirentalservice.dto.login.LoginFormReqDto;
 
 public class CredentialException {
-
     public static class PasswordMismatchException extends RuntimeException {
         public PasswordMismatchException(String firstField, String secondField) {
             super("Hasła w polach <strong>" + firstField + "</strong> oraz <strong>" + secondField + "</strong> " +

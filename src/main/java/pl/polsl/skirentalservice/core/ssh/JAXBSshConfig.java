@@ -14,9 +14,9 @@ import lombok.NoArgsConstructor;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "ssh-configuration")
 public class JAXBSshConfig {
-
     @XmlElement(name = "properties")
     private JAXBSshProperties properties;
+
     @XmlElement(name = "commands")
     private JAXBSshCommands commands;
 

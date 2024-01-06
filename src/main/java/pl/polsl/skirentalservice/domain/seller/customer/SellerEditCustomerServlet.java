@@ -102,7 +102,7 @@ public class SellerEditCustomerServlet extends HttpServlet {
             }
             try {
                 session.beginTransaction();
-                final IUserDetailsDao userDetailsDao = new UserDetailsDao(session);
+                final UserDetailsDao userDetailsDao = new UserDetailsDaoHib(session);
 
                 final CustomerEntity updatableCustomer = session.get(CustomerEntity.class, customerId);
                 if (Objects.isNull(updatableCustomer)) throw new UserNotFoundException(customerId);

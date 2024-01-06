@@ -17,7 +17,6 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "commands")
 public class JAXBSshCommands {
-
     @XmlElement(name = "command")
     private List<JAXBSshCommand> commands = new ArrayList<>();
 

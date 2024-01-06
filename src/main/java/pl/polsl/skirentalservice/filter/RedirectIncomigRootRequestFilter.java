@@ -15,7 +15,6 @@ import java.io.IOException;
 
 @WebFilter(urlPatterns = "/", initParams = @WebInitParam(name = "mood", value = "awake"))
 public class RedirectIncomigRootRequestFilter extends HttpFilter {
-
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException {
         res.sendRedirect("/login");

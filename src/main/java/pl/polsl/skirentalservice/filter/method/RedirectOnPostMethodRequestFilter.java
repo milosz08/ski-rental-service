@@ -21,7 +21,6 @@ import java.io.IOException;
     "/owner/delete-equipment-color",
 }, initParams = @WebInitParam(name = "mood", value = "awake"))
 public class RedirectOnPostMethodRequestFilter extends HttpFilter {
-
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
         throws IOException, ServletException {

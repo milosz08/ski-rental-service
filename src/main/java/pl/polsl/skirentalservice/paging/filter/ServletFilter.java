@@ -6,21 +6,16 @@ package pl.polsl.skirentalservice.paging.filter;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import pl.polsl.skirentalservice.util.SessionAttribute;
 
 import java.util.List;
-import java.util.Objects;
 
+@RequiredArgsConstructor
 public class ServletFilter {
-
     private final HttpServletRequest req;
     private final List<FilterColumn> fields;
-
-    public ServletFilter(HttpServletRequest req, List<FilterColumn> fields) {
-        this.req = req;
-        this.fields = fields;
-    }
 
     public FilterDataDto generateFilterJPQuery(SessionAttribute attribute) {
         final HttpSession session = req.getSession();
@@ -36,7 +31,7 @@ public class ServletFilter {
                 select.setIsSelected("selected");
                 filterData.setSearchColumn(select.getColumnName());
             } else {
-                select.setIsSelected("");
+                select.setIsSelected(StringUtils.EMPTY);
             }
         }
         filterData.setSearchText(searchText);

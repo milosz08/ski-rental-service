@@ -9,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import pl.polsl.skirentalservice.util.UserRole;
 
 public class AlreadyExistException {
-
     public static class PeselAlreadyExistException extends RuntimeException {
         public PeselAlreadyExistException(String pesel, UserRole role) {
             super(StringUtils.capitalize(role.getName()) + " z numerem PESEL <strong>" + pesel +

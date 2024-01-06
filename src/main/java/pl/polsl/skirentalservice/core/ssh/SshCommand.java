@@ -4,6 +4,6 @@
  */
 package pl.polsl.skirentalservice.core.ssh;
 
-public interface ICommand {
+public interface SshCommand {
     String getCommandName();
 }

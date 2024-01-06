@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 
 public class PdfHandler {
-
     private static final String FONT_PATH = "./font/Cambria-Font.ttf";
 
     private static final DeviceRgb SECONDARY_COLOR = new DeviceRgb(113, 128, 150);
@@ -39,16 +38,12 @@ public class PdfHandler {
         "Nazwa sprzętu", "Ilość", "Cena netto", "Cena brutto", "Kaucja netto", "Kaucja brutto",
     };
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     protected Document createDocument(PdfWriter pdfWriter) throws IOException {
         final PdfFont pdfFont = PdfFontFactory.createFont(FONT_PATH, PdfEncodings.CP1250);
         final PdfDocument pdfDocument = new PdfDocument(pdfWriter);
         pdfDocument.setDefaultPageSize(PageSize.A4);
         return new Document(pdfDocument).setFont(pdfFont).setFontSize(9);
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     protected Table generateHeader(String text, String identifier, String date) {
         final Table headerTable = flexTable(UnitValue.createPercentArray(new float[]{ 60, 40 }));
@@ -64,8 +59,6 @@ public class PdfHandler {
         headerTable.addCell(new Cell().add(headerLeftTable).setBorder(Border.NO_BORDER));
         return headerTable;
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     protected Table generateDetails(Map<String, String> leftDataCells, Map<String, String> rightDataCells, String header) {
         final Table documentDetails = flexTable(2);
@@ -87,8 +80,6 @@ public class PdfHandler {
         return documentDetails;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     protected Table generateEquipments(List<PdfEquipmentDataDto> dataRows) {
         final Table equipments = flexTable(TABLE_HEADERS.length).setMarginBottom(10f);
         for (final String tableHeader : TABLE_HEADERS) {
@@ -105,8 +96,6 @@ public class PdfHandler {
         return equipments;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     protected void generatePriceUnits(Document document, PriceUnitsDto priceUnits) {
         document.add(priceUnitBruttoParagraph("Cena za wypożyczenie (brutto): " + priceUnits.getTotalPriceBrutto() + " zł"));
         document.add(priceUnitNettoParagraph("(netto): " + priceUnits.getTotalPriceNetto() + " zł"));
@@ -115,14 +104,10 @@ public class PdfHandler {
         document.add(priceUnitNettoParagraph("(netto): " + priceUnits.getTotalDepositPriceNetto() + " zł"));
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     protected void generateSummaryPrices(Document document, String totalSumBrutto, String totalSumNetto) {
         document.add(priceUnitBruttoParagraph("Łącznie (brutto): " + totalSumBrutto + " zł").setFontSize(12f).setBold());
         document.add(priceUnitNettoParagraph("(netto): " + totalSumNetto + " zł").setFontSize(10f).setBold());
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     protected void generateDescription(Document document, String text) {
         final Paragraph descriptionHeader = paragraphWithLeading("Dodatkowe uwagi:").setFontColor(SECONDARY_COLOR);
@@ -131,13 +116,9 @@ public class PdfHandler {
         document.add(description);
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     protected Paragraph generateHeader(String text) {
         return new Paragraph(text).setFontSize(12f).setMarginBottom(10f);
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     protected Table generateHorizontalDivider() {
         final Table divider = flexTable(1);
@@ -146,16 +127,12 @@ public class PdfHandler {
         return divider;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     protected Table generatePricesDivider() {
         final Table dividerPrice = new Table(new float[]{ 150f }).setHorizontalAlignment(HorizontalAlignment.RIGHT);
         dividerPrice.setBorder(new SolidBorder(SECONDARY_COLOR, .2f));
         dividerPrice.setMargins(8f, 0, 8f, 0);
         return dividerPrice;
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private Paragraph priceUnitBruttoParagraph(String text) {
         return new Paragraph(text).setFontSize(10f).setFixedLeading(5f).setTextAlignment(TextAlignment.RIGHT);

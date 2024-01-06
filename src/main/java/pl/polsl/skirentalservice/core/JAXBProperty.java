@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "property")
 public class JAXBProperty {
-
     @XmlAttribute(name = "name")
     private String name;
 

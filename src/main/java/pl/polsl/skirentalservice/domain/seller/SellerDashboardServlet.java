@@ -17,7 +17,6 @@ import java.io.IOException;
 
 @WebServlet("/seller/dashboard")
 public class SellerDashboardServlet extends HttpServlet {
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         req.setAttribute("alertData", Utils.getAndDestroySessionAlert(req, SessionAlert.SELLER_DASHBOARD_PAGE_ALERT));

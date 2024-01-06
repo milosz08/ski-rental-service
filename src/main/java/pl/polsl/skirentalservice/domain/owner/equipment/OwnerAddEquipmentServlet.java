@@ -113,7 +113,7 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
-                final IEquipmentDao equipmentDao = new EquipmentDao(session);
+                final EquipmentDao equipmentDao = new EquipmentDaoHib(session);
 
                 if (equipmentDao.checkIfEquipmentModelExist(reqDto.getModel(), null)) {
                     throw new EquipmentAlreadyExistException();

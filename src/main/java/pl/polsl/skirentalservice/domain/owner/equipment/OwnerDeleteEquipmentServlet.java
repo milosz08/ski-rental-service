@@ -55,8 +55,9 @@ public class OwnerDeleteEquipmentServlet extends HttpServlet {
                     throw new EquipmenHasOpenedRentsException();
                 }
                 final EquipmentEntity equipmentEntity = session.getReference(EquipmentEntity.class, equipmentId);
-                if (Objects.isNull(equipmentEntity)) throw new EquipmentNotFoundException(equipmentId);
-
+                if (equipmentEntity == null) {
+                    throw new EquipmentNotFoundException(equipmentId);
+                }
                 final String uploadsDir = config.getUploadsDir() + File.separator + "bar-codes";
                 final File barcodeFile = new File(uploadsDir, equipmentEntity.getBarcode() + ".png");
                 if (barcodeFile.exists()) {

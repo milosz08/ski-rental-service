@@ -63,10 +63,13 @@ public class SellerPersistNewRentServlet extends HttpServlet {
         }
         final AlertTupleDto alert = new AlertTupleDto(true);
         final String loggedUser = Utils.getLoggedUserLogin(req);
-        final var loggedEmployer = (LoggedUserDataDto) httpSession.getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
+        final var loggedEmployer = (LoggedUserDataDto) httpSession
+            .getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
 
         try (final Session session = sessionFactory.openSession()) {
-            if (rentData.getEquipments().isEmpty()) throw new AnyEquipmentsInCartNotFoundException();
+            if (rentData.getEquipments().isEmpty()) {
+                throw new AnyEquipmentsInCartNotFoundException();
+            }
             try {
                 session.beginTransaction();
 
@@ -79,8 +82,9 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                 final Set<RentEquipmentEntity> equipmentEntities = new HashSet<>();
                 for (final CartSingleEquipmentDataDto cartData : rentData.getEquipments()) {
                     final Integer eqCount = equipmentDao.findAllEquipmentsInCartCount(cartData.getId());
-                    if (eqCount < Integer.parseInt(cartData.getCount())) throw new TooMuchEquipmentsException();
-
+                    if (eqCount < Integer.parseInt(cartData.getCount())) {
+                        throw new TooMuchEquipmentsException();
+                    }
                     final RentEquipmentEntity equipment = modelMapper.map(cartData, RentEquipmentEntity.class);
                     final EquipmentEntity refEquipment = session.get(EquipmentEntity.class, cartData.getId());
                     equipment.setId(null);

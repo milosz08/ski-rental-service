@@ -65,7 +65,8 @@ public class SellerGenerateReturnServlet extends HttpServlet {
 
         final AlertTupleDto alert = new AlertTupleDto(true);
         final HttpSession httpSession = req.getSession();
-        final var userDataDto = (LoggedUserDataDto) httpSession.getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
+        final var userDataDto = (LoggedUserDataDto) httpSession
+            .getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
 
         try (final Session session = sessionFactory.openSession()) {
             try {

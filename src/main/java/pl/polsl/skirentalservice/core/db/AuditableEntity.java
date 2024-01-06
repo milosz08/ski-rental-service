@@ -13,7 +13,6 @@ import java.util.Date;
 @MappedSuperclass
 @NoArgsConstructor
 public abstract class AuditableEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

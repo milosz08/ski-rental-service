@@ -34,6 +34,7 @@ public class HibernateDbSingleton {
     private static final String LIQUIBASE_CONF = "db/db.changelog.xml";
     private static final String HIBERNATE_CONF = "db/hibernate.cfg.xml";
 
+    @Getter
     private SessionFactory sessionFactory;
     private static volatile HibernateDbSingleton instance;
 
@@ -73,10 +74,6 @@ public class HibernateDbSingleton {
         } catch (LiquibaseException ex) {
             LOGGER.error("Unable to load Liquibase configuration. Exception: {}", ex.getMessage());
         }
-    }
-
-    public SessionFactory getSessionFactory() {
-        return sessionFactory;
     }
 
     public static synchronized HibernateDbSingleton getInstance() {

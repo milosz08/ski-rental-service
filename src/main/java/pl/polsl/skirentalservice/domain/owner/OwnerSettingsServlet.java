@@ -102,7 +102,7 @@ public class OwnerSettingsServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final IUserDetailsDao userDetailsDao = new UserDetailsDao(session);
+                final UserDetailsDao userDetailsDao = new UserDetailsDaoHib(session);
 
                 final EmployerEntity updatableOwner = session.get(EmployerEntity.class, ownerDetailsDto.getId());
                 if (Objects.isNull(updatableOwner)) throw new UserNotFoundException(httpSession.getId());

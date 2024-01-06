@@ -13,13 +13,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.util.Objects;
 
 @WebFilter(urlPatterns = {
     "/change-forgotten-password/*",
 }, initParams = @WebInitParam(name = "mood", value = "awake"))
 public class NonOtaAttributeRedirectFilter extends HttpFilter {
-
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
         throws IOException, ServletException {

@@ -4,18 +4,15 @@
  */
 package pl.polsl.skirentalservice.ssh;
 
+import lombok.RequiredArgsConstructor;
 import pl.polsl.skirentalservice.core.ssh.CommandPerformException;
 import pl.polsl.skirentalservice.core.ssh.SshSocketSingleton;
 
 import java.util.Map;
 
-public class ExecCommandPerformer implements IExecCommandPerformer {
-
+@RequiredArgsConstructor
+public class ExecCommandPerformer implements ExecCommand {
     private final SshSocketSingleton sshSocket;
-
-    public ExecCommandPerformer(SshSocketSingleton sshSocket) {
-        this.sshSocket = sshSocket;
-    }
 
     @Override
     public void createMailbox(String email, String password) throws CommandPerformException {

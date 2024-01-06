@@ -4,6 +4,10 @@
  */
 package pl.polsl.skirentalservice.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class Regex {
     public static final String LOGIN_EMAIL = "^[a-z0-9@.]{5,80}$";
     public static final String PASSWORD_REQ = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*]).{8,25}$";

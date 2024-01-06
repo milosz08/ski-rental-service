@@ -39,7 +39,7 @@ public class SshSocketSingleton {
         }
     }
 
-    public <T> T executeCommand(ICommand com, Map<String, String> entries, Class<T> mapTo) throws RuntimeException {
+    public <T> T executeCommand(SshCommand com, Map<String, String> entries, Class<T> mapTo) throws RuntimeException {
         final JAXBSshCommand command = config.getCommands().getCommands().stream()
             .filter(c -> c.getExecutableFor().equals(com.getCommandName())).findFirst()
             .orElseThrow(() -> new RuntimeException("Command with executable for " + com.getCommandName()

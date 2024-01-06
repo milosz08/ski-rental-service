@@ -20,7 +20,6 @@ import java.io.IOException;
     "/login",
 }, initParams = @WebInitParam(name = "mood", value = "awake"))
 public class NoCacheProxyFilter extends HttpFilter {
-
     @Override
     public void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
         throws ServletException, IOException {

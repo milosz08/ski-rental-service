@@ -15,7 +15,6 @@ import java.util.Objects;
 
 @Getter
 public class ConfigSingleton {
-
     private final String systemVersion;
     private final int circaDateYears;
     private final String defPageTitle;

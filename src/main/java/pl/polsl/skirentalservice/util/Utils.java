@@ -7,6 +7,8 @@ package pl.polsl.skirentalservice.util;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
@@ -20,8 +22,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Utils {
-
     public static <T> T getFromSessionAndDestroy(HttpServletRequest req, String propertyName, Class<T> mappedClazz) {
         final HttpSession session = req.getSession();
         final T property = mappedClazz.cast(session.getAttribute(propertyName));
@@ -36,7 +38,9 @@ public class Utils {
         return alert;
     }
 
-    public static AttributeModalResDto getAndDestroySessionModalData(HttpServletRequest req, SessionAttribute attribute) {
+    public static AttributeModalResDto getAndDestroySessionModalData(
+        HttpServletRequest req, SessionAttribute attribute
+    ) {
         return getFromSessionAndDestroy(req, attribute.getName(), AttributeModalResDto.class);
     }
 
@@ -51,7 +55,9 @@ public class Utils {
         return loggedUser.getLogin();
     }
 
-    public static AttributeValidatorPayloadDto validateEquipmentAttribute(HttpServletRequest req, ValidatorSingleton validator) {
+    public static AttributeValidatorPayloadDto validateEquipmentAttribute(
+        HttpServletRequest req, ValidatorSingleton validator
+    ) {
         final AlertTupleDto alert = new AlertTupleDto();
         final AttributeModalReqDto reqDto = new AttributeModalReqDto(req);
         final AttributeModalResDto resDto = new AttributeModalResDto(validator, reqDto, alert);

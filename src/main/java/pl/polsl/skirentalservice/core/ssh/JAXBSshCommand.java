@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "command")
 public class JAXBSshCommand {
-
     @XmlAttribute(name = "executableFor")
     private String executableFor;
 

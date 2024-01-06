@@ -37,8 +37,8 @@ import pl.polsl.skirentalservice.entity.EmployerEntity;
 import pl.polsl.skirentalservice.entity.LocationAddressEntity;
 import pl.polsl.skirentalservice.entity.RoleEntity;
 import pl.polsl.skirentalservice.entity.UserDetailsEntity;
+import pl.polsl.skirentalservice.ssh.ExecCommand;
 import pl.polsl.skirentalservice.ssh.ExecCommandPerformer;
-import pl.polsl.skirentalservice.ssh.IExecCommandPerformer;
 import pl.polsl.skirentalservice.util.*;
 
 import java.io.IOException;
@@ -54,7 +54,6 @@ public class OwnerAddEmployerServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OwnerAddEmployerServlet.class);
     private final ModelMapper modelMapper = ModelMapperGenerator.getModelMapper();
-
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
     private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
     private final MailSocketSingleton mailSocket = MailSocketSingleton.getInstance();
@@ -86,7 +85,7 @@ public class OwnerAddEmployerServlet extends HttpServlet {
             return;
         }
 
-        final IExecCommandPerformer commandPerformer = new ExecCommandPerformer(sshSocket);
+        final ExecCommand commandPerformer = new ExecCommandPerformer(sshSocket);
         try (final Session session = sessionFactory.openSession()) {
             reqDto.validateDates(config);
             String email = "";
@@ -103,8 +102,9 @@ public class OwnerAddEmployerServlet extends HttpServlet {
                     throw new PhoneNumberAlreadyExistException(reqDto.getPhoneNumber(), UserRole.SELLER);
                 }
                 final RoleEntity role = session.get(RoleEntity.class, 1);
-                if (Objects.isNull(role)) throw new RuntimeException("Podana rola nie istnieje w systemie.");
-
+                if (role == null) {
+                    throw new RuntimeException("Podana rola nie istnieje w systemie.");
+                }
                 String login;
                 boolean emailExist;
                 do {

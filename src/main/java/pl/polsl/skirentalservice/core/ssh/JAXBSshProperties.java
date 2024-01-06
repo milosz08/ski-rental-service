@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "properties")
 public class JAXBSshProperties {
-
     @XmlElement(name = "ssh-host")
     private String sshHost;
 

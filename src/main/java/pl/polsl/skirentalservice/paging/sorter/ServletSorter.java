@@ -6,22 +6,16 @@ package pl.polsl.skirentalservice.paging.sorter;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import pl.polsl.skirentalservice.util.SessionAttribute;
 
 import java.util.Map;
-import java.util.Objects;
 
+@RequiredArgsConstructor
 public class ServletSorter {
-
     private final HttpServletRequest req;
     private final String defColumnSort;
     private final Map<String, ServletSorterField> fieldsMap;
-
-    public ServletSorter(HttpServletRequest req, String defColumnSort, Map<String, ServletSorterField> fieldsMap) {
-        this.req = req;
-        this.defColumnSort = defColumnSort;
-        this.fieldsMap = fieldsMap;
-    }
 
     public SorterDataDto generateSortingJPQuery(SessionAttribute attribute) {
         final HttpSession session = req.getSession();

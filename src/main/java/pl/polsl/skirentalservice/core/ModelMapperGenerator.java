@@ -10,7 +10,7 @@ import org.modelmapper.config.Configuration;
 import org.modelmapper.convention.MatchingStrategies;
 
 public class ModelMapperGenerator {
-
+    @Getter
     private static final ModelMapper modelMapper = createModelMapper();
 
     private static ModelMapper createModelMapper() {
@@ -29,9 +29,5 @@ public class ModelMapperGenerator {
 
     public static void onUpdateNullableTransactTurnOff() {
         modelMapper.getConfiguration().setPropertyCondition(Conditions.isNull());
-    }
-
-    public static ModelMapper getModelMapper() {
-        return modelMapper;
     }
 }

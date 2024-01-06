@@ -92,8 +92,8 @@ public class ChangeForgottenPasswordServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final IOtaTokenDao otaTokenDao = new OtaTokenDao(session);
-                final IEmployerDao employerDao = new EmployerDao(session);
+                final OtaTokenDao otaTokenDao = new OtaTokenDaoHib(session);
+                final EmployerDao employerDao = new EmployerDaoHib(session);
 
                 final var details = otaTokenDao.findTokenDetails(token)
                     .orElseThrow(() -> new OtaTokenNotFoundException(req, token, LOGGER));

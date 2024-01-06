@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public class ValidatorSingleton {
-
+    @Getter
     private final Validator validator;
     private static volatile ValidatorSingleton instance;
 
@@ -49,10 +49,6 @@ public class ValidatorSingleton {
     public <T extends IReqValidatePojo> boolean someFieldsAreInvalid(T req) {
         final Set<ConstraintViolation<T>> constraints = validator.validate(req);
         return !constraints.isEmpty();
-    }
-
-    public Validator getValidator() {
-        return validator;
     }
 
     public static synchronized ValidatorSingleton getInstance() {

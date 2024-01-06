@@ -18,7 +18,6 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "mail-configuration")
 class JAXBMailConfig {
-
     @XmlElement(name = "property")
     private List<JAXBProperty> properties = new ArrayList<>();
 

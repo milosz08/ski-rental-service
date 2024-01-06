@@ -26,7 +26,6 @@ import java.io.IOException;
     "/seller/create-new-rent/*",
 }, initParams = @WebInitParam(name = "mood", value = "awake"))
 public class RedirectWhenCustomerIdNotExistInPathFilter extends HttpFilter {
-
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
         throws IOException, ServletException {

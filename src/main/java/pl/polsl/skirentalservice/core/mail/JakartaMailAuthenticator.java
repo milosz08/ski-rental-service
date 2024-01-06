@@ -11,7 +11,6 @@ import pl.polsl.skirentalservice.core.JAXBProperty;
 import java.util.List;
 
 class JakartaMailAuthenticator extends Authenticator {
-
     private final String username;
     private final String password;
 

@@ -17,13 +17,11 @@ import pl.polsl.skirentalservice.util.SessionAttribute;
 import pl.polsl.skirentalservice.util.UserRole;
 
 import java.io.IOException;
-import java.util.Objects;
 
 @WebFilter(urlPatterns = {
     "/first-access",
 }, initParams = @WebInitParam(name = "mood", value = "awake"))
 public class RedirectOnFirstAccessFilter extends HttpFilter {
-
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
         throws IOException, ServletException {

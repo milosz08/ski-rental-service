@@ -86,16 +86,18 @@ public class ReturnPdfDocument extends PdfHandler implements IPdfGenerator {
     public void remove() throws RuntimeException {
         final String fileName = issuerIdentifier.replaceAll("/", "") + ".pdf";
         final File deletedPdf = new File(uploadsDir + File.separator + "return-fvs" + File.separator + fileName);
-        if (deletedPdf.delete()) {
-            LOGGER.info("Pdf FV return file was sucessfully removed from system.");
-        } else {
-            LOGGER.error("Unable to remove pdf FV return file from system.");
-        }
+        log.info(deletedPdf.delete()
+            ? "Pdf FV return file was sucessfully removed from system."
+            : "Unable to remove pdf FV return file from system.");
     }
 
     @Override
     public String getPath() {
-        final String issuerId = Objects.isNull(returnDataDto) ? issuerIdentifier : returnDataDto.getIssuedIdentifier();
-        return uploadsDir + File.separator + "return-fvs" + File.separator + issuerId.replaceAll("/", "") + ".pdf";
+        final String issuerId = returnDataDto == null ? issuerIdentifier : returnDataDto.getIssuedIdentifier();
+        return new StringJoiner(File.separator)
+            .add(uploadsDir)
+            .add("return-fvs")
+            .add(issuerId.replaceAll("/", "") + ".pdf")
+            .toString();
     }
 }

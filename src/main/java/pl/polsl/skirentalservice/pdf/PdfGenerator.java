@@ -4,7 +4,7 @@
  */
 package pl.polsl.skirentalservice.pdf;
 
-public interface IPdfGenerator {
+public interface PdfGenerator {
     void generate() throws RuntimeException;
     void remove() throws RuntimeException;
     String getPath();

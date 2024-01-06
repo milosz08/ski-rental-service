@@ -15,7 +15,6 @@ import java.io.IOException;
 
 @WebServlet("/owner/dashboard")
 public class OwnerDashboardServlet extends HttpServlet {
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         req.setAttribute("title", PageTitle.OWNER_DASHBOARD_PAGE.getName());
