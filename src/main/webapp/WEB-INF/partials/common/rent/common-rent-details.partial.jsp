@@ -4,7 +4,7 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
-<jsp:useBean id="totalSum" class="java.lang.Integer" scope="request"/>
+<jsp:useBean id="totalSum" type="java.lang.Integer" scope="request"/>
 <jsp:useBean id="rentDetailsData" class="pl.polsl.skirentalservice.dto.rent.RentDetailsResDto" scope="request"/>
 <jsp:useBean id="equipmentsRentDetailsData"
              type="java.util.List<pl.polsl.skirentalservice.dto.rent.RentEquipmentsDetailsResDto>" scope="request"/>
