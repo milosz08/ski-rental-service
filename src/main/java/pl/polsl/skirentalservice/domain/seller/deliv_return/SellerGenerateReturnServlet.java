@@ -114,15 +114,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 BigDecimal totalSumPriceNetto = new BigDecimal(0);
 
                 for (final RentReturnEquipmentRecordResDto eqDto : equipmentsList) {
-                    final BigDecimal totalPriceDays = eqDto.pricePerDay().multiply(new BigDecimal(rentDays));
-                    BigDecimal totalPriceHoursSum = eqDto.pricePerHour();
-                    if ((totalRentHours % 24) > 0) {
-                        for (int i = 0; i < (totalRentHours % 24) - 1; i++) {
-                            totalPriceHoursSum = totalPriceHoursSum.add(eqDto.priceForNextHour());
-                        }
-                    }
-                    final BigDecimal totalPrice = totalPriceDays.add(totalPriceHoursSum);
-                    final BigDecimal sumPriceNetto = totalPrice.multiply(new BigDecimal(eqDto.count()));
+                    final BigDecimal sumPriceNetto = getSumPriceNetto(eqDto, rentDays, totalRentHours);
 
                     final BigDecimal taxValue = new BigDecimal(rentDetails.tax());
                     final BigDecimal sumPriceBrutto = taxValue
@@ -267,5 +259,17 @@ public class SellerGenerateReturnServlet extends HttpServlet {
             httpSession.setAttribute(SessionAlert.COMMON_RENTS_PAGE_ALERT.getName(), alert);
             res.sendRedirect("/seller/rents");
         }
+    }
+
+    private BigDecimal getSumPriceNetto(RentReturnEquipmentRecordResDto eqDto, long rentDays, long totalRentHours) {
+        final BigDecimal totalPriceDays = eqDto.pricePerDay().multiply(new BigDecimal(rentDays));
+        BigDecimal totalPriceHoursSum = eqDto.pricePerHour();
+        if ((totalRentHours % 24) > 0) {
+            for (int i = 0; i < (totalRentHours % 24) - 1; i++) {
+                totalPriceHoursSum = totalPriceHoursSum.add(eqDto.priceForNextHour());
+            }
+        }
+        final BigDecimal totalPrice = totalPriceDays.add(totalPriceHoursSum);
+        return totalPrice.multiply(new BigDecimal(eqDto.count()));
     }
 }
