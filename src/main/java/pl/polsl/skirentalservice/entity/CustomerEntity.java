@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import pl.polsl.skirentalservice.core.db.AuditableEntity;
 import pl.polsl.skirentalservice.core.db.EntityInjector;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,7 +18,9 @@ import java.util.Set;
 @EntityInjector
 @Table(name = "customers")
 @NoArgsConstructor
-public class CustomerEntity extends AuditableEntity {
+public class CustomerEntity extends AuditableEntity implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 0L;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     @JoinColumn(name = "user_details_id", referencedColumnName = "id")

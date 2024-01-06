@@ -9,13 +9,17 @@ import lombok.NoArgsConstructor;
 import pl.polsl.skirentalservice.core.db.AuditableEntity;
 import pl.polsl.skirentalservice.core.db.EntityInjector;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Entity
 @EntityInjector
 @Table(name = "rent_equipments")
 @NoArgsConstructor
-public class RentEquipmentEntity extends AuditableEntity {
+public class RentEquipmentEntity extends AuditableEntity implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 0L;
 
     @Column(name = "count")
     private Integer count;

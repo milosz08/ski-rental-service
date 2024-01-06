@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 import pl.polsl.skirentalservice.core.db.AuditableEntity;
 import pl.polsl.skirentalservice.core.db.EntityInjector;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Entity
@@ -19,7 +21,9 @@ import java.time.LocalDate;
 @Table(name = "employeers")
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmployerEntity extends AuditableEntity {
+public class EmployerEntity extends AuditableEntity implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 0L;
 
     @Column(name = "login")
     private String login;

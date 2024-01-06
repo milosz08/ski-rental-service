@@ -11,11 +11,16 @@ import lombok.NoArgsConstructor;
 import pl.polsl.skirentalservice.core.db.AuditableEntity;
 import pl.polsl.skirentalservice.core.db.EntityInjector;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 @Entity
 @EntityInjector
 @Table(name = "location_addresses")
 @NoArgsConstructor
-public class LocationAddressEntity extends AuditableEntity {
+public class LocationAddressEntity extends AuditableEntity implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 0L;
 
     @Column(name = "street")
     private String street;

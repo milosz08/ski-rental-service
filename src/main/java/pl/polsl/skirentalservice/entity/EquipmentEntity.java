@@ -11,6 +11,8 @@ import pl.polsl.skirentalservice.core.db.AuditableEntity;
 import pl.polsl.skirentalservice.core.db.EntityInjector;
 import pl.polsl.skirentalservice.util.Gender;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +21,9 @@ import java.util.Set;
 @EntityInjector
 @Table(name = "equipments")
 @NoArgsConstructor
-public class EquipmentEntity extends AuditableEntity {
+public class EquipmentEntity extends AuditableEntity implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 0L;
 
     @Column(name = "name")
     private String name;

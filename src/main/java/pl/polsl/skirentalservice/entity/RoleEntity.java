@@ -11,11 +11,16 @@ import lombok.NoArgsConstructor;
 import pl.polsl.skirentalservice.core.db.AuditableEntity;
 import pl.polsl.skirentalservice.core.db.EntityInjector;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 @Entity
 @EntityInjector
 @Table(name = "roles")
 @NoArgsConstructor
-public class RoleEntity extends AuditableEntity {
+public class RoleEntity extends AuditableEntity implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 0L;
 
     @Column(name = "role_name")
     private String roleName;

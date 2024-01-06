@@ -9,13 +9,17 @@ import lombok.NoArgsConstructor;
 import pl.polsl.skirentalservice.core.db.AuditableEntity;
 import pl.polsl.skirentalservice.core.db.EntityInjector;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
 @EntityInjector
 @Table(name = "ota_tokens")
 @NoArgsConstructor
-public class OtaTokenEntity extends AuditableEntity {
+public class OtaTokenEntity extends AuditableEntity implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 0L;
 
     @Column(name = "ota_token", updatable = false)
     private String otaToken;

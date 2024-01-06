@@ -14,13 +14,17 @@ import pl.polsl.skirentalservice.core.db.AuditableEntity;
 import pl.polsl.skirentalservice.core.db.EntityInjector;
 import pl.polsl.skirentalservice.util.Gender;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Entity
 @EntityInjector
 @Table(name = "user_details")
 @NoArgsConstructor
-public class UserDetailsEntity extends AuditableEntity {
+public class UserDetailsEntity extends AuditableEntity implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 0L;
 
     @Column(name = "first_name")
     private String firstName;
