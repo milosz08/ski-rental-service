@@ -38,8 +38,8 @@ public class NewRentDetailsResDto {
     @Override
     public String toString() {
         return "{" +
-            "issuedIdentifier='" + issuedIdentifier +
-            ", issuedDateTime='" + issuedDateTime +
+            "issuedIdentifier=" + issuedIdentifier +
+            ", issuedDateTime=" + issuedDateTime +
             ", rentStatus=" + rentStatus +
             ", rentDateTime=" + rentDateTime +
             ", returnDateTime=" + returnDateTime +

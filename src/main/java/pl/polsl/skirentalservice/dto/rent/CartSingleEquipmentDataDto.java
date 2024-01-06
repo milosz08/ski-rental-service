@@ -45,11 +45,11 @@ public class CartSingleEquipmentDataDto {
     public String toString() {
         return "{" +
             "id=" + id +
-            ", name='" + name +
-            ", typeAndModel='" + typeAndModel +
-            ", count='" + count +
-            ", totalPersistCount='" + totalPersistCount +
-            ", description='" + description +
+            ", name=" + name +
+            ", typeAndModel=" + typeAndModel +
+            ", count=" + count +
+            ", totalPersistCount=" + totalPersistCount +
+            ", description=" + description +
             ", priceUnits=" + priceUnits +
             ", resDto=" + resDto +
             '}';

@@ -33,15 +33,15 @@ public class EquipmentRentRecordResDto {
     public String toString() {
         return "{" +
             "id=" + id +
-            ", name='" + name +
-            ", type='" + type +
-            ", model='" + model +
-            ", barcode='" + barcode +
+            ", name=" + name +
+            ", type=" + type +
+            ", model=" + model +
+            ", barcode=" + barcode +
             ", totalCount=" + totalCount +
             ", pricePerHour=" + pricePerHour +
             ", priceForNextHour=" + priceForNextHour +
             ", pricePerDay=" + pricePerDay +
-            ", disabled='" + disabled +
+            ", disabled=" + disabled +
             '}';
     }
 }

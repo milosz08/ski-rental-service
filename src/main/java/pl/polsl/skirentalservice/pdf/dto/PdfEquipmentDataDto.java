@@ -18,12 +18,12 @@ public class PdfEquipmentDataDto {
     @Override
     public String toString() {
         return "{" +
-            "name='" + name +
-            ", count='" + count +
-            ", priceNetto='" + priceNetto +
-            ", priceBrutto='" + priceBrutto +
-            ", depositPriceNetto='" + depositPriceNetto +
-            ", depositPriceBrutto='" + depositPriceBrutto +
+            "name=" + name +
+            ", count=" + count +
+            ", priceNetto=" + priceNetto +
+            ", priceBrutto=" + priceBrutto +
+            ", depositPriceNetto=" + depositPriceNetto +
+            ", depositPriceBrutto=" + depositPriceBrutto +
             '}';
     }
 }

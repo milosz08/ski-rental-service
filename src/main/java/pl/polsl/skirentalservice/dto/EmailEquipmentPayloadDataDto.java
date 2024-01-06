@@ -32,9 +32,9 @@ public class EmailEquipmentPayloadDataDto {
     @Override
     public String toString() {
         return "{" +
-            "count='" + count +
-            ", name='" + name +
-            ", typeAndModel='" + typeAndModel +
+            "count=" + count +
+            ", name=" + name +
+            ", typeAndModel=" + typeAndModel +
             ", priceNetto=" + priceNetto +
             ", priceBrutto=" + priceBrutto +
             ", depositPriceNetto=" + depositPriceNetto +

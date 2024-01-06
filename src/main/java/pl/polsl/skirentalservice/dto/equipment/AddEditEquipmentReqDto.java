@@ -82,18 +82,18 @@ public class AddEditEquipmentReqDto implements ReqValidatePojo {
     @Override
     public String toString() {
         return "{" +
-            "name='" + name +
-            ", model='" + model +
-            ", description='" + description +
-            ", countInStore='" + countInStore +
-            ", size='" + size +
-            ", pricePerHour='" + pricePerHour +
-            ", priceForNextHour='" + priceForNextHour +
-            ", pricePerDay='" + pricePerDay +
-            ", valueCost='" + valueCost +
-            ", type='" + type +
-            ", brand='" + brand +
-            ", color='" + color +
+            "name=" + name +
+            ", model=" + model +
+            ", description=" + description +
+            ", countInStore=" + countInStore +
+            ", size=" + size +
+            ", pricePerHour=" + pricePerHour +
+            ", priceForNextHour=" + priceForNextHour +
+            ", pricePerDay=" + pricePerDay +
+            ", valueCost=" + valueCost +
+            ", type=" + type +
+            ", brand=" + brand +
+            ", color=" + color +
             ", gender=" + gender +
             '}';
     }

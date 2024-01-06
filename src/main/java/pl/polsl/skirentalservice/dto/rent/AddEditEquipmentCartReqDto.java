@@ -38,9 +38,9 @@ public class AddEditEquipmentCartReqDto implements ReqValidatePojo {
     @Override
     public String toString() {
         return "{" +
-            "count='" + count +
-            ", depositPrice='" + depositPrice +
-            ", description='" + description +
+            "count=" + count +
+            ", depositPrice=" + depositPrice +
+            ", description=" + description +
             '}';
     }
 }

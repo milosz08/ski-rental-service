@@ -160,13 +160,13 @@ public class RentEntity extends AuditableEntity {
     @Override
     public String toString() {
         return "{" +
-            "issuedIdentifier='" + issuedIdentifier +
+            "issuedIdentifier=" + issuedIdentifier +
             ", issuedDateTime=" + issuedDateTime +
             ", rentDateTime=" + rentDateTime +
             ", returnDateTime=" + returnDateTime +
             ", status=" + status +
             ", tax=" + tax +
-            ", description='" + description +
+            ", description=" + description +
             ", totalPrice=" + totalPrice +
             ", totalDepositPrice=" + totalDepositPrice +
             ", customer=" + customer +

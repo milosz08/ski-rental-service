@@ -24,7 +24,7 @@ public class AttributeModalReqDto implements ReqValidatePojo {
     @Override
     public String toString() {
         return "{" +
-            "name='" + name +
+            "name=" + name +
             '}';
     }
 }

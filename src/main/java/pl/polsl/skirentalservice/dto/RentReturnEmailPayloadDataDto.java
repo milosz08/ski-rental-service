@@ -31,14 +31,14 @@ public class RentReturnEmailPayloadDataDto {
     @Override
     public String toString() {
         return "{" +
-            "fullName='" + fullName +
-            ", pesel='" + pesel +
-            ", phoneNumber='" + phoneNumber +
-            ", email='" + email +
-            ", rentDate='" + rentDate +
-            ", returnDate='" + returnDate +
-            ", rentTime='" + rentTime +
-            ", tax='" + tax +
+            "fullName=" + fullName +
+            ", pesel=" + pesel +
+            ", phoneNumber=" + phoneNumber +
+            ", email=" + email +
+            ", rentDate=" + rentDate +
+            ", returnDate=" + returnDate +
+            ", rentTime=" + rentTime +
+            ", tax=" + tax +
             ", totalPriceBrutto=" + totalPriceBrutto +
             ", totalPriceNetto=" + totalPriceNetto +
             ", totalDepositPriceBrutto=" + totalDepositPriceBrutto +

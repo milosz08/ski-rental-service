@@ -61,10 +61,10 @@ public class JAXBSshProperties {
     @Override
     public String toString() {
         return "{" +
-            "sshHost='" + sshHost +
-            ", sshLogin='" + sshLogin +
-            ", sshRsa='" + sshRsa +
-            ", sshKnownHosts='" + sshKnownHosts +
+            "sshHost=" + sshHost +
+            ", sshLogin=" + sshLogin +
+            ", sshRsa=" + sshRsa +
+            ", sshKnownHosts=" + sshKnownHosts +
             '}';
     }
 }

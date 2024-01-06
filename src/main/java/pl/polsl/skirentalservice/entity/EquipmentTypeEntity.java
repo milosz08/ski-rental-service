@@ -47,7 +47,7 @@ public class EquipmentTypeEntity extends AuditableEntity {
     @Override
     public String toString() {
         return "{" +
-            "name='" + name +
+            "name=" + name +
             '}';
     }
 }

@@ -30,8 +30,8 @@ public class ChangeForgottenPasswordReqDto implements ReqValidatePojo {
     @Override
     public String toString() {
         return '{' +
-            "password='" + password +
-            ", passwordRepeat='" + passwordRepeat +
+            "password=" + password +
+            ", passwordRepeat=" + passwordRepeat +
             '}';
     }
 }

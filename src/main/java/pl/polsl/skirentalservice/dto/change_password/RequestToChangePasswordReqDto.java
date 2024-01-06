@@ -25,7 +25,7 @@ public class RequestToChangePasswordReqDto implements ReqValidatePojo {
     @Override
     public String toString() {
         return '{' +
-            "loginOrEmail='" + loginOrEmail +
+            "loginOrEmail=" + loginOrEmail +
             '}';
     }
 }

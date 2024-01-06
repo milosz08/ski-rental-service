@@ -42,10 +42,10 @@ public class FirstAccessReqDto implements ReqValidatePojo {
     @Override
     public String toString() {
         return "{" +
-            "password='" + password +
-            ", passwordRep='" + passwordRep +
-            ", emailPassword='" + emailPassword +
-            ", emailPasswordRep='" + emailPasswordRep +
+            "password=" + password +
+            ", passwordRep=" + passwordRep +
+            ", emailPassword=" + emailPassword +
+            ", emailPasswordRep=" + emailPasswordRep +
             '}';
     }
 }

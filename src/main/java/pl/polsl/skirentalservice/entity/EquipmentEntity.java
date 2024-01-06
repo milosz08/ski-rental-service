@@ -204,11 +204,11 @@ public class EquipmentEntity extends AuditableEntity {
     @Override
     public String toString() {
         return "{" +
-            "name='" + name +
-            ", model='" + model +
+            "name=" + name +
+            ", model=" + model +
             ", gender=" + gender +
-            ", description='" + description +
-            ", barcode='" + barcode +
+            ", description=" + description +
+            ", barcode=" + barcode +
             ", countInStore=" + countInStore +
             ", availableCount=" + availableCount +
             ", size=" + size +

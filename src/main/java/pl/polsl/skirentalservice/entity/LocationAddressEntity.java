@@ -75,11 +75,11 @@ public class LocationAddressEntity extends AuditableEntity {
     @Override
     public String toString() {
         return '{' +
-            "street='" + street +
-            ", buildingNo='" + buildingNr +
-            ", apartmentNo='" + apartmentNr +
-            ", city='" + city +
-            ", postalCode='" + postalCode +
+            "street=" + street +
+            ", buildingNo=" + buildingNr +
+            ", apartmentNo=" + apartmentNr +
+            ", city=" + city +
+            ", postalCode=" + postalCode +
             '}';
     }
 }

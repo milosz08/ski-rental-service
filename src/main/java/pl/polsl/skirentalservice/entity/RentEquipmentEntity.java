@@ -90,7 +90,7 @@ public class RentEquipmentEntity extends AuditableEntity {
         return "{" +
             "count=" + count +
             ", totalPrice=" + totalPrice +
-            ", description='" + description +
+            ", description=" + description +
             ", depositPrice=" + depositPrice +
             ", equipment=" + equipment +
             '}';

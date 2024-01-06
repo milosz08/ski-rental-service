@@ -39,8 +39,8 @@ public class JAXBSshCommand {
     @Override
     public String toString() {
         return "{" +
-            "executableFor='" + executableFor +
-            ", execScript='" + execScript +
+            "executableFor=" + executableFor +
+            ", execScript=" + execScript +
             '}';
     }
 }

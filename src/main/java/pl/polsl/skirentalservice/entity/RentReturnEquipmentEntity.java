@@ -90,7 +90,7 @@ public class RentReturnEquipmentEntity extends AuditableEntity {
     public String toString() {
         return "{" +
             "totalPrice=" + totalPrice +
-            ", description='" + description +
+            ", description=" + description +
             ", depositPrice=" + depositPrice +
             ", equipment=" + equipment +
             '}';

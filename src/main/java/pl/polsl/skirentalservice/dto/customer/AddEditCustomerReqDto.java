@@ -89,17 +89,17 @@ public class AddEditCustomerReqDto implements ReqValidatePojo {
     @Override
     public String toString() {
         return "{" +
-            "firstName='" + firstName +
-            ", lastName='" + lastName +
-            ", pesel='" + pesel +
-            ", phoneNumber='" + phoneNumber +
-            ", bornDate='" + bornDate +
-            ", emailAddress='" + emailAddress +
-            ", street='" + street +
-            ", buildingNr='" + buildingNr +
-            ", apartmentNr='" + apartmentNr +
-            ", city='" + city +
-            ", postalCode='" + postalCode +
+            "firstName=" + firstName +
+            ", lastName=" + lastName +
+            ", pesel=" + pesel +
+            ", phoneNumber=" + phoneNumber +
+            ", bornDate=" + bornDate +
+            ", emailAddress=" + emailAddress +
+            ", street=" + street +
+            ", buildingNr=" + buildingNr +
+            ", apartmentNr=" + apartmentNr +
+            ", city=" + city +
+            ", postalCode=" + postalCode +
             '}';
     }
 }

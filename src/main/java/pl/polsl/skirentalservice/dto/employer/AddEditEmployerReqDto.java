@@ -111,17 +111,17 @@ public class AddEditEmployerReqDto implements ReqValidatePojo {
     @Override
     public String toString() {
         return "{" +
-            "firstName='" + firstName +
-            ", lastName='" + lastName +
-            ", pesel='" + pesel +
-            ", phoneNumber='" + phoneNumber +
-            ", bornDate='" + bornDate +
-            ", hiredDate='" + hiredDate +
-            ", street='" + street +
-            ", buildingNr='" + buildingNr +
-            ", apartmentNr='" + apartmentNr +
-            ", city='" + city +
-            ", postalCode='" + postalCode +
+            "firstName=" + firstName +
+            ", lastName=" + lastName +
+            ", pesel=" + pesel +
+            ", phoneNumber=" + phoneNumber +
+            ", bornDate=" + bornDate +
+            ", hiredDate=" + hiredDate +
+            ", street=" + street +
+            ", buildingNr=" + buildingNr +
+            ", apartmentNr=" + apartmentNr +
+            ", city=" + city +
+            ", postalCode=" + postalCode +
             ", gender=" + gender +
             '}';
     }

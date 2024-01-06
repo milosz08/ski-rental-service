@@ -53,9 +53,9 @@ public class RoleEntity extends AuditableEntity {
     @Override
     public String toString() {
         return "{" +
-            "roleName='" + roleName +
+            "roleName=" + roleName +
             ", alias=" + alias +
-            ", roleEng='" + roleEng +
+            ", roleEng=" + roleEng +
             '}';
     }
 }

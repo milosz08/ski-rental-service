@@ -32,21 +32,21 @@ public class RentPdfDocumentDataDto {
     @Override
     public String toString() {
         return "{" +
-            "issuedIdentifier='" + issuedIdentifier +
-            ", fullName='" + fullName +
-            ", pesel='" + pesel +
-            ", phoneNumber='" + phoneNumber +
-            ", email='" + email +
-            ", address='" + address +
-            ", issuedDate='" + issuedDate +
-            ", rentDate='" + rentDate +
-            ", returnDate='" + returnDate +
-            ", rentTime='" + rentTime +
-            ", tax='" + tax +
+            "issuedIdentifier=" + issuedIdentifier +
+            ", fullName=" + fullName +
+            ", pesel=" + pesel +
+            ", phoneNumber=" + phoneNumber +
+            ", email=" + email +
+            ", address=" + address +
+            ", issuedDate=" + issuedDate +
+            ", rentDate=" + rentDate +
+            ", returnDate=" + returnDate +
+            ", rentTime=" + rentTime +
+            ", tax=" + tax +
             ", priceUnits=" + priceUnits +
-            ", totalSumPriceNetto='" + totalSumPriceNetto +
-            ", totalSumPriceBrutto='" + totalSumPriceBrutto +
-            ", description='" + description +
+            ", totalSumPriceNetto=" + totalSumPriceNetto +
+            ", totalSumPriceBrutto=" + totalSumPriceBrutto +
+            ", description=" + description +
             ", equipments=" + equipments +
             '}';
     }

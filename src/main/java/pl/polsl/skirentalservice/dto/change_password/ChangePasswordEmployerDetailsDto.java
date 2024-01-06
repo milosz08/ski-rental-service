@@ -20,7 +20,7 @@ public class ChangePasswordEmployerDetailsDto {
     public String toString() {
         return '{' +
             "id=" + id +
-            ", fullName='" + fullName +
+            ", fullName=" + fullName +
             '}';
     }
 }

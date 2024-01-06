@@ -31,19 +31,19 @@ public class ReturnPdfDocumentDataDto {
     @Override
     public String toString() {
         return "{" +
-            "issuedIdentifier='" + issuedIdentifier +
-            ", fullName='" + fullName +
-            ", pesel='" + pesel +
-            ", phoneNumber='" + phoneNumber +
-            ", email='" + email +
-            ", address='" + address +
-            ", rentDate='" + rentDate +
-            ", returnDate='" + returnDate +
-            ", rentTime='" + rentTime +
-            ", tax='" + tax +
-            ", totalSumPriceNetto='" + totalSumPriceNetto +
-            ", totalSumPriceBrutto='" + totalSumPriceBrutto +
-            ", description='" + description +
+            "issuedIdentifier=" + issuedIdentifier +
+            ", fullName=" + fullName +
+            ", pesel=" + pesel +
+            ", phoneNumber=" + phoneNumber +
+            ", email=" + email +
+            ", address=" + address +
+            ", rentDate=" + rentDate +
+            ", returnDate=" + returnDate +
+            ", rentTime=" + rentTime +
+            ", tax=" + tax +
+            ", totalSumPriceNetto=" + totalSumPriceNetto +
+            ", totalSumPriceBrutto=" + totalSumPriceBrutto +
+            ", description=" + description +
             ", priceUnits=" + priceUnits +
             ", equipments=" + equipments +
             '}';

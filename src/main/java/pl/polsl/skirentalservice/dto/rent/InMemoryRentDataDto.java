@@ -54,14 +54,14 @@ public class InMemoryRentDataDto {
     public String toString() {
         return "{" +
             "customerId=" + customerId +
-            ", customerFullName='" + customerFullName +
-            ", issuedIdentifier='" + issuedIdentifier +
-            ", issuedDateTime='" + issuedDateTime +
-            ", rentDateTime='" + rentDateTime +
-            ", returnDateTime='" + returnDateTime +
+            ", customerFullName=" + customerFullName +
+            ", issuedIdentifier=" + issuedIdentifier +
+            ", issuedDateTime=" + issuedDateTime +
+            ", rentDateTime=" + rentDateTime +
+            ", returnDateTime=" + returnDateTime +
             ", rentStatus=" + rentStatus +
-            ", description='" + description +
-            ", tax='" + tax +
+            ", description=" + description +
+            ", tax=" + tax +
             ", priceUnits=" + priceUnits +
             ", days=" + days +
             ", hours=" + hours +

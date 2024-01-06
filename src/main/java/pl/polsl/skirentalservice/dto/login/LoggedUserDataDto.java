@@ -25,14 +25,14 @@ public class LoggedUserDataDto {
     public String toString() {
         return "{" +
             "id=" + id +
-            ", login='" + login +
-            ", fullName='" + fullName +
-            ", roleName='" + roleName +
+            ", login=" + login +
+            ", fullName=" + fullName +
+            ", roleName=" + roleName +
             ", roleAlias=" + roleAlias +
-            ", roleEng='" + roleEng +
+            ", roleEng=" + roleEng +
             ", gender=" + gender +
-            ", emailAddress='" + emailAddress +
-            ", isFirstAccess='" + isFirstAccess +
+            ", emailAddress=" + emailAddress +
+            ", isFirstAccess=" + isFirstAccess +
             '}';
     }
 }

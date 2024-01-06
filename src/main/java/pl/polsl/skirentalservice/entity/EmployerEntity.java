@@ -114,8 +114,8 @@ public class EmployerEntity extends AuditableEntity {
     @Override
     public String toString() {
         return "{" +
-            "login='" + login +
-            ", password='" + password +
+            "login=" + login +
+            ", password=" + password +
             ", hiredDate=" + hiredDate +
             ", firstAccess=" + firstAccess +
             ", role=" + role +
