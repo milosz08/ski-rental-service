@@ -19,10 +19,10 @@ import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.core.ModelMapperGenerator;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.employer.EmployerDao;
-import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
-import pl.polsl.skirentalservice.dao.user_details.IUserDetailsDao;
-import pl.polsl.skirentalservice.dao.user_details.UserDetailsDao;
+import pl.polsl.skirentalservice.dao.EmployerDao;
+import pl.polsl.skirentalservice.dao.UserDetailsDao;
+import pl.polsl.skirentalservice.dao.hibernate.EmployerDaoHib;
+import pl.polsl.skirentalservice.dao.hibernate.UserDetailsDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.employer.AddEditEmployerReqDto;
 import pl.polsl.skirentalservice.dto.employer.AddEditEmployerResDto;
@@ -58,7 +58,7 @@ public class OwnerEditEmployerServlet extends HttpServlet {
             try (final Session session = sessionFactory.openSession()) {
                 try {
                     session.beginTransaction();
-                    final IEmployerDao employerDao = new EmployerDao(session);
+                    final EmployerDao employerDao = new EmployerDaoHib(session);
 
                     final var employerDetails = employerDao.findEmployerEditPageDetails(userId)
                         .orElseThrow(() -> new UserNotFoundException(userId));
@@ -97,7 +97,7 @@ public class OwnerEditEmployerServlet extends HttpServlet {
             reqDto.validateDates(config);
             try {
                 session.beginTransaction();
-                final IUserDetailsDao userDetailsDao = new UserDetailsDao(session);
+                final UserDetailsDao userDetailsDao = new UserDetailsDaoHib(session);
 
                 final EmployerEntity updatableEmployer = session.get(EmployerEntity.class, employerId);
                 if (Objects.isNull(updatableEmployer)) throw new UserNotFoundException(employerId);

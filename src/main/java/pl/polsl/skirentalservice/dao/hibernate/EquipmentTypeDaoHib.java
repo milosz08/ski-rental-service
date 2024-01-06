@@ -1,21 +1,21 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
  * Silesian University of Technology
  */
-package pl.polsl.skirentalservice.dao.equipment_type;
+package pl.polsl.skirentalservice.dao.hibernate;
 
-import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
+import pl.polsl.skirentalservice.dao.EquipmentTypeDao;
+import pl.polsl.skirentalservice.dao.core.AbstractHibernateDao;
 import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
-@RequiredArgsConstructor
-public class EquipmentTypeDao implements IEquipmentTypeDao {
-
-    private final Session session;
+public class EquipmentTypeDaoHib extends AbstractHibernateDao implements EquipmentTypeDao {
+    public EquipmentTypeDaoHib(Session session) {
+        super(session);
+    }
 
     @Override
     public List<FormSelectTupleDto> findAllEquipmentTypes() {
@@ -34,8 +34,7 @@ public class EquipmentTypeDao implements IEquipmentTypeDao {
         final String typeName = session.createQuery(jqplFindNameOfType, String.class)
             .setParameter("id", typeId)
             .getSingleResultOrNull();
-        if (Objects.isNull(typeName)) return Optional.empty();
-        return Optional.of(typeName);
+        return Optional.ofNullable(typeName);
     }
 
     @Override

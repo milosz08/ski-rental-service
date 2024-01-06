@@ -16,8 +16,8 @@ import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.customer.CustomerDao;
-import pl.polsl.skirentalservice.dao.customer.ICustomerDao;
+import pl.polsl.skirentalservice.dao.CustomerDao;
+import pl.polsl.skirentalservice.dao.hibernate.CustomerDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.dto.customer.CustomerRecordResDto;
@@ -80,7 +80,7 @@ public class CommonCustomersServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final ICustomerDao customerDao = new CustomerDao(session);
+                final CustomerDao customerDao = new CustomerDaoHib(session);
 
                 final Long totalCustomers = customerDao.findAllCustomersCount(filterData);
                 final ServletPagination pagination = new ServletPagination(page, total, totalCustomers);

@@ -16,8 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
-import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
+import pl.polsl.skirentalservice.dao.EquipmentDao;
+import pl.polsl.skirentalservice.dao.hibernate.EquipmentDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.entity.EquipmentEntity;
 import pl.polsl.skirentalservice.util.AlertType;
@@ -49,7 +49,7 @@ public class OwnerDeleteEquipmentServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
-                final IEquipmentDao equipmentDao = new EquipmentDao(session);
+                final EquipmentDao equipmentDao = new EquipmentDaoHib(session);
 
                 if (equipmentDao.checkIfEquipmentHasOpenedRents(equipmentId)) {
                     throw new EquipmenHasOpenedRentsException();

@@ -1,11 +1,12 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
  * Silesian University of Technology
  */
-package pl.polsl.skirentalservice.dao.employer;
+package pl.polsl.skirentalservice.dao.hibernate;
 
-import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
+import pl.polsl.skirentalservice.dao.EmployerDao;
+import pl.polsl.skirentalservice.dao.core.AbstractHibernateDao;
 import pl.polsl.skirentalservice.dto.OwnerMailPayloadDto;
 import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.dto.change_password.EmployerDetailsDto;
@@ -18,13 +19,12 @@ import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
 import pl.polsl.skirentalservice.util.RentStatus;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
-@RequiredArgsConstructor
-public class EmployerDao implements IEmployerDao {
-
-    private final Session session;
+public class EmployerDaoHib extends AbstractHibernateDao implements EmployerDao {
+    public EmployerDaoHib(Session session) {
+        super(session);
+    }
 
     @Override
     public Optional<String> findEmployerPassword(String loginOrEmail) {
@@ -35,8 +35,7 @@ public class EmployerDao implements IEmployerDao {
         final String password = session.createQuery(jpqlFindEmployer, String.class)
             .setParameter("loginOrEmail", loginOrEmail)
             .getSingleResultOrNull();
-        if (Objects.isNull(password)) return Optional.empty();
-        return Optional.of(password);
+        return Optional.ofNullable(password);
     }
 
     @Override
@@ -48,8 +47,7 @@ public class EmployerDao implements IEmployerDao {
         final EmployerEntity employer = session.createQuery(jpqlFindEmployer, EmployerEntity.class)
             .setParameter("employerId", employerId)
             .getSingleResultOrNull();
-        if (Objects.isNull(employer)) return Optional.empty();
-        return Optional.of(employer);
+        return Optional.ofNullable(employer);
     }
 
     @Override
@@ -66,8 +64,7 @@ public class EmployerDao implements IEmployerDao {
         final LoggedUserDataDto employer = session.createQuery(jpqlSelectEmployer, LoggedUserDataDto.class)
             .setParameter("loginOrEmail", loginOrEmail)
             .getSingleResultOrNull();
-        if (Objects.isNull(employer)) return Optional.empty();
-        return Optional.of(employer);
+        return Optional.ofNullable(employer);
     }
 
     @Override
@@ -82,8 +79,7 @@ public class EmployerDao implements IEmployerDao {
         final var employer = session.createQuery(jpqlEmployerDetails, EmployerDetailsDto.class)
             .setParameter("loginOrEmail", loginOrEmail)
             .getSingleResultOrNull();
-        if (Objects.isNull(employer)) return Optional.empty();
-        return Optional.of(employer);
+        return Optional.ofNullable(employer);
     }
 
     @Override
@@ -104,8 +100,7 @@ public class EmployerDao implements IEmployerDao {
         final var employerDetails = session.createQuery(jpqlFindEmployerDetails, EmployerDetailsResDto.class)
             .setParameter("eid", employerId)
             .getSingleResultOrNull();
-        if (Objects.isNull(employerDetails)) return Optional.empty();
-        return Optional.of(employerDetails);
+        return Optional.ofNullable(employerDetails);
     }
 
     @Override
@@ -124,8 +119,7 @@ public class EmployerDao implements IEmployerDao {
             .createQuery(jpqlFindEmployerBaseId, AddEditEmployerReqDto.class)
             .setParameter("uid", employerId)
             .getSingleResultOrNull();
-        if (Objects.isNull(employerDetails)) return Optional.empty();
-        return Optional.of(employerDetails);
+        return Optional.ofNullable(employerDetails);
     }
 
     @Override

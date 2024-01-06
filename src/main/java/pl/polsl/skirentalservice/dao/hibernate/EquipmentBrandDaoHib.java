@@ -1,21 +1,21 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
  * Silesian University of Technology
  */
-package pl.polsl.skirentalservice.dao.equipment_brand;
+package pl.polsl.skirentalservice.dao.hibernate;
 
-import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
+import pl.polsl.skirentalservice.dao.EquipmentBrandDao;
+import pl.polsl.skirentalservice.dao.core.AbstractHibernateDao;
 import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
-@RequiredArgsConstructor
-public class EquipmentBrandDao implements IEquipmentBrandDao {
-
-    private final Session session;
+public class EquipmentBrandDaoHib extends AbstractHibernateDao implements EquipmentBrandDao {
+    public EquipmentBrandDaoHib(Session session) {
+        super(session);
+    }
 
     @Override
     public List<FormSelectTupleDto> findAllEquipmentBrands() {
@@ -34,8 +34,7 @@ public class EquipmentBrandDao implements IEquipmentBrandDao {
         final String brandName = session.createQuery(jqplFindNameOfBrand, String.class)
             .setParameter("id", brandId)
             .getSingleResultOrNull();
-        if (Objects.isNull(brandName)) return Optional.empty();
-        return Optional.of(brandName);
+        return Optional.ofNullable(brandName);
     }
 
     @Override

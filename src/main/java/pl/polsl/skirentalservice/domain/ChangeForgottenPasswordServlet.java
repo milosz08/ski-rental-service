@@ -16,10 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.employer.EmployerDao;
-import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
-import pl.polsl.skirentalservice.dao.ota_token.IOtaTokenDao;
-import pl.polsl.skirentalservice.dao.ota_token.OtaTokenDao;
+import pl.polsl.skirentalservice.dao.EmployerDao;
+import pl.polsl.skirentalservice.dao.OtaTokenDao;
+import pl.polsl.skirentalservice.dao.hibernate.EmployerDaoHib;
+import pl.polsl.skirentalservice.dao.hibernate.OtaTokenDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.change_password.ChangeForgottenPasswordReqDto;
 import pl.polsl.skirentalservice.dto.change_password.ChangeForgottenPasswordResDto;
@@ -51,7 +51,7 @@ public class ChangeForgottenPasswordServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
-                final IOtaTokenDao otaTokenDao = new OtaTokenDao(session);
+                final OtaTokenDao otaTokenDao = new OtaTokenDaoHib(session);
 
                 final var details = otaTokenDao.findTokenRelatedToEmployer(token)
                     .orElseThrow(() -> new OtaTokenNotFoundException(req, token, LOGGER));

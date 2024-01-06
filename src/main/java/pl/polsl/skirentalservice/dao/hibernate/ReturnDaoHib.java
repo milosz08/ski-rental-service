@@ -1,11 +1,12 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
  * Silesian University of Technology
  */
-package pl.polsl.skirentalservice.dao.return_deliv;
+package pl.polsl.skirentalservice.dao.hibernate;
 
-import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
+import pl.polsl.skirentalservice.dao.ReturnDao;
+import pl.polsl.skirentalservice.dao.core.AbstractHibernateDao;
 import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.dto.deliv_return.OwnerRentReturnRecordResDto;
 import pl.polsl.skirentalservice.dto.deliv_return.ReturnAlreadyExistPayloadDto;
@@ -14,13 +15,12 @@ import pl.polsl.skirentalservice.dto.deliv_return.SellerRentReturnRecordResDto;
 import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
-@RequiredArgsConstructor
-public class ReturnDao implements IReturnDao {
-
-    private final Session session;
+public class ReturnDaoHib extends AbstractHibernateDao implements ReturnDao {
+    public ReturnDaoHib(Session session) {
+        super(session);
+    }
 
     @Override
     public Optional<ReturnAlreadyExistPayloadDto> findReturnExistDocument(Object rentId) {
@@ -33,8 +33,7 @@ public class ReturnDao implements IReturnDao {
             .createQuery(jpqlFindReturn, ReturnAlreadyExistPayloadDto.class)
             .setParameter("rid", rentId)
             .getSingleResultOrNull();
-        if (Objects.isNull(returnAlreadyExist)) return Optional.empty();
-        return Optional.of(returnAlreadyExist);
+        return Optional.ofNullable(returnAlreadyExist);
     }
 
     @Override
@@ -61,8 +60,7 @@ public class ReturnDao implements IReturnDao {
             .setParameter("eid", employerId)
             .setParameter("ralias", roleAlias)
             .getSingleResultOrNull();
-        if (Objects.isNull(returnDetails)) return Optional.empty();
-        return Optional.of(returnDetails);
+        return Optional.ofNullable(returnDetails);
     }
 
     @Override

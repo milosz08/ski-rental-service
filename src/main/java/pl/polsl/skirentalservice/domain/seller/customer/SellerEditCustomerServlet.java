@@ -19,10 +19,10 @@ import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.core.ModelMapperGenerator;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.customer.CustomerDao;
-import pl.polsl.skirentalservice.dao.customer.ICustomerDao;
-import pl.polsl.skirentalservice.dao.user_details.IUserDetailsDao;
-import pl.polsl.skirentalservice.dao.user_details.UserDetailsDao;
+import pl.polsl.skirentalservice.dao.CustomerDao;
+import pl.polsl.skirentalservice.dao.UserDetailsDao;
+import pl.polsl.skirentalservice.dao.hibernate.CustomerDaoHib;
+import pl.polsl.skirentalservice.dao.hibernate.UserDetailsDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.customer.AddEditCustomerReqDto;
 import pl.polsl.skirentalservice.dto.customer.AddEditCustomerResDto;
@@ -60,7 +60,7 @@ public class SellerEditCustomerServlet extends HttpServlet {
             try (final Session session = sessionFactory.openSession()) {
                 try {
                     session.beginTransaction();
-                    final ICustomerDao customerDao = new CustomerDao(session);
+                    final CustomerDao customerDao = new CustomerDaoHib(session);
 
                     final var customerDetails = customerDao.findCustomerEditPageDetails(customerId)
                         .orElseThrow(() -> new UserNotFoundException(customerId));

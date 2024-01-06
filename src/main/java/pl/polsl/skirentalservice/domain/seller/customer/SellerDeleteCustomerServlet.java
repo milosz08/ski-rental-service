@@ -16,12 +16,12 @@ import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.customer.CustomerDao;
-import pl.polsl.skirentalservice.dao.customer.ICustomerDao;
-import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
-import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
-import pl.polsl.skirentalservice.dao.rent.IRentDao;
-import pl.polsl.skirentalservice.dao.rent.RentDao;
+import pl.polsl.skirentalservice.dao.CustomerDao;
+import pl.polsl.skirentalservice.dao.EquipmentDao;
+import pl.polsl.skirentalservice.dao.RentDao;
+import pl.polsl.skirentalservice.dao.hibernate.CustomerDaoHib;
+import pl.polsl.skirentalservice.dao.hibernate.EquipmentDaoHib;
+import pl.polsl.skirentalservice.dao.hibernate.RentDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.rent.InMemoryRentDataDto;
 import pl.polsl.skirentalservice.entity.CustomerEntity;
@@ -51,9 +51,9 @@ public class SellerDeleteCustomerServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final IEquipmentDao equipmentDao = new EquipmentDao(session);
-                final ICustomerDao customerDao = new CustomerDao(session);
-                final IRentDao rentDao = new RentDao(session);
+                final EquipmentDao equipmentDao = new EquipmentDaoHib(session);
+                final CustomerDao customerDao = new CustomerDaoHib(session);
+                final RentDao rentDao = new RentDaoHib(session);
 
                 final CustomerEntity customerEntity = session.get(CustomerEntity.class, userId);
                 if (Objects.isNull(customerEntity)) throw new UserNotFoundException(UserRole.SELLER);

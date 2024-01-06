@@ -1,11 +1,12 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
  * Silesian University of Technology
  */
-package pl.polsl.skirentalservice.dao.equipment;
+package pl.polsl.skirentalservice.dao.hibernate;
 
-import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
+import pl.polsl.skirentalservice.dao.EquipmentDao;
+import pl.polsl.skirentalservice.dao.core.AbstractHibernateDao;
 import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.dto.deliv_return.RentReturnEquipmentRecordResDto;
 import pl.polsl.skirentalservice.dto.equipment.AddEditEquipmentReqDto;
@@ -17,13 +18,12 @@ import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
 import pl.polsl.skirentalservice.util.RentStatus;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
-@RequiredArgsConstructor
-public class EquipmentDao implements IEquipmentDao {
-
-    private final Session session;
+public class EquipmentDaoHib extends AbstractHibernateDao implements EquipmentDao {
+    public EquipmentDaoHib(Session session) {
+        super(session);
+    }
 
     @Override
     public void decreaseAvailableSelectedEquipmentCount(Object equipmentId, Object count) {
@@ -63,8 +63,7 @@ public class EquipmentDao implements IEquipmentDao {
             .createQuery(jpqlEquipmentDetails, EquipmentRentRecordResDto.class)
             .setParameter("id", equipmentId)
             .getSingleResultOrNull();
-        if (Objects.isNull(equipmentDetails)) return Optional.empty();
-        return Optional.of(equipmentDetails);
+        return Optional.ofNullable(equipmentDetails);
     }
 
     @Override
@@ -83,8 +82,7 @@ public class EquipmentDao implements IEquipmentDao {
             .createQuery(jpqlFindEquipmentBaseId, AddEditEquipmentReqDto.class)
             .setParameter("eid", equipmentId)
             .getSingleResultOrNull();
-        if (Objects.isNull(equipmentDetails)) return Optional.empty();
-        return Optional.of(equipmentDetails);
+        return Optional.ofNullable(equipmentDetails);
     }
 
     @Override
@@ -105,8 +103,7 @@ public class EquipmentDao implements IEquipmentDao {
             .createQuery(jpqlFindEquipmentDetails, EquipmentDetailsResDto.class)
             .setParameter("eid", equipmentId)
             .getSingleResultOrNull();
-        if (Objects.isNull(equipmentDetails)) return Optional.empty();
-        return Optional.of(equipmentDetails);
+        return Optional.ofNullable(equipmentDetails);
     }
 
     @Override

@@ -17,8 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.employer.EmployerDao;
-import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
+import pl.polsl.skirentalservice.dao.EmployerDao;
+import pl.polsl.skirentalservice.dao.hibernate.EmployerDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.login.LoginFormReqDto;
 import pl.polsl.skirentalservice.dto.login.LoginFormResDto;
@@ -64,7 +64,7 @@ public class LoginServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
-                final IEmployerDao employerDao = new EmployerDao(session);
+                final EmployerDao employerDao = new EmployerDaoHib(session);
 
                 final String password = employerDao.findEmployerPassword(reqDto.getLoginOrEmail())
                     .orElseThrow(() -> new UserNotFoundException(reqDto, LOGGER));

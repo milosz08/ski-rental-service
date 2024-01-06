@@ -1,11 +1,12 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
  * Silesian University of Technology
  */
-package pl.polsl.skirentalservice.dao.rent;
+package pl.polsl.skirentalservice.dao.hibernate;
 
-import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
+import pl.polsl.skirentalservice.dao.RentDao;
+import pl.polsl.skirentalservice.dao.core.AbstractHibernateDao;
 import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.dto.deliv_return.RentReturnDetailsResDto;
 import pl.polsl.skirentalservice.dto.rent.OwnerRentRecordResDto;
@@ -16,13 +17,12 @@ import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
 import pl.polsl.skirentalservice.util.RentStatus;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
-@RequiredArgsConstructor
-public class RentDao implements IRentDao {
-
-    private final Session session;
+public class RentDaoHib extends AbstractHibernateDao implements RentDao {
+    public RentDaoHib(Session session) {
+        super(session);
+    }
 
     @Override
     public Optional<RentReturnDetailsResDto> findRentReturnDetails(Object rentId, Object employerId) {
@@ -38,8 +38,7 @@ public class RentDao implements IRentDao {
             .setParameter("rentid", rentId)
             .setParameter("eid", employerId)
             .getSingleResultOrNull();
-        if (Objects.isNull(rentDetails)) return Optional.empty();
-        return Optional.of(rentDetails);
+        return Optional.ofNullable(rentDetails);
     }
 
     @Override
@@ -65,8 +64,7 @@ public class RentDao implements IRentDao {
             .setParameter("eid", employerId)
             .setParameter("ralias", roleAlias)
             .getSingleResultOrNull();
-        if (Objects.isNull(equipmentDetails)) return Optional.empty();
-        return Optional.of(equipmentDetails);
+        return Optional.ofNullable(equipmentDetails);
     }
 
     @Override

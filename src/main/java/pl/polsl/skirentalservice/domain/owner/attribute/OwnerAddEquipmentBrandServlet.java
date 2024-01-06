@@ -17,8 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.equipment_brand.EquipmentBrandDao;
-import pl.polsl.skirentalservice.dao.equipment_brand.IEquipmentBrandDao;
+import pl.polsl.skirentalservice.dao.EquipmentBrandDao;
+import pl.polsl.skirentalservice.dao.hibernate.EquipmentBrandDaoHib;
 import pl.polsl.skirentalservice.dto.attribute.AttributeValidatorPayloadDto;
 import pl.polsl.skirentalservice.entity.EquipmentBrandEntity;
 import pl.polsl.skirentalservice.util.AlertType;
@@ -50,7 +50,7 @@ public class OwnerAddEquipmentBrandServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
-                final IEquipmentBrandDao equipmentDetailsDao = new EquipmentBrandDao(session);
+                final EquipmentBrandDao equipmentDetailsDao = new EquipmentBrandDaoHib(session);
 
                 if (!equipmentDetailsDao.checkIfEquipmentBrandExistByName(payload.reqDto().getName())) {
                     throw new EquipmentBrandAlreadyExistException();

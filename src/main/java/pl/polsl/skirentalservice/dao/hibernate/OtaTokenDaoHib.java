@@ -1,21 +1,21 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
  * Silesian University of Technology
  */
-package pl.polsl.skirentalservice.dao.ota_token;
+package pl.polsl.skirentalservice.dao.hibernate;
 
-import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
+import pl.polsl.skirentalservice.dao.OtaTokenDao;
+import pl.polsl.skirentalservice.dao.core.AbstractHibernateDao;
 import pl.polsl.skirentalservice.dto.change_password.ChangePasswordEmployerDetailsDto;
 import pl.polsl.skirentalservice.dto.change_password.TokenDetailsDto;
 
-import java.util.Objects;
 import java.util.Optional;
 
-@RequiredArgsConstructor
-public class OtaTokenDao implements IOtaTokenDao {
-
-    private final Session session;
+public class OtaTokenDaoHib extends AbstractHibernateDao implements OtaTokenDao {
+    public OtaTokenDaoHib(Session session) {
+        super(session);
+    }
 
     @Override
     public Optional<ChangePasswordEmployerDetailsDto> findTokenRelatedToEmployer(String token) {
@@ -30,8 +30,7 @@ public class OtaTokenDao implements IOtaTokenDao {
         final var details = session.createQuery(jpqlFindToken, ChangePasswordEmployerDetailsDto.class)
             .setParameter("token", token)
             .getSingleResultOrNull();
-        if (Objects.isNull(details)) return Optional.empty();
-        return Optional.of(details);
+        return Optional.ofNullable(details);
     }
 
     @Override
@@ -44,8 +43,7 @@ public class OtaTokenDao implements IOtaTokenDao {
         final var details = session.createQuery(jpqlFindToken, TokenDetailsDto.class)
             .setParameter("token", token)
             .getSingleResultOrNull();
-        if (Objects.isNull(details)) return Optional.empty();
-        return Optional.of(details);
+        return Optional.ofNullable(details);
     }
 
     @Override

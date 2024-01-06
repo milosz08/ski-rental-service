@@ -1,21 +1,21 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
  * Silesian University of Technology
  */
-package pl.polsl.skirentalservice.dao.equipment_color;
+package pl.polsl.skirentalservice.dao.hibernate;
 
-import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
+import pl.polsl.skirentalservice.dao.EquipmentColorDao;
+import pl.polsl.skirentalservice.dao.core.AbstractHibernateDao;
 import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
-@RequiredArgsConstructor
-public class EquipmentColorDao implements IEquipmentColorDao {
-
-    private final Session session;
+public class EquipmentColorDaoHib extends AbstractHibernateDao implements EquipmentColorDao {
+    public EquipmentColorDaoHib(Session session) {
+        super(session);
+    }
 
     @Override
     public List<FormSelectTupleDto> findAllEquipmentColors() {
@@ -34,8 +34,7 @@ public class EquipmentColorDao implements IEquipmentColorDao {
         final String colorName = session.createQuery(jqplFindNameOfColor, String.class)
             .setParameter("id", colorId)
             .getSingleResultOrNull();
-        if (Objects.isNull(colorName)) return Optional.empty();
-        return Optional.of(colorName);
+        return Optional.ofNullable(colorName);
     }
 
     @Override

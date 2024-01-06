@@ -20,8 +20,8 @@ import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.core.mail.MailRequestPayload;
 import pl.polsl.skirentalservice.core.mail.MailSocketSingleton;
-import pl.polsl.skirentalservice.dao.employer.EmployerDao;
-import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
+import pl.polsl.skirentalservice.dao.EmployerDao;
+import pl.polsl.skirentalservice.dao.hibernate.EmployerDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.change_password.RequestToChangePasswordReqDto;
 import pl.polsl.skirentalservice.dto.change_password.RequestToChangePasswordResDto;
@@ -70,7 +70,7 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
-                final IEmployerDao employerDao = new EmployerDao(session);
+                final EmployerDao employerDao = new EmployerDaoHib(session);
 
                 final var employer = employerDao.findEmployerDetails(reqDto.getLoginOrEmail())
                     .orElseThrow(() -> new UserNotFoundException(reqDto, LOGGER));

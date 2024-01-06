@@ -15,8 +15,8 @@ import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.employer.EmployerDao;
-import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
+import pl.polsl.skirentalservice.dao.EmployerDao;
+import pl.polsl.skirentalservice.dao.hibernate.EmployerDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.dto.employer.EmployerRecordResDto;
@@ -70,7 +70,7 @@ public class OwnerEmployersServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
-                final IEmployerDao employerDao = new EmployerDao(session);
+                final EmployerDao employerDao = new EmployerDaoHib(session);
 
                 final Long totalEmployers = employerDao.findAllEmployersCount(filterData);
                 final ServletPagination pagination = new ServletPagination(page, total, totalEmployers);

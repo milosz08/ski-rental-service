@@ -20,10 +20,10 @@ import pl.polsl.skirentalservice.core.ModelMapperGenerator;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.core.mail.MailRequestPayload;
 import pl.polsl.skirentalservice.core.mail.MailSocketSingleton;
-import pl.polsl.skirentalservice.dao.employer.EmployerDao;
-import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
-import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
-import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
+import pl.polsl.skirentalservice.dao.EmployerDao;
+import pl.polsl.skirentalservice.dao.EquipmentDao;
+import pl.polsl.skirentalservice.dao.hibernate.EmployerDaoHib;
+import pl.polsl.skirentalservice.dao.hibernate.EquipmentDaoHib;
 import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
@@ -70,8 +70,8 @@ public class SellerPersistNewRentServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final IEmployerDao employerDao = new EmployerDao(session);
-                final IEquipmentDao equipmentDao = new EquipmentDao(session);
+                final EmployerDao employerDao = new EmployerDaoHib(session);
+                final EquipmentDao equipmentDao = new EquipmentDaoHib(session);
 
                 final RentEntity rent = modelMapper.map(rentData, RentEntity.class);
                 rent.setEquipments(new HashSet<>());

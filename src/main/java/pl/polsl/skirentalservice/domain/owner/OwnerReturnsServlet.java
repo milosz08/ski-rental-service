@@ -15,8 +15,8 @@ import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.return_deliv.IReturnDao;
-import pl.polsl.skirentalservice.dao.return_deliv.ReturnDao;
+import pl.polsl.skirentalservice.dao.ReturnDao;
+import pl.polsl.skirentalservice.dao.hibernate.ReturnDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.dto.deliv_return.OwnerRentReturnRecordResDto;
@@ -71,7 +71,7 @@ public class OwnerReturnsServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final IReturnDao returnDao = new ReturnDao(session);
+                final ReturnDao returnDao = new ReturnDaoHib(session);
 
                 final Long totalReturns = returnDao.findAllReturnsCount(filterData);
                 final ServletPagination pagination = new ServletPagination(page, total, totalReturns);

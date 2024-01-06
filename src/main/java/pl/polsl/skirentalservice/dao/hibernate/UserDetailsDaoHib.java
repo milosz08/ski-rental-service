@@ -1,16 +1,17 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
  * Silesian University of Technology
  */
-package pl.polsl.skirentalservice.dao.user_details;
+package pl.polsl.skirentalservice.dao.hibernate;
 
-import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
+import pl.polsl.skirentalservice.dao.UserDetailsDao;
+import pl.polsl.skirentalservice.dao.core.AbstractHibernateDao;
 
-@RequiredArgsConstructor
-public class UserDetailsDao implements IUserDetailsDao {
-
-    private final Session session;
+public class UserDetailsDaoHib extends AbstractHibernateDao implements UserDetailsDao {
+    public UserDetailsDaoHib(Session session) {
+        super(session);
+    }
 
     @Override
     public boolean checkIfCustomerWithSamePeselExist(String pesel, Object customerId) {

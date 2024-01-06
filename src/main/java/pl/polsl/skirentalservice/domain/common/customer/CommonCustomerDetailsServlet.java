@@ -15,8 +15,8 @@ import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.customer.CustomerDao;
-import pl.polsl.skirentalservice.dao.customer.ICustomerDao;
+import pl.polsl.skirentalservice.dao.CustomerDao;
+import pl.polsl.skirentalservice.dao.hibernate.CustomerDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.util.PageTitle;
@@ -44,7 +44,7 @@ public class CommonCustomerDetailsServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
-                final ICustomerDao customerDao = new CustomerDao(session);
+                final CustomerDao customerDao = new CustomerDaoHib(session);
 
                 final var customerDetails = customerDao.findCustomerDetails(userId)
                     .orElseThrow(() -> new UserNotFoundException(userId));

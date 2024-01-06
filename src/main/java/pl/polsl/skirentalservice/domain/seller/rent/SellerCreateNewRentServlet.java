@@ -18,14 +18,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.customer.CustomerDao;
-import pl.polsl.skirentalservice.dao.customer.ICustomerDao;
-import pl.polsl.skirentalservice.dao.employer.EmployerDao;
-import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
-import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
-import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
-import pl.polsl.skirentalservice.dao.rent.IRentDao;
-import pl.polsl.skirentalservice.dao.rent.RentDao;
+import pl.polsl.skirentalservice.dao.CustomerDao;
+import pl.polsl.skirentalservice.dao.EmployerDao;
+import pl.polsl.skirentalservice.dao.EquipmentDao;
+import pl.polsl.skirentalservice.dao.RentDao;
+import pl.polsl.skirentalservice.dao.hibernate.CustomerDaoHib;
+import pl.polsl.skirentalservice.dao.hibernate.EmployerDaoHib;
+import pl.polsl.skirentalservice.dao.hibernate.EquipmentDaoHib;
+import pl.polsl.skirentalservice.dao.hibernate.RentDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.dto.rent.InMemoryRentDataDto;
@@ -76,10 +76,10 @@ public class SellerCreateNewRentServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final ICustomerDao customerDao = new CustomerDao(session);
-                final IEmployerDao employerDao = new EmployerDao(session);
-                final IEquipmentDao equipmentDao = new EquipmentDao(session);
-                final IRentDao rentDao = new RentDao(session);
+                final CustomerDao customerDao = new CustomerDaoHib(session);
+                final EmployerDao employerDao = new EmployerDaoHib(session);
+                final EquipmentDao equipmentDao = new EquipmentDaoHib(session);
+                final RentDao rentDao = new RentDaoHib(session);
 
                 final Long isSomeEquipmentsAvaialble = equipmentDao.getCountIfSomeEquipmentsAreAvailable();
                 if (Objects.isNull(isSomeEquipmentsAvaialble) || isSomeEquipmentsAvaialble < 0) {

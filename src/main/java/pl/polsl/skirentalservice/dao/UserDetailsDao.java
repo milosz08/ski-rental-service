@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
  * Silesian University of Technology
  */
-package pl.polsl.skirentalservice.dao.user_details;
+package pl.polsl.skirentalservice.dao;
 
-public interface IUserDetailsDao {
+public interface UserDetailsDao {
     boolean checkIfCustomerWithSamePeselExist(String pesel, Object customerId);
     boolean checkIfCustomerWithSameEmailExist(String email, Object customerId);
     boolean checkIfCustomerWithSamePhoneNumberExist(String phoneNumber, Object customerId);

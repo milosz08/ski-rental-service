@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.core.ssh.SshSocketSingleton;
-import pl.polsl.skirentalservice.dao.employer.EmployerDao;
-import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
+import pl.polsl.skirentalservice.dao.EmployerDao;
+import pl.polsl.skirentalservice.dao.hibernate.EmployerDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.first_access.FirstAccessReqDto;
 import pl.polsl.skirentalservice.dto.first_access.FirstAccessResDto;
@@ -72,10 +72,10 @@ public class FirstAccessServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final IEmployerDao employerDao = new EmployerDao(session);
+                final EmployerDao employerDao = new EmployerDaoHib(session);
                 employerDao.updateEmployerFirstAccessPassword(Utils.generateHash(reqDto.getPassword()), userDataDto.getId());
 
-                final IExecCommandPerformer commandPerformer = new ExecCommandPerformer(sshSocket);
+                final ExecCommand commandPerformer = new ExecCommandPerformer(sshSocket);
                 commandPerformer.updateMailboxPassword(userDataDto.getEmailAddress(), reqDto.getEmailPassword());
 
                 alert.setType(AlertType.INFO);

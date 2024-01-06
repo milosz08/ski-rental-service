@@ -24,10 +24,10 @@ import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.core.mail.MailRequestPayload;
 import pl.polsl.skirentalservice.core.mail.MailSocketSingleton;
 import pl.polsl.skirentalservice.core.ssh.SshSocketSingleton;
-import pl.polsl.skirentalservice.dao.employer.EmployerDao;
-import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
-import pl.polsl.skirentalservice.dao.user_details.IUserDetailsDao;
-import pl.polsl.skirentalservice.dao.user_details.UserDetailsDao;
+import pl.polsl.skirentalservice.dao.EmployerDao;
+import pl.polsl.skirentalservice.dao.UserDetailsDao;
+import pl.polsl.skirentalservice.dao.hibernate.EmployerDaoHib;
+import pl.polsl.skirentalservice.dao.hibernate.UserDetailsDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.employer.AddEditEmployerReqDto;
 import pl.polsl.skirentalservice.dto.employer.AddEditEmployerResDto;
@@ -93,8 +93,8 @@ public class OwnerAddEmployerServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final IEmployerDao employerDao = new EmployerDao(session);
-                final IUserDetailsDao userDetailsDao = new UserDetailsDao(session);
+                final EmployerDao employerDao = new EmployerDaoHib(session);
+                final UserDetailsDao userDetailsDao = new UserDetailsDaoHib(session);
 
                 if (userDetailsDao.checkIfEmployerWithSamePeselExist(reqDto.getPesel(), null)) {
                     throw new PeselAlreadyExistException(reqDto.getPesel(), UserRole.SELLER);

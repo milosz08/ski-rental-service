@@ -17,8 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.equipment_color.EquipmentColorDao;
-import pl.polsl.skirentalservice.dao.equipment_color.IEquipmentColorDao;
+import pl.polsl.skirentalservice.dao.EquipmentColorDao;
+import pl.polsl.skirentalservice.dao.hibernate.EquipmentColorDaoHib;
 import pl.polsl.skirentalservice.dto.attribute.AttributeValidatorPayloadDto;
 import pl.polsl.skirentalservice.entity.EquipmentColorEntity;
 import pl.polsl.skirentalservice.util.AlertType;
@@ -50,7 +50,7 @@ public class OwnerAddEquipmentColorServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
-                final IEquipmentColorDao equipmentDetailsDao = new EquipmentColorDao(session);
+                final EquipmentColorDao equipmentDetailsDao = new EquipmentColorDaoHib(session);
 
                 if (equipmentDetailsDao.checkIfEquipmentColorExistByName(payload.reqDto().getName())) {
                     throw new EquipmentColorAlreadyExistException();

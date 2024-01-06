@@ -22,14 +22,14 @@ import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.core.ModelMapperGenerator;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
-import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
-import pl.polsl.skirentalservice.dao.equipment_brand.EquipmentBrandDao;
-import pl.polsl.skirentalservice.dao.equipment_brand.IEquipmentBrandDao;
-import pl.polsl.skirentalservice.dao.equipment_color.EquipmentColorDao;
-import pl.polsl.skirentalservice.dao.equipment_color.IEquipmentColorDao;
-import pl.polsl.skirentalservice.dao.equipment_type.EquipmentTypeDao;
-import pl.polsl.skirentalservice.dao.equipment_type.IEquipmentTypeDao;
+import pl.polsl.skirentalservice.dao.EquipmentBrandDao;
+import pl.polsl.skirentalservice.dao.EquipmentColorDao;
+import pl.polsl.skirentalservice.dao.EquipmentDao;
+import pl.polsl.skirentalservice.dao.EquipmentTypeDao;
+import pl.polsl.skirentalservice.dao.hibernate.EquipmentBrandDaoHib;
+import pl.polsl.skirentalservice.dao.hibernate.EquipmentColorDaoHib;
+import pl.polsl.skirentalservice.dao.hibernate.EquipmentDaoHib;
+import pl.polsl.skirentalservice.dao.hibernate.EquipmentTypeDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.equipment.AddEditEquipmentReqDto;
 import pl.polsl.skirentalservice.dto.equipment.AddEditEquipmentResDto;
@@ -68,9 +68,9 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final IEquipmentTypeDao equipmentTypeDao = new EquipmentTypeDao(session);
-                final IEquipmentBrandDao equipmentBrandDao = new EquipmentBrandDao(session);
-                final IEquipmentColorDao equipmentColorDao = new EquipmentColorDao(session);
+                final EquipmentTypeDao equipmentTypeDao = new EquipmentTypeDaoHib(session);
+                final EquipmentBrandDao equipmentBrandDao = new EquipmentBrandDaoHib(session);
+                final EquipmentColorDao equipmentColorDao = new EquipmentColorDaoHib(session);
 
                 resDto.insertTypesSelects(equipmentTypeDao.findAllEquipmentTypes());
                 resDto.insertBrandsSelects(equipmentBrandDao.findAllEquipmentBrands());

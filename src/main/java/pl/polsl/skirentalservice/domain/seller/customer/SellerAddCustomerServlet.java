@@ -19,8 +19,8 @@ import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.core.ModelMapperGenerator;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.user_details.IUserDetailsDao;
-import pl.polsl.skirentalservice.dao.user_details.UserDetailsDao;
+import pl.polsl.skirentalservice.dao.UserDetailsDao;
+import pl.polsl.skirentalservice.dao.hibernate.UserDetailsDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.customer.AddEditCustomerReqDto;
 import pl.polsl.skirentalservice.dto.customer.AddEditCustomerResDto;
@@ -79,7 +79,7 @@ public class SellerAddCustomerServlet extends HttpServlet {
             }
             try {
                 session.beginTransaction();
-                final IUserDetailsDao userDetailsDao = new UserDetailsDao(session);
+                final UserDetailsDao userDetailsDao = new UserDetailsDaoHib(session);
 
                 if (userDetailsDao.checkIfCustomerWithSamePeselExist(reqDto.getPesel(), null)) {
                     throw new PeselAlreadyExistException(reqDto.getPesel(), UserRole.USER);

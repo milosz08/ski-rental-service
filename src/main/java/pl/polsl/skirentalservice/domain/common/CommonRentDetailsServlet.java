@@ -15,10 +15,10 @@ import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
-import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
-import pl.polsl.skirentalservice.dao.rent.IRentDao;
-import pl.polsl.skirentalservice.dao.rent.RentDao;
+import pl.polsl.skirentalservice.dao.EquipmentDao;
+import pl.polsl.skirentalservice.dao.RentDao;
+import pl.polsl.skirentalservice.dao.hibernate.EquipmentDaoHib;
+import pl.polsl.skirentalservice.dao.hibernate.RentDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.dto.rent.RentEquipmentsDetailsResDto;
@@ -49,8 +49,8 @@ public class CommonRentDetailsServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final IRentDao rentDao = new RentDao(session);
-                final IEquipmentDao equipmentDao = new EquipmentDao(session);
+                final RentDao rentDao = new RentDaoHib(session);
+                final EquipmentDao equipmentDao = new EquipmentDaoHib(session);
 
                 final var rentDetails = rentDao
                     .findRentDetails(rentId, userDataDto.getId(), String.valueOf(userDataDto.getRoleAlias()))

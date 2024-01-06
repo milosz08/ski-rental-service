@@ -15,8 +15,8 @@ import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
-import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
+import pl.polsl.skirentalservice.dao.EquipmentDao;
+import pl.polsl.skirentalservice.dao.hibernate.EquipmentDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.util.PageTitle;
@@ -43,7 +43,7 @@ public class CommonEquipmentDetailsServlet extends HttpServlet {
         final AlertTupleDto alert = new AlertTupleDto(true);
         try (final Session session = sessionFactory.openSession()) {
             try {
-                final IEquipmentDao equipmentDao = new EquipmentDao(session);
+                final EquipmentDao equipmentDao = new EquipmentDaoHib(session);
 
                 final var equipmentDetails = equipmentDao.findEquipmentDetailsPage(equipmentId)
                     .orElseThrow(() -> new EquipmentNotFoundException(equipmentId));

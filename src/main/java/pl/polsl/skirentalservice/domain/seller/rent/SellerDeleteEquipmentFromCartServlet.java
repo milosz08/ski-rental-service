@@ -15,8 +15,8 @@ import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
-import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
+import pl.polsl.skirentalservice.dao.EquipmentDao;
+import pl.polsl.skirentalservice.dao.hibernate.EquipmentDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.rent.CartSingleEquipmentDataDto;
 import pl.polsl.skirentalservice.dto.rent.InMemoryRentDataDto;
@@ -56,7 +56,7 @@ public class SellerDeleteEquipmentFromCartServlet extends HttpServlet {
         final String loggedUser = Utils.getLoggedUserLogin(req);
         try (final Session session = sessionFactory.openSession()) {
             try {
-                final IEquipmentDao equipmentDao = new EquipmentDao(session);
+                final EquipmentDao equipmentDao = new EquipmentDaoHib(session);
                 if (!equipmentDao.checkIfEquipmentExist(equipmentId)) throw new EquipmentNotFoundException(equipmentId);
 
                 final CartSingleEquipmentDataDto cartData = rentData.getEquipments().stream()

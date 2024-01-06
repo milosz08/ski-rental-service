@@ -17,10 +17,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
-import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
-import pl.polsl.skirentalservice.dao.rent.IRentDao;
-import pl.polsl.skirentalservice.dao.rent.RentDao;
+import pl.polsl.skirentalservice.dao.EquipmentDao;
+import pl.polsl.skirentalservice.dao.RentDao;
+import pl.polsl.skirentalservice.dao.hibernate.EquipmentDaoHib;
+import pl.polsl.skirentalservice.dao.hibernate.RentDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.entity.RentEquipmentEntity;
 import pl.polsl.skirentalservice.entity.RentReturnEntity;
@@ -58,8 +58,8 @@ public class SellerDeleteReturnServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final IEquipmentDao equipmentDao = new EquipmentDao(session);
-                final IRentDao rentDao = new RentDao(session);
+                final EquipmentDao equipmentDao = new EquipmentDaoHib(session);
+                final RentDao rentDao = new RentDaoHib(session);
 
                 final RentReturnEntity rentReturn = session.getReference(RentReturnEntity.class, returnId);
                 if (Objects.isNull(rentReturn)) throw new ReturnNotFoundException();

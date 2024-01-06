@@ -16,8 +16,8 @@ import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.equipment_brand.EquipmentBrandDao;
-import pl.polsl.skirentalservice.dao.equipment_brand.IEquipmentBrandDao;
+import pl.polsl.skirentalservice.dao.EquipmentBrandDao;
+import pl.polsl.skirentalservice.dao.hibernate.EquipmentBrandDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.attribute.AttributeModalResDto;
 import pl.polsl.skirentalservice.util.AlertType;
@@ -50,7 +50,7 @@ public class OwnerDeleteEquipmentBrandServlet extends HttpServlet {
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
-                final IEquipmentBrandDao equipmentDetailsDao = new EquipmentBrandDao(session);
+                final EquipmentBrandDao equipmentDetailsDao = new EquipmentBrandDaoHib(session);
 
                 final String deletedBrand = equipmentDetailsDao.getEquipmentBrandNameById(brandId)
                     .orElseThrow(EquipmentBrandNotFoundException::new);

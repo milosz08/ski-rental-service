@@ -16,8 +16,8 @@ import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.rent.IRentDao;
-import pl.polsl.skirentalservice.dao.rent.RentDao;
+import pl.polsl.skirentalservice.dao.RentDao;
+import pl.polsl.skirentalservice.dao.hibernate.RentDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
@@ -76,7 +76,7 @@ public class SellerRentsServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final IRentDao rentDao = new RentDao(session);
+                final RentDao rentDao = new RentDaoHib(session);
                 final Long totalRents = rentDao.findAllRentsFromEmployerCount(filterData, loggedEmployer.getId());
 
                 final ServletPagination pagination = new ServletPagination(page, total, totalRents);

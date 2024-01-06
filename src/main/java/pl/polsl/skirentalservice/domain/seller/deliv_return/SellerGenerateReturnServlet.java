@@ -22,16 +22,8 @@ import pl.polsl.skirentalservice.core.ModelMapperGenerator;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.core.mail.MailRequestPayload;
 import pl.polsl.skirentalservice.core.mail.MailSocketSingleton;
-import pl.polsl.skirentalservice.dao.customer.CustomerDao;
-import pl.polsl.skirentalservice.dao.customer.ICustomerDao;
-import pl.polsl.skirentalservice.dao.employer.EmployerDao;
-import pl.polsl.skirentalservice.dao.employer.IEmployerDao;
-import pl.polsl.skirentalservice.dao.equipment.EquipmentDao;
-import pl.polsl.skirentalservice.dao.equipment.IEquipmentDao;
-import pl.polsl.skirentalservice.dao.rent.IRentDao;
-import pl.polsl.skirentalservice.dao.rent.RentDao;
-import pl.polsl.skirentalservice.dao.return_deliv.IReturnDao;
-import pl.polsl.skirentalservice.dao.return_deliv.ReturnDao;
+import pl.polsl.skirentalservice.dao.*;
+import pl.polsl.skirentalservice.dao.hibernate.*;
 import pl.polsl.skirentalservice.dto.*;
 import pl.polsl.skirentalservice.dto.deliv_return.CustomerDetailsReturnResDto;
 import pl.polsl.skirentalservice.dto.deliv_return.RentReturnDetailsResDto;
@@ -79,11 +71,11 @@ public class SellerGenerateReturnServlet extends HttpServlet {
             try {
                 session.beginTransaction();
 
-                final IEmployerDao employerDao = new EmployerDao(session);
-                final IEquipmentDao equipmentDao = new EquipmentDao(session);
-                final ICustomerDao customerDao = new CustomerDao(session);
-                final IRentDao rentDao = new RentDao(session);
-                final IReturnDao returnDao = new ReturnDao(session);
+                final EmployerDao employerDao = new EmployerDaoHib(session);
+                final EquipmentDao equipmentDao = new EquipmentDaoHib(session);
+                final CustomerDao customerDao = new CustomerDaoHib(session);
+                final RentDao rentDao = new RentDaoHib(session);
+                final ReturnDao returnDao = new ReturnDaoHib(session);
 
                 if (!customerDao.checkIfCustomerExist(rentId)) {
                     throw new RuntimeException("Generowanie zwrotu wypożyczenia z usuniętym klientem jest niemożliwe.");
