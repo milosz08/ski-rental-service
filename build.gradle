@@ -1,136 +1,104 @@
 plugins {
-    id 'java'
-    id 'war'
-    alias libs.plugins.ssh.gradle
-    alias libs.plugins.dotenv.gradle
+  id 'java'
+  id 'war'
+  id 'co.uzzu.dotenv.gradle' version '2.0.0'
 }
 
 def warFileName = 'ROOT'
-def catalinaBase = env.isPresent('CICD_CATALINA_BASE') ? env.CICD_CATALINA_BASE.value : '/opt/tomcat/'
-def projectBase = env.isPresent('CICD_PROJECT_BASE') ? env.CICD_PROJECT_BASE.value : 'webapps/ski-rental-service/'
 
 repositories {
-    mavenCentral()
+  mavenCentral()
 }
 
 compileJava.options.encoding = 'UTF-8'
 tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
+  options.encoding = 'UTF-8'
 }
 
 java.sourceCompatibility = JavaVersion.VERSION_17
 java.targetCompatibility = JavaVersion.VERSION_17
 
-ssh.settings {
-    dryRun = project.hasProperty('dryRun')
-}
-
-remotes {
-    webServer {
-        host = env.CICD_HOST.value
-        user = env.CICD_USER.value
-        identity = file('id_rsa_pem')
-        knownHosts = file('known_hosts.dat')
-    }
-}
-
-// NOTE: all 3rd part libraries in /gradle/libs.versions.toml file
-
 dependencies {
-    implementation          libs.jquery
-    implementation          libs.popperjs
-    implementation          libs.bootstrap
-    implementation          libs.bootstrap.icons
+  implementation 'org.webjars.bower:jquery:3.6.2'
+  implementation 'org.webjars.npm:popper.js:1.16.1'
+  implementation 'org.webjars:bootstrap:5.2.3'
+  implementation 'org.webjars.npm:bootstrap-icons:1.10.2'
 
-    implementation          libs.slf4j
-    implementation          libs.slf4j.simple
-    implementation          libs.slf4j.liquibase
-    implementation          libs.lombok
-    implementation          libs.reflections
-    implementation          libs.bcrypt
-    implementation          libs.freemarker
-    implementation          libs.commons.text
-    implementation          libs.modelmapper
-    implementation          libs.sshj
-    implementation          libs.commons.codec
-    implementation          libs.commons.validator
-    implementation          libs.gson
-    implementation          libs.barcode4j
-    implementation          libs.itext
+  implementation 'org.slf4j:slf4j-api:2.0.6'
+  implementation 'org.slf4j:slf4j-simple:2.0.6'
+  implementation 'com.mattbertolini:liquibase-slf4j:4.1.0'
+  implementation 'org.projectlombok:lombok:1.18.24'
+  implementation 'org.reflections:reflections:0.10.2'
+  implementation 'at.favre.lib:bcrypt:0.9.0'
+  implementation 'org.freemarker:freemarker:2.3.31'
+  implementation 'org.apache.commons:commons-text:1.10.0'
+  implementation 'org.modelmapper:modelmapper:3.1.1'
+  implementation 'com.hierynomus:sshj:0.34.0'
+  implementation 'commons-codec:commons-codec:1.15'
+  implementation 'commons-validator:commons-validator:1.7'
+  implementation 'com.google.code.gson:gson:2.10.1'
+  implementation 'net.sf.barcode4j:barcode4j:2.1'
+  implementation 'com.itextpdf:itext7-core:7.2.5'
 
-    implementation          libs.mysql.driver
-    implementation          libs.hibernate.core
-    implementation          libs.hibernate.validator
-    implementation          libs.liquibase.core
-    implementation          libs.hibernate.c3p0
+  implementation 'mysql:mysql-connector-java:8.0.31'
+  implementation 'org.hibernate:hibernate-core:6.1.6.Final'
+  implementation 'org.hibernate.validator:hibernate-validator:8.0.0.Final'
+  implementation 'org.liquibase:liquibase-core:4.18.0'
+  implementation 'org.hibernate.orm:hibernate-c3p0:6.1.6.Final'
 
-    implementation          libs.jaxb.runtime
-    implementation          libs.jakarta.mail
-    implementation          libs.jakarta.activation
-    implementation          libs.jakarta.xml.bind.api
-    implementation          libs.jakarta.servlet.jstl
-    implementation          libs.jakarta.servlet.jstl.api
-    implementation          libs.jakarta.servlet.jsp.api
-    compileOnly             libs.jakarta.servlet.api
+  implementation 'org.glassfish.jaxb:jaxb-runtime:4.0.0'
+  implementation 'com.sun.mail:jakarta.mail:2.0.1'
+  implementation 'com.sun.activation:jakarta.activation:2.0.1'
+  implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
+  implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl:3.0.1'
+  implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:3.0.0'
+  implementation 'jakarta.servlet.jsp:jakarta.servlet.jsp-api:3.0.0'
+  compileOnly 'jakarta.servlet:jakarta.servlet-api:6.0.0'
 
-    implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
+  implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
 
-    annotationProcessor     libs.lombok
-    testImplementation      libs.junit.api
-    testRuntimeOnly         libs.junit.engine
+  annotationProcessor 'org.projectlombok:lombok:1.18.24'
+  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
 }
 
 configurations.all {
-    exclude group: 'org.eclipse.angus', module: 'angus-activation'
+  exclude group: 'org.eclipse.angus', module: 'angus-activation'
 }
 
 tasks.register('copyRsa', Copy) {
-    from layout.projectDirectory.files([ 'id_rsa', 'known_hosts.dat' ])
-    into layout.buildDirectory.dir("resources/main/ssh")
+  from layout.projectDirectory.files(['.volumes/ssh/id_rsa', '.volumes/ssh/known_hosts.dat'])
+  into layout.buildDirectory.dir("resources/main/ssh")
 }
 
 processResources {
-    filesMatching('**/hibernate.cfg.xml') {
-        filter org.apache.tools.ant.filters.ReplaceTokens, tokens: [
-                'db_url': env.DB_URL.value,
-                'db_user': env.DB_USERNAME.value,
-                'db_pass': env.DB_PASSWORD.value,
-        ]
-    }
-    filesMatching('**/mail.cfg.xml') {
-        filter org.apache.tools.ant.filters.ReplaceTokens, tokens: [
-                'smtp_host': env.SMTP_HOST.value,
-                'smtp_user': env.SMTP_USER.value,
-                'smtp_pass': env.SMTP_PASS.value,
-        ]
-    }
-    filesMatching('**/ssh.cfg.xml' ) {
-        filter org.apache.tools.ant.filters.ReplaceTokens, tokens: [
-                'ssh_host': env.SSH_HOST.value,
-                'ssh_login': env.SSH_LOGIN.value,
-        ]
-    }
-    dependsOn copyRsa
+  filesMatching('**/hibernate.cfg.xml') {
+    filter org.apache.tools.ant.filters.ReplaceTokens, tokens: [
+      'db_url' : env.DB_URL.value,
+      'db_user': env.DB_USERNAME.value,
+      'db_pass': env.DB_PASSWORD.value,
+    ]
+  }
+  filesMatching('**/mail.cfg.xml') {
+    filter org.apache.tools.ant.filters.ReplaceTokens, tokens: [
+      'smtp_host': env.SMTP_HOST.value,
+      'smtp_user': env.SMTP_USER.value,
+      'smtp_pass': env.SMTP_PASS.value,
+    ]
+  }
+  filesMatching('**/ssh.cfg.xml') {
+    filter org.apache.tools.ant.filters.ReplaceTokens, tokens: [
+      'ssh_host' : env.SSH_HOST.value,
+      'ssh_login': env.SSH_LOGIN.value,
+    ]
+  }
+  dependsOn copyRsa
 }
 
 war {
-    archiveFileName = "${warFileName}.war"
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    dependsOn processResources
-}
-
-task deployToTomcat(dependsOn: war) {
-    group = 'deployment'
-    def fullPath = "${catalinaBase}${projectBase}"
-    doLast {
-        ssh.run {
-            session(remotes.webServer) {
-                execute "sudo rm -rf ${fullPath}*"
-                put from: "${buildDir}/libs/${warFileName}.war", into: fullPath
-                execute 'sudo systemctl restart tomcat'
-            }
-        }
-    }
+  archiveFileName = "${warFileName}.war"
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+  dependsOn processResources
 }
 
 build.dependsOn processResources
