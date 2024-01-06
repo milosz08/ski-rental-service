@@ -1,0 +1,27 @@
+#!/bin/bash
+#
+# Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
+# Silesian University of Technology
+#
+mc_alias="minio-temp-client"
+mc_host="http://localhost:9000"
+mc_access_key=$MINIO_ROOT_USER
+mc_secret_key=$MINIO_ROOT_PASSWORD
+
+bucket="barcodes"
+entry_dir="/barcodes"
+
+mc config host add $mc_alias \
+  $mc_host \
+  "$mc_access_key" "$mc_secret_key" \
+  --api S3v4 \
+  --lookup path
+
+for file in "$entry_dir"/*; do
+  if [ -f "$file" ]; then
+    filename=$(basename "$file")
+    mc cp "$file" "$mc_alias/$bucket/$filename"
+  fi
+done
+
+mc config host rm $mc_alias

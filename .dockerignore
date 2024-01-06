@@ -1,0 +1,15 @@
+.git
+.gradle
+gradle
+.idea
+build
+.volumes
+.gitignore
+.dockerignore
+docker-compose.yml
+Dockerfile
+example.env
+gradlew
+gradlew.bat
+LICENSE
+README.md

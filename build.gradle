@@ -1,7 +1,6 @@
 plugins {
   id 'java'
   id 'war'
-  id 'co.uzzu.dotenv.gradle' version '2.0.0'
 }
 
 def warFileName = 'ROOT'
@@ -39,6 +38,8 @@ dependencies {
   implementation 'com.google.code.gson:gson:2.10.1'
   implementation 'net.sf.barcode4j:barcode4j:2.1'
   implementation 'com.itextpdf:itext7-core:7.2.5'
+  implementation 'com.amazonaws:aws-java-sdk-s3:1.12.631'
+  implementation 'commons-io:commons-io:2.15.1'
 
   implementation 'mysql:mysql-connector-java:8.0.31'
   implementation 'org.hibernate:hibernate-core:6.1.6.Final'
@@ -46,9 +47,8 @@ dependencies {
   implementation 'org.liquibase:liquibase-core:4.18.0'
   implementation 'org.hibernate.orm:hibernate-c3p0:6.1.6.Final'
 
-  implementation 'org.glassfish.jaxb:jaxb-runtime:4.0.0'
-  implementation 'com.sun.mail:jakarta.mail:2.0.1'
-  implementation 'com.sun.activation:jakarta.activation:2.0.1'
+  implementation 'com.sun.xml.bind:jaxb-core:2.3.0.1'
+  implementation 'org.eclipse.angus:jakarta.mail:2.0.2'
   implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
   implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl:3.0.1'
   implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:3.0.0'
@@ -62,43 +62,7 @@ dependencies {
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
 }
 
-configurations.all {
-  exclude group: 'org.eclipse.angus', module: 'angus-activation'
-}
-
-tasks.register('copyRsa', Copy) {
-  from layout.projectDirectory.files(['.volumes/ssh/id_rsa', '.volumes/ssh/known_hosts.dat'])
-  into layout.buildDirectory.dir("resources/main/ssh")
-}
-
-processResources {
-  filesMatching('**/hibernate.cfg.xml') {
-    filter org.apache.tools.ant.filters.ReplaceTokens, tokens: [
-      'db_url' : env.DB_URL.value,
-      'db_user': env.DB_USERNAME.value,
-      'db_pass': env.DB_PASSWORD.value,
-    ]
-  }
-  filesMatching('**/mail.cfg.xml') {
-    filter org.apache.tools.ant.filters.ReplaceTokens, tokens: [
-      'smtp_host': env.SMTP_HOST.value,
-      'smtp_user': env.SMTP_USER.value,
-      'smtp_pass': env.SMTP_PASS.value,
-    ]
-  }
-  filesMatching('**/ssh.cfg.xml') {
-    filter org.apache.tools.ant.filters.ReplaceTokens, tokens: [
-      'ssh_host' : env.SSH_HOST.value,
-      'ssh_login': env.SSH_LOGIN.value,
-    ]
-  }
-  dependsOn copyRsa
-}
-
 war {
   archiveFileName = "${warFileName}.war"
   duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-  dependsOn processResources
 }
-
-build.dependsOn processResources
