@@ -28,7 +28,6 @@ import pl.polsl.skirentalservice.util.SessionAlert;
 import pl.polsl.skirentalservice.util.Utils;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import static pl.polsl.skirentalservice.exception.CredentialException.OtaTokenNotFoundException;
 import static pl.polsl.skirentalservice.exception.CredentialException.PasswordMismatchException;
@@ -41,8 +40,7 @@ public class ChangeForgottenPasswordServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        AlertTupleDto alert = Utils.getAndDestroySessionAlert(req, SessionAlert.CHANGE_FORGOTTEN_PASSWORD_PAGE_ALERT);
-        if (Objects.isNull(alert)) alert = new AlertTupleDto();
+        final AlertTupleDto alert = Utils.getAndDestroySessionAlert(req, SessionAlert.CHANGE_FORGOTTEN_PASSWORD_PAGE_ALERT);
         final String token = req.getParameter("token");
 
         try (final Session session = sessionFactory.openSession()) {
@@ -108,7 +106,9 @@ public class ChangeForgottenPasswordServlet extends HttpServlet {
                 Utils.onHibernateException(session, log, ex);
             }
         } catch (RuntimeException ex) {
-            if (!(ex instanceof PasswordMismatchException)) alert.setDisableContent(true);
+            if (!(ex instanceof PasswordMismatchException)) {
+                alert.setDisableContent(true);
+            }
             alert.setMessage(ex.getMessage());
             httpSession.setAttribute(getClass().getName(), resDto);
             httpSession.setAttribute(SessionAlert.CHANGE_FORGOTTEN_PASSWORD_PAGE_ALERT.getName(), alert);

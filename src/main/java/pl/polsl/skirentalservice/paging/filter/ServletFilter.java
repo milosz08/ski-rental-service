@@ -20,12 +20,14 @@ public class ServletFilter {
     public FilterDataDto generateFilterJPQuery(SessionAttribute attribute) {
         final HttpSession session = req.getSession();
         FilterDataDto filterData = (FilterDataDto) session.getAttribute(attribute.getName());
-        if (Objects.isNull(filterData)) filterData = new FilterDataDto(fields);
-
+        if (filterData == null) {
+            filterData = new FilterDataDto(fields);
+        }
         final String searchText = StringUtils.trimToEmpty(req.getParameter("searchText"));
         final String searchByValue = req.getParameter("searchBy");
-        if (Objects.isNull(searchByValue)) return filterData;
-
+        if (searchByValue == null) {
+            return filterData;
+        }
         for (final FilterColumn select : filterData.getSearchBy()) {
             if (select.getValue().equals(searchByValue)) {
                 select.setIsSelected("selected");

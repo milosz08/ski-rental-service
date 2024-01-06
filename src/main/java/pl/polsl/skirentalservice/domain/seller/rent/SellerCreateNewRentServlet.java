@@ -34,7 +34,6 @@ import pl.polsl.skirentalservice.util.*;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 import static pl.polsl.skirentalservice.exception.DateException.RentDateBeforeIssuedDateException;
 import static pl.polsl.skirentalservice.exception.DateException.ReturnDateBeforeRentDateException;
@@ -57,7 +56,7 @@ public class SellerCreateNewRentServlet extends HttpServlet {
         var inMemoryRentData = (InMemoryRentDataDto) httpSession.getAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName());
         var loggedUser = (LoggedUserDataDto) httpSession.getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
 
-        if (!Objects.isNull(inMemoryRentData) && !inMemoryRentData.getCustomerId().equals(customerId)) {
+        if (inMemoryRentData != null && !inMemoryRentData.getCustomerId().equals(customerId)) {
             alert.setActive(true);
             alert.setMessage(
                 "W pamięci systemu istnieje już otwarte zgłoszenie wypożyczenia dla klienta " +
@@ -79,7 +78,7 @@ public class SellerCreateNewRentServlet extends HttpServlet {
                 final RentDao rentDao = new RentDaoHib(session);
 
                 final Long isSomeEquipmentsAvaialble = equipmentDao.getCountIfSomeEquipmentsAreAvailable();
-                if (Objects.isNull(isSomeEquipmentsAvaialble) || isSomeEquipmentsAvaialble < 0) {
+                if (isSomeEquipmentsAvaialble == null || isSomeEquipmentsAvaialble < 0) {
                     alert.setActive(true);
                     alert.setMessage("Aby stworzyć wypożyczenie musi być dostępny przynajmniej jeden sprzęt w " +
                         "ilości jednej sztuki na stanie.");
@@ -95,7 +94,7 @@ public class SellerCreateNewRentServlet extends HttpServlet {
                     .orElseThrow(() -> new UserNotFoundException(UserRole.SELLER));
                 req.setAttribute("employerData", employerDetails);
 
-                if (Objects.isNull(inMemoryRentData)) {
+                if (inMemoryRentData == null) {
                     inMemoryRentData = new InMemoryRentDataDto(customerId, customerDetails.fullName());
                     final LocalDateTime now = LocalDateTime.now();
                     final String issuerStaticPart = "WY/" + now.getYear() + "/" + now.getMonth().getValue() + "/";
@@ -110,7 +109,7 @@ public class SellerCreateNewRentServlet extends HttpServlet {
                 inMemoryRentData.setAllGood(false);
                 inMemoryRentData.setCustomerDetails(customerDetails);
 
-                if (Objects.isNull(resDto)) {
+                if (resDto == null) {
                     resDto = new NewRentDetailsResDto();
                     resDto.getTax().setValue(inMemoryRentData.getTax());
                     resDto.getRentDateTime().setValue(inMemoryRentData.getRentDateTime());

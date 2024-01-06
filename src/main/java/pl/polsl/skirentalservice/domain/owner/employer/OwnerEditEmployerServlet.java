@@ -29,7 +29,6 @@ import pl.polsl.skirentalservice.entity.EmployerEntity;
 import pl.polsl.skirentalservice.util.*;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.PeselAlreadyExistException;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.PhoneNumberAlreadyExistException;
@@ -51,7 +50,7 @@ public class OwnerEditEmployerServlet extends HttpServlet {
 
         final AlertTupleDto alert = Utils.getAndDestroySessionAlert(req, SessionAlert.OWNER_EDIT_EMPLOYER_PAGE_ALERT);
         var resDto = (AddEditEmployerResDto) httpSession.getAttribute(getClass().getName());
-        if (Objects.isNull(resDto)) {
+        if (resDto == null) {
             try (final Session session = sessionFactory.openSession()) {
                 try {
                     session.beginTransaction();
@@ -97,8 +96,9 @@ public class OwnerEditEmployerServlet extends HttpServlet {
                 final UserDetailsDao userDetailsDao = new UserDetailsDaoHib(session);
 
                 final EmployerEntity updatableEmployer = session.get(EmployerEntity.class, employerId);
-                if (Objects.isNull(updatableEmployer)) throw new UserNotFoundException(employerId);
-
+                if (updatableEmployer == null) {
+                    throw new UserNotFoundException(employerId);
+                }
                 if (userDetailsDao.checkIfEmployerWithSamePeselExist(reqDto.getPesel(), updatableEmployer.getId())) {
                     throw new PeselAlreadyExistException(reqDto.getPesel(), UserRole.SELLER);
                 }

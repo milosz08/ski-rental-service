@@ -31,7 +31,7 @@ public class ProtectedRoutesGuardFilter extends HttpFilter {
         final LoggedUserDataDto userData = (LoggedUserDataDto) httpSession
             .getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
         String redirectToPath = "";
-        if (Objects.isNull(userData)) {
+        if (userData == null) {
             redirectToPath = "/login";
         } else {
             if (userData.getRoleAlias().equals(UserRole.SELLER.getAlias()) && req.getRequestURI().contains("/owner")) {

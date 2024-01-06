@@ -24,7 +24,6 @@ import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
 import java.sql.SQLException;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -76,7 +75,7 @@ public class HibernateDbSingleton {
     }
 
     public static synchronized HibernateDbSingleton getInstance() {
-        if (Objects.isNull(instance)) {
+        if (instance == null) {
             instance = new HibernateDbSingleton();
         }
         return instance;

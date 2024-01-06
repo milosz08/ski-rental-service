@@ -26,8 +26,9 @@ public class RedirectOnFirstAccessFilter extends HttpFilter {
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
         throws IOException, ServletException {
         final HttpSession httpSession = req.getSession();
-        final var userDetails = (LoggedUserDataDto) httpSession.getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
-        if (Objects.isNull(userDetails)) {
+        final var userDetails = (LoggedUserDataDto) httpSession
+            .getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
+        if (userDetails == null) {
             res.sendRedirect("/login");
             return;
         }

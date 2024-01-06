@@ -30,7 +30,6 @@ import pl.polsl.skirentalservice.util.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Objects;
 
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
 import static pl.polsl.skirentalservice.exception.DateException.DateInFutureException;
@@ -53,7 +52,7 @@ public class SellerEditCustomerServlet extends HttpServlet {
         final AlertTupleDto alert = Utils.getAndDestroySessionAlert(req, SessionAlert.SELLER_EDIT_CUSTOMER_PAGE_ALERT);
         var resDto = (AddEditCustomerResDto) httpSession.getAttribute(getClass().getName());
 
-        if (Objects.isNull(resDto)) {
+        if (resDto == null) {
             try (final Session session = sessionFactory.openSession()) {
                 try {
                     session.beginTransaction();
@@ -102,8 +101,9 @@ public class SellerEditCustomerServlet extends HttpServlet {
                 final UserDetailsDao userDetailsDao = new UserDetailsDaoHib(session);
 
                 final CustomerEntity updatableCustomer = session.get(CustomerEntity.class, customerId);
-                if (Objects.isNull(updatableCustomer)) throw new UserNotFoundException(customerId);
-
+                if (updatableCustomer == null) {
+                    throw new UserNotFoundException(customerId);
+                }
                 if (userDetailsDao.checkIfCustomerWithSamePeselExist(reqDto.getPesel(), customerId)) {
                     throw new PeselAlreadyExistException(reqDto.getPesel(), UserRole.USER);
                 }

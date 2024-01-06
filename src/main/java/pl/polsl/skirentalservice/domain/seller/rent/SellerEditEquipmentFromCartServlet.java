@@ -27,7 +27,6 @@ import pl.polsl.skirentalservice.util.Utils;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Objects;
 
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.TooMuchEquipmentsException;
 import static pl.polsl.skirentalservice.exception.NotFoundException.EquipmentInCartNotFoundException;
@@ -48,7 +47,7 @@ public class SellerEditEquipmentFromCartServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final HttpSession httpSession = req.getSession();
         final var rentData = (InMemoryRentDataDto) httpSession.getAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName());
-        if (Objects.isNull(rentData)) {
+        if (rentData == null) {
             res.sendRedirect("/seller/customers");
             return;
         }

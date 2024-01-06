@@ -7,8 +7,6 @@ package pl.polsl.skirentalservice.converter;
 import jakarta.persistence.AttributeConverter;
 import pl.polsl.skirentalservice.util.Gender;
 
-import java.util.Objects;
-
 public class GenderConverter implements AttributeConverter<Gender, String> {
     @Override
     public String convertToDatabaseColumn(Gender gender) {
@@ -17,8 +15,7 @@ public class GenderConverter implements AttributeConverter<Gender, String> {
 
     @Override
     public Gender convertToEntityAttribute(String name) {
-        if (Objects.isNull(name)) return Gender.MALE;
-        return switch (name) {
+        return name == null ? Gender.MALE : switch (name) {
             case "kobieta" -> Gender.FEMALE;
             case "mężczyzna" -> Gender.MALE;
             default -> Gender.UNISEX;

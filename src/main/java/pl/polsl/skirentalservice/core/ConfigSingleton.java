@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Objects;
 
 @Getter
 public class ConfigSingleton {
@@ -32,7 +31,7 @@ public class ConfigSingleton {
     }
 
     public static synchronized ConfigSingleton getInstance() {
-        if (Objects.isNull(instance)) {
+        if (instance == null) {
             try {
                 instance = new ConfigSingleton();
             } catch (IOException ex) {

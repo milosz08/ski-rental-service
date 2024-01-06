@@ -25,7 +25,6 @@ import pl.polsl.skirentalservice.util.Utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
 
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.EquipmenHasOpenedRentsException;
 import static pl.polsl.skirentalservice.exception.NotFoundException.EquipmentNotFoundException;

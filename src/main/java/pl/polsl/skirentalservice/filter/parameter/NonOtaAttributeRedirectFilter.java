@@ -22,7 +22,7 @@ public class NonOtaAttributeRedirectFilter extends HttpFilter {
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
         throws IOException, ServletException {
         final String token = req.getParameter("token");
-        if (Objects.isNull(token)) {
+        if (token == null) {
             res.sendRedirect("/forgot-password-request");
             return;
         }

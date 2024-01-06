@@ -30,7 +30,6 @@ import pl.polsl.skirentalservice.util.SessionAlert;
 import pl.polsl.skirentalservice.util.Utils;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import static pl.polsl.skirentalservice.exception.NotFoundException.ReturnNotFoundException;
 
@@ -43,7 +42,7 @@ public class SellerDeleteReturnServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final String returnId = StringUtils.trimToNull(req.getParameter("id"));
-        if (Objects.isNull(returnId)) {
+        if (returnId == null) {
             res.sendRedirect("/seller/returns");
             return;
         }
@@ -59,11 +58,14 @@ public class SellerDeleteReturnServlet extends HttpServlet {
                 final RentDao rentDao = new RentDaoHib(session);
 
                 final RentReturnEntity rentReturn = session.getReference(RentReturnEntity.class, returnId);
-                if (Objects.isNull(rentReturn)) throw new ReturnNotFoundException();
-
+                if (rentReturn == null) {
+                    throw new ReturnNotFoundException();
+                }
                 rentDao.updateRentStatus(RentStatus.RENTED, rentReturn.getRent().getId());
                 for (final RentEquipmentEntity equipment : rentReturn.getRent().getEquipments()) {
-                    if (Objects.isNull(equipment.getEquipment())) continue;
+                    if (equipment.getEquipment() == null) {
+                        continue;
+                    }
                     equipmentDao.decreaseAvailableSelectedEquipmentCount(equipment.getEquipment().getId(),
                         equipment.getCount());
                 }

@@ -35,7 +35,6 @@ import pl.polsl.skirentalservice.entity.EquipmentTypeEntity;
 import pl.polsl.skirentalservice.util.*;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.EquipmentAlreadyExistException;
 import static pl.polsl.skirentalservice.exception.NotFoundException.EquipmentNotFoundException;
@@ -55,7 +54,7 @@ public class OwnerEditEquipmentServlet extends HttpServlet {
 
         final AlertTupleDto alert = Utils.getAndDestroySessionAlert(req, SessionAlert.OWNER_EDIT_EQUIPMENT_PAGE_ALERT);
         var resDto = (AddEditEquipmentResDto) httpSession.getAttribute(getClass().getName());
-        if (Objects.isNull(resDto)) {
+        if (resDto == null) {
             try (final Session session = sessionFactory.openSession()) {
                 try {
                     session.beginTransaction();
@@ -116,8 +115,9 @@ public class OwnerEditEquipmentServlet extends HttpServlet {
                 final EquipmentDao equipmentDao = new EquipmentDaoHib(session);
 
                 final EquipmentEntity equipmentEntity = session.get(EquipmentEntity.class, equipmentId);
-                if (Objects.isNull(equipmentEntity)) throw new EquipmentNotFoundException(equipmentId);
-
+                if (equipmentEntity == null) {
+                    throw new EquipmentNotFoundException(equipmentId);
+                }
                 if (equipmentDao.checkIfEquipmentModelExist(reqDto.getModel(), equipmentId)) {
                     throw new EquipmentAlreadyExistException();
                 }

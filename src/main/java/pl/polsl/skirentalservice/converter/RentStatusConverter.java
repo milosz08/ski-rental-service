@@ -7,8 +7,6 @@ package pl.polsl.skirentalservice.converter;
 import jakarta.persistence.AttributeConverter;
 import pl.polsl.skirentalservice.util.RentStatus;
 
-import java.util.Objects;
-
 public class RentStatusConverter implements AttributeConverter<RentStatus, String> {
     @Override
     public String convertToDatabaseColumn(RentStatus rentStatus) {
@@ -17,8 +15,7 @@ public class RentStatusConverter implements AttributeConverter<RentStatus, Strin
 
     @Override
     public RentStatus convertToEntityAttribute(String name) {
-        if (Objects.isNull(name)) return RentStatus.OPENED;
-        return switch (name) {
+        return name == null ? RentStatus.OPENED : switch (name) {
             case "wypożyczony" -> RentStatus.RENTED;
             case "zwrócony" -> RentStatus.RETURNED;
             default -> RentStatus.OPENED;

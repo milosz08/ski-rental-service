@@ -26,7 +26,6 @@ import pl.polsl.skirentalservice.util.Utils;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static pl.polsl.skirentalservice.exception.NotFoundException.EquipmentInCartNotFoundException;
@@ -41,12 +40,12 @@ public class SellerDeleteEquipmentFromCartServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final HttpSession httpSession = req.getSession();
         final var rentData = (InMemoryRentDataDto) httpSession.getAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName());
-        if (Objects.isNull(rentData)) {
+        if (rentData == null) {
             res.sendRedirect("/seller/customers");
             return;
         }
         final String equipmentId = req.getParameter("id");
-        if (Objects.isNull(equipmentId)) {
+        if (equipmentId == null) {
             res.sendRedirect("/seller/complete-rent-equipments");
             return;
         }

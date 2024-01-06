@@ -68,7 +68,7 @@ public class SshSocketSingleton {
     }
 
     public static synchronized SshSocketSingleton getInstance() {
-        if (Objects.isNull(instance)) {
+        if (instance == null) {
             instance = new SshSocketSingleton();
         }
         return instance;

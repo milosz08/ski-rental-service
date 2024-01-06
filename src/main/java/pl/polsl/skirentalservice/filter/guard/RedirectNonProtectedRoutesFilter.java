@@ -29,7 +29,7 @@ public class RedirectNonProtectedRoutesFilter extends HttpFilter {
         final HttpSession httpSession = req.getSession();
         final var loggedUserDetailsDto = (LoggedUserDataDto) httpSession
             .getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
-        if (!Objects.isNull(loggedUserDetailsDto)) {
+        if (loggedUserDetailsDto != null) {
             res.sendRedirect("/" + loggedUserDetailsDto.getRoleEng() + "/dashboard");
             return;
         }

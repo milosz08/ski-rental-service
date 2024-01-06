@@ -26,7 +26,6 @@ import pl.polsl.skirentalservice.util.SessionAttribute;
 import pl.polsl.skirentalservice.util.Utils;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.EquipmentInCartAlreadyExistException;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.TooMuchEquipmentsException;
@@ -48,7 +47,7 @@ public class SellerAddEquipmentToCartServlet extends HttpServlet {
         final HttpSession httpSession = req.getSession();
         final var rentData = (InMemoryRentDataDto) httpSession
             .getAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName());
-        if (Objects.isNull(rentData)) {
+        if (rentData == null) {
             res.sendRedirect("/seller/customers");
             return;
         }

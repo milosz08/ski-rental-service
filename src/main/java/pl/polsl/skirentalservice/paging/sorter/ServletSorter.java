@@ -20,11 +20,13 @@ public class ServletSorter {
     public SorterDataDto generateSortingJPQuery(SessionAttribute attribute) {
         final HttpSession session = req.getSession();
         SorterDataDto sortedData = (SorterDataDto) session.getAttribute(attribute.getName());
-        if (Objects.isNull(sortedData)) sortedData = new SorterDataDto(fieldsMap, defColumnSort);
-
+        if (sortedData == null) {
+            sortedData = new SorterDataDto(fieldsMap, defColumnSort);
+        }
         final String columnName = req.getParameter("sortBy");
-        if (Objects.isNull(columnName)) return sortedData;
-
+        if (columnName == null) {
+            return sortedData;
+        }
         for (final Map.Entry<String, ServletSorterField> entry : sortedData.getFieldsMap().entrySet()) {
             final ServletSorterField field = entry.getValue();
             if (entry.getKey().equals(columnName)) {

@@ -19,17 +19,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Objects;
 
 @WebServlet("/resources/*")
 public class GetStaticResourceServlet extends HttpServlet {
-
     private final ConfigSingleton config = ConfigSingleton.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final HttpSession httpSession = req.getSession();
-        if (Objects.isNull(httpSession.getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName()))) {
+        if (httpSession.getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName()) == null) {
             res.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
@@ -37,7 +35,7 @@ public class GetStaticResourceServlet extends HttpServlet {
         final String absPath = config.getUploadsDir() + File.separator + resourcePath;
         final ServletContext servletContext = req.getServletContext();
         final String mime = servletContext.getMimeType(absPath);
-        if (Objects.isNull(mime)) {
+        if (mime == null) {
             res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }

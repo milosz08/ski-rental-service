@@ -28,7 +28,6 @@ import pl.polsl.skirentalservice.util.SessionAlert;
 import pl.polsl.skirentalservice.util.Utils;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import static pl.polsl.skirentalservice.exception.NotFoundException.RentNotFoundException;
 
@@ -51,17 +50,20 @@ public class SellerDeleteRentServlet extends HttpServlet {
                 final EquipmentDao equipmentDao = new EquipmentDaoHib(session);
 
                 final RentEntity rentEntity = session.getReference(RentEntity.class, rentId);
-                if (Objects.isNull(rentEntity)) throw new RentNotFoundException();
+                if (rentEntity == null) {
+                    throw new RentNotFoundException();
+                }
                 if (rentEntity.getStatus().equals(RentStatus.RETURNED)) throw new RuntimeException(
                     "Usunięcie wypożyczenia ze statusem <strong>wypożyczone</strong> nie jest możliwe. Aby usunąć " +
                         "niechciane wypożyczenie, usuń przypisany do niego dokument zwrotu."
                 );
                 for (final RentEquipmentEntity equipment : rentEntity.getEquipments()) {
-                    if (Objects.isNull(equipment.getEquipment())) continue;
+                    if (equipment.getEquipment() == null) {
+                        continue;
+                    }
                     equipmentDao.increaseAvailableSelectedEquipmentCount(equipment.getEquipment().getId(),
                         equipment.getCount());
                 }
-
                 final RentPdfDocument rentPdfDocument = new RentPdfDocument(config.getUploadsDir(),
                     rentEntity.getIssuedIdentifier());
                 rentPdfDocument.remove();

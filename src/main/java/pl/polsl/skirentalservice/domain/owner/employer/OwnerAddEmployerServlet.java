@@ -43,7 +43,6 @@ import pl.polsl.skirentalservice.util.*;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.PeselAlreadyExistException;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.PhoneNumberAlreadyExistException;
@@ -62,7 +61,9 @@ public class OwnerAddEmployerServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final AlertTupleDto alert = Utils.getAndDestroySessionAlert(req, SessionAlert.OWNER_ADD_EMPLOYER_PAGE_ALERT);
         var resDto = Utils.getFromSessionAndDestroy(req, getClass().getName(), AddEditEmployerResDto.class);
-        if (Objects.isNull(resDto)) resDto = new AddEditEmployerResDto();
+        if (resDto == null) {
+            resDto = new AddEditEmployerResDto();
+        }
         req.setAttribute("alertData", alert);
         req.setAttribute("addEditEmployerData", resDto);
         req.setAttribute("addEditText", "Dodaj");

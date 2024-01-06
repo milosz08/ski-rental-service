@@ -95,7 +95,7 @@ public class MailSocketSingleton {
                 config.getDefPageTitle()));
             message.setRecipients(Message.RecipientType.TO, sendToAddresses);
 
-            if (!Objects.isNull(payload.getAttachmentsPaths())) {
+            if (payload.getAttachmentsPaths() != null) {
                 final Multipart multipart = new MimeMultipart();
                 final BodyPart bodyPart = new MimeBodyPart();
 
@@ -140,7 +140,7 @@ public class MailSocketSingleton {
     }
 
     public static synchronized MailSocketSingleton getInstance() {
-        if (Objects.isNull(instance)) {
+        if (instance == null) {
             instance = new MailSocketSingleton();
         }
         return instance;

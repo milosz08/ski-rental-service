@@ -42,7 +42,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
 
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.EquipmentAlreadyExistException;
 
@@ -59,8 +58,9 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final AlertTupleDto alert = Utils.getAndDestroySessionAlert(req, SessionAlert.OWNER_ADD_EQUIPMENT_PAGE_ALERT);
         var resDto = Utils.getFromSessionAndDestroy(req, getClass().getName(), AddEditEquipmentResDto.class);
-        if (Objects.isNull(resDto)) resDto = new AddEditEquipmentResDto();
-
+        if (resDto == null) {
+            resDto = new AddEditEquipmentResDto();
+        }
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();

@@ -12,7 +12,6 @@ import lombok.Getter;
 import pl.polsl.skirentalservice.dto.FormSelectsDto;
 import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
 
-import java.util.Objects;
 import java.util.Set;
 
 public class ValidatorSingleton {
@@ -53,7 +52,7 @@ public class ValidatorSingleton {
     }
 
     public static synchronized ValidatorSingleton getInstance() {
-        if (Objects.isNull(instance)) {
+        if (instance == null) {
             instance = new ValidatorSingleton();
         }
         return instance;

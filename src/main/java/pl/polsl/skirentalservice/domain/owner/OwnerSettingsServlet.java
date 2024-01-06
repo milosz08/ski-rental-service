@@ -30,7 +30,6 @@ import pl.polsl.skirentalservice.entity.EmployerEntity;
 import pl.polsl.skirentalservice.util.*;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.PeselAlreadyExistException;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.PhoneNumberAlreadyExistException;
@@ -54,7 +53,7 @@ public class OwnerSettingsServlet extends HttpServlet {
         final var ownerDetailsDto = (LoggedUserDataDto) httpSession
             .getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
 
-        if (Objects.isNull(resDto)) {
+        if (resDto == null) {
             try (final Session session = sessionFactory.openSession()) {
                 try {
                     session.beginTransaction();
@@ -102,8 +101,9 @@ public class OwnerSettingsServlet extends HttpServlet {
                 final UserDetailsDao userDetailsDao = new UserDetailsDaoHib(session);
 
                 final EmployerEntity updatableOwner = session.get(EmployerEntity.class, ownerDetailsDto.getId());
-                if (Objects.isNull(updatableOwner)) throw new UserNotFoundException(httpSession.getId());
-
+                if (updatableOwner == null) {
+                    throw new UserNotFoundException(httpSession.getId());
+                }
                 if (userDetailsDao.checkIfEmployerWithSamePeselExist(reqDto.getPesel(), ownerDetailsDto.getId())) {
                     throw new PeselAlreadyExistException(reqDto.getPesel(), UserRole.OWNER);
                 }

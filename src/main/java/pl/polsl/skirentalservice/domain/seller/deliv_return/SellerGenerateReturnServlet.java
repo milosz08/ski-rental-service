@@ -188,7 +188,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 final Map<String, Object> templateVars = new HashMap<>();
                 templateVars.put("rentIdentifier", rentDetails.issuedIdentifier());
                 templateVars.put("returnIdentifier", rentReturn.getIssuedIdentifier());
-                templateVars.put("additionalDescription", Objects.isNull(description) ? "<i>Brak danych</i>" : description);
+                templateVars.put("additionalDescription", description == null ? "<i>Brak danych</i>" : description);
                 templateVars.put("data", emailPayload);
 
                 final ReturnPdfDocumentDataDto returnPdfDataDto = modelMapper.map(rentDetails, ReturnPdfDocumentDataDto.class);

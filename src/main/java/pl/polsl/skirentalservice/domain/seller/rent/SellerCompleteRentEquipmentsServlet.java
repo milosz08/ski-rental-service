@@ -76,7 +76,7 @@ public class SellerCompleteRentEquipmentsServlet extends HttpServlet {
 
         final HttpSession httpSession = req.getSession();
         final var rentData = (InMemoryRentDataDto) httpSession.getAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName());
-        if (Objects.isNull(rentData) || !rentData.isAllGood()) {
+        if (rentData == null || !rentData.isAllGood()) {
             res.sendRedirect("/seller/customers");
             return;
         }
@@ -117,15 +117,7 @@ public class SellerCompleteRentEquipmentsServlet extends HttpServlet {
                         .orElseThrow(() -> new EquipmentNotFoundException(cartDto.getId().toString()));
 
                     recordDto.setDisabled(true);
-                    final BigDecimal totalPriceDays = recordDto.getPricePerDay().multiply(new BigDecimal(rentDays));
-                    BigDecimal totalPriceHoursSum = new BigDecimal(0);
-                    if ((totalRentHours % 24) > 0) {
-                        totalPriceHoursSum = recordDto.getPricePerHour();
-                        for (int i = 0; i < (totalRentHours % 24) - 1; i++) {
-                            totalPriceHoursSum = totalPriceHoursSum.add(recordDto.getPriceForNextHour());
-                        }
-                    }
-                    final BigDecimal totalPrice = totalPriceDays.add(totalPriceHoursSum);
+                    final BigDecimal totalPrice = getTotalPrice(recordDto, rentDays, totalRentHours);
                     final BigDecimal sumPriceNetto = totalPrice.multiply(new BigDecimal(cartDto.getCount()));
 
                     final BigDecimal taxValue = new BigDecimal(rentData.getTax());
@@ -138,7 +130,7 @@ public class SellerCompleteRentEquipmentsServlet extends HttpServlet {
                         .divide(new BigDecimal(100), 2, RoundingMode.HALF_UP).multiply(depositPriceNetto).add(depositPriceNetto)
                         .setScale(2, RoundingMode.HALF_UP);
 
-                    if (!Objects.isNull(editModalResDto) && Long.parseLong(editModalResDto.getEqId()) == recordDto.getId()) {
+                    if (editModalResDto != null && Long.parseLong(editModalResDto.getEqId()) == recordDto.getId()) {
                         cartDto.setResDto(editModalResDto);
                     }
                     cartDto.setName(recordDto.getName());
@@ -179,5 +171,17 @@ public class SellerCompleteRentEquipmentsServlet extends HttpServlet {
         servletFilter.generateFilterJPQuery(SessionAttribute.RENT_EQUIPMENTS_LIST_FILTER);
 
         res.sendRedirect("/seller/complete-rent-equipments?page=" + page + "&total=" + total);
+    }
+
+    private static BigDecimal getTotalPrice(EquipmentRentRecordResDto recordDto, long rentDays, long totalRentHours) {
+        final BigDecimal totalPriceDays = recordDto.getPricePerDay().multiply(new BigDecimal(rentDays));
+        BigDecimal totalPriceHoursSum = new BigDecimal(0);
+        if ((totalRentHours % 24) > 0) {
+            totalPriceHoursSum = recordDto.getPricePerHour();
+            for (int i = 0; i < (totalRentHours % 24) - 1; i++) {
+                totalPriceHoursSum = totalPriceHoursSum.add(recordDto.getPriceForNextHour());
+            }
+        }
+        return totalPriceDays.add(totalPriceHoursSum);
     }
 }

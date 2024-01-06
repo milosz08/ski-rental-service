@@ -19,7 +19,6 @@ import pl.polsl.skirentalservice.util.SessionAttribute;
 import pl.polsl.skirentalservice.util.Utils;
 
 import java.io.IOException;
-import java.util.Objects;
 
 @Slf4j
 @WebServlet("/seller/reject-new-rent")
@@ -33,7 +32,7 @@ public class SellerRejectNewRentServlet extends HttpServlet {
         final var inMemoryRentData = (InMemoryRentDataDto) httpSession
             .getAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName());
 
-        if (Objects.isNull(inMemoryRentData)) {
+        if (inMemoryRentData == null) {
             alert.setType(AlertType.WARN);
             alert.setMessage(
                 "Usuwane robocze wypożyczenie zapisane w pamięci systemu nie zawierało żadnych zapisanych danych.");

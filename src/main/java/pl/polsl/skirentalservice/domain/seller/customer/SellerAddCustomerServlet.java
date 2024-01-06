@@ -47,8 +47,9 @@ public class SellerAddCustomerServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final AlertTupleDto alert = Utils.getAndDestroySessionAlert(req, SessionAlert.SELLER_ADD_CUSTOMER_PAGE_ALERT);
         var resDto = Utils.getFromSessionAndDestroy(req, getClass().getName(), AddEditCustomerResDto.class);
-        if (Objects.isNull(resDto)) resDto = new AddEditCustomerResDto();
-
+        if (resDto == null) {
+            resDto = new AddEditCustomerResDto();
+        }
         req.setAttribute("alertData", alert);
         req.setAttribute("addEditCustomerData", resDto);
         req.setAttribute("addEditText", "Dodaj");

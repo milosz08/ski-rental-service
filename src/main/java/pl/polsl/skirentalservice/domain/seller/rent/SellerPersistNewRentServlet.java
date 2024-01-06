@@ -36,7 +36,10 @@ import pl.polsl.skirentalservice.util.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.TooMuchEquipmentsException;
 import static pl.polsl.skirentalservice.exception.NotFoundException.AnyEquipmentsInCartNotFoundException;
@@ -53,8 +56,9 @@ public class SellerPersistNewRentServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final HttpSession httpSession = req.getSession();
-        final var rentData = (InMemoryRentDataDto) httpSession.getAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName());
-        if (Objects.isNull(rentData)) {
+        final var rentData = (InMemoryRentDataDto) httpSession
+            .getAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName());
+        if (rentData == null) {
             res.sendRedirect("/seller/customers");
             return;
         }
@@ -116,7 +120,8 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                     emailPayload.getRentEquipments().add(equipment);
                 }
                 final String emailTopic = "SkiRent Service | Nowe wypożyczenie: " + rentData.getIssuedIdentifier();
-                final String description = Objects.isNull(rentData.getDescription()) ? "<i>Brak danych</i>" : rentData.getDescription();
+                final String description = rentData.getDescription() == null
+                    ? "<i>Brak danych</i>" : rentData.getDescription();
 
                 final Map<String, Object> templateVars = new HashMap<>();
                 templateVars.put("rentIdentifier", rentData.getIssuedIdentifier());

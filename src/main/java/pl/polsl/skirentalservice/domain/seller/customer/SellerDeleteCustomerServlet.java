@@ -53,20 +53,24 @@ public class SellerDeleteCustomerServlet extends HttpServlet {
                 final RentDao rentDao = new RentDaoHib(session);
 
                 final CustomerEntity customerEntity = session.get(CustomerEntity.class, userId);
-                if (Objects.isNull(customerEntity)) throw new UserNotFoundException(UserRole.SELLER);
+                if (customerEntity == null) {
+                    throw new UserNotFoundException(UserRole.SELLER);
+                }
                 if (customerDao.checkIfCustomerHasAnyActiveRents(userId)) {
                     throw new CustomerHasOpenedRentsException();
                 }
                 for (final RentEntity rentEntity : rentDao.findAllRentsBaseCustomerId(userId)) {
                     for (final RentEquipmentEntity equipment : rentEntity.getEquipments()) {
-                        if (Objects.isNull(equipment.getEquipment())) continue;
+                        if (equipment.getEquipment() == null) {
+                            continue;
+                        }
                         equipmentDao.increaseAvailableSelectedEquipmentCount(equipment.getEquipment().getId(),
                             equipment.getCount());
                     }
                 }
                 final var rentData = (InMemoryRentDataDto) httpSession
                     .getAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName());
-                if (!Objects.isNull(rentData) && rentData.getCustomerId().equals(userId)) {
+                if (rentData != null && rentData.getCustomerId().equals(userId)) {
                     httpSession.removeAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName());
                 }
                 session.remove(customerEntity);
