@@ -10,11 +10,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.dao.EquipmentDao;
@@ -33,11 +32,9 @@ import java.util.Objects;
 
 import static pl.polsl.skirentalservice.exception.NotFoundException.RentNotFoundException;
 
+@Slf4j
 @WebServlet("/seller/delete-rent")
 public class SellerDeleteRentServlet extends HttpServlet {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SellerDeleteRentServlet.class);
-
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
     private final ConfigSingleton config = ConfigSingleton.getInstance();
 
@@ -76,14 +73,14 @@ public class SellerDeleteRentServlet extends HttpServlet {
                     "Pomyślnie usunięto wypożyczenie <strong>" + rentEntity.getIssuedIdentifier() + "</strong> " +
                         "z systemu."
                 );
-                LOGGER.info("Rent with id: {} was succesfuly removed from system by {}. Rent data: {}", rentId,
+                log.info("Rent with id: {} was succesfuly removed from system by {}. Rent data: {}", rentId,
                     loggedUser, rentEntity);
             } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, log, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
-            LOGGER.error("Unable to remove rent with id: {} by {}. Cause: {}", rentId, loggedUser, ex.getMessage());
+            log.error("Unable to remove rent with id: {} by {}. Cause: {}", rentId, loggedUser, ex.getMessage());
         }
         httpSession.setAttribute(SessionAlert.COMMON_RENTS_PAGE_ALERT.getName(), alert);
         res.sendRedirect("/seller/rents");

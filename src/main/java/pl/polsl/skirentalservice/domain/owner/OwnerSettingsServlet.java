@@ -10,11 +10,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.core.ModelMapperGenerator;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
@@ -37,11 +36,9 @@ import static pl.polsl.skirentalservice.exception.AlreadyExistException.PeselAlr
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.PhoneNumberAlreadyExistException;
 import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
 
+@Slf4j
 @WebServlet("/owner/settings")
 public class OwnerSettingsServlet extends HttpServlet {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(OwnerSettingsServlet.class);
-
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
     private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
     private final ConfigSingleton config = ConfigSingleton.getInstance();
@@ -69,7 +66,7 @@ public class OwnerSettingsServlet extends HttpServlet {
 
                     session.getTransaction().commit();
                 } catch (RuntimeException ex) {
-                    if (!Objects.isNull(session)) Utils.onHibernateException(session, LOGGER, ex);
+                    Utils.onHibernateException(session, log, ex);
                 }
             } catch (RuntimeException ex) {
                 alert.setMessage(ex.getMessage());
@@ -126,16 +123,16 @@ public class OwnerSettingsServlet extends HttpServlet {
                 httpSession.removeAttribute(getClass().getName());
                 alert.setMessage("Twoje dane osobowe zostały pomyślnie zaktualizowane.");
                 httpSession.setAttribute(SessionAlert.COMMON_PROFILE_PAGE_ALERT.getName(), alert);
-                LOGGER.info("Owner with id: {} was successfuly updated. Data: {}", ownerDetailsDto.getId(), reqDto);
+                log.info("Owner with id: {} was successfuly updated. Data: {}", ownerDetailsDto.getId(), reqDto);
                 res.sendRedirect("/owner/profile");
             } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, log, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
             httpSession.setAttribute(getClass().getName(), resDto);
             httpSession.setAttribute(SessionAlert.OWNER_SETTINGS_PAGE_ALERT.getName(), alert);
-            LOGGER.error("Unable to update owner personal data with id: {}. Cause: {}", ownerDetailsDto.getId(),
+            log.error("Unable to update owner personal data with id: {}. Cause: {}", ownerDetailsDto.getId(),
                 ex.getMessage());
             res.sendRedirect("/owner/settings");
         }

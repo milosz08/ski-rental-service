@@ -12,10 +12,9 @@ import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.dao.RentDao;
 import pl.polsl.skirentalservice.dao.hibernate.RentDaoHib;
@@ -29,13 +28,12 @@ import java.io.IOException;
 
 import static pl.polsl.skirentalservice.exception.NotFoundException.RentNotFoundException;
 
+@Slf4j
 @WebFilter(urlPatterns = {
     "/seller/rent-details/*",
     "/seller/delete-rent/*",
 }, initParams = @WebInitParam(name = "mood", value = "awake"))
 public class RedirectWhenRentIsNotCreatedByEmployerFilter extends HttpFilter {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(RedirectWhenRentIsNotCreatedByEmployerFilter.class);
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
 
     @Override
@@ -58,7 +56,7 @@ public class RedirectWhenRentIsNotCreatedByEmployerFilter extends HttpFilter {
                 }
                 session.getTransaction().commit();
             } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, log, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());

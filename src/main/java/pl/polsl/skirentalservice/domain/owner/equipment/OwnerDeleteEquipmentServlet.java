@@ -10,10 +10,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.dao.EquipmentDao;
@@ -31,11 +30,9 @@ import java.util.Objects;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.EquipmenHasOpenedRentsException;
 import static pl.polsl.skirentalservice.exception.NotFoundException.EquipmentNotFoundException;
 
+@Slf4j
 @WebServlet("/owner/delete-equipment")
 public class OwnerDeleteEquipmentServlet extends HttpServlet {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(OwnerDeleteEquipmentServlet.class);
-
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
     private final ConfigSingleton config = ConfigSingleton.getInstance();
 
@@ -69,13 +66,13 @@ public class OwnerDeleteEquipmentServlet extends HttpServlet {
                     "Pomyślnie usunięto sprzęt narciarski z ID <strong>#" + equipmentId + "</strong> z systemu."
                 );
                 session.getTransaction().commit();
-                LOGGER.info("Equipment with id: {} was succesfuly removed from system by {}.", equipmentId, loggedUser);
+                log.info("Equipment with id: {} was succesfuly removed from system by {}.", equipmentId, loggedUser);
             } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, log, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
-            LOGGER.error("Unable to remove equipment with id: {} by: {}. Cause: {}", loggedUser, equipmentId,
+            log.error("Unable to remove equipment with id: {} by: {}. Cause: {}", loggedUser, equipmentId,
                 ex.getMessage());
         }
         httpSession.setAttribute(SessionAlert.COMMON_EQUIPMENTS_PAGE_ALERT.getName(), alert);

@@ -10,11 +10,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.core.ModelMapperGenerator;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
@@ -42,11 +41,9 @@ import java.util.*;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.TooMuchEquipmentsException;
 import static pl.polsl.skirentalservice.exception.NotFoundException.AnyEquipmentsInCartNotFoundException;
 
+@Slf4j
 @WebServlet("/seller/persist-new-rent")
 public class SellerPersistNewRentServlet extends HttpServlet {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SellerPersistNewRentServlet.class);
-
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
     private final MailSocketSingleton mailSocket = MailSocketSingleton.getInstance();
     private final ConfigSingleton config = ConfigSingleton.getInstance();
@@ -148,7 +145,7 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                     .attachmentsPaths(Set.of(rentPdfDocument.getPath()))
                     .build();
                 mailSocket.sendMessage(rentData.getCustomerDetails().email(), customerPayload, req);
-                LOGGER.info("Successful send rent email message for customer. Payload: {}", customerPayload);
+                log.info("Successful send rent email message for customer. Payload: {}", customerPayload);
 
                 final MailRequestPayload employerPayload = MailRequestPayload.builder()
                     .messageResponder(loggedEmployer.getFullName())
@@ -158,7 +155,7 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                     .attachmentsPaths(Set.of(rentPdfDocument.getPath()))
                     .build();
                 mailSocket.sendMessage(loggedEmployer.getEmailAddress(), employerPayload, req);
-                LOGGER.info("Successful send rent email message for employer. Payload: {}", employerPayload);
+                log.info("Successful send rent email message for employer. Payload: {}", employerPayload);
 
                 final Map<String, Object> ownerTemplateVars = new HashMap<>(templateVars);
                 ownerTemplateVars.put("employerFullName", loggedEmployer.getFullName());
@@ -173,7 +170,7 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                     ownerPayload.setMessageResponder(owner.fullName());
                     mailSocket.sendMessage(owner.email(), ownerPayload, req);
                 }
-                LOGGER.info("Successful send rent email message for owner/owners. Payload: {}", ownerPayload);
+                log.info("Successful send rent email message for owner/owners. Payload: {}", ownerPayload);
 
                 session.persist(rent);
                 session.getTransaction().commit();
@@ -184,15 +181,15 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                 );
                 httpSession.setAttribute(SessionAlert.COMMON_RENTS_PAGE_ALERT.getName(), alert);
                 httpSession.removeAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName());
-                LOGGER.info("Successfuly persist new rent by: {} in database. Rent data: {}", loggedUser, rentData);
+                log.info("Successfuly persist new rent by: {} in database. Rent data: {}", loggedUser, rentData);
                 res.sendRedirect("/seller/rents");
             } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, log, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
             httpSession.setAttribute(SessionAlert.SELLER_COMPLETE_RENT_PAGE_ALERT.getName(), alert);
-            LOGGER.error("Failure persist new rent by: {} in database. Rent data: {}. Cause: {}", loggedUser, rentData,
+            log.error("Failure persist new rent by: {} in database. Rent data: {}. Cause: {}", loggedUser, rentData,
                 ex.getMessage());
             res.sendRedirect("/seller/complete-rent-equipments");
         }

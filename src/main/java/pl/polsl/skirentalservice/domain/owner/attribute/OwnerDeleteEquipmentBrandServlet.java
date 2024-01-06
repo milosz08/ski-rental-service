@@ -10,11 +10,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.dao.EquipmentBrandDao;
 import pl.polsl.skirentalservice.dao.hibernate.EquipmentBrandDaoHib;
@@ -29,10 +28,9 @@ import java.io.IOException;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.EquipmentBrandHasConnectionsException;
 import static pl.polsl.skirentalservice.exception.NotFoundException.EquipmentBrandNotFoundException;
 
+@Slf4j
 @WebServlet("/owner/delete-equipment-brand")
 public class OwnerDeleteEquipmentBrandServlet extends HttpServlet {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(OwnerDeleteEquipmentBrandServlet.class);
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
 
     @Override
@@ -68,14 +66,14 @@ public class OwnerDeleteEquipmentBrandServlet extends HttpServlet {
                     "Usuwanie marki sprzętu narciarskiego: <strong>" + deletedBrand + "</strong> zakończone sukcesem."
                 );
                 session.getTransaction().commit();
-                LOGGER.info("Successful deleted equipment brand by: {}. Brand: {}", loggedUser, deletedBrand);
+                log.info("Successful deleted equipment brand by: {}. Brand: {}", loggedUser, deletedBrand);
             } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, log, ex);
             }
         } catch (RuntimeException ex) {
             alert.setActive(true);
             alert.setMessage(ex.getMessage());
-            LOGGER.error("Failure delete equipment brand by: {}. Cause: {}", loggedUser, ex.getMessage());
+            log.error("Failure delete equipment brand by: {}. Cause: {}", loggedUser, ex.getMessage());
         }
         httpSession.setAttribute(SessionAttribute.EQ_BRANDS_MODAL_DATA.getName(), resDto);
         res.sendRedirect(StringUtils.defaultIfBlank(req.getParameter("redirect"), "/owner/add-equipment"));

@@ -4,15 +4,15 @@
  */
 package pl.polsl.skirentalservice.exception;
 
-import org.slf4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import pl.polsl.skirentalservice.core.mail.MailRequestPayload;
 
 public class ServletException {
-
+    @Slf4j
     public static class UnableToSendEmailException extends RuntimeException {
-        public UnableToSendEmailException(String emailAddress, MailRequestPayload payload, Logger logger) {
+        public UnableToSendEmailException(String emailAddress, MailRequestPayload payload) {
             super("Nieudane wysłanie wiadomości email. Spróbuj ponownie później.");
-            logger.error("Unable to send email message to user email: {}. Message payload: {}", emailAddress, payload);
+            log.error("Unable to send email message to user email: {}. Message payload: {}", emailAddress, payload);
         }
     }
 }

@@ -6,8 +6,7 @@ package pl.polsl.skirentalservice.pdf;
 
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import pl.polsl.skirentalservice.pdf.dto.RentPdfDocumentDataDto;
 
 import java.io.File;
@@ -16,12 +15,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
+import java.util.StringJoiner;
 
-public class RentPdfDocument extends PdfHandler implements IPdfGenerator {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ReturnPdfDocument.class);
-
+@Slf4j
+public class RentPdfDocument extends PdfHandler implements PdfGenerator {
     private final String uploadsDir;
     private String issuerIdentifier;
     private RentPdfDocumentDataDto rentPdfDto;
@@ -75,9 +72,9 @@ public class RentPdfDocument extends PdfHandler implements IPdfGenerator {
             generateDescription(document, rentPdfDto.getDescription());
 
             document.close();
-            LOGGER.info("Pdf FV rent file was successfully generated in: {}. Pdf data: {}", file, rentPdfDto);
+            log.info("Pdf FV rent file was successfully generated in: {}. Pdf data: {}", file, rentPdfDto);
         } catch (IOException ex) {
-            LOGGER.error("Issue with reading pdf FV rent file with path: {}", file);
+            log.error("Issue with reading pdf FV rent file with path: {}", file);
             throw new RuntimeException(ex.getMessage());
         }
     }

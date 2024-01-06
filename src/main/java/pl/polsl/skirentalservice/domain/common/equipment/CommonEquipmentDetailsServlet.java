@@ -10,10 +10,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.dao.EquipmentDao;
 import pl.polsl.skirentalservice.dao.hibernate.EquipmentDaoHib;
@@ -28,10 +27,9 @@ import java.io.IOException;
 
 import static pl.polsl.skirentalservice.exception.NotFoundException.EquipmentNotFoundException;
 
+@Slf4j
 @WebServlet(urlPatterns = { "/owner/equipment-details", "/seller/equipment-details" })
 public class CommonEquipmentDetailsServlet extends HttpServlet {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommonEquipmentDetailsServlet.class);
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
 
     @Override
@@ -53,7 +51,7 @@ public class CommonEquipmentDetailsServlet extends HttpServlet {
                 req.getRequestDispatcher("/WEB-INF/pages/" + userDataDto.getRoleEng() + "/equipment/" +
                     userDataDto.getRoleEng() + "-equipment-details.jsp").forward(req, res);
             } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, log, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());

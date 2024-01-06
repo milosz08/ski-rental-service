@@ -10,11 +10,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ModelMapperGenerator;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
@@ -41,11 +40,9 @@ import java.util.Objects;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.EquipmentAlreadyExistException;
 import static pl.polsl.skirentalservice.exception.NotFoundException.EquipmentNotFoundException;
 
+@Slf4j
 @WebServlet("/owner/edit-equipment")
 public class OwnerEditEquipmentServlet extends HttpServlet {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(OwnerEditEquipmentServlet.class);
-
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
     private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
 
@@ -78,7 +75,7 @@ public class OwnerEditEquipmentServlet extends HttpServlet {
 
                     session.getTransaction().commit();
                 } catch (RuntimeException ex) {
-                    if (!Objects.isNull(session)) Utils.onHibernateException(session, LOGGER, ex);
+                    Utils.onHibernateException(session, log, ex);
                 }
             } catch (RuntimeException ex) {
                 alert.setMessage(ex.getMessage());
@@ -140,17 +137,17 @@ public class OwnerEditEquipmentServlet extends HttpServlet {
                 );
                 httpSession.setAttribute(SessionAlert.COMMON_EQUIPMENTS_PAGE_ALERT.getName(), alert);
                 httpSession.removeAttribute(getClass().getName());
-                LOGGER.info("Successful edit existing equipment with id: {} by: {}. Equipment data: {}",
+                log.info("Successful edit existing equipment with id: {} by: {}. Equipment data: {}",
                     equipmentId, loggedUser, reqDto);
                 res.sendRedirect("/owner/equipments");
             } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, log, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
             httpSession.setAttribute(getClass().getName(), resDto);
             httpSession.setAttribute(SessionAlert.OWNER_EDIT_EQUIPMENT_PAGE_ALERT.getName(), alert);
-            LOGGER.error("Unable to edit existing equipment with id: {}. Cause: {}", equipmentId, ex.getMessage());
+            log.error("Unable to edit existing equipment with id: {}. Cause: {}", equipmentId, ex.getMessage());
             res.sendRedirect("/owner/edit-equipment?id=" + equipmentId);
         }
     }

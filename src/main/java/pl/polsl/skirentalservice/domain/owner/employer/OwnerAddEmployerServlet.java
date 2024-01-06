@@ -10,13 +10,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.core.ModelMapperGenerator;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
@@ -49,10 +48,9 @@ import java.util.Objects;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.PeselAlreadyExistException;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.PhoneNumberAlreadyExistException;
 
+@Slf4j
 @WebServlet("/owner/add-employer")
 public class OwnerAddEmployerServlet extends HttpServlet {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(OwnerAddEmployerServlet.class);
     private final ModelMapper modelMapper = ModelMapperGenerator.getModelMapper();
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
     private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
@@ -156,7 +154,7 @@ public class OwnerAddEmployerServlet extends HttpServlet {
 
                 session.persist(employer);
                 session.getTransaction().commit();
-                LOGGER.info("Employer with mailbox was successfuly created. User data: {}", employer);
+                log.info("Employer with mailbox was successfuly created. User data: {}", employer);
                 alert.setMessage(
                     "Nastąpiło pomyślnie dodanie nowego pracownika. Na adres email <strong>" + email + "</strong> " +
                         "zostało wysłane hasło dostępu do konta. Hasło dostępu do skrzynki email użytkownika znajdziesz " +
@@ -168,13 +166,13 @@ public class OwnerAddEmployerServlet extends HttpServlet {
                 res.sendRedirect("/owner/employers");
             } catch (RuntimeException ex) {
                 if (!StringUtils.isEmpty(email)) commandPerformer.deleteMailbox(email);
-                Utils.onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, log, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
             httpSession.setAttribute(getClass().getName(), resDto);
             httpSession.setAttribute(SessionAlert.OWNER_ADD_EMPLOYER_PAGE_ALERT.getName(), alert);
-            LOGGER.error("Unable to create employer. Cause: {}", ex.getMessage());
+            log.error("Unable to create employer. Cause: {}", ex.getMessage());
             res.sendRedirect("/owner/add-employer");
         }
     }

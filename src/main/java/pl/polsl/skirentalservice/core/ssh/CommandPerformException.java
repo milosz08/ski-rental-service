@@ -4,15 +4,12 @@
  */
 package pl.polsl.skirentalservice.core.ssh;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class CommandPerformException extends RuntimeException {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommandPerformException.class);
-
     public CommandPerformException(String message, String errMsg) {
         super(message + " Spróbuj ponownie później.");
-        LOGGER.error("Unable to perform SSH command. Command details: {}. ERR Cause by: {}", message, errMsg);
+        log.error("Unable to perform SSH command. Command details: {}. ERR Cause by: {}", message, errMsg);
     }
 }

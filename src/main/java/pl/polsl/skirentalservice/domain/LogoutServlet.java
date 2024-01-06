@@ -9,19 +9,16 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.dto.logout.LogoutModalDto;
 import pl.polsl.skirentalservice.util.SessionAttribute;
 
 import java.io.IOException;
 
+@Slf4j
 @WebServlet("/logout")
 public class LogoutServlet extends HttpServlet {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(LogoutServlet.class);
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
         final HttpSession httpSession = req.getSession(false);
@@ -29,7 +26,7 @@ public class LogoutServlet extends HttpServlet {
             .getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
         httpSession.removeAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
         httpSession.setAttribute(SessionAttribute.LOGOUT_MODAL.getName(), new LogoutModalDto(true));
-        LOGGER.info("Successful logout from user account. Account data: {}", detailsDto);
+        log.info("Successful logout from user account. Account data: {}", detailsDto);
         res.sendRedirect("/login");
     }
 }

@@ -5,7 +5,7 @@
 package pl.polsl.skirentalservice.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import pl.polsl.skirentalservice.dto.login.LoginFormReqDto;
 
 public class CredentialException {
@@ -16,19 +16,21 @@ public class CredentialException {
         }
     }
 
+    @Slf4j
     public static class OtaTokenNotFoundException extends RuntimeException {
-        public OtaTokenNotFoundException(HttpServletRequest req, String token, Logger logger) {
+        public OtaTokenNotFoundException(HttpServletRequest req, String token) {
             super("Podany token nie istnieje, został już wykorzystany lub uległ przedawnieniu. Przejdź " +
                 "<a class='alert-link' href='" + req.getContextPath() + "/forgot-password-request'>tutaj</a>, " +
                 "aby wygenerować nowy token.");
-            logger.warn("Attempt to change password with non-existing, expired or already used token. Token: {}", token);
+            log.warn("Attempt to change password with non-existing, expired or already used token. Token: {}", token);
         }
     }
 
+    @Slf4j
     public static class InvalidCredentialsException extends RuntimeException {
-        public InvalidCredentialsException(LoginFormReqDto reqDto, Logger logger) {
+        public InvalidCredentialsException(LoginFormReqDto reqDto) {
             super("Nieprawidłowe hasło. Spróbuj ponownie podając inne hasło.");
-            logger.warn("Attempt to login with invalid credentials. Login/email data: {}", reqDto.getLoginOrEmail());
+            log.warn("Attempt to login with invalid credentials. Login/email data: {}", reqDto.getLoginOrEmail());
         }
     }
 }

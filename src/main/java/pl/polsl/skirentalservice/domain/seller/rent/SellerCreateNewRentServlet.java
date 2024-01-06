@@ -10,12 +10,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.dao.CustomerDao;
@@ -41,11 +40,9 @@ import static pl.polsl.skirentalservice.exception.DateException.RentDateBeforeIs
 import static pl.polsl.skirentalservice.exception.DateException.ReturnDateBeforeRentDateException;
 import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
 
+@Slf4j
 @WebServlet("/seller/create-new-rent")
 public class SellerCreateNewRentServlet extends HttpServlet {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SellerCreateNewRentServlet.class);
-
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
     private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
 
@@ -125,7 +122,7 @@ public class SellerCreateNewRentServlet extends HttpServlet {
                 resDto.setRentStatus(inMemoryRentData.getRentStatus());
                 session.getTransaction().commit();
             } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, log, ex);
             }
         } catch (RuntimeException ex) {
             alert.setActive(true);

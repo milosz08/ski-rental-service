@@ -10,14 +10,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.krysalis.barcode4j.impl.upcean.EAN13Bean;
 import org.krysalis.barcode4j.output.bitmap.BitmapCanvasProvider;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.core.ModelMapperGenerator;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
@@ -47,11 +46,9 @@ import java.util.Objects;
 
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.EquipmentAlreadyExistException;
 
+@Slf4j
 @WebServlet("/owner/add-equipment")
 public class OwnerAddEquipmentServlet extends HttpServlet {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(OwnerAddEquipmentServlet.class);
-
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
     private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
     private final ConfigSingleton config = ConfigSingleton.getInstance();
@@ -78,7 +75,7 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
 
                 session.getTransaction().commit();
             } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, log, ex);
             }
         } catch (RuntimeException ex) {
             alert.setActive(true);
@@ -154,17 +151,17 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
                 );
                 httpSession.setAttribute(SessionAlert.COMMON_EQUIPMENTS_PAGE_ALERT.getName(), alert);
                 httpSession.removeAttribute(getClass().getName());
-                LOGGER.info("Successful created new equipment with bar code image by: {}. Equipment data: {}",
+                log.info("Successful created new equipment with bar code image by: {}. Equipment data: {}",
                     loggedUser, reqDto);
                 res.sendRedirect("/owner/equipments");
             } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, log, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
             httpSession.setAttribute(getClass().getName(), resDto);
             httpSession.setAttribute(SessionAlert.OWNER_ADD_EQUIPMENT_PAGE_ALERT.getName(), alert);
-            LOGGER.error("Unable to create new equipment. Cause: {}", ex.getMessage());
+            log.error("Unable to create new equipment. Cause: {}", ex.getMessage());
             res.sendRedirect("/owner/add-equipment");
         }
     }

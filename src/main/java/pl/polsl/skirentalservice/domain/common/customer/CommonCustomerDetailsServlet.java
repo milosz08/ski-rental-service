@@ -10,10 +10,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.dao.CustomerDao;
 import pl.polsl.skirentalservice.dao.hibernate.CustomerDaoHib;
@@ -28,10 +27,9 @@ import java.io.IOException;
 
 import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
 
+@Slf4j
 @WebServlet(urlPatterns = { "/seller/customer-details", "/owner/customer-details" })
 public class CommonCustomerDetailsServlet extends HttpServlet {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommonCustomerDetailsServlet.class);
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
 
     @Override
@@ -56,7 +54,7 @@ public class CommonCustomerDetailsServlet extends HttpServlet {
                 req.getRequestDispatcher("/WEB-INF/pages/" + userDataDto.getRoleEng() + "/customer/" +
                     userDataDto.getRoleEng() + "-customer-details.jsp").forward(req, res);
             } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, log, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());

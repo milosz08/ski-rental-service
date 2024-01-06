@@ -10,8 +10,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.rent.InMemoryRentDataDto;
 import pl.polsl.skirentalservice.util.AlertType;
@@ -22,11 +21,9 @@ import pl.polsl.skirentalservice.util.Utils;
 import java.io.IOException;
 import java.util.Objects;
 
+@Slf4j
 @WebServlet("/seller/reject-new-rent")
 public class SellerRejectNewRentServlet extends HttpServlet {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SellerRejectNewRentServlet.class);
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         final AlertTupleDto alert = new AlertTupleDto(true);
@@ -41,7 +38,7 @@ public class SellerRejectNewRentServlet extends HttpServlet {
             alert.setMessage(
                 "Usuwane robocze wypożyczenie zapisane w pamięci systemu nie zawierało żadnych zapisanych danych.");
         } else {
-            LOGGER.info("Successful removed temporary saved rent data by: {}. In memory data: {}", loggedUser,
+            log.info("Successful removed temporary saved rent data by: {}. In memory data: {}", loggedUser,
                 inMemoryRentData);
             httpSession.removeAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName());
             alert.setType(AlertType.INFO);

@@ -10,11 +10,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.core.ModelMapperGenerator;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
@@ -36,11 +35,9 @@ import static pl.polsl.skirentalservice.exception.AlreadyExistException.PeselAlr
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.PhoneNumberAlreadyExistException;
 import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
 
+@Slf4j
 @WebServlet("/owner/edit-employer")
 public class OwnerEditEmployerServlet extends HttpServlet {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(OwnerEditEmployerServlet.class);
-
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
     private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
     private final ConfigSingleton config = ConfigSingleton.getInstance();
@@ -66,7 +63,7 @@ public class OwnerEditEmployerServlet extends HttpServlet {
 
                     session.getTransaction().commit();
                 } catch (RuntimeException ex) {
-                    if (!Objects.isNull(session)) Utils.onHibernateException(session, LOGGER, ex);
+                    Utils.onHibernateException(session, log, ex);
                 }
             } catch (RuntimeException ex) {
                 alert.setMessage(ex.getMessage());
@@ -123,16 +120,16 @@ public class OwnerEditEmployerServlet extends HttpServlet {
                     "Dane pracownika z ID <strong>#" + employerId + "</strong> zostały pomyślnie zaktualizowane."
                 );
                 httpSession.setAttribute(SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT.getName(), alert);
-                LOGGER.info("Employer with id: {} was successfuly updated. Data: {}", employerId, reqDto);
+                log.info("Employer with id: {} was successfuly updated. Data: {}", employerId, reqDto);
                 res.sendRedirect("/owner/employers");
             } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, log, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
             httpSession.setAttribute(getClass().getName(), resDto);
             httpSession.setAttribute(SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT.getName(), alert);
-            LOGGER.error("Unable to update existing employer with id: {}. Cause: {}", employerId, ex.getMessage());
+            log.error("Unable to update existing employer with id: {}. Cause: {}", employerId, ex.getMessage());
             res.sendRedirect("/owner/edit-employer?id=" + employerId);
         }
     }

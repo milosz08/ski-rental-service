@@ -15,8 +15,7 @@ import jakarta.mail.internet.MimeMultipart;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.core.JAXBProperty;
 
@@ -30,9 +29,8 @@ import java.util.*;
 
 import static pl.polsl.skirentalservice.exception.ServletException.UnableToSendEmailException;
 
+@Slf4j
 public class MailSocketSingleton {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MailSocketSingleton.class);
     private static final ConfigSingleton config = ConfigSingleton.getInstance();
 
     private static final String MAIL_CFG = "/mail/mail.cfg.xml";
@@ -48,7 +46,7 @@ public class MailSocketSingleton {
         try {
             freemarkerConfig = new Configuration(Configuration.VERSION_2_3_22);
             freemarkerConfig.setClassForTemplateLoading(MailSocketSingleton.class, FREEMARKER_PATH);
-            LOGGER.info("Successful loaded freemarker template engine cache path. Cache path: {}", FREEMARKER_PATH);
+            log.info("Successful loaded freemarker template engine cache path. Cache path: {}", FREEMARKER_PATH);
 
             final JAXBContext jaxbContext = JAXBContext.newInstance(JAXBMailConfig.class);
             final var config = (JAXBMailConfig) jaxbContext.createUnmarshaller()
@@ -65,9 +63,9 @@ public class MailSocketSingleton {
             }
             final Authenticator authenticator = new JakartaMailAuthenticator(config.getProperties());
             mailSession = Session.getInstance(properties, authenticator);
-            LOGGER.info("Successful loaded JavaMail API properties with authentication. Props: {}", properties);
+            log.info("Successful loaded JavaMail API properties with authentication. Props: {}", properties);
         } catch (JAXBException ex) {
-            LOGGER.error("Unable to load mail properties from extended XML file: {}", MAIL_CFG);
+            log.error("Unable to load mail properties from extended XML file: {}", MAIL_CFG);
         }
     }
 
@@ -117,15 +115,15 @@ public class MailSocketSingleton {
             message.setSentDate(new Date());
 
             Transport.send(message);
-            LOGGER.info("Successful send email message to the following recipent/s: {}", sendTo);
+            log.info("Successful send email message to the following recipent/s: {}", sendTo);
         } catch (IOException ex) {
-            LOGGER.error("Unable to load freemarker template. Template name: {}", payload.getTemplateName());
-            throw new UnableToSendEmailException(String.join(", ", sendTo), payload, LOGGER);
+            log.error("Unable to load freemarker template. Template name: {}", payload.getTemplateName());
+            throw new UnableToSendEmailException(String.join(", ", sendTo), payload);
         } catch (TemplateException ex) {
-            LOGGER.error("Unable to process freemarker template. Exception: {}", ex.getMessage());
-            throw new UnableToSendEmailException(String.join(", ", sendTo), payload, LOGGER);
+            log.error("Unable to process freemarker template. Exception: {}", ex.getMessage());
+            throw new UnableToSendEmailException(String.join(", ", sendTo), payload);
         } catch (MessagingException | RuntimeException ex) {
-            throw new UnableToSendEmailException(String.join(", ", sendTo), payload, LOGGER);
+            throw new UnableToSendEmailException(String.join(", ", sendTo), payload);
         }
     }
 

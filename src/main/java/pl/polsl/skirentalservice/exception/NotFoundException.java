@@ -4,27 +4,27 @@
  */
 package pl.polsl.skirentalservice.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
 import pl.polsl.skirentalservice.dto.change_password.RequestToChangePasswordReqDto;
 import pl.polsl.skirentalservice.dto.login.LoginFormReqDto;
 import pl.polsl.skirentalservice.util.UserRole;
 
 public class NotFoundException {
-
+    @Slf4j
     public static class UserNotFoundException extends RuntimeException {
         public UserNotFoundException(String userId) {
             super("Użytkownik z podanym ID <strong>#" + userId + "</strong> nie istnieje w systemie.");
         }
 
-        public UserNotFoundException(RequestToChangePasswordReqDto reqDto, Logger logger) {
+        public UserNotFoundException(RequestToChangePasswordReqDto reqDto) {
             super("Użytkownik z podanymi danymi logowania nie istnieje w systemie.");
-            logger.warn("Attempt to change password for non existing account. Login data: {}", reqDto);
+            log.warn("Attempt to change password for non existing account. Login data: {}", reqDto);
         }
 
-        public UserNotFoundException(LoginFormReqDto reqDto, Logger logger) {
+        public UserNotFoundException(LoginFormReqDto reqDto) {
             super("Użytkownik z podanymi danymi logowania nie istnieje w systemie.");
-            logger.warn("Attempt to login on non existing account. Login data: {}", reqDto);
+            log.warn("Attempt to login on non existing account. Login data: {}", reqDto);
         }
 
         public UserNotFoundException(UserRole role) {

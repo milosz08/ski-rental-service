@@ -7,12 +7,11 @@ package pl.polsl.skirentalservice.core.ssh;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import jakarta.xml.bind.JAXBContext;
+import lombok.extern.slf4j.Slf4j;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import org.apache.commons.text.StringSubstitutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,9 +19,8 @@ import java.io.StringReader;
 import java.util.Map;
 import java.util.Objects;
 
+@Slf4j
 public class SshSocketSingleton {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SshSocketSingleton.class);
     private static final String SSH_CFG = "/ssh/ssh.cfg.xml";
 
     private JAXBSshConfig config;
@@ -32,10 +30,10 @@ public class SshSocketSingleton {
         try {
             final JAXBContext jaxbContext = JAXBContext.newInstance(JAXBSshConfig.class);
             this.config = (JAXBSshConfig) jaxbContext.createUnmarshaller().unmarshal(getClass().getResource(SSH_CFG));
-            LOGGER.info("Successful loaded Ssh Socket properties with authentication. Props: {}", config.getProperties());
-            LOGGER.info("Successful loaded Ssh Socket commands. Commands: {}", config.getCommands());
+            log.info("Successful loaded Ssh Socket properties with authentication. Props: {}", config.getProperties());
+            log.info("Successful loaded Ssh Socket commands. Commands: {}", config.getCommands());
         } catch (Exception ex) {
-            LOGGER.error("Unable to load Ssh socket properties from extended XML file: {}", SSH_CFG);
+            log.error("Unable to load Ssh socket properties from extended XML file: {}", SSH_CFG);
         }
     }
 
@@ -63,7 +61,7 @@ public class SshSocketSingleton {
                 mappedTo = gson.fromJson(jsonReader, mapTo);
             }
         } catch (IOException ex) {
-            LOGGER.error("Unable to perform Ssh socket command operation. Exception: {}", ex.getMessage());
+            log.error("Unable to perform Ssh socket command operation. Exception: {}", ex.getMessage());
             throw new RuntimeException(ex.getMessage());
         }
         return mappedTo;

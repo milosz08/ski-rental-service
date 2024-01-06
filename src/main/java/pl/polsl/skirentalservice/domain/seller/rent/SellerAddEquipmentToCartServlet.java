@@ -10,10 +10,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.dao.EquipmentDao;
@@ -33,11 +32,9 @@ import static pl.polsl.skirentalservice.exception.AlreadyExistException.Equipmen
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.TooMuchEquipmentsException;
 import static pl.polsl.skirentalservice.exception.NotFoundException.EquipmentNotFoundException;
 
+@Slf4j
 @WebServlet("/seller/add-equipment-to-cart")
 public class SellerAddEquipmentToCartServlet extends HttpServlet {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SellerAddEquipmentToCartServlet.class);
-
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
     private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
 
@@ -82,10 +79,10 @@ public class SellerAddEquipmentToCartServlet extends HttpServlet {
                     throw new TooMuchEquipmentsException();
                 final CartSingleEquipmentDataDto cartData = new CartSingleEquipmentDataDto(eqDetails, reqDto, resDto);
                 rentData.getEquipments().add(cartData);
-                LOGGER.info("Successfuly add equipment to memory-persist data container by: {}. Data: {}", loggedUser,
+                log.info("Successfuly add equipment to memory-persist data container by: {}. Data: {}", loggedUser,
                     cartData);
             } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, log, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
@@ -93,7 +90,7 @@ public class SellerAddEquipmentToCartServlet extends HttpServlet {
             resDto.setEqId(equipmentId);
             resDto.setAlert(alert);
             httpSession.setAttribute(SessionAttribute.EQ_ADD_CART_MODAL_DATA.getName(), resDto);
-            LOGGER.error("Failure add equipment to memory-persist data container by: {}. Cause: {}", loggedUser,
+            log.error("Failure add equipment to memory-persist data container by: {}. Cause: {}", loggedUser,
                 ex.getMessage());
         }
         res.sendRedirect("/seller/complete-rent-equipments" + redirPag);

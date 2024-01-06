@@ -10,13 +10,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.core.ModelMapperGenerator;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
@@ -48,10 +47,9 @@ import static pl.polsl.skirentalservice.exception.AlreadyExistException.ReturnDo
 import static pl.polsl.skirentalservice.exception.DateException.ReturnDateBeforeRentDateException;
 import static pl.polsl.skirentalservice.exception.NotFoundException.*;
 
+@Slf4j
 @WebServlet("/seller/generate-return")
 public class SellerGenerateReturnServlet extends HttpServlet {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SellerGenerateReturnServlet.class);
     private final ModelMapper modelMapper = ModelMapperGenerator.getModelMapper();
 
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
@@ -224,7 +222,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                     .attachmentsPaths(Set.of(returnPdfDocument.getPath()))
                     .build();
                 mailSocket.sendMessage(emailPayload.getEmail(), customerPayload, req);
-                LOGGER.info("Successful send rent-return email message for customer. Payload: {}", customerPayload);
+                log.info("Successful send rent-return email message for customer. Payload: {}", customerPayload);
 
                 final MailRequestPayload employerPayload = MailRequestPayload.builder()
                     .messageResponder(userDataDto.getFullName())
@@ -234,7 +232,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                     .attachmentsPaths(Set.of(returnPdfDocument.getPath()))
                     .build();
                 mailSocket.sendMessage(userDataDto.getEmailAddress(), employerPayload, req);
-                LOGGER.info("Successful send rent-return email message for employer. Payload: {}", employerPayload);
+                log.info("Successful send rent-return email message for employer. Payload: {}", employerPayload);
 
                 final Map<String, Object> ownerTemplateVars = new HashMap<>(templateVars);
                 ownerTemplateVars.put("employerFullName", userDataDto.getFullName());
@@ -249,7 +247,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                     ownerPayload.setMessageResponder(owner.fullName());
                     mailSocket.sendMessage(owner.email(), ownerPayload, req);
                 }
-                LOGGER.info("Successful send rent-return email message for owner/owners. Payload: {}", ownerPayload);
+                log.info("Successful send rent-return email message for owner/owners. Payload: {}", ownerPayload);
 
                 session.persist(rentReturn);
                 session.getTransaction().commit();
@@ -262,7 +260,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 httpSession.setAttribute(SessionAlert.COMMON_RETURNS_PAGE_ALERT.getName(), alert);
                 res.sendRedirect("/seller/returns");
             } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, log, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());

@@ -10,10 +10,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.core.ssh.SshSocketSingleton;
 import pl.polsl.skirentalservice.dao.EmployerDao;
@@ -30,11 +29,9 @@ import java.io.IOException;
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.EmployerHasOpenedRentsException;
 import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
 
+@Slf4j
 @WebServlet("/owner/delete-employer")
 public class OwnerDeleteEmployerServlet extends HttpServlet {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(OwnerAddEmployerServlet.class);
-
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
     private final SshSocketSingleton sshSocket = SshSocketSingleton.getInstance();
 
@@ -63,13 +60,13 @@ public class OwnerDeleteEmployerServlet extends HttpServlet {
                         "jego skrzynką pocztową."
                 );
                 session.getTransaction().commit();
-                LOGGER.info("Employer with id: {} was succesfuly removed from system.", userId);
+                log.info("Employer with id: {} was succesfuly removed from system.", userId);
             } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, log, ex);
             }
         } catch (Exception ex) {
             alert.setMessage(ex.getMessage());
-            LOGGER.error("Unable to remove employer with id: {}. Cause: {}", userId, ex.getMessage());
+            log.error("Unable to remove employer with id: {}. Cause: {}", userId, ex.getMessage());
         }
         httpSession.setAttribute(SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT.getName(), alert);
         res.sendRedirect("/owner/employers");

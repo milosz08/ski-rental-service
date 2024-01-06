@@ -11,10 +11,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.dao.EmployerDao;
@@ -30,11 +29,9 @@ import java.io.IOException;
 import static pl.polsl.skirentalservice.exception.CredentialException.InvalidCredentialsException;
 import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
 
+@Slf4j
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(LoginServlet.class);
-
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
     private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
 
@@ -67,23 +64,23 @@ public class LoginServlet extends HttpServlet {
                 final EmployerDao employerDao = new EmployerDaoHib(session);
 
                 final String password = employerDao.findEmployerPassword(reqDto.getLoginOrEmail())
-                    .orElseThrow(() -> new UserNotFoundException(reqDto, LOGGER));
+                    .orElseThrow(() -> new UserNotFoundException(reqDto));
                 if (!(BCrypt.verifyer().verify(reqDto.getPassword().toCharArray(), password).verified)) {
-                    throw new InvalidCredentialsException(reqDto, LOGGER);
+                    throw new InvalidCredentialsException(reqDto);
                 }
                 final var employer = employerDao.findLoggedEmployerDetails(reqDto.getLoginOrEmail())
-                    .orElseThrow(() -> new UserNotFoundException(reqDto, LOGGER));
+                    .orElseThrow(() -> new UserNotFoundException(reqDto));
                 session.getTransaction().commit();
                 httpSession.setAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName(), employer);
                 httpSession.removeAttribute(getClass().getName());
-                LOGGER.info("Successful logged on {} account. Account data: {}", employer.getRoleEng(), employer);
+                log.info("Successful logged on {} account. Account data: {}", employer.getRoleEng(), employer);
                 if (employer.getIsFirstAccess() && employer.getRoleAlias().equals(UserRole.SELLER.getAlias())) {
                     res.sendRedirect("/first-access");
                     return;
                 }
                 res.sendRedirect("/" + employer.getRoleEng() + "/dashboard");
             } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, log, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());

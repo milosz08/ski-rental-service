@@ -10,10 +10,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.dao.EquipmentDao;
 import pl.polsl.skirentalservice.dao.hibernate.EquipmentDaoHib;
@@ -33,10 +32,9 @@ import java.util.stream.Collectors;
 import static pl.polsl.skirentalservice.exception.NotFoundException.EquipmentInCartNotFoundException;
 import static pl.polsl.skirentalservice.exception.NotFoundException.EquipmentNotFoundException;
 
+@Slf4j
 @WebServlet("/seller/delete-equipment-from-cart")
 public class SellerDeleteEquipmentFromCartServlet extends HttpServlet {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SellerDeleteEquipmentFromCartServlet.class);
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
 
     @Override
@@ -70,14 +68,14 @@ public class SellerDeleteEquipmentFromCartServlet extends HttpServlet {
                 rentData.setEquipments(equipmentsWithoutSelected);
                 alert.setType(AlertType.INFO);
                 alert.setMessage("Pomyślnie usunięto pozycję z listy zestawienia sprzętów kreatora wypożyczania.");
-                LOGGER.info("Successfuly deleted equipment from memory-persist data container by: {}. Data: {}",
+                log.info("Successfuly deleted equipment from memory-persist data container by: {}. Data: {}",
                     loggedUser, cartData);
             } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, log, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
-            LOGGER.error("Failure delete equipment from memory-persist data container by: {}. Cause: {}", loggedUser,
+            log.error("Failure delete equipment from memory-persist data container by: {}. Cause: {}", loggedUser,
                 ex.getMessage());
         }
         httpSession.setAttribute(SessionAlert.SELLER_COMPLETE_RENT_PAGE_ALERT.getName(), alert);

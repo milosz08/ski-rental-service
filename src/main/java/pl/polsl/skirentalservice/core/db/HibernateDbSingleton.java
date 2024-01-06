@@ -10,6 +10,8 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -20,17 +22,14 @@ import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class HibernateDbSingleton {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(HibernateDbSingleton.class);
     private static final String LIQUIBASE_CONF = "db/db.changelog.xml";
     private static final String HIBERNATE_CONF = "db/hibernate.cfg.xml";
 
@@ -52,7 +51,7 @@ public class HibernateDbSingleton {
                 configurationHib.addAnnotatedClass(entityClazz);
             }
             final String entities = annotatedClasses.stream().map(Class::getSimpleName).collect(Collectors.joining(", "));
-            LOGGER.info("Successful loaded Hibernate entities: [ {} ]", entities);
+            log.info("Successful loaded Hibernate entities: [ {} ]", entities);
 
             final ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                 .applySettings(configurationHib.getProperties()).build();
@@ -70,9 +69,9 @@ public class HibernateDbSingleton {
 
             sessionFactory = configurationHib.buildSessionFactory(serviceRegistry);
         } catch (SQLException ex) {
-            LOGGER.error("Unable to connect with database. Exception: {}", ex.getMessage());
+            log.error("Unable to connect with database. Exception: {}", ex.getMessage());
         } catch (LiquibaseException ex) {
-            LOGGER.error("Unable to load Liquibase configuration. Exception: {}", ex.getMessage());
+            log.error("Unable to load Liquibase configuration. Exception: {}", ex.getMessage());
         }
     }
 

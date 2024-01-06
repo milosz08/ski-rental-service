@@ -10,11 +10,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.dao.CustomerDao;
 import pl.polsl.skirentalservice.dao.EquipmentDao;
@@ -30,15 +29,13 @@ import pl.polsl.skirentalservice.entity.RentEquipmentEntity;
 import pl.polsl.skirentalservice.util.*;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.CustomerHasOpenedRentsException;
 import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
 
+@Slf4j
 @WebServlet("/seller/delete-customer")
 public class SellerDeleteCustomerServlet extends HttpServlet {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SellerDeleteCustomerServlet.class);
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
 
     @Override
@@ -76,13 +73,13 @@ public class SellerDeleteCustomerServlet extends HttpServlet {
                 session.getTransaction().commit();
                 alert.setType(AlertType.INFO);
                 alert.setMessage("Pomyślnie usunięto klienta z ID <strong>#" + userId + "</strong> z systemu.");
-                LOGGER.info("Customer with id: {} was succesfuly removed from system.", userId);
+                log.info("Customer with id: {} was succesfuly removed from system.", userId);
             } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, log, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
-            LOGGER.error("Unable to remove customer with id: {}. Cause: {}", userId, ex.getMessage());
+            log.error("Unable to remove customer with id: {}. Cause: {}", userId, ex.getMessage());
         }
         httpSession.setAttribute(SessionAlert.COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
         res.sendRedirect("/seller/customers");

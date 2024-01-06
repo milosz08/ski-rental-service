@@ -10,11 +10,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.dao.EquipmentColorDao;
@@ -29,11 +28,9 @@ import java.io.IOException;
 
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.EquipmentColorAlreadyExistException;
 
+@Slf4j
 @WebServlet("/owner/add-equipment-color")
 public class OwnerAddEquipmentColorServlet extends HttpServlet {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(OwnerAddEquipmentColorServlet.class);
-
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
     private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
 
@@ -64,14 +61,14 @@ public class OwnerAddEquipmentColorServlet extends HttpServlet {
                         payload.reqDto().getName() + "</strong>."
                 );
                 session.getTransaction().commit();
-                LOGGER.info("Successful added new equipment color by: {}. Color: {}", loggedUser,
+                log.info("Successful added new equipment color by: {}. Color: {}", loggedUser,
                     payload.reqDto().getName());
             } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, log, ex);
             }
         } catch (RuntimeException ex) {
             payload.alert().setMessage(ex.getMessage());
-            LOGGER.error("Failure add new equipment color by: {}. Cause: {}", loggedUser, ex.getMessage());
+            log.error("Failure add new equipment color by: {}. Cause: {}", loggedUser, ex.getMessage());
         }
         payload.alert().setActive(true);
         payload.resDto().setAlert(payload.alert());

@@ -10,11 +10,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.dao.EquipmentDao;
 import pl.polsl.skirentalservice.dao.hibernate.EquipmentDaoHib;
@@ -44,10 +43,9 @@ import java.util.stream.Collectors;
 
 import static pl.polsl.skirentalservice.exception.NotFoundException.EquipmentNotFoundException;
 
+@Slf4j
 @WebServlet("/seller/complete-rent-equipments")
 public class SellerCompleteRentEquipmentsServlet extends HttpServlet {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SellerCompleteRentEquipmentsServlet.class);
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
 
     private final Map<String, ServletSorterField> sorterFieldMap = new HashMap<>();
@@ -156,7 +154,7 @@ public class SellerCompleteRentEquipmentsServlet extends HttpServlet {
                 req.setAttribute("pagesData", pagination);
                 req.setAttribute("equipmentsData", equipmentsList);
             } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, log, ex);
             }
         } catch (RuntimeException ex) {
             alert.setType(AlertType.ERROR);

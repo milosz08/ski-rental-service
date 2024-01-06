@@ -10,12 +10,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.core.mail.MailRequestPayload;
@@ -38,11 +37,9 @@ import java.util.Map;
 
 import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
 
+@Slf4j
 @WebServlet("/forgot-password-request")
 public class ForgotPasswordRequestServlet extends HttpServlet {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ForgotPasswordRequestServlet.class);
-
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
     private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
     private final MailSocketSingleton mailSocket = MailSocketSingleton.getInstance();
@@ -73,7 +70,7 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
                 final EmployerDao employerDao = new EmployerDaoHib(session);
 
                 final var employer = employerDao.findEmployerDetails(reqDto.getLoginOrEmail())
-                    .orElseThrow(() -> new UserNotFoundException(reqDto, LOGGER));
+                    .orElseThrow(() -> new UserNotFoundException(reqDto));
 
                 final String token = RandomStringUtils.randomAlphanumeric(10);
                 final EmployerEntity employerEntity = session.getReference(EmployerEntity.class, employer.id());
@@ -98,7 +95,7 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
                 resDto.getLoginOrEmail().setValue(StringUtils.EMPTY);
                 session.getTransaction().commit();
             } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, LOGGER, ex);
+                Utils.onHibernateException(session, log, ex);
             }
         } catch (RuntimeException ex) {
             alert.setMessage(ex.getMessage());
