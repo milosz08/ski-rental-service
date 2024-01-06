@@ -11,17 +11,17 @@
     <ssh-knownHosts>/ssh/known_hosts.dat</ssh-knownHosts>
   </properties>
   <commands>
-    <command executableFor="create-mailbox">
+    <create-mailbox>
       echo "['--json', 'mail', 'account', 'add', '${email}', '${password}']" | nc -U /var/run/devil2.sock
-    </command>
-    <command executableFor="update-mailbox-password">
+    </create-mailbox>
+    <update-mailbox-password>
       echo "['--json', 'mail', 'passwd', '${email}', '${newPassword}']" | nc -U /var/run/devil2.sock
-    </command>
-    <command executableFor="delete-mailbox">
+    </update-mailbox-password>
+    <delete-mailbox>
       echo "['--json', 'mail', 'account', 'del', '${email}']" | nc -U /var/run/devil2.sock
-    </command>
-    <command executableFor="set-mailbox-capacity">
+    </delete-mailbox>
+    <set-mailbox-capacity>
       echo "['--json', 'mail', 'quota', '${email}', '5M' ]" | nc -U /var/run/devil2.sock
-    </command>
+    </set-mailbox-capacity>
   </commands>
 </ssh-configuration>
