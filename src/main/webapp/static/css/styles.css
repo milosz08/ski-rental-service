@@ -4,110 +4,110 @@
  */
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Roboto", sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
 }
 
 .disable-animations * {
-    animation: none !important;
-    transition: none !important;
+  animation: none !important;
+  transition: none !important;
 }
 
 .modal-medium-size {
-    max-width: 600px;
-    width: 100%;
+  max-width: 600px;
+  width: 100%;
 }
 
 .media-small-size-box {
-    max-width: 440px;
+  max-width: 440px;
 }
 
 .the-biggest-font-size {
-    font-size: 5rem;
+  font-size: 5rem;
 }
 
 .simple-transition {
-    transition: .2s;
+  transition: .2s;
 }
 
 .left-nav-wrapper,
 .mobile-left-nav-wrapper {
-    flex-basis: 280px !important;
-    width: 280px !important;
+  flex-basis: 280px !important;
+  width: 280px !important;
 }
 
 .left-nav-wrapper {
-    transform: translateX(-280px);
+  transform: translateX(-280px);
 }
 
 .left-nav-wrapper-active {
-    transform: translateX(0);
+  transform: translateX(0);
 }
 
 .main-wrapper {
-    margin-left: -280px;
-    width: calc(100% - 280px);
+  margin-left: -280px;
+  width: calc(100% - 280px);
 }
 
 .main-wrapper-active {
-    margin-left: 0;
+  margin-left: 0;
 }
 
 .btn-hover-dark:hover {
-    background-color: var(--bs-gray-dark);
+  background-color: var(--bs-gray-dark);
 }
 
 .btn-hover-dark[aria-expanded="true"] .chewron-icon {
-    transform: rotate(90deg);
+  transform: rotate(90deg);
 }
 
 .fit {
-    white-space: nowrap;
-    width: 1%;
+  white-space: nowrap;
+  width: 1%;
 }
 
 .fit-content {
-    width: auto;
+  width: auto;
 }
 
 .search-max-width {
-    max-width: 350px;
+  max-width: 350px;
 }
 
 .micro-font {
-    font-size: .9em;
+  font-size: .9em;
 }
 
 .max-width-fit {
-    max-width: fit-content !important;
+  max-width: fit-content !important;
 }
 
 .nowrap-tb {
-    white-space: nowrap;
+  white-space: nowrap;
 }
 
 .table-fixed-width {
-    table-layout: fixed;
-    width: 100%;
+  table-layout: fixed;
+  width: 100%;
 }
 
 .rent-saved-data-opacity {
-    opacity: .5;
+  opacity: .5;
 }
 
 @media only screen and (max-width: 992px) {
-    .main-wrapper {
-        margin-left: 0;
-        width: 100%;
-    }
+  .main-wrapper {
+    margin-left: 0;
+    width: 100%;
+  }
 }
 
 @media only screen and (max-width: 576px) {
-    .max-width-fit,
-    .search-max-width {
-        width: 100% !important;
-        max-width: 100% !important;
-    }
+  .max-width-fit,
+  .search-max-width {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
 }
