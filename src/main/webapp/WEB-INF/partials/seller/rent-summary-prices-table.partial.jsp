@@ -8,14 +8,14 @@
 <td class="nowrap-tb align-middle">${cartEq.name}</td>
 <td class="nowrap-tb align-middle">${cartEq.count} szt.</td>
 <td class="nowrap-tb align-middle">
-    <fmt:formatNumber value="${cartEq.priceUnits.totalPriceNetto}" minFractionDigits="2" type="currency"/>
+  <fmt:formatNumber value="${cartEq.priceUnits.totalPriceNetto}" minFractionDigits="2" type="currency"/>
 </td>
 <td class="nowrap-tb align-middle">
-    <fmt:formatNumber value="${cartEq.priceUnits.totalPriceBrutto}" minFractionDigits="2" type="currency"/>
+  <fmt:formatNumber value="${cartEq.priceUnits.totalPriceBrutto}" minFractionDigits="2" type="currency"/>
 </td>
 <td class="nowrap-tb align-middle">
-    <fmt:formatNumber value="${cartEq.priceUnits.totalDepositPriceNetto}" minFractionDigits="2" type="currency"/>
+  <fmt:formatNumber value="${cartEq.priceUnits.totalDepositPriceNetto}" minFractionDigits="2" type="currency"/>
 </td>
 <td class="nowrap-tb align-middle">
-    <fmt:formatNumber value="${cartEq.priceUnits.totalDepositPriceBrutto}" minFractionDigits="2" type="currency"/>
+  <fmt:formatNumber value="${cartEq.priceUnits.totalDepositPriceBrutto}" minFractionDigits="2" type="currency"/>
 </td>

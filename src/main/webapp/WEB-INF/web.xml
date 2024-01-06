@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
+  ~ Silesian University of Technology
+  -->
 <web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
          version="6.0">
-    <display-name>ski-rental-service</display-name>
-    <session-config>
-        <session-timeout>25</session-timeout>
-    </session-config>
-    <welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
-    </welcome-file-list>
-    <error-page>
-        <error-code>404</error-code>
-        <location>/404</location>
-    </error-page>
-    <locale-encoding-mapping-list>
-        <locale-encoding-mapping>
-            <locale>pl-PL</locale>
-            <encoding>UTF-8</encoding>
-        </locale-encoding-mapping>
-    </locale-encoding-mapping-list>
+  <display-name>ski-rental-service</display-name>
+  <session-config>
+    <session-timeout>25</session-timeout>
+  </session-config>
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/404</location>
+  </error-page>
+  <locale-encoding-mapping-list>
+    <locale-encoding-mapping>
+      <locale>pl-PL</locale>
+      <encoding>UTF-8</encoding>
+    </locale-encoding-mapping>
+  </locale-encoding-mapping-list>
 </web-app>

@@ -1,5 +1,5 @@
 <%@ tag description="Datetime tag formatter" pageEncoding="UTF-8" language="java" %>
-<%@ tag trimDirectiveWhitespaces="true"%>
+<%@ tag trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%@ attribute name="date" required="true" %>
 
