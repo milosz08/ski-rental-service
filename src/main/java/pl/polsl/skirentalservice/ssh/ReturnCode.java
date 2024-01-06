@@ -11,7 +11,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ReturnCode {
     OK("OK"),
-    ERROR("ERROR");
+    ERROR("ERROR"),
+    ;
 
     private final String name;
 

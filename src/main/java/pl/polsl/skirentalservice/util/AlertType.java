@@ -12,7 +12,8 @@ import lombok.Getter;
 public enum AlertType {
     INFO("alert-success"),
     WARN("alert-warning"),
-    ERROR("alert-danger");
+    ERROR("alert-danger"),
+    ;
 
     private final String cssClass;
 }

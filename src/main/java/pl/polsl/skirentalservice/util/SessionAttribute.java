@@ -31,7 +31,8 @@ public enum SessionAttribute {
 
     LOGGED_USER_DETAILS("loggedUserDetails"),
     INMEMORY_NEW_RENT_DATA("inmemoryNewRentData"),
-    LOGOUT_MODAL("logout-modal");
+    LOGOUT_MODAL("logout-modal"),
+    ;
 
     private final String name;
 }

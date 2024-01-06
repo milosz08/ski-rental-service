@@ -17,7 +17,8 @@ import java.util.List;
 public enum Gender {
     MALE("mężczyzna", 'M'),
     FEMALE("kobieta", 'K'),
-    UNISEX("unisex", 'U');
+    UNISEX("unisex", 'U'),
+    ;
 
     private final String name;
     private final char alias;

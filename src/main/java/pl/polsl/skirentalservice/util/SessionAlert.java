@@ -32,7 +32,8 @@ public enum SessionAlert {
     COMMON_RENTS_PAGE_ALERT("common-rents-page-alert"),
     COMMON_CUSTOMERS_PAGE_ALERT("common-customers-page-alert"),
     COMMON_EQUIPMENTS_PAGE_ALERT("common-equipments-page-alert"),
-    COMMON_RETURNS_PAGE_ALERT("common-returns-page-alert");
+    COMMON_RETURNS_PAGE_ALERT("common-returns-page-alert"),
+    ;
 
     private final String name;
 }

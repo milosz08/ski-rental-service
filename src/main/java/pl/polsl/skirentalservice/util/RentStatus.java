@@ -12,7 +12,8 @@ import lombok.Getter;
 public enum RentStatus {
     OPENED("otwarty", "opened"),
     RENTED("wypożyczony", "rented"),
-    RETURNED("zwrócony", "returned");
+    RETURNED("zwrócony", "returned"),
+    ;
 
     private final String status;
     private final String statusEng;

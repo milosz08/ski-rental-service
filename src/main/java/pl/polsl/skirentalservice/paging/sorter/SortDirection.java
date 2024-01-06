@@ -12,7 +12,8 @@ import lombok.Getter;
 public enum SortDirection {
     IDLE("IDLE"),
     ASC("ASC"),
-    DESC("DESC");
+    DESC("DESC"),
+    ;
 
     private final String dir;
 }

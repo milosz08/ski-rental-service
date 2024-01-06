@@ -41,7 +41,8 @@ public enum PageTitle {
     COMMON_EQUIPMENTS_PAGE("Lista sprzętów narciarskich"),
     COMMON_EQUIPMENT_DETAILS_PAGE("Szczegóły sprzętu narciarskiego"),
     COMMON_RETURNS_PAGE("Lista zwrotów"),
-    COMMON_RETURN_DETAILS_PAGE("Szczegóły zwrotu");
+    COMMON_RETURN_DETAILS_PAGE("Szczegóły zwrotu"),
+    ;
 
     private final String name;
 
