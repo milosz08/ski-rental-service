@@ -14,11 +14,11 @@ import org.hibernate.validator.constraints.pl.PESEL;
 import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.core.ReqValidatePojo;
 import pl.polsl.skirentalservice.exception.DateException;
+import pl.polsl.skirentalservice.util.DateParser;
 import pl.polsl.skirentalservice.util.Gender;
 import pl.polsl.skirentalservice.util.Regex;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @Data
 @AllArgsConstructor
@@ -84,11 +84,11 @@ public class AddEditEmployerReqDto implements ReqValidatePojo {
     }
 
     public LocalDate getParsedBornDate() {
-        return LocalDate.parse(bornDate, formatter);
+        return DateParser.parseToDateOnly(bornDate);
     }
 
     public LocalDate getParsedHiredDate() {
-        return LocalDate.parse(hiredDate, formatter);
+        return DateParser.parseToDateOnly(hiredDate);
     }
 
     public String getFullAddress() {

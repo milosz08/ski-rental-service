@@ -7,19 +7,16 @@ package pl.polsl.skirentalservice.dto.rent;
 import lombok.Data;
 import pl.polsl.skirentalservice.dto.PriceUnitsDto;
 import pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto;
+import pl.polsl.skirentalservice.util.DateParser;
 import pl.polsl.skirentalservice.util.RentStatus;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
 public class InMemoryRentDataDto {
-
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
     private Long customerId;
     private String customerFullName;
     private String issuedIdentifier;
@@ -46,11 +43,11 @@ public class InMemoryRentDataDto {
     }
 
     public LocalDateTime getParsedRentDateTime() {
-        return LocalDateTime.parse(rentDateTime.replace('T', ' '), formatter);
+        return DateParser.parse(rentDateTime);
     }
 
     public LocalDateTime getParsedReturnDateTime() {
-        return LocalDateTime.parse(returnDateTime.replace('T', ' '), formatter);
+        return DateParser.parse(returnDateTime);
     }
 
     @Override

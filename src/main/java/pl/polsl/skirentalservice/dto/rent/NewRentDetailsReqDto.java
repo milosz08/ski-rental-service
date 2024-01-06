@@ -10,12 +10,11 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
-import pl.polsl.skirentalservice.core.IReqValidatePojo;
 import pl.polsl.skirentalservice.core.ReqValidatePojo;
+import pl.polsl.skirentalservice.util.DateParser;
 import pl.polsl.skirentalservice.util.Regex;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Data
 public class NewRentDetailsReqDto implements ReqValidatePojo {
@@ -42,11 +41,11 @@ public class NewRentDetailsReqDto implements ReqValidatePojo {
     }
 
     public LocalDateTime getParsedRentDateTime() {
-        return LocalDateTime.parse(rentDateTime.replace('T', ' '), formatter);
+        return DateParser.parse(rentDateTime);
     }
 
     public LocalDateTime getParsedReturnDateTime() {
-        return LocalDateTime.parse(returnDateTime.replace('T', ' '), formatter);
+        return DateParser.parse(returnDateTime);
     }
 
     @Override
