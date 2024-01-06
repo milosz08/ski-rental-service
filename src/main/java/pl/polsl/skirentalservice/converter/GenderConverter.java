@@ -10,7 +10,6 @@ import pl.polsl.skirentalservice.util.Gender;
 import java.util.Objects;
 
 public class GenderConverter implements AttributeConverter<Gender, String> {
-
     @Override
     public String convertToDatabaseColumn(Gender gender) {
         return gender.getName();

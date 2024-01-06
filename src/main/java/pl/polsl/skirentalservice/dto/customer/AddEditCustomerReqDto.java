@@ -13,6 +13,7 @@ import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.pl.PESEL;
 import pl.polsl.skirentalservice.core.IReqValidatePojo;
+import pl.polsl.skirentalservice.core.ReqValidatePojo;
 import pl.polsl.skirentalservice.util.Gender;
 import pl.polsl.skirentalservice.util.Regex;
 
@@ -21,10 +22,7 @@ import java.time.format.DateTimeFormatter;
 
 @Data
 @AllArgsConstructor
-public class AddEditCustomerReqDto implements IReqValidatePojo {
-
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
+public class AddEditCustomerReqDto implements ReqValidatePojo {
     @NotEmpty(message = "Pole imienia nie może być puste.")
     @Pattern(regexp = Regex.NAME_SURNAME, message = "Nieprawidłowa wartość/wartości w polu imię.")
     private String firstName;

@@ -9,21 +9,24 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
-import pl.polsl.skirentalservice.core.IReqValidatePojo;
+import pl.polsl.skirentalservice.core.ReqValidatePojo;
 import pl.polsl.skirentalservice.util.Regex;
 
 @Data
-public class FirstAccessReqDto implements IReqValidatePojo {
-
-    @Pattern(regexp = Regex.PASSWORD_REQ, message = "Hasło musi zawierać co najmniej 8 znaków, jedną wielką literę, jedną " +
-        "cyfrę i znak specjalny (spośród #?!@$%^&*).")
+public class FirstAccessReqDto implements ReqValidatePojo {
+    @Pattern(
+        regexp = Regex.PASSWORD_REQ,
+        message = "Hasło musi zawierać co najmniej 8 znaków, jedną wielką literę, " +
+            "jedną cyfrę i znak specjalny (spośród #?!@$%^&*).")
     private String password;
 
     @NotEmpty(message = "Pole powtórzonego hasła nie może być puste.")
     private String passwordRep;
 
-    @Pattern(regexp = Regex.PASSWORD_REQ, message = "Hasło musi zawierać co najmniej 8 znaków, jedną wielką literę, " +
-        "jedną cyfrę i znak specjalny (spośród #?!@$%^&*).")
+    @Pattern(
+        regexp = Regex.PASSWORD_REQ,
+        message = "Hasło musi zawierać co najmniej 8 znaków, jedną wielką literę, " +
+            "jedną cyfrę i znak specjalny (spośród #?!@$%^&*).")
     private String emailPassword;
 
     @NotEmpty(message = "Pole powtórzonego hasła nie może być puste.")

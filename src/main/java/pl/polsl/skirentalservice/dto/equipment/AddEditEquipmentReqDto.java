@@ -11,14 +11,13 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
-import pl.polsl.skirentalservice.core.IReqValidatePojo;
+import pl.polsl.skirentalservice.core.ReqValidatePojo;
 import pl.polsl.skirentalservice.util.Gender;
 import pl.polsl.skirentalservice.util.Regex;
 
 @Data
 @AllArgsConstructor
-public class AddEditEquipmentReqDto implements IReqValidatePojo {
-
+public class AddEditEquipmentReqDto implements ReqValidatePojo {
     @NotEmpty(message = "Pole nazwy sprzętu nie może być puste.")
     @Size(min = 5, max = 50, message = "Pole nazwy sprzętu musi mieć od 5 do 50 znaków.")
     private String name;

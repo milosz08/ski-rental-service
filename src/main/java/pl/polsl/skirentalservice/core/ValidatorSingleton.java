@@ -8,6 +8,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import lombok.Getter;
 import pl.polsl.skirentalservice.dto.FormSelectsDto;
 import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
 
@@ -24,7 +25,7 @@ public class ValidatorSingleton {
         this.validator = validatorFactory.getValidator();
     }
 
-    public <T extends IReqValidatePojo> FormValueInfoTupleDto validateField(T req, String field, String value) {
+    public <T extends ReqValidatePojo> FormValueInfoTupleDto validateField(T req, String field, String value) {
         final Set<ConstraintViolation<T>> constraints = validator.validateProperty(req, field);
         final FormValueInfoTupleDto resDto = new FormValueInfoTupleDto(value);
         for (final ConstraintViolation<T> constraint : constraints) {
@@ -34,7 +35,7 @@ public class ValidatorSingleton {
         return resDto;
     }
 
-    public <T extends IReqValidatePojo> FormSelectsDto validateSelectField(
+    public <T extends ReqValidatePojo> FormSelectsDto validateSelectField(
         T req, String field, FormSelectsDto selectsDto, String selected
     ) {
         final Set<ConstraintViolation<T>> constraints = validator.validateProperty(req, field);
@@ -46,7 +47,7 @@ public class ValidatorSingleton {
         return selectsDto;
     }
 
-    public <T extends IReqValidatePojo> boolean someFieldsAreInvalid(T req) {
+    public <T extends ReqValidatePojo> boolean someFieldsAreInvalid(T req) {
         final Set<ConstraintViolation<T>> constraints = validator.validate(req);
         return !constraints.isEmpty();
     }

@@ -10,7 +10,6 @@ import pl.polsl.skirentalservice.util.RentStatus;
 import java.util.Objects;
 
 public class RentStatusConverter implements AttributeConverter<RentStatus, String> {
-
     @Override
     public String convertToDatabaseColumn(RentStatus rentStatus) {
         return rentStatus.getStatus();

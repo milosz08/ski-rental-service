@@ -11,16 +11,14 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import pl.polsl.skirentalservice.core.IReqValidatePojo;
+import pl.polsl.skirentalservice.core.ReqValidatePojo;
 import pl.polsl.skirentalservice.util.Regex;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Data
-public class NewRentDetailsReqDto implements IReqValidatePojo {
-
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
+public class NewRentDetailsReqDto implements ReqValidatePojo {
     @NotEmpty(message = "Pole daty wypożyczenia nie może być puste.")
     @Pattern(regexp = Regex.DATE_TIME, message = "Nieprawidłowa wartość w polu data wypożyczenia.")
     private String rentDateTime;

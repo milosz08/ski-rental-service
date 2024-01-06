@@ -4,5 +4,5 @@
  */
 package pl.polsl.skirentalservice.core;
 
-public interface IReqValidatePojo {
+public interface ReqValidatePojo {
 }

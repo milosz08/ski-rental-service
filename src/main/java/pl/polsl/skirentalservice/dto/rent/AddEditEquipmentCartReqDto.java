@@ -10,12 +10,11 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
-import pl.polsl.skirentalservice.core.IReqValidatePojo;
+import pl.polsl.skirentalservice.core.ReqValidatePojo;
 import pl.polsl.skirentalservice.util.Regex;
 
 @Data
-public class AddEditEquipmentCartReqDto implements IReqValidatePojo {
-
+public class AddEditEquipmentCartReqDto implements ReqValidatePojo {
     @NotEmpty(message = "Pole ilości sprzętów w wypożyczeniu nie może być puste.")
     @Pattern(
         regexp = Regex.POS_NUMBER_INT,

@@ -9,12 +9,11 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
-import pl.polsl.skirentalservice.core.IReqValidatePojo;
+import pl.polsl.skirentalservice.core.ReqValidatePojo;
 import pl.polsl.skirentalservice.util.Regex;
 
 @Data
-public class RequestToChangePasswordReqDto implements IReqValidatePojo {
-
+public class RequestToChangePasswordReqDto implements ReqValidatePojo {
     @NotEmpty(message = "Pole loginu/adresu email nie może być puste.")
     @Pattern(regexp = Regex.LOGIN_EMAIL, message = "Nieprawidłowa wartość/wartości w polu login/adres email.")
     private String loginOrEmail;
