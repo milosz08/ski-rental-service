@@ -4,9 +4,9 @@
 
 <p:generic-page.wrapper>
   <jsp:include page="/WEB-INF/partials/error-page.partial.jsp">
-    <jsp:param name="errorCode" value="404"/>
-    <jsp:param name="errorMessage" value="Nie znaleziono"/>
-    <jsp:param name="callbackPath" value="/"/>
-    <jsp:param name="callbackMessage" value="Przejdź do strony głównej"/>
+    <jsp:param name="errorCode" value="403"/>
+    <jsp:param name="errorMessage" value="Dostęp zabroniony"/>
+    <jsp:param name="callbackPath" value="/login"/>
+    <jsp:param name="callbackMessage" value="Przejdź do logowania"/>
   </jsp:include>
 </p:generic-page.wrapper>

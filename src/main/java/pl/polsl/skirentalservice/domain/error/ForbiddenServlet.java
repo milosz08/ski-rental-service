@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
  * Silesian University of Technology
  */
-package pl.polsl.skirentalservice.domain;
+package pl.polsl.skirentalservice.domain.error;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -13,11 +13,11 @@ import pl.polsl.skirentalservice.util.PageTitle;
 
 import java.io.IOException;
 
-@WebServlet("/404")
-public class NotFoundServlet extends HttpServlet {
+@WebServlet("/403")
+public class ForbiddenServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        req.setAttribute("title", PageTitle.NOT_FOUND_4O4_PAGE.getName());
-        req.getRequestDispatcher("/WEB-INF/pages/_not-found.jsp").forward(req, res);
+        req.setAttribute("title", PageTitle.FORBIDDEN_PAGE.getName());
+        req.getRequestDispatcher("/WEB-INF/pages/_forbidden.jsp").forward(req, res);
     }
 }
