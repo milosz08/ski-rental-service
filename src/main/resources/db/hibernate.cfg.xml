@@ -8,15 +8,12 @@
   "http://hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
   <session-factory>
-    <property name="hibernate.connection.url">@db_url@</property>
+    <property name="hibernate.connection.url">${SKI_MYSQL_URL}</property>
     <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
     <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
-
-    <property name="hibernate.connection.username">@db_user@</property>
-    <property name="hibernate.connection.password">@db_pass@</property>
-
+    <property name="hibernate.connection.username">${SKI_MYSQL_USERNAME}</property>
+    <property name="hibernate.connection.password">${SKI_MYSQL_PASSWORD}</property>
     <property name="hibernate.connection.provider_class">org.hibernate.c3p0.internal.C3P0ConnectionProvider</property>
-
     <property name="hibernate.c3p0.min_size">10</property>
     <property name="hibernate.c3p0.max_size">20</property>
     <property name="hibernate.c3p0.acquire_increment">1</property>
@@ -24,10 +21,8 @@
     <property name="hibernate.c3p0.max_statements">50</property>
     <property name="hibernate.c3p0.timeout">1800</property>
     <property name="hibernate.c3p0.validate">1800</property>
-
     <property name="hibernate.c3p0.unreturnedConnectionTimeout">30</property>
     <property name="hibernate.c3p0.debugUnreturnedConnectionStackTraces">false</property>
-
     <property name="hibernate.show_sql">true</property>
     <property name="hibernate.hbm2ddl.auto">none</property>
     <property name="hibernate.format_sql">false</property>
