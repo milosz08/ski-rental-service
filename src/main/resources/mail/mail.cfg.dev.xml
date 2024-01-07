@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+  ~ Silesian University of Technology
+  -->
+<mail-configuration>
+  <property name="mail.smtp.host">${SKI_SMTP_HOST}</property>
+  <property name="mail.smtp.port">${SKI_SMTP_PORT}</property>
+  <property name="mail.smtp.user">${SKI_SMTP_USERNAME}</property>
+  <property name="mail.smtp.pass">${SKI_SMTP_PASSWORD}</property>
+  <property name="mail.smtp.domain">${SKI_SMTP_DOMAIN}</property>
+  <property name="mail.smtp.auth">false</property>
+  <property name="mail.smtp.starttls.enable">false</property>
+  <property name="mail.smtp.socketFactory.fallback">false</property>
+</mail-configuration>
