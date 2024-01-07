@@ -24,7 +24,7 @@
       Usuń wypożyczenie
     </button>
     <a
-      href="${pageContext.request.contextPath}/resources/rent-fvs/${rentDetailsData.issuedIdentifier.replace('/', '')}.pdf"
+      href="${pageContext.request.contextPath}/resources/rents/${rentDetailsData.issuedIdentifier.replace('/', '-')}.pdf"
       target="_blank" class="btn btn-success btn-sm me-1">
       <i class="bi bi-filetype-pdf align-middle me-2"></i>
       Pobierz PDF

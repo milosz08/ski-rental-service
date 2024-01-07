@@ -134,7 +134,7 @@
                   Szczegóły
                 </a>
                 <a
-                  href="${pageContext.request.contextPath}/resources/return-fvs/${sReturn.issuedIdentifier.replace('/', '')}.pdf"
+                  href="${pageContext.request.contextPath}/resources/returns/${sReturn.issuedIdentifier.replace('/', '-')}.pdf"
                   target="_blank" class="btn btn-sm btn-success py-0">
                                     <span type="button" data-bs-toggle="tooltip" data-bs-placement="top"
                                           data-bs-title="Pobierz zestawienie PDF">

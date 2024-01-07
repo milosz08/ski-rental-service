@@ -26,7 +26,7 @@
       Usuń zwrot
     </button>
     <a
-      href="${pageContext.request.contextPath}/resources/return-fvs/${returnDetailsData.issuedIdentifier().replace('/', '')}.pdf"
+      href="${pageContext.request.contextPath}/resources/returns/${returnDetailsData.issuedIdentifier().replace('/', '-')}.pdf"
       target="_blank" class="btn btn-success btn-sm me-1">
       <i class="bi bi-filetype-pdf align-middle me-2"></i>
       Pobierz PDF

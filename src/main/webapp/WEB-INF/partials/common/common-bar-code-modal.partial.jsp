@@ -11,7 +11,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body lh-sm">
-        <img src="${pageContext.request.contextPath}/resources/bar-codes/${param.barcode}.png" alt=""
+        <img src="${pageContext.request.contextPath}/resources/barcodes/${param.barcode}.png" alt=""
              class="mx-auto d-block" height="120px"/>
       </div>
       <div class="modal-footer">

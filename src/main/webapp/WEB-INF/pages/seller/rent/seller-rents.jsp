@@ -152,7 +152,7 @@
                   Generuj zwrot
                 </button>
                 <a
-                  href="${pageContext.request.contextPath}/resources/rent-fvs/${rent.issuedIdentifier().replace('/', '')}.pdf"
+                  href="${pageContext.request.contextPath}/resources/rents/${rent.issuedIdentifier().replace('/', '-')}.pdf"
                   target="_blank" class="btn btn-sm btn-success py-0">
                                     <span type="button" data-bs-toggle="tooltip" data-bs-placement="top"
                                           data-bs-title="Pobierz zestawienie PDF">
