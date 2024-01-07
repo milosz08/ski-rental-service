@@ -71,8 +71,8 @@ public class SellerAddCustomerServlet extends HttpServlet {
             return;
         }
         try (final Session session = sessionFactory.openSession()) {
-            if (reqDto.getParsedBornDate().isAfter(LocalDate.now().minusYears(config.getCircaDateYears()))) {
-                throw new DateInFutureException("data urodzenia", config.getCircaDateYears());
+            if (reqDto.getParsedBornDate().isAfter(LocalDate.now().minusYears(config.getMaturityAge()))) {
+                throw new DateInFutureException("data urodzenia", config.getMaturityAge());
             }
             try {
                 session.beginTransaction();

@@ -22,6 +22,7 @@ import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
+import pl.polsl.skirentalservice.core.AppEnvironment;
 
 import java.sql.SQLException;
 import java.util.Set;
@@ -39,6 +40,7 @@ public class HibernateDbSingleton {
     private HibernateDbSingleton() {
         try {
             final Configuration configurationHib = new Configuration().configure(HIBERNATE_CONF);
+            AppEnvironment.replaceAllPlaceholders(configurationHib.getProperties());
 
             final org.reflections.Configuration configuration = new ConfigurationBuilder()
                 .setUrls(ClasspathHelper.forPackage("pl.polsl.skirentalservice"))

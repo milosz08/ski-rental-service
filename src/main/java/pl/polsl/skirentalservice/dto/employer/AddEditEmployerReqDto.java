@@ -103,8 +103,8 @@ public class AddEditEmployerReqDto implements ReqValidatePojo {
     }
 
     public void validateDates(ConfigSingleton config) {
-        if (getParsedBornDate().isAfter(LocalDate.now().minusYears(config.getCircaDateYears()))) {
-            throw new DateException.DateInFutureException("data urodzenia", config.getCircaDateYears());
+        if (getParsedBornDate().isAfter(LocalDate.now().minusYears(config.getMaturityAge()))) {
+            throw new DateException.DateInFutureException("data urodzenia", config.getMaturityAge());
         }
         if (getParsedHiredDate().isAfter(LocalDate.now())) {
             throw new DateException.DateInFutureException("data zatrudnienia");

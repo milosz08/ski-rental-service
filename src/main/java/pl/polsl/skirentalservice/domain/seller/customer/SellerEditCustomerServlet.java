@@ -93,8 +93,8 @@ public class SellerEditCustomerServlet extends HttpServlet {
             return;
         }
         try (final Session session = sessionFactory.openSession()) {
-            if (reqDto.getParsedBornDate().isAfter(LocalDate.now().minusYears(config.getCircaDateYears()))) {
-                throw new DateInFutureException("data zatrudnienia", config.getCircaDateYears());
+            if (reqDto.getParsedBornDate().isAfter(LocalDate.now().minusYears(config.getMaturityAge()))) {
+                throw new DateInFutureException("data zatrudnienia", config.getMaturityAge());
             }
             try {
                 session.beginTransaction();
