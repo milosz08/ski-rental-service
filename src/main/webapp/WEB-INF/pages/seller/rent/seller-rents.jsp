@@ -148,7 +148,7 @@
                   Szczegóły
                 </a>
                 <button type="button" data-bs-toggle="modal" data-bs-target="#generateReturn${rent.id()}"
-                        class="btn btn-sm btn-outline-success py-0">
+                        class="btn btn-sm btn-outline-success py-0 ${rent.isRented() ? '' : 'disabled'}">
                   Generuj zwrot
                 </button>
                 <a
@@ -173,9 +173,11 @@
     </c:if>
   </form>
   <c:forEach items="${rentsData}" var="rent">
-    <jsp:include page="/WEB-INF/partials/seller/generate-return-modal.partial.jsp">
-      <jsp:param name="id" value="${rent.id()}"/>
-      <jsp:param name="issuedIdentifier" value="${rent.issuedIdentifier()}"/>
-    </jsp:include>
+    <c:if test="${rent.isRented()}">
+      <jsp:include page="/WEB-INF/partials/seller/generate-return-modal.partial.jsp">
+        <jsp:param name="id" value="${rent.id()}"/>
+        <jsp:param name="issuedIdentifier" value="${rent.issuedIdentifier()}"/>
+      </jsp:include>
+    </c:if>
   </c:forEach>
 </p:generic-seller.wrapper>

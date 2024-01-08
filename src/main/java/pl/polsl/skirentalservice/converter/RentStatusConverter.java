@@ -18,6 +18,7 @@ public class RentStatusConverter implements AttributeConverter<RentStatus, Strin
         return name == null ? RentStatus.OPENED : switch (name) {
             case "wypożyczony" -> RentStatus.RENTED;
             case "zwrócony" -> RentStatus.RETURNED;
+            case "zarezerwowany" -> RentStatus.BOOKED;
             default -> RentStatus.OPENED;
         };
     }

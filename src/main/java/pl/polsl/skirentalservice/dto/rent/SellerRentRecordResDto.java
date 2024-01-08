@@ -14,6 +14,7 @@ public record SellerRentRecordResDto(
     String issuedIdentifier,
     LocalDateTime issuedDateTime,
     RentStatus status,
+    Boolean isRented,
     BigDecimal totalPriceNetto,
     BigDecimal totalPriceBrutto,
     String customerName,

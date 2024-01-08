@@ -102,7 +102,7 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                 rent.setTotalPrice(rentData.getPriceUnits().getTotalPriceNetto());
                 rent.setTotalDepositPrice(rentData.getPriceUnits().getTotalDepositPriceNetto());
 
-                rent.setStatus(RentStatus.RENTED);
+                rent.setStatus(rentData.getParsedRentDateTime().isAfter(LocalDateTime.now()) ? RentStatus.BOOKED : RentStatus.RENTED);
                 rent.setCustomer(session.get(CustomerEntity.class, rentData.getCustomerId()));
                 rent.setEmployer(session.get(EmployerEntity.class, loggedEmployer.getId()));
                 rent.setEquipments(equipmentEntities);

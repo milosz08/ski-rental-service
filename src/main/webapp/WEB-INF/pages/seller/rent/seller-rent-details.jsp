@@ -1,5 +1,6 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ page trimDirectiveWhitespaces="true" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
 <jsp:useBean id="rentDetailsData" class="pl.polsl.skirentalservice.dto.rent.RentDetailsResDto" scope="request"/>
@@ -29,10 +30,12 @@
       <i class="bi bi-filetype-pdf align-middle me-2"></i>
       Pobierz PDF
     </a>
-    <button type="button" data-bs-toggle="modal" data-bs-target="#generateReturn${rentDetailsData.id}"
-            class="btn btn-sm btn-outline-success me-1">
-      Generuj zwrot
-    </button>
+    <c:if test="${rentDetailsData.isRented}">
+      <button type="button" data-bs-toggle="modal" data-bs-target="#generateReturn${rentDetailsData.id}"
+              class="btn btn-sm btn-outline-success me-1">
+        Generuj zwrot
+      </button>
+    </c:if>
   </div>
   <jsp:include page="/WEB-INF/partials/common/rent/common-rent-details.partial.jsp"/>
   <jsp:include page="/WEB-INF/partials/seller/delete-rent-modal.partial.jsp">

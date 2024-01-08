@@ -26,6 +26,7 @@ public class RentDetailsResDto {
     private String description;
     private Integer tax;
     private RentStatus status;
+    private Boolean isRented;
     private BigDecimal totalPriceNetto;
     private BigDecimal totalPriceBrutto;
     private BigDecimal totalDepositPriceNetto;
