@@ -33,7 +33,7 @@ import static pl.polsl.skirentalservice.exception.NotFoundException.EquipmentNot
 @WebServlet("/owner/delete-equipment")
 public class OwnerDeleteEquipmentServlet extends HttpServlet {
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
-    private final ConfigSingleton config = ConfigSingleton.getInstance();
+    private final S3ClientSigleton s3Client = S3ClientSigleton.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -54,12 +54,9 @@ public class OwnerDeleteEquipmentServlet extends HttpServlet {
                 if (equipmentEntity == null) {
                     throw new EquipmentNotFoundException(equipmentId);
                 }
-                final String uploadsDir = config.getUploadsDir() + File.separator + "bar-codes";
-                final File barcodeFile = new File(uploadsDir, equipmentEntity.getBarcode() + ".png");
-                if (barcodeFile.exists()) {
-                    if (!barcodeFile.delete()) throw new RuntimeException("Nieudane usunięcie kodu kreskowego.");
-                }
                 session.remove(equipmentEntity);
+                s3Client.deleteObject(S3Bucket.BARCODES, equipmentEntity.getBarcode() + ".png");
+
                 alert.setType(AlertType.INFO);
                 alert.setMessage(
                     "Pomyślnie usunięto sprzęt narciarski z ID <strong>#" + equipmentId + "</strong> z systemu."

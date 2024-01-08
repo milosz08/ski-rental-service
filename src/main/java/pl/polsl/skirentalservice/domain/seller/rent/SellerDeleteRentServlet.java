@@ -14,14 +14,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
+import pl.polsl.skirentalservice.core.s3.S3Bucket;
+import pl.polsl.skirentalservice.core.s3.S3ClientSigleton;
 import pl.polsl.skirentalservice.dao.EquipmentDao;
 import pl.polsl.skirentalservice.dao.hibernate.EquipmentDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.entity.RentEntity;
 import pl.polsl.skirentalservice.entity.RentEquipmentEntity;
-import pl.polsl.skirentalservice.pdf.RentPdfDocument;
 import pl.polsl.skirentalservice.util.AlertType;
 import pl.polsl.skirentalservice.util.RentStatus;
 import pl.polsl.skirentalservice.util.SessionAlert;
@@ -35,7 +35,7 @@ import static pl.polsl.skirentalservice.exception.NotFoundException.RentNotFound
 @WebServlet("/seller/delete-rent")
 public class SellerDeleteRentServlet extends HttpServlet {
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
-    private final ConfigSingleton config = ConfigSingleton.getInstance();
+    private final S3ClientSigleton s3Client = S3ClientSigleton.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -64,9 +64,8 @@ public class SellerDeleteRentServlet extends HttpServlet {
                     equipmentDao.increaseAvailableSelectedEquipmentCount(equipment.getEquipment().getId(),
                         equipment.getCount());
                 }
-                final RentPdfDocument rentPdfDocument = new RentPdfDocument(config.getUploadsDir(),
-                    rentEntity.getIssuedIdentifier());
-                rentPdfDocument.remove();
+                final String fileName = rentEntity.getIssuedIdentifier().replaceAll("/", "-") + ".pdf";
+                s3Client.deleteObject(S3Bucket.RENTS, fileName);
 
                 session.remove(rentEntity);
                 session.getTransaction().commit();

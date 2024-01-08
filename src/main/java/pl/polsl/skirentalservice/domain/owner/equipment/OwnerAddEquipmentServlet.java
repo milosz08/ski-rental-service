@@ -12,15 +12,17 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.http.entity.ContentType;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.krysalis.barcode4j.impl.upcean.EAN13Bean;
 import org.krysalis.barcode4j.output.bitmap.BitmapCanvasProvider;
 import org.modelmapper.ModelMapper;
-import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.core.ModelMapperGenerator;
 import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
+import pl.polsl.skirentalservice.core.s3.S3Bucket;
+import pl.polsl.skirentalservice.core.s3.S3ClientSigleton;
 import pl.polsl.skirentalservice.dao.EquipmentBrandDao;
 import pl.polsl.skirentalservice.dao.EquipmentColorDao;
 import pl.polsl.skirentalservice.dao.EquipmentDao;
@@ -40,7 +42,8 @@ import pl.polsl.skirentalservice.util.*;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import static pl.polsl.skirentalservice.exception.AlreadyExistException.EquipmentAlreadyExistException;
@@ -50,7 +53,7 @@ import static pl.polsl.skirentalservice.exception.AlreadyExistException.Equipmen
 public class OwnerAddEquipmentServlet extends HttpServlet {
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
     private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
-    private final ConfigSingleton config = ConfigSingleton.getInstance();
+    private final S3ClientSigleton s3Client = S3ClientSigleton.getInstance();
 
     private final ModelMapper modelMapper = ModelMapperGenerator.getModelMapper();
 
@@ -133,14 +136,16 @@ public class OwnerAddEquipmentServlet extends HttpServlet {
                 barcodeGenerator.generateBarcode(canvas, generatedBarcode);
                 final BufferedImage barcodeBufferedImage = canvas.getBufferedImage();
 
-                final File barCodesDir = new File(config.getUploadsDir() + File.separator + "bar-codes");
-                if (!barCodesDir.mkdir()) {
-                    throw new RuntimeException("Nieudane zapisanie kodu kreskowego sprzętu.");
-                }
-                final File outputFile = new File(barCodesDir, generatedBarcode + ".png");
-                if (outputFile.createNewFile()) {
-                    ImageIO.write(barcodeBufferedImage, "png", outputFile);
-                } else throw new RuntimeException("Nieudane zapisanie kodu kreskowego sprzętu.");
+                final String fileName = generatedBarcode + ".png";
+                final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                ImageIO.write(barcodeBufferedImage, "png", outputStream);
+
+                final byte[] contentArray = outputStream.toByteArray();
+                final ByteArrayInputStream inputStream = new ByteArrayInputStream(contentArray);
+                s3Client.putObject(S3Bucket.BARCODES, fileName, inputStream, ContentType.IMAGE_PNG, contentArray.length);
+
+                inputStream.close();
+                outputStream.close();
 
                 persistNewEquipment.setBarcode(generatedBarcode);
                 session.persist(persistNewEquipment);

@@ -14,8 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
+import pl.polsl.skirentalservice.core.s3.S3Bucket;
+import pl.polsl.skirentalservice.core.s3.S3ClientSigleton;
 import pl.polsl.skirentalservice.dao.EquipmentDao;
 import pl.polsl.skirentalservice.dao.RentDao;
 import pl.polsl.skirentalservice.dao.hibernate.EquipmentDaoHib;
@@ -23,7 +24,6 @@ import pl.polsl.skirentalservice.dao.hibernate.RentDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.entity.RentEquipmentEntity;
 import pl.polsl.skirentalservice.entity.RentReturnEntity;
-import pl.polsl.skirentalservice.pdf.ReturnPdfDocument;
 import pl.polsl.skirentalservice.util.AlertType;
 import pl.polsl.skirentalservice.util.RentStatus;
 import pl.polsl.skirentalservice.util.SessionAlert;
@@ -37,7 +37,7 @@ import static pl.polsl.skirentalservice.exception.NotFoundException.ReturnNotFou
 @WebServlet("/seller/delete-return")
 public class SellerDeleteReturnServlet extends HttpServlet {
     private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
-    private final ConfigSingleton config = ConfigSingleton.getInstance();
+    private final S3ClientSigleton s3Client = S3ClientSigleton.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -69,9 +69,8 @@ public class SellerDeleteReturnServlet extends HttpServlet {
                     equipmentDao.decreaseAvailableSelectedEquipmentCount(equipment.getEquipment().getId(),
                         equipment.getCount());
                 }
-                final ReturnPdfDocument returnPdfDocument = new ReturnPdfDocument(config.getUploadsDir(),
-                    rentReturn.getIssuedIdentifier());
-                returnPdfDocument.remove();
+                final String fileName = rentReturn.getIssuedIdentifier().replaceAll("/", "-") + ".pdf";
+                s3Client.deleteObject(S3Bucket.RETURNS, fileName);
 
                 alert.setType(AlertType.INFO);
                 alert.setMessage(
