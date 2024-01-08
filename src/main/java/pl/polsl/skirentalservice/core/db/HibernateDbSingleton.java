@@ -41,6 +41,7 @@ public class HibernateDbSingleton {
         try {
             final Configuration configurationHib = new Configuration().configure(HIBERNATE_CONF);
             AppEnvironment.replaceAllPlaceholders(configurationHib.getProperties());
+            configurationHib.setImplicitNamingStrategy(new CustomPhysicalNamingStrategy());
 
             final org.reflections.Configuration configuration = new ConfigurationBuilder()
                 .setUrls(ClasspathHelper.forPackage("pl.polsl.skirentalservice"))

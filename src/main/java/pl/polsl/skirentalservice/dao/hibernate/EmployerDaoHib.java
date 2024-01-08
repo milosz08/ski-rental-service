@@ -93,7 +93,7 @@ public class EmployerDaoHib extends AbstractHibernateDao implements EmployerDao 
                     YEAR(NOW()) - YEAR(e.hiredDate), d.gender, CONCAT(a.postalCode, ' ', a.city),
                     CAST(IF(e.firstAccess, 'nieaktywowane', 'aktywowane') AS string),
                     CAST(IF(e.firstAccess, 'text-danger', 'text-success') AS string),
-                    CONCAT('ul. ', a.street, ' ', a.buildingNr, IF(a.apartmentNr, CONCAT('/', a.apartmentNr), ''))
+                    CONCAT('ul. ', a.street, ' ', a.buildingNo, IF(a.apartmentNo, CONCAT('/', a.apartmentNo), ''))
                 ) FROM EmployerEntity e INNER JOIN e.userDetails d INNER JOIN e.locationAddress a
                 WHERE e.id = :eid
             """;
@@ -110,7 +110,7 @@ public class EmployerDaoHib extends AbstractHibernateDao implements EmployerDao 
                     d.firstName, d.lastName, d.pesel,
                     CONCAT(SUBSTRING(d.phoneNumber, 1, 3), ' ', SUBSTRING(d.phoneNumber, 4, 3), ' ',
                     SUBSTRING(d.phoneNumber, 7, 3)), CAST(d.bornDate AS string), CAST(e.hiredDate AS string),
-                    a.street, a.buildingNr, a.apartmentNr, a.city, a.postalCode, d.gender
+                    a.street, a.buildingNo, a.apartmentNo, a.city, a.postalCode, d.gender
                 ) FROM EmployerEntity e
                 INNER JOIN e.userDetails d INNER JOIN e.locationAddress a INNER JOIN e.role r
                 WHERE e.id = :uid

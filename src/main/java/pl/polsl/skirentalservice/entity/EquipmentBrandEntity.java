@@ -4,7 +4,9 @@
  */
 package pl.polsl.skirentalservice.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.NoArgsConstructor;
 import pl.polsl.skirentalservice.core.db.AuditableEntity;
 import pl.polsl.skirentalservice.core.db.EntityInjector;
@@ -22,10 +24,9 @@ public class EquipmentBrandEntity extends AuditableEntity implements Serializabl
     @Serial
     private static final long serialVersionUID = 0L;
 
-    @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "equipmentBrand", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "brand")
     private Set<EquipmentEntity> equipments = new HashSet<>();
 
     public EquipmentBrandEntity(String name) {

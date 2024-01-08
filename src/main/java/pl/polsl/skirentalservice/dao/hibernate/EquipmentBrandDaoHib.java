@@ -50,7 +50,7 @@ public class EquipmentBrandDaoHib extends AbstractHibernateDao implements Equipm
     @Override
     public boolean checkIfEquipmentBrandHasAnyConnections(Object brandId) {
         final String jpqlFindBrandHasConnections = """
-                SELECT COUNT(e.id) > 0 FROM EquipmentEntity e INNER JOIN e.equipmentBrand b WHERE b.id = :id
+                SELECT COUNT(e.id) > 0 FROM EquipmentEntity e INNER JOIN e.brand b WHERE b.id = :id
             """;
         return session.createQuery(jpqlFindBrandHasConnections, Boolean.class)
             .setParameter("id", brandId)

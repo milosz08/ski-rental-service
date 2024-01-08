@@ -13,6 +13,8 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+import static jakarta.persistence.CascadeType.*;
+
 @Entity
 @EntityInjector
 @Table(name = "rent_returns_equipments")
@@ -21,25 +23,22 @@ public class RentReturnEquipmentEntity extends AuditableEntity implements Serial
     @Serial
     private static final long serialVersionUID = 0L;
 
-    @Column(name = "total_price")
     private BigDecimal totalPrice;
 
-    @Column(name = "description")
     private String description;
 
-    @Column(name = "deposit_price")
     private BigDecimal depositPrice;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
-    @JoinColumn(name = "rent_return_id", referencedColumnName = "id")
+    @JoinColumn
+    @ManyToOne(cascade = { PERSIST, MERGE, REMOVE })
     private RentReturnEntity rentReturn;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinColumn(name = "equipment_id", referencedColumnName = "id")
+    @JoinColumn
+    @ManyToOne(cascade = { PERSIST, MERGE })
     private EquipmentEntity equipment;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinColumn(name = "rent_equipment_id", referencedColumnName = "id")
+    @JoinColumn
+    @OneToOne(cascade = { PERSIST, MERGE })
     private RentEquipmentEntity rentEquipment;
 
     BigDecimal getTotalPrice() {

@@ -4,7 +4,10 @@
  */
 package pl.polsl.skirentalservice.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.NoArgsConstructor;
 import pl.polsl.skirentalservice.core.db.AuditableEntity;
 import pl.polsl.skirentalservice.core.db.EntityInjector;
@@ -12,6 +15,8 @@ import pl.polsl.skirentalservice.core.db.EntityInjector;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
+
+import static jakarta.persistence.CascadeType.*;
 
 @Entity
 @EntityInjector
@@ -21,24 +26,20 @@ public class RentEquipmentEntity extends AuditableEntity implements Serializable
     @Serial
     private static final long serialVersionUID = 0L;
 
-    @Column(name = "count")
     private Integer count;
 
-    @Column(name = "total_price")
     private BigDecimal totalPrice;
 
-    @Column(name = "description")
     private String description;
 
-    @Column(name = "deposit_price")
     private BigDecimal depositPrice;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
-    @JoinColumn(name = "rent_id", referencedColumnName = "id")
+    @JoinColumn
+    @ManyToOne(cascade = { PERSIST, MERGE, REMOVE })
     private RentEntity rent;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinColumn(name = "equipment_id", referencedColumnName = "id")
+    @JoinColumn
+    @ManyToOne(cascade = { PERSIST, MERGE })
     private EquipmentEntity equipment;
 
     public Integer getCount() {

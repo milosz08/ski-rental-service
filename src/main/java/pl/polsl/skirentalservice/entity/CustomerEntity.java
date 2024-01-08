@@ -14,6 +14,8 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import static jakarta.persistence.CascadeType.*;
+
 @Entity
 @EntityInjector
 @Table(name = "customers")
@@ -22,15 +24,15 @@ public class CustomerEntity extends AuditableEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 0L;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
-    @JoinColumn(name = "user_details_id", referencedColumnName = "id")
+    @JoinColumn
+    @OneToOne(cascade = { PERSIST, MERGE, REMOVE })
     private UserDetailsEntity userDetails;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
-    @JoinColumn(name = "location_address_id", referencedColumnName = "id")
+    @JoinColumn
+    @OneToOne(cascade = { PERSIST, MERGE, REMOVE })
     private LocationAddressEntity locationAddress;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "customer")
+    @OneToMany(cascade = { PERSIST, MERGE }, mappedBy = "customer")
     private Set<RentEntity> rents = new HashSet<>();
 
     public CustomerEntity(UserDetailsEntity userDetails, LocationAddressEntity locationAddress) {
@@ -66,7 +68,7 @@ public class CustomerEntity extends AuditableEntity implements Serializable {
     public String toString() {
         return '{' +
             "userDetails=" + userDetails +
-            ", address=" + locationAddress +
+            ", locationAddress=" + locationAddress +
             '}';
     }
 }

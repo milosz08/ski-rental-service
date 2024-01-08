@@ -52,7 +52,7 @@ public class CommonEquipmentsServlet extends HttpServlet {
         sorterFieldMap.put("pricePerDay", new ServletSorterField("e.pricePerDay"));
         sorterFieldMap.put("valueCost", new ServletSorterField("e.valueCost"));
         filterFieldMap.add(new FilterColumn("name", "nazwie", "e.name"));
-        filterFieldMap.add(new FilterColumn("type", "typie sprzętu", "t.name"));
+        filterFieldMap.add(new FilterColumn("type", "typie sprzętu", "e.name"));
     }
 
     @Override

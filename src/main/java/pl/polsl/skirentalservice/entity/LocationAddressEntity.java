@@ -4,7 +4,6 @@
  */
 package pl.polsl.skirentalservice.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.NoArgsConstructor;
@@ -22,19 +21,14 @@ public class LocationAddressEntity extends AuditableEntity implements Serializab
     @Serial
     private static final long serialVersionUID = 0L;
 
-    @Column(name = "street")
     private String street;
 
-    @Column(name = "building_no")
-    private String buildingNr;
+    private String buildingNo;
 
-    @Column(name = "apartment_no")
-    private String apartmentNr;
+    private String apartmentNo;
 
-    @Column(name = "city")
     private String city;
 
-    @Column(name = "postal_code")
     private String postalCode;
 
     String getStreet() {
@@ -45,20 +39,20 @@ public class LocationAddressEntity extends AuditableEntity implements Serializab
         this.street = street;
     }
 
-    String getBuildingNr() {
-        return buildingNr;
+    String getBuildingNo() {
+        return buildingNo;
     }
 
-    public void setBuildingNr(String buildingNr) {
-        this.buildingNr = buildingNr;
+    public void setBuildingNo(String buildingNo) {
+        this.buildingNo = buildingNo;
     }
 
-    String getApartmentNr() {
-        return apartmentNr;
+    String getApartmentNo() {
+        return apartmentNo;
     }
 
-    public void setApartmentNr(String apartmentNr) {
-        this.apartmentNr = apartmentNr;
+    public void setApartmentNo(String apartmentNo) {
+        this.apartmentNo = apartmentNo;
     }
 
     String getCity() {
@@ -81,8 +75,8 @@ public class LocationAddressEntity extends AuditableEntity implements Serializab
     public String toString() {
         return '{' +
             "street=" + street +
-            ", buildingNo=" + buildingNr +
-            ", apartmentNo=" + apartmentNr +
+            ", buildingNo=" + buildingNo +
+            ", apartmentNo=" + apartmentNo +
             ", city=" + city +
             ", postalCode=" + postalCode +
             '}';

@@ -56,7 +56,7 @@ public class EquipmentDaoHib extends AbstractHibernateDao implements EquipmentDa
                     e.id, e.name, t.name, e.model, e.barcode, e.availableCount, e.pricePerHour,
                     e.priceForNextHour, e.pricePerDay, ''
                 ) FROM EquipmentEntity e
-                INNER JOIN e.equipmentType t
+                INNER JOIN e.type t
                 WHERE e.id = :id
             """;
         final EquipmentRentRecordResDto equipmentDetails = session
@@ -75,7 +75,7 @@ public class EquipmentDaoHib extends AbstractHibernateDao implements EquipmentDa
                     CAST(e.pricePerDay AS string), CAST(e.valueCost AS string), CAST(t.id AS string),
                     CAST(b.id AS string), CAST(c.id AS string), e.gender
                 ) FROM EquipmentEntity e
-                INNER JOIN e.equipmentType t INNER JOIN e.equipmentBrand b INNER JOIN e.equipmentColor c
+                INNER JOIN e.type t INNER JOIN e.brand b INNER JOIN e.color c
                 WHERE e.id = :eid
             """;
         final AddEditEquipmentReqDto equipmentDetails = session
@@ -96,7 +96,7 @@ public class EquipmentDaoHib extends AbstractHibernateDao implements EquipmentDa
                     e.pricePerDay, e.valueCost,
                     CASE WHEN e.description IS NULL THEN '<i>brak danych</i>' ELSE e.description END
                 ) FROM EquipmentEntity e
-                INNER JOIN e.equipmentType t INNER JOIN e.equipmentBrand b INNER JOIN e.equipmentColor c
+                INNER JOIN e.type t INNER JOIN e.brand b INNER JOIN e.color c
                 WHERE e.id = :eid
             """;
         final EquipmentDetailsResDto equipmentDetails = session
@@ -109,7 +109,7 @@ public class EquipmentDaoHib extends AbstractHibernateDao implements EquipmentDa
     @Override
     public boolean checkIfEquipmentExist(Object equipmentId) {
         final String jpqlEquipmentDetails = """
-                SELECT COUNT(e.id) > 0 FROM EquipmentEntity e INNER JOIN e.equipmentType t WHERE e.id = :id
+                SELECT COUNT(e.id) > 0 FROM EquipmentEntity e INNER JOIN e.type t WHERE e.id = :id
             """;
         return session.createQuery(jpqlEquipmentDetails, Boolean.class)
             .setParameter("id", equipmentId)
@@ -226,7 +226,7 @@ public class EquipmentDaoHib extends AbstractHibernateDao implements EquipmentDa
                     e.id, e.name, t.name, e.barcode, e.availableCount, e.pricePerHour, e.priceForNextHour,
                     e.pricePerDay, e.valueCost
                 ) FROM EquipmentEntity e
-                INNER JOIN e.equipmentType t
+                INNER JOIN e.type t
                 WHERE :searchColumn LIKE :search
                 ORDER BY :sortedColumn
             """;
@@ -247,7 +247,7 @@ public class EquipmentDaoHib extends AbstractHibernateDao implements EquipmentDa
                     e.id, e.name, t.name, e.model, e.barcode, e.availableCount, e.pricePerHour,
                     e.priceForNextHour, e.pricePerDay, ''
                 ) FROM EquipmentEntity e
-                INNER JOIN e.equipmentType t
+                INNER JOIN e.type t
                 WHERE :searchColumn LIKE :search GROUP BY e.id
                 ORDER BY :sortedColumn
             """;

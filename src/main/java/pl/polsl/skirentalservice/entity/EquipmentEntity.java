@@ -17,6 +17,9 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
+
 @Entity
 @EntityInjector
 @Table(name = "equipments")
@@ -25,56 +28,44 @@ public class EquipmentEntity extends AuditableEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 0L;
 
-    @Column(name = "name")
     private String name;
 
-    @Column(name = "model")
     private String model;
 
-    @Column(name = "description")
     private String description;
 
-    @Column(name = "barcode")
     private String barcode;
 
-    @Column(name = "count_in_store")
     private Integer countInStore;
 
-    @Column(name = "available_count")
     private Integer availableCount;
 
-    @Column(name = "size")
     private BigDecimal size;
 
-    @Column(name = "price_per_hour")
     private BigDecimal pricePerHour;
 
-    @Column(name = "price_for_next_hour")
     private BigDecimal priceForNextHour;
 
-    @Column(name = "price_per_day")
     private BigDecimal pricePerDay;
 
-    @Column(name = "value_cost")
     private BigDecimal valueCost;
 
     @Convert(converter = GenderConverter.class)
-    @Column(name = "gender")
     private Gender gender;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinColumn(name = "type_id", referencedColumnName = "id")
-    private EquipmentTypeEntity equipmentType;
+    @JoinColumn
+    @ManyToOne(cascade = { PERSIST, MERGE })
+    private EquipmentTypeEntity type;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinColumn(name = "brand_id", referencedColumnName = "id")
-    private EquipmentBrandEntity equipmentBrand;
+    @JoinColumn
+    @ManyToOne(cascade = { PERSIST, MERGE })
+    private EquipmentBrandEntity brand;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinColumn(name = "color_id", referencedColumnName = "id")
-    private EquipmentColorEntity equipmentColor;
+    @JoinColumn
+    @ManyToOne(cascade = { PERSIST, MERGE })
+    private EquipmentColorEntity color;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "equipment")
+    @OneToMany(cascade = { PERSIST, MERGE }, mappedBy = "equipment")
     private Set<RentEquipmentEntity> rentsEquipments = new HashSet<>();
 
     public String getName() {
@@ -173,28 +164,28 @@ public class EquipmentEntity extends AuditableEntity implements Serializable {
         this.valueCost = valueCost;
     }
 
-    public EquipmentTypeEntity getEquipmentType() {
-        return equipmentType;
+    public EquipmentTypeEntity getType() {
+        return type;
     }
 
-    public void setEquipmentType(EquipmentTypeEntity equipmentType) {
-        this.equipmentType = equipmentType;
+    public void setType(EquipmentTypeEntity type) {
+        this.type = type;
     }
 
-    EquipmentBrandEntity getEquipmentBrand() {
-        return equipmentBrand;
+    EquipmentBrandEntity getBrand() {
+        return brand;
     }
 
-    public void setEquipmentBrand(EquipmentBrandEntity equipmentBrand) {
-        this.equipmentBrand = equipmentBrand;
+    public void setBrand(EquipmentBrandEntity brand) {
+        this.brand = brand;
     }
 
-    EquipmentColorEntity getEquipmentColor() {
-        return equipmentColor;
+    EquipmentColorEntity getColor() {
+        return color;
     }
 
-    public void setEquipmentColor(EquipmentColorEntity equipmentColor) {
-        this.equipmentColor = equipmentColor;
+    public void setColor(EquipmentColorEntity color) {
+        this.color = color;
     }
 
     Set<RentEquipmentEntity> getRentsEquipments() {
@@ -220,9 +211,9 @@ public class EquipmentEntity extends AuditableEntity implements Serializable {
             ", priceForNextHour=" + priceForNextHour +
             ", pricePerDay=" + pricePerDay +
             ", valueCost=" + valueCost +
-            ", equipmentType=" + equipmentType +
-            ", equipmentBrand=" + equipmentBrand +
-            ", equipmentColor=" + equipmentColor +
+            ", type=" + type +
+            ", brand=" + brand +
+            ", color=" + color +
             '}';
     }
 }

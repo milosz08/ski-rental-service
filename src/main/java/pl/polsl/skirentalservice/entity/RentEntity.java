@@ -18,6 +18,8 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import static jakarta.persistence.CascadeType.*;
+
 @Entity
 @EntityInjector
 @Table(name = "rents")
@@ -26,43 +28,34 @@ public class RentEntity extends AuditableEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 0L;
 
-    @Column(name = "issued_identifier")
     private String issuedIdentifier;
 
-    @Column(name = "issued_datetime")
     private LocalDateTime issuedDateTime;
 
-    @Column(name = "rent_datetime")
     private LocalDateTime rentDateTime;
 
-    @Column(name = "return_datetime")
     private LocalDateTime returnDateTime;
 
-    @Column(name = "tax")
     private Integer tax;
 
-    @Column(name = "description")
     private String description;
 
-    @Column(name = "total_price")
     private BigDecimal totalPrice;
 
-    @Column(name = "total_deposit_price")
     private BigDecimal totalDepositPrice;
 
-    @Column(name = "status")
     @Convert(converter = RentStatusConverter.class)
     private RentStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinColumn(name = "customer_id", referencedColumnName = "id")
+    @JoinColumn
+    @ManyToOne(cascade = { PERSIST, MERGE })
     private CustomerEntity customer;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinColumn(name = "employer_id", referencedColumnName = "id")
+    @JoinColumn
+    @ManyToOne(cascade = { PERSIST, MERGE })
     private EmployerEntity employer;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE }, mappedBy = "rent")
+    @OneToMany(cascade = { PERSIST, MERGE, REMOVE }, mappedBy = "rent")
     private Set<RentEquipmentEntity> equipments = new HashSet<>();
 
     public String getIssuedIdentifier() {

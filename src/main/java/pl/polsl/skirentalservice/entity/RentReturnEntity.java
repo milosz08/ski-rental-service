@@ -16,6 +16,9 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
+
 @Entity
 @EntityInjector
 @Table(name = "rent_returns")
@@ -24,26 +27,21 @@ public class RentReturnEntity extends AuditableEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 0L;
 
-    @Column(name = "issued_identifier")
     private String issuedIdentifier;
 
-    @Column(name = "issued_datetime")
     private LocalDateTime issuedDateTime;
 
-    @Column(name = "description")
     private String description;
 
-    @Column(name = "total_price")
     private BigDecimal totalPrice;
 
-    @Column(name = "total_deposit_price")
     private BigDecimal totalDepositPrice;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinColumn(name = "rent_id", referencedColumnName = "id")
+    @JoinColumn
+    @OneToOne(cascade = { PERSIST, MERGE })
     private RentEntity rent;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "rentReturn")
+    @OneToMany(cascade = { PERSIST, MERGE }, mappedBy = "rentReturn")
     private Set<RentReturnEquipmentEntity> equipments = new HashSet<>();
 
     public String getIssuedIdentifier() {

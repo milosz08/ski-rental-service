@@ -15,38 +15,37 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+import static jakarta.persistence.CascadeType.*;
+
 @Entity
 @EntityInjector
 @Builder
-@Table(name = "employeers")
+@Table(name = "employers")
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmployerEntity extends AuditableEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 0L;
 
-    @Column(name = "login")
     private String login;
 
-    @Column(name = "password")
     private String password;
 
-    @Column(name = "hired_date")
     private LocalDate hiredDate;
 
-    @Column(name = "first_access", insertable = false)
+    @Column(insertable = false)
     private Boolean firstAccess;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
-    @JoinColumn(name = "user_details_id", referencedColumnName = "id")
+    @JoinColumn
+    @OneToOne(cascade = { PERSIST, MERGE, REMOVE })
     private UserDetailsEntity userDetails;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
-    @JoinColumn(name = "location_address_id", referencedColumnName = "id")
+    @JoinColumn
+    @OneToOne(cascade = { PERSIST, MERGE, REMOVE })
     private LocationAddressEntity locationAddress;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinColumn(name = "role_id", referencedColumnName = "id")
+    @JoinColumn
+    @OneToOne(cascade = { PERSIST, MERGE })
     private RoleEntity role;
 
     public EmployerEntity(LocalDate hiredDate, UserDetailsEntity userDetails, LocationAddressEntity locationAddress) {
@@ -119,7 +118,7 @@ public class EmployerEntity extends AuditableEntity implements Serializable {
     public String toString() {
         return "{" +
             "login=" + login +
-            ", password=" + password +
+            ", password=******" +
             ", hiredDate=" + hiredDate +
             ", firstAccess=" + firstAccess +
             ", role=" + role +

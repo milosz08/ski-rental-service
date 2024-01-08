@@ -120,7 +120,7 @@ public class OwnerAddEmployerServlet extends HttpServlet {
                 userDetails.setBornDate(reqDto.getParsedBornDate());
                 userDetails.setEmailAddress(email);
                 final LocationAddressEntity locationAddress = modelMapper.map(reqDto, LocationAddressEntity.class);
-                locationAddress.setApartmentNr(StringUtils.trimToNull(reqDto.getApartmentNr()));
+                locationAddress.setApartmentNo(StringUtils.trimToNull(reqDto.getApartmentNr()));
                 final EmployerEntity employer = EmployerEntity.builder()
                     .login(login)
                     .password(passowordDecoded)

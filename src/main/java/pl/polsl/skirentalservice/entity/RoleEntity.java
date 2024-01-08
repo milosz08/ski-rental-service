@@ -4,7 +4,6 @@
  */
 package pl.polsl.skirentalservice.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.NoArgsConstructor;
@@ -22,13 +21,10 @@ public class RoleEntity extends AuditableEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 0L;
 
-    @Column(name = "role_name")
     private String roleName;
 
-    @Column(name = "alias")
     private Character alias;
 
-    @Column(name = "role_eng")
     private String roleEng;
 
     public String getRoleName() {

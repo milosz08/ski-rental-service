@@ -53,7 +53,7 @@ public class RentDaoHib extends AbstractHibernateDao implements RentDao {
                     SUBSTRING(d.phoneNumber, 1, 3), ' ', SUBSTRING(d.phoneNumber, 4, 3), ' ',
                     SUBSTRING(d.phoneNumber, 7, 3)), YEAR(NOW()) - YEAR(d.bornDate), d.emailAddress,
                     d.gender, CONCAT(a.postalCode, ' ', a.city),
-                    CONCAT('ul. ', a.street, ' ', a.buildingNr, IF(a.apartmentNr, CONCAT('/', a.apartmentNr), ''))
+                    CONCAT('ul. ', a.street, ' ', a.buildingNo, IF(a.apartmentNo, CONCAT('/', a.apartmentNo), ''))
                 ) FROM RentEntity r
                 LEFT OUTER JOIN r.employer e INNER JOIN e.role rl
                 LEFT OUTER JOIN r.customer c LEFT OUTER JOIN c.userDetails d LEFT OUTER JOIN c.locationAddress a

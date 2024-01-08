@@ -50,7 +50,7 @@ public class EquipmentColorDaoHib extends AbstractHibernateDao implements Equipm
     @Override
     public boolean checkIfEquipmentColorHasAnyConnections(Object colorId) {
         final String jpqlFindColorHasConnections = """
-                SELECT COUNT(e.id) > 0 FROM EquipmentEntity e INNER JOIN e.equipmentColor c WHERE c.id = :id
+                SELECT COUNT(e.id) > 0 FROM EquipmentEntity e INNER JOIN e.color c WHERE c.id = :id
             """;
         return session.createQuery(jpqlFindColorHasConnections, Boolean.class)
             .setParameter("id", colorId)

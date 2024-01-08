@@ -43,13 +43,13 @@ public class OwnerReturnsServlet extends HttpServlet {
     public void init() {
         sorterFieldMap.put("identity", new ServletSorterField("r.id"));
         sorterFieldMap.put("issuedIdentifier", new ServletSorterField("r.issuedIdentifier"));
-        sorterFieldMap.put("issuedDateTime", new ServletSorterField("r.issuedDateTime"));
+        sorterFieldMap.put("issuedDatetime", new ServletSorterField("r.issuedDatetime"));
         sorterFieldMap.put("totalPriceNetto", new ServletSorterField("r.totalPrice"));
         sorterFieldMap.put("totalPriceBrutto", new ServletSorterField("(rd.tax / 100) * r.totalPrice + r.totalPrice"));
         sorterFieldMap.put("employer", new ServletSorterField("CONCAT(ed.firstName, ' ', ed.lastName)"));
         sorterFieldMap.put("rentIssuedIdentifier", new ServletSorterField("rd.issuedIdentifier"));
         filterFieldMap.add(new FilterColumn("issuedIdentifier", "Numerze zwrotu", "r.issuedIdentifier"));
-        filterFieldMap.add(new FilterColumn("issuedDateTime", "Dacie stworzenia zwrotu", "CAST(r.issuedDateTime AS string)"));
+        filterFieldMap.add(new FilterColumn("issuedDatetime", "Dacie stworzenia zwrotu", "CAST(r.issuedDatetime AS string)"));
         filterFieldMap.add(new FilterColumn("rentIssuedIdentifier", "Numerze wypożyczenia", "rd.issuedIdentifier"));
         filterFieldMap.add(new FilterColumn("employer", "Po imieniu i nazwisku pracownika", "CONCAT(ed.firstName, ' ', ed.lastName)"));
     }

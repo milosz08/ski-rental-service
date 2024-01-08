@@ -26,29 +26,22 @@ public class UserDetailsEntity extends AuditableEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 0L;
 
-    @Column(name = "first_name")
     private String firstName;
 
-    @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "pesel")
     private String pesel;
 
-    @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(name = "email_address")
     private String emailAddress;
 
-    @Column(name = "born_date")
     private LocalDate bornDate;
 
     @Convert(converter = GenderConverter.class)
-    @Column(name = "gender")
     private Gender gender;
 
-    @Column(name = "phone_area_code", insertable = false, updatable = false)
+    @Column(insertable = false, updatable = false)
     private Integer phoneAreaCode;
 
     String getFirstName() {

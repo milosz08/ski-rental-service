@@ -54,7 +54,7 @@ public class CustomerDaoHib extends AbstractHibernateDao implements CustomerDao 
                     SUBSTRING(d.phoneNumber, 1, 3), ' ', SUBSTRING(d.phoneNumber, 4, 3), ' ',
                     SUBSTRING(d.phoneNumber, 7, 3)), YEAR(NOW()) - YEAR(d.bornDate),
                     d.gender, CONCAT(a.postalCode, ' ', a.city),
-                    CONCAT('ul. ', a.street, ' ', a.buildingNr, IF(a.apartmentNr, CONCAT('/', a.apartmentNr), ''))
+                    CONCAT('ul. ', a.street, ' ', a.buildingNo, IF(a.apartmentNo, CONCAT('/', a.apartmentNo), ''))
                 ) FROM CustomerEntity c INNER JOIN c.userDetails d INNER JOIN c.locationAddress a
                 WHERE c.id = :uid
             """;
@@ -70,8 +70,8 @@ public class CustomerDaoHib extends AbstractHibernateDao implements CustomerDao 
                 SELECT new pl.polsl.skirentalservice.dto.deliv_return.CustomerDetailsReturnResDto(
                     CONCAT(d.firstName, ' ', d.lastName), d.pesel, CONCAT('+', d.phoneAreaCode, ' ',
                     SUBSTRING(d.phoneNumber, 1, 3), ' ', SUBSTRING(d.phoneNumber, 4, 3), ' ',
-                    SUBSTRING(d.phoneNumber, 7, 3)), d.emailAddress, CONCAT('ul. ', a.street, ' ', a.buildingNr,
-                    IF(a.apartmentNr, CONCAT('/', a.apartmentNr), ''), ', ', a.postalCode, ' ', a.city)
+                    SUBSTRING(d.phoneNumber, 7, 3)), d.emailAddress, CONCAT('ul. ', a.street, ' ', a.buildingNo,
+                    IF(a.apartmentNo, CONCAT('/', a.apartmentNo), ''), ', ', a.postalCode, ' ', a.city)
                 ) FROM RentEntity r
                 INNER JOIN r.customer c INNER JOIN c.userDetails d INNER JOIN c.locationAddress a
                 WHERE r.id = :rentid
@@ -91,7 +91,7 @@ public class CustomerDaoHib extends AbstractHibernateDao implements CustomerDao 
                     CONCAT(SUBSTRING(d.phoneNumber, 1, 3), ' ', SUBSTRING(d.phoneNumber, 4, 3), ' ',
                     SUBSTRING(d.phoneNumber, 7, 3)),
                     CAST(d.bornDate AS string), d.emailAddress, a.street,
-                    a.buildingNr, a.apartmentNr, a.city, a.postalCode, d.gender
+                    a.buildingNo, a.apartmentNo, a.city, a.postalCode, d.gender
                 ) FROM CustomerEntity c
                 INNER JOIN c.userDetails d INNER JOIN c.locationAddress a
                 WHERE c.id = :uid

@@ -19,6 +19,8 @@
   <include file="changelog/2023-01-29-0000000__create-rents-table.sql" relativeToChangelogFile="true"/>
   <include file="changelog/2023-01-30-0000000__remove-image-and-add-usable-eq.sql" relativeToChangelogFile="true"/>
   <include file="changelog/2023-01-31-0000000__create-returns-table.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/2024-01-07-0000000__alter-table-employers.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/2024-01-07-0000001__rename-datetime-columns.sql" relativeToChangelogFile="true"/>
   <include file="changelog/2024-01-08-0000000__add-booked-status.sql" relativeToChangelogFile="true"/>
 
   <!-- loadable content scripts -->

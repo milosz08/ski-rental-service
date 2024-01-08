@@ -13,6 +13,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
+
 @Entity
 @EntityInjector
 @Table(name = "ota_tokens")
@@ -21,17 +24,17 @@ public class OtaTokenEntity extends AuditableEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 0L;
 
-    @Column(name = "ota_token", updatable = false)
+    @Column(updatable = false)
     private String otaToken;
 
-    @Column(name = "expired_at", insertable = false, updatable = false)
+    @Column(insertable = false, updatable = false)
     private LocalDateTime expiredDate;
 
-    @Column(name = "is_used", insertable = false)
+    @Column(insertable = false)
     private Boolean isUsed;
 
-    @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST }, fetch = FetchType.LAZY)
-    @JoinColumn(name = "employer_id", referencedColumnName = "id")
+    @JoinColumn
+    @ManyToOne(cascade = { MERGE, PERSIST })
     private EmployerEntity employer;
 
     public OtaTokenEntity(String otaToken, EmployerEntity employer) {

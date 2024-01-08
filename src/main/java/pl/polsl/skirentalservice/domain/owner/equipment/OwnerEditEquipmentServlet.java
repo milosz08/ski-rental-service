@@ -125,9 +125,9 @@ public class OwnerEditEquipmentServlet extends HttpServlet {
                 modelMapper.map(reqDto, equipmentEntity);
                 ModelMapperGenerator.onUpdateNullableTransactTurnOff();
 
-                equipmentEntity.setEquipmentType(session.getReference(EquipmentTypeEntity.class, reqDto.getType()));
-                equipmentEntity.setEquipmentBrand(session.getReference(EquipmentBrandEntity.class, reqDto.getBrand()));
-                equipmentEntity.setEquipmentColor(session.getReference(EquipmentColorEntity.class, reqDto.getColor()));
+                equipmentEntity.setType(session.getReference(EquipmentTypeEntity.class, reqDto.getType()));
+                equipmentEntity.setBrand(session.getReference(EquipmentBrandEntity.class, reqDto.getBrand()));
+                equipmentEntity.setColor(session.getReference(EquipmentColorEntity.class, reqDto.getColor()));
 
                 session.getTransaction().commit();
                 alert.setType(AlertType.INFO);
