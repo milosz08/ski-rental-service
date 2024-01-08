@@ -6,27 +6,20 @@ package pl.polsl.skirentalservice.core.mail;
 
 import jakarta.mail.Authenticator;
 import jakarta.mail.PasswordAuthentication;
-import pl.polsl.skirentalservice.core.JAXBProperty;
 
-import java.util.List;
+import java.util.Properties;
 
 class JakartaMailAuthenticator extends Authenticator {
     private final String username;
     private final String password;
 
-    JakartaMailAuthenticator(List<JAXBProperty> mappedProperties) {
-        this.username = findProperty(mappedProperties, "mail.smtp.user");
-        this.password = findProperty(mappedProperties, "mail.smtp.pass");
+    JakartaMailAuthenticator(Properties properties) {
+        this.username = properties.getProperty("mail.smtp.user");
+        this.password = properties.getProperty("mail.smtp.pass");
     }
 
     @Override
     protected PasswordAuthentication getPasswordAuthentication() {
         return new PasswordAuthentication(username, password);
-    }
-
-    static String findProperty(List<JAXBProperty> mappedProperties, String propertyName) {
-        return mappedProperties.stream().filter(p -> p.getName().equals(propertyName))
-            .findFirst()
-            .orElse(new JAXBProperty(propertyName)).getValue();
     }
 }

@@ -6,57 +6,52 @@ package pl.polsl.skirentalservice.core.ssh;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
-import jakarta.xml.bind.JAXBContext;
 import lombok.extern.slf4j.Slf4j;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import org.apache.commons.text.StringSubstitutor;
+import pl.polsl.skirentalservice.core.XMLConfigLoader;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Properties;
 import java.util.function.Function;
 
 @Slf4j
 public class SshSocketSingleton {
     private static final String SSH_CFG = "/ssh/ssh.cfg.xml";
-
-    private JAXBSshConfig config;
     private static volatile SshSocketSingleton instance;
 
+    private final XMLSshCommands sshCommands;
+    private final Properties sshProperties;
+    private final Gson gson;
+
     private SshSocketSingleton() {
-        try {
-            final JAXBContext jaxbContext = JAXBContext.newInstance(JAXBSshConfig.class);
-            this.config = (JAXBSshConfig) jaxbContext.createUnmarshaller().unmarshal(getClass().getResource(SSH_CFG));
-            log.info("Successful loaded Ssh Socket properties with authentication. Props: {}", config.getProperties());
-            log.info("Successful loaded Ssh Socket commands. Commands: {}", config.getCommands());
-        } catch (Exception ex) {
-            log.error("Unable to load Ssh socket properties from extended XML file: {}", SSH_CFG);
-        }
+        final XMLConfigLoader<XMLSshConfig> configLoader = new XMLConfigLoader<>(SSH_CFG, XMLSshConfig.class);
+        sshProperties = configLoader.loadConfig();
+        sshCommands = configLoader.getConfigDatalist().getCommands();
+        gson = new Gson();
     }
 
     public <T> T executeCommand(
-        Function<JAXBSshCommands, String> commandCallback, Map<String, String> entries, Class<T> mapTo
+        Function<XMLSshCommands, String> commandCallback, Map<String, String> entries, Class<T> mapTo
     ) throws RuntimeException {
-        final String command = commandCallback.apply(config.getCommands());
+        final String command = commandCallback.apply(sshCommands);
         final StringSubstitutor substitutor = new StringSubstitutor(entries);
-        final JAXBSshProperties properties = config.getProperties();
-        final String knownHosts = Objects.requireNonNull(getClass().getResource(properties.getSshKnownHosts())).getFile();
-        final String rsaKey = Objects.requireNonNull(getClass().getResource(properties.getSshRsa())).getFile();
         T mappedTo;
         try (final SSHClient sshClient = new SSHClient()) {
-            sshClient.loadKnownHosts(new File(knownHosts));
-            sshClient.connect(properties.getSshHost());
-            sshClient.authPublickey(properties.getSshLogin(), rsaKey);
+            sshClient.loadKnownHosts(new File(sshProperties.getProperty("ssh.known-hosts.path")));
+            sshClient.connect(sshProperties.getProperty("ssh.host"));
+            sshClient.authPublickey(sshProperties.getProperty("ssh.login"),
+                sshProperties.getProperty("ssh.public-key.path"));
             final Session session = sshClient.startSession();
             final Session.Command sessionCommand = session.exec(substitutor.replace(command));
             final String response = IOUtils.readFully(sessionCommand.getInputStream()).toString();
             sessionCommand.join();
             session.close();
-            final Gson gson = new Gson();
             try (JsonReader jsonReader = new JsonReader(new StringReader(response))) {
                 mappedTo = gson.fromJson(jsonReader, mapTo);
             }

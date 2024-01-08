@@ -7,19 +7,19 @@ package pl.polsl.skirentalservice.core.mail;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import jakarta.activation.DataHandler;
+import jakarta.activation.DataSource;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
+import jakarta.mail.util.ByteArrayDataSource;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
 import lombok.extern.slf4j.Slf4j;
 import pl.polsl.skirentalservice.core.ConfigSingleton;
-import pl.polsl.skirentalservice.core.JAXBProperty;
+import pl.polsl.skirentalservice.core.XMLConfigLoader;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -34,39 +34,37 @@ public class MailSocketSingleton {
     private static final ConfigSingleton config = ConfigSingleton.getInstance();
 
     private static final String MAIL_CFG = "/mail/mail.cfg.xml";
+    private static final String MAIL_CFG_DEV = "/mail/mail.cfg.dev.xml";
     private static final String FREEMARKER_PATH = "/mail/templates";
 
-    private Session mailSession;
-    private Configuration freemarkerConfig;
-    private List<JAXBProperty> configProperties;
+    private final Session mailSession;
+    private final Configuration freemarkerConfig;
+    private final Properties configProperties;
 
     private static volatile MailSocketSingleton instance;
 
     private MailSocketSingleton() {
-        try {
-            freemarkerConfig = new Configuration(Configuration.VERSION_2_3_22);
-            freemarkerConfig.setClassForTemplateLoading(MailSocketSingleton.class, FREEMARKER_PATH);
-            log.info("Successful loaded freemarker template engine cache path. Cache path: {}", FREEMARKER_PATH);
+        final String configFile = config.getEnvironment().isDevOrDocker() ? MAIL_CFG_DEV : MAIL_CFG;
+        final XMLConfigLoader<XMLMailConfig> xmlConfigLoader = new XMLConfigLoader<>(configFile, XMLMailConfig.class);
+        final Properties allConfigProperties = xmlConfigLoader.loadConfig();
 
-            final JAXBContext jaxbContext = JAXBContext.newInstance(JAXBMailConfig.class);
-            final var config = (JAXBMailConfig) jaxbContext.createUnmarshaller()
-                .unmarshal(MailSocketSingleton.class.getResource(MAIL_CFG));
-            configProperties = config.getProperties();
-
-            final Properties properties = new Properties();
-            final List<JAXBProperty> withoutCredentials = config.getProperties().stream()
-                .filter(p -> !p.getName().equals("mail.smtp.user") && !p.getName().equals("mail.smtp.pass"))
-                .toList();
-
-            for (final JAXBProperty property : withoutCredentials) {
-                properties.put(property.getName(), property.getValue());
+        final Properties authConfigProperties = new Properties();
+        configProperties = new Properties();
+        for (final Map.Entry<Object, Object> property : allConfigProperties.entrySet()) {
+            final String key = (String) property.getKey();
+            Properties propertiesContainer = configProperties;
+            if (key.equals("mail.smtp.user") || key.equals("mail.smtp.pass")) {
+                propertiesContainer = authConfigProperties;
             }
-            final Authenticator authenticator = new JakartaMailAuthenticator(config.getProperties());
-            mailSession = Session.getInstance(properties, authenticator);
-            log.info("Successful loaded JavaMail API properties with authentication. Props: {}", properties);
-        } catch (JAXBException ex) {
-            log.error("Unable to load mail properties from extended XML file: {}", MAIL_CFG);
+            propertiesContainer.put(property.getKey(), property.getValue());
         }
+        freemarkerConfig = new Configuration(Configuration.VERSION_2_3_22);
+        freemarkerConfig.setClassForTemplateLoading(MailSocketSingleton.class, FREEMARKER_PATH);
+        log.info("Successful loaded freemarker template engine cache path. Cache path: {}", FREEMARKER_PATH);
+
+        final Authenticator authenticator = new JakartaMailAuthenticator(authConfigProperties);
+        mailSession = Session.getInstance(configProperties, authenticator);
+        log.info("Successful loaded JavaMail API properties with authentication. Props: {}", configProperties);
     }
 
     public void sendMessage(String sendTo, MailRequestPayload payload, HttpServletRequest req) {
@@ -76,7 +74,7 @@ public class MailSocketSingleton {
     public void sendMessage(List<String> sendTo, MailRequestPayload payload, HttpServletRequest req) {
         try {
             final Message message = new MimeMessage(mailSession);
-            final Template bodyTemplate = freemarkerConfig.getTemplate(payload.getTemplateName());
+            final Template bodyTemplate = freemarkerConfig.getTemplate(payload.getTemplate().getFullName());
             final Writer outWriter = new StringWriter();
 
             final Map<String, Object> addtlnPayloadProps = new HashMap<>(payload.getTemplateVars());
@@ -91,8 +89,8 @@ public class MailSocketSingleton {
             for (int i = 0; i < sendToAddresses.length; i++) {
                 sendToAddresses[i] = new InternetAddress(sendTo.get(i));
             }
-            message.setFrom(new InternetAddress(JakartaMailAuthenticator.findProperty(configProperties, "mail.smtp.user"),
-                config.getDefPageTitle()));
+            message.setFrom(new InternetAddress("noreply@" + configProperties.getProperty("mail.smtp.domain"),
+                config.getTitlePageTag()));
             message.setRecipients(Message.RecipientType.TO, sendToAddresses);
 
             if (payload.getAttachmentsPaths() != null) {
@@ -111,26 +109,25 @@ public class MailSocketSingleton {
             } else {
                 message.setContent(outWriter.toString(), "text/html;charset=UTF-8");
             }
-            message.setSubject(payload.getSubject());
+            message.setSubject(config.getTitlePageTag() + " | " + payload.getSubject());
             message.setSentDate(new Date());
 
             Transport.send(message);
             log.info("Successful send email message to the following recipent/s: {}", sendTo);
         } catch (IOException ex) {
-            log.error("Unable to load freemarker template. Template name: {}", payload.getTemplateName());
+            log.error("Unable to load freemarker template. Template name: {}", payload.getTemplate());
             throw new UnableToSendEmailException(String.join(", ", sendTo), payload);
         } catch (TemplateException ex) {
             log.error("Unable to process freemarker template. Exception: {}", ex.getMessage());
             throw new UnableToSendEmailException(String.join(", ", sendTo), payload);
         } catch (MessagingException | RuntimeException ex) {
+            log.error("Unable to send message. Cause: {}", ex.getMessage());
             throw new UnableToSendEmailException(String.join(", ", sendTo), payload);
         }
     }
 
     public String getDomain() {
-        return "@" + configProperties.stream()
-            .filter(p -> p.getName().equals("mail.smtp.domain"))
-            .findFirst().map(JAXBProperty::getValue).orElse("localhost");
+        return "@" + configProperties.getProperty("mail.smtp.domain");
     }
 
     private String getBaseReqPath(HttpServletRequest req) {

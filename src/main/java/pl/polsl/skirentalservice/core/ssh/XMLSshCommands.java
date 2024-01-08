@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "commands")
-public class JAXBSshCommands {
+public class XMLSshCommands {
     @XmlElement(name = "create-mailbox")
     private String createMailbox;
 

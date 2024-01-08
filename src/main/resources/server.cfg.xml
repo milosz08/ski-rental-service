@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
+  ~ Silesian University of Technology
+  -->
+<server-configuration>
+  <property name="ski.server-home">${SKI_SERVER_HOME}</property>
+  <property name="ski.system-version">${SKI_SYSTEM_VERSION}</property>
+  <property name="ski.title-page-tag">SkiRent System</property>
+  <property name="ski.maturity-age">18</property>
+</server-configuration>

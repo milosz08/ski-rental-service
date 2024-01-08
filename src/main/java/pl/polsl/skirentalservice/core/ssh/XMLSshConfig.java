@@ -8,33 +8,19 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import pl.polsl.skirentalservice.core.AbstractXMLProperties;
 
+@Setter
+@Getter
 @NoArgsConstructor
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "ssh-configuration")
-public class JAXBSshConfig {
-    @XmlElement(name = "properties")
-    private JAXBSshProperties properties;
-
+public class XMLSshConfig extends AbstractXMLProperties {
     @XmlElement(name = "commands")
-    private JAXBSshCommands commands;
-
-    JAXBSshProperties getProperties() {
-        return properties;
-    }
-
-    void setProperties(JAXBSshProperties properties) {
-        this.properties = properties;
-    }
-
-    JAXBSshCommands getCommands() {
-        return commands;
-    }
-
-    void setCommands(JAXBSshCommands commands) {
-        this.commands = commands;
-    }
+    private XMLSshCommands commands;
 
     @Override
     public String toString() {

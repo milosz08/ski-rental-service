@@ -5,38 +5,38 @@
 package pl.polsl.skirentalservice.core;
 
 import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.Properties;
 
+@Slf4j
 @Getter
 public class ConfigSingleton {
+    private final AppEnvironment environment;
+    private final String serverHome;
     private final String systemVersion;
-    private final int circaDateYears;
-    private final String defPageTitle;
-    private final String uploadsDir;
+    private final String titlePageTag;
+    private final int maturityAge;
 
     private static volatile ConfigSingleton instance;
+    private static final String SERVER_CFG = "/server.cfg.xml";
 
-    private ConfigSingleton() throws IOException {
-        this.systemVersion = StringUtils.defaultIfEmpty(getClass().getPackage().getImplementationVersion(), "DEVELOPMENT");
-        this.circaDateYears = 18;
-        this.defPageTitle = "SkiRent System";
-        final Path path = Paths.get(System.getProperty("catalina.base") + "/uploads/ski-rental-service");
-        Files.createDirectories(path);
-        this.uploadsDir = path.toString();
+    private ConfigSingleton() {
+        environment = AppEnvironment.loadEnviroment();
+        log.info("Successful loaded app environment: {}", environment);
+
+        final XMLConfigLoader<XMLServerConfig> configLoader = new XMLConfigLoader<>(SERVER_CFG, XMLServerConfig.class);
+        final Properties properties = configLoader.loadConfig();
+
+        serverHome = properties.getProperty("ski.server-home");
+        systemVersion = properties.getProperty("ski.system-version");
+        titlePageTag = properties.getProperty("ski.title-page-tag");
+        maturityAge = Integer.parseInt(properties.getProperty("ski.maturity-age"));
     }
 
     public static synchronized ConfigSingleton getInstance() {
         if (instance == null) {
-            try {
-                instance = new ConfigSingleton();
-            } catch (IOException ex) {
-                throw new RuntimeException();
-            }
+            instance = new ConfigSingleton();
         }
         return instance;
     }

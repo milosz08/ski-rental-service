@@ -22,26 +22,26 @@ import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
-import pl.polsl.skirentalservice.core.AppEnvironment;
+import pl.polsl.skirentalservice.core.XMLConfigLoader;
 
 import java.sql.SQLException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
+@Getter
 public class HibernateDbSingleton {
     private static final String LIQUIBASE_CONF = "db/db.changelog.xml";
     private static final String HIBERNATE_CONF = "db/hibernate.cfg.xml";
 
-    @Getter
     private SessionFactory sessionFactory;
     private static volatile HibernateDbSingleton instance;
 
     private HibernateDbSingleton() {
         try {
             final Configuration configurationHib = new Configuration().configure(HIBERNATE_CONF);
-            AppEnvironment.replaceAllPlaceholders(configurationHib.getProperties());
             configurationHib.setImplicitNamingStrategy(new CustomPhysicalNamingStrategy());
+            XMLConfigLoader.replaceAllPlaceholders(configurationHib.getProperties());
 
             final org.reflections.Configuration configuration = new ConfigurationBuilder()
                 .setUrls(ClasspathHelper.forPackage("pl.polsl.skirentalservice"))
