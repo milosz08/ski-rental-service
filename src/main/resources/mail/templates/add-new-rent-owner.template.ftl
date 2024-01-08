@@ -9,11 +9,19 @@
     Dodatkowo w załączniku tej wiadomości znajdziesz fakturę VAT ze szczegółami zamówienia do pobrania w
     formacie PDF.
   </p>
-  <table class="s-3 w-full" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 100%;" width="100%">
-    <tbody><tr><td style="line-height: 12px; font-size: 12px; width: 100%; height: 12px; margin: 0;" align="left" width="100%" height="12">&#160;</td></tr></tbody>
+  <table class="s-3 w-full" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 100%;"
+         width="100%">
+    <tbody>
+    <tr>
+      <td style="line-height: 12px; font-size: 12px; width: 100%; height: 12px; margin: 0;" align="left" width="100%"
+          height="12">&#160;
+      </td>
+    </tr>
+    </tbody>
   </table>
   <p class="lh-sm" style="line-height: 1.25; font-size: 16px; width: 100%; margin: 0;" align="left">
     Wszystkie wypożyczenia oraz ich szczegóły możesz znaleźć
     <a href="${baseServletPath}/owner/rents" style="color: #0d6efd;"><u>pod tym adresem</u></a>.
   </p>
 </@m.commonWrapper>
+

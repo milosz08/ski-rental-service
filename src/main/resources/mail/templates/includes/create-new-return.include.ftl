@@ -3,8 +3,15 @@
   vertical-align: baseline; font-size: 16px; line-height: 19.2px; margin: 0;" align="left">
   Szczegóły zwrotu:
 </h2>
-<table class="s-3 w-full" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 100%;" width="100%">
-  <tbody><tr><td style="line-height: 12px; font-size: 12px; width: 100%; height: 12px; margin: 0;" align="left" width="100%" height="12">&#160;</td></tr></tbody>
+<table class="s-3 w-full" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 100%;"
+       width="100%">
+  <tbody>
+  <tr>
+    <td style="line-height: 12px; font-size: 12px; width: 100%; height: 12px; margin: 0;" align="left" width="100%"
+        height="12">&#160;
+    </td>
+  </tr>
+  </tbody>
 </table>
 <table class="table" border="0" cellpadding="0" cellspacing="0" style="width: 100%; max-width: 100%;">
   <tbody>
@@ -50,11 +57,25 @@
   </tr>
   </tbody>
 </table>
-<table class="s-3 w-full" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 100%;" width="100%">
-  <tbody><tr><td style="line-height: 12px; font-size: 12px; width: 100%; height: 12px; margin: 0;" align="left" width="100%" height="12">&#160;</td></tr></tbody>
+<table class="s-3 w-full" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 100%;"
+       width="100%">
+  <tbody>
+  <tr>
+    <td style="line-height: 12px; font-size: 12px; width: 100%; height: 12px; margin: 0;" align="left" width="100%"
+        height="12">&#160;
+    </td>
+  </tr>
+  </tbody>
 </table>
-<table class="s-3 w-full" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 100%;" width="100%">
-  <tbody><tr><td style="line-height: 12px; font-size: 12px; width: 100%; height: 12px; margin: 0;" align="left" width="100%" height="12">&#160;</td></tr></tbody>
+<table class="s-3 w-full" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 100%;"
+       width="100%">
+  <tbody>
+  <tr>
+    <td style="line-height: 12px; font-size: 12px; width: 100%; height: 12px; margin: 0;" align="left" width="100%"
+        height="12">&#160;
+    </td>
+  </tr>
+  </tbody>
 </table>
 <h2 class="h6 text-secondary" style="color: #718096; padding-top: 0; padding-bottom: 0; font-weight: 500;
   vertical-align: baseline; font-size: 16px; line-height: 19.2px; margin: 0;" align="left">

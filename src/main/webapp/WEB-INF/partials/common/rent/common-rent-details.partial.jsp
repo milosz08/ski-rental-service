@@ -167,7 +167,7 @@
             <div class="modal-body lh-sm">
               <p class="lh-sm text-secondary mb-3">Kod kreskowy (${equipment.barcode()}):</p>
               <p class="mb-3">
-                <img src="${pageContext.request.contextPath}/resources/bar-codes/${equipment.barcode()}.png"
+                <img src="${pageContext.request.contextPath}/resources/barcodes/${equipment.barcode()}.png"
                      alt="" class="mx-auto d-block" height="120px"/>
               </p>
               <p class="lh-sm text-secondary mb-1">Dodatkowy opis:</p>

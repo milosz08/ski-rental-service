@@ -138,10 +138,10 @@
               <td class="nowrap-tb align-middle fit">
                 <button type="button" class="btn btn-sm btn-danger py-0 px-1" data-bs-toggle="modal"
                         data-bs-target="#deleteRent${rent.id()}">
-                                    <span type="button" data-bs-toggle="tooltip" data-bs-placement="top"
-                                          data-bs-title="Usuń wypożyczenie">
-                                        <i class="bi bi-x-lg align-middle lh-sm"></i>
-                                    </span>
+                   <span type="button" data-bs-toggle="tooltip" data-bs-placement="top"
+                         data-bs-title="Usuń wypożyczenie">
+                     <i class="bi bi-x-lg align-middle lh-sm"></i>
+                   </span>
                 </button>
                 <a href="${pageContext.request.contextPath}/seller/rent-details?id=${rent.id()}"
                    class="btn btn-sm btn-dark py-0">
@@ -154,10 +154,10 @@
                 <a
                   href="${pageContext.request.contextPath}/resources/rents/${rent.issuedIdentifier().replace('/', '-')}.pdf"
                   target="_blank" class="btn btn-sm btn-success py-0">
-                                    <span type="button" data-bs-toggle="tooltip" data-bs-placement="top"
-                                          data-bs-title="Pobierz zestawienie PDF">
-                                        <i class="bi bi-filetype-pdf align-middle"></i>
-                                    </span>
+                  <span type="button" data-bs-toggle="tooltip" data-bs-placement="top"
+                        data-bs-title="Pobierz zestawienie PDF">
+                    <i class="bi bi-filetype-pdf align-middle"></i>
+                  </span>
                 </a>
               </td>
             </tr>
