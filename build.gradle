@@ -23,7 +23,6 @@ dependencies {
   implementation 'org.webjars:bootstrap:5.2.3'
   implementation 'org.webjars.npm:bootstrap-icons:1.10.2'
 
-  implementation 'org.slf4j:slf4j-api:2.0.6'
   implementation 'org.slf4j:slf4j-simple:2.0.6'
   implementation 'com.mattbertolini:liquibase-slf4j:4.1.0'
   implementation 'org.projectlombok:lombok:1.18.24'
@@ -47,15 +46,14 @@ dependencies {
   implementation 'org.liquibase:liquibase-core:4.18.0'
   implementation 'org.hibernate.orm:hibernate-c3p0:6.1.6.Final'
 
-  implementation 'com.sun.xml.bind:jaxb-core:2.3.0.1'
-  implementation 'org.eclipse.angus:jakarta.mail:2.0.2'
-  implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
-  implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl:3.0.1'
-  implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:3.0.0'
-  implementation 'jakarta.servlet.jsp:jakarta.servlet.jsp-api:3.0.0'
+  compileOnly 'org.slf4j:slf4j-api:2.0.6'
+  compileOnly 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
+  compileOnly 'jakarta.mail:jakarta.mail-api:2.1.2'
+  compileOnly 'org.glassfish.web:jakarta.servlet.jsp.jstl:3.0.1'
+  compileOnly 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:3.0.0'
+  compileOnly 'jakarta.servlet.jsp:jakarta.servlet.jsp-api:3.0.0'
   compileOnly 'jakarta.servlet:jakarta.servlet-api:6.0.0'
-
-  implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
+  compileOnly 'jakarta.ejb:jakarta.ejb-api:4.0.1'
 
   annotationProcessor 'org.projectlombok:lombok:1.18.24'
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'

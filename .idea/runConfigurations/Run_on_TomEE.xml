@@ -1,32 +1,26 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run on TOMCAT" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 10.1.9" ALTERNATIVE_JRE_ENABLED="true" ALTERNATIVE_JRE_PATH="corretto-17">
+  <configuration default="false" name="Run on TomEE" type="TomeeConfiguration" factoryName="Local" APPLICATION_SERVER_NAME="TomEE 10.0.27" ALTERNATIVE_JRE_ENABLED="true" ALTERNATIVE_JRE_PATH="corretto-17">
     <option name="OPEN_IN_BROWSER" value="false" />
-    <option name="BROWSER_ID" value="98ca6316-2f89-46d9-a9e5-fa9e2b0625b3" />
-    <option name="COMMON_VM_ARGUMENTS" value="-Duser.language=pl -Duser.country=PL -Dfile.encoding=UTF8" />
+    <option name="COMMON_VM_ARGUMENTS" value="-Duser.language=pl -Duser.country=PL -Dfile.encoding=UTF-8" />
     <option name="UPDATING_POLICY" value="restart-server" />
     <deployment>
       <artifact name="Gradle : ROOT.war (exploded)">
         <settings>
-          <option name="CONTEXT_PATH" value="" />
+          <option name="CONTEXT_PATH" value="/" />
         </settings>
       </artifact>
     </deployment>
     <server-settings>
-      <option name="BASE_DIRECTORY_NAME" value="f43f2a47-19b2-4974-a0bb-7d0701554c74" />
-      <option name="JNDI_PORT" value="8083" />
+      <option name="BASE_DIRECTORY_NAME" value="9099415b-6213-4c02-b34d-b4f82a78d3e2" />
+      <option name="JNDI_PORT" value="8081" />
     </server-settings>
     <predefined_log_file enabled="true" id="Tomcat" />
     <predefined_log_file enabled="true" id="Tomcat Catalina" />
     <predefined_log_file id="Tomcat Manager" />
     <predefined_log_file id="Tomcat Host Manager" />
     <predefined_log_file id="Tomcat Localhost Access" />
-    <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
-      <option name="credential" />
-      <option name="region" />
-      <option name="useCurrentConnection" value="false" />
-    </extension>
     <RunnerSettings RunnerId="Debug">
-      <option name="DEBUG_PORT" value="11176" />
+      <option name="DEBUG_PORT" value="1358" />
     </RunnerSettings>
     <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Cover">
       <option name="USE_ENV_VARIABLES" value="true" />
