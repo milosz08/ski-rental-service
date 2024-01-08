@@ -28,7 +28,7 @@ public class OtaTokenEntity extends AuditableEntity implements Serializable {
     private String otaToken;
 
     @Column(insertable = false, updatable = false)
-    private LocalDateTime expiredDate;
+    private LocalDateTime expiredAt;
 
     @Column(insertable = false)
     private Boolean isUsed;
@@ -50,12 +50,12 @@ public class OtaTokenEntity extends AuditableEntity implements Serializable {
         this.otaToken = otaToken;
     }
 
-    LocalDateTime getExpiredDate() {
-        return expiredDate;
+    LocalDateTime getExpiredAt() {
+        return expiredAt;
     }
 
-    void setExpiredDate(LocalDateTime expiredDate) {
-        this.expiredDate = expiredDate;
+    void setExpiredAt(LocalDateTime expiredAt) {
+        this.expiredAt = expiredAt;
     }
 
     Boolean getUsed() {
@@ -78,7 +78,7 @@ public class OtaTokenEntity extends AuditableEntity implements Serializable {
     public String toString() {
         return '{' +
             "otaToken=" + otaToken +
-            ", expiredDate=" + expiredDate +
+            ", expiredAt=" + expiredAt +
             ", isUsed=" + isUsed +
             ", employer=" + employer +
             '}';

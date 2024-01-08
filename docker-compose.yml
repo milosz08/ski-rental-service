@@ -41,7 +41,7 @@ services:
     environment:
       - 'MINIO_ROOT_USER=${SKI_DEV_S3_USERNAME}'
       - 'MINIO_ROOT_PASSWORD=${SKI_DEV_S3_PASSWORD}'
-      - 'MINIO_DEFAULT_BUCKETS=barcodes:private,rentsfv:private,returnsfv:private'
+      - 'MINIO_DEFAULT_BUCKETS=barcodes:private,rents:private,returns:private'
       - 'MINIO_SCHEME=http'
     volumes:
       - ./.volumes/s3/s3-volume:/bitnami/minio/data

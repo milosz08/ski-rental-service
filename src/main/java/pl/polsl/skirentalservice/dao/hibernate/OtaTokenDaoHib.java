@@ -25,7 +25,7 @@ public class OtaTokenDaoHib extends AbstractHibernateDao implements OtaTokenDao 
                 ) FROM OtaTokenEntity t
                 INNER JOIN t.employer e
                 INNER JOIN e.userDetails d
-                WHERE t.otaToken = :token AND t.isUsed = false AND t.expiredDate >= NOW()
+                WHERE t.otaToken = :token AND t.isUsed = false AND t.expiredAt >= NOW()
             """;
         final var details = session.createQuery(jpqlFindToken, ChangePasswordEmployerDetailsDto.class)
             .setParameter("token", token)
@@ -38,7 +38,7 @@ public class OtaTokenDaoHib extends AbstractHibernateDao implements OtaTokenDao 
         final String jpqlFindToken = """
                 SELECT new pl.polsl.skirentalservice.dto.change_password.TokenDetailsDto(e.id, t.id)
                 FROM OtaTokenEntity t INNER JOIN t.employer e
-                WHERE t.otaToken = :token AND t.isUsed = false AND t.expiredDate >= NOW()
+                WHERE t.otaToken = :token AND t.isUsed = false AND t.expiredAt >= NOW()
             """;
         final var details = session.createQuery(jpqlFindToken, TokenDetailsDto.class)
             .setParameter("token", token)
