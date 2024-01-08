@@ -93,18 +93,21 @@ public class MailSocketSingleton {
                 config.getTitlePageTag()));
             message.setRecipients(Message.RecipientType.TO, sendToAddresses);
 
-            if (payload.getAttachmentsPaths() != null) {
+            if (payload.getAttachments() != null) {
                 final Multipart multipart = new MimeMultipart();
                 final BodyPart bodyPart = new MimeBodyPart();
 
                 bodyPart.setContent(outWriter.toString(), "text/html;charset=UTF-8");
                 multipart.addBodyPart(bodyPart);
 
-                final MimeBodyPart attachementsPart = new MimeBodyPart();
-                for (String filePath : payload.getAttachmentsPaths()) {
-                    attachementsPart.attachFile(new File(filePath));
+                for (final Attachment attachment : payload.getAttachments()) {
+                    final BodyPart attachPart = new MimeBodyPart();
+                    final DataSource dataSource = new ByteArrayDataSource(attachment.data(),
+                        attachment.type().getMimeType());
+                    attachPart.setDataHandler(new DataHandler(dataSource));
+                    attachPart.setFileName(attachment.name());
+                    multipart.addBodyPart(attachPart);
                 }
-                multipart.addBodyPart(attachementsPart);
                 message.setContent(multipart);
             } else {
                 message.setContent(outWriter.toString(), "text/html;charset=UTF-8");

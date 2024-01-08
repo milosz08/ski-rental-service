@@ -19,6 +19,7 @@ import org.modelmapper.TypeToken;
 import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.core.ModelMapperGenerator;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
+import pl.polsl.skirentalservice.core.mail.Attachment;
 import pl.polsl.skirentalservice.core.mail.MailRequestPayload;
 import pl.polsl.skirentalservice.core.mail.MailSocketSingleton;
 import pl.polsl.skirentalservice.dao.*;
@@ -211,7 +212,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                     .subject(emailTopic)
                     .template(MailTemplate.CREATE_NEW_RETURN_CUSTOMER)
                     .templateVars(templateVars)
-                    .attachmentsPaths(Set.of(returnPdfDocument.getPath()))
+                    .attachments(List.of(new Attachment(data.filename(), data.pdfData(), data.type())))
                     .build();
                 mailSocket.sendMessage(emailPayload.getEmail(), customerPayload, req);
                 log.info("Successful send rent-return email message for customer. Payload: {}", customerPayload);
@@ -221,7 +222,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                     .subject(emailTopic)
                     .template(MailTemplate.CREATE_NEW_RETURN_EMPLOYER)
                     .templateVars(templateVars)
-                    .attachmentsPaths(Set.of(returnPdfDocument.getPath()))
+                    .attachments(List.of(new Attachment(data.filename(), data.pdfData(), data.type())))
                     .build();
                 mailSocket.sendMessage(userDataDto.getEmailAddress(), employerPayload, req);
                 log.info("Successful send rent-return email message for employer. Payload: {}", employerPayload);
@@ -233,7 +234,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                     .subject(emailTopic)
                     .template(MailTemplate.CREATE_NEW_RETURN_OWNER)
                     .templateVars(ownerTemplateVars)
-                    .attachmentsPaths(Set.of(returnPdfDocument.getPath()))
+                    .attachments(List.of(new Attachment(data.filename(), data.pdfData(), data.type())))
                     .build();
                 for (final OwnerMailPayloadDto owner : employerDao.findAllEmployersMailSenders()) {
                     ownerPayload.setMessageResponder(owner.fullName());
