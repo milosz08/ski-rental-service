@@ -25,7 +25,7 @@ public class EmailEquipmentPayloadDataDto {
     public EmailEquipmentPayloadDataDto(EquipmentEntity eqEntity, RentReturnEquipmentRecordResDto eqDto) {
         name = eqEntity.getName();
         count = eqDto.count().toString();
-        typeAndModel = eqEntity.getModel() + ", " + eqEntity.getEquipmentType().getName();
+        typeAndModel = eqEntity.getModel() + ", " + eqEntity.getType().getName();
         depositPriceNetto = eqDto.depositPriceNetto();
     }
 

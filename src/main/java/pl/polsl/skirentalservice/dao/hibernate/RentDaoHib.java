@@ -47,7 +47,9 @@ public class RentDaoHib extends AbstractHibernateDao implements RentDao {
                 SELECT new pl.polsl.skirentalservice.dto.rent.RentDetailsResDto(
                     r.id, r.issuedIdentifier, r.issuedDateTime, r.rentDateTime, r.returnDateTime,
                     IFNULL(r.description, '<i>Brak danych</i>'),
-                    r.tax, r.status, r.totalPrice, CAST((r.tax / 100) * r.totalPrice + r.totalPrice AS bigdecimal),
+                    r.tax, r.status,
+                    CASE WHEN r.status = pl.polsl.skirentalservice.util.RentStatus.RENTED THEN true ELSE false END,
+                    r.totalPrice, CAST((r.tax / 100) * r.totalPrice + r.totalPrice AS bigdecimal),
                     r.totalDepositPrice, CAST((r.tax / 100) * r.totalDepositPrice + r.totalDepositPrice AS bigdecimal),
                     CONCAT(d.firstName, ' ', d.lastName), d.pesel, d.bornDate, CONCAT('+', d.phoneAreaCode,
                     SUBSTRING(d.phoneNumber, 1, 3), ' ', SUBSTRING(d.phoneNumber, 4, 3), ' ',
@@ -161,7 +163,9 @@ public class RentDaoHib extends AbstractHibernateDao implements RentDao {
     public List<SellerRentRecordResDto> findAllPageableRentsFromEmployer(PageableDto pageableDto, Object employerId) {
         String jpqlFindAllRentsConnectedWithEmployer = """
                 SELECT new pl.polsl.skirentalservice.dto.rent.SellerRentRecordResDto(
-                    r.id, r.issuedIdentifier, r.issuedDateTime, r.status, r.totalPrice,
+                    r.id, r.issuedIdentifier, r.issuedDateTime, r.status,
+                    CASE WHEN r.status = pl.polsl.skirentalservice.util.RentStatus.RENTED THEN true ELSE false END,
+                    r.totalPrice,
                     CAST((r.tax / 100) * r.totalPrice + r.totalPrice AS bigdecimal),
                     IFNULL(CONCAT(d.firstName, ' ', d.lastName), '<i>klient usunięty</i>'), c.id
                 ) FROM RentEntity r
