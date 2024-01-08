@@ -176,7 +176,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 emailPayload.setTotalPriceWithDepositBrutto(totalWithTax);
                 emailPayload.getRentEquipments().addAll(emailEquipmentsPayload);
 
-                final String emailTopic = "SkiRent Service | Nowy zwrot: " + rentReturn.getIssuedIdentifier();
+                final String emailTopic = "Nowy zwrot: " + rentReturn.getIssuedIdentifier();
                 final Map<String, Object> templateVars = new HashMap<>();
                 templateVars.put("rentIdentifier", rentDetails.issuedIdentifier());
                 templateVars.put("returnIdentifier", rentReturn.getIssuedIdentifier());
@@ -209,7 +209,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 final MailRequestPayload customerPayload = MailRequestPayload.builder()
                     .messageResponder(emailPayload.getFullName())
                     .subject(emailTopic)
-                    .templateName("create-new-return-customer.template.ftl")
+                    .template(MailTemplate.CREATE_NEW_RETURN_CUSTOMER)
                     .templateVars(templateVars)
                     .attachmentsPaths(Set.of(returnPdfDocument.getPath()))
                     .build();
@@ -219,7 +219,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
                 final MailRequestPayload employerPayload = MailRequestPayload.builder()
                     .messageResponder(userDataDto.getFullName())
                     .subject(emailTopic)
-                    .templateName("create-new-return-employer.template.ftl")
+                    .template(MailTemplate.CREATE_NEW_RETURN_EMPLOYER)
                     .templateVars(templateVars)
                     .attachmentsPaths(Set.of(returnPdfDocument.getPath()))
                     .build();
@@ -231,7 +231,7 @@ public class SellerGenerateReturnServlet extends HttpServlet {
 
                 final MailRequestPayload ownerPayload = MailRequestPayload.builder()
                     .subject(emailTopic)
-                    .templateName("create-new-return-owner.template.ftl")
+                    .template(MailTemplate.CREATE_NEW_RETURN_OWNER)
                     .templateVars(ownerTemplateVars)
                     .attachmentsPaths(Set.of(returnPdfDocument.getPath()))
                     .build();

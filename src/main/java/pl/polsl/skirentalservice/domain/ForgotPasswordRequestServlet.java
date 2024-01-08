@@ -19,6 +19,7 @@ import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.core.mail.MailRequestPayload;
 import pl.polsl.skirentalservice.core.mail.MailSocketSingleton;
+import pl.polsl.skirentalservice.core.mail.MailTemplate;
 import pl.polsl.skirentalservice.dao.EmployerDao;
 import pl.polsl.skirentalservice.dao.hibernate.EmployerDaoHib;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
@@ -82,8 +83,8 @@ public class ForgotPasswordRequestServlet extends HttpServlet {
 
                 final MailRequestPayload payload = MailRequestPayload.builder()
                     .messageResponder(employer.fullName())
-                    .subject("SkiRent Service | Zmiana hasła dla użytkownika " + employer.fullName())
-                    .templateName("change-password.template.ftl")
+                    .subject("Zmiana hasła dla użytkownika " + employer.fullName())
+                    .template(MailTemplate.CHANGE_PASSWORD)
                     .templateVars(templateVars)
                     .build();
 

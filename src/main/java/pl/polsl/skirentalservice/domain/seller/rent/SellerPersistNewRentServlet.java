@@ -119,7 +119,7 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                     final var equipment = modelMapper.map(equipmentDataDto, EmailEquipmentPayloadDataDto.class);
                     emailPayload.getRentEquipments().add(equipment);
                 }
-                final String emailTopic = "SkiRent Service | Nowe wypożyczenie: " + rentData.getIssuedIdentifier();
+                final String emailTopic = "Nowe wypożyczenie: " + rentData.getIssuedIdentifier();
                 final String description = rentData.getDescription() == null
                     ? "<i>Brak danych</i>" : rentData.getDescription();
 
@@ -145,7 +145,7 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                 final MailRequestPayload customerPayload = MailRequestPayload.builder()
                     .messageResponder(rentData.getCustomerDetails().fullName())
                     .subject(emailTopic)
-                    .templateName("add-new-rent-customer.template.ftl")
+                    .template(MailTemplate.ADD_NEW_RENT_CUSTOMER)
                     .templateVars(templateVars)
                     .attachmentsPaths(Set.of(rentPdfDocument.getPath()))
                     .build();
@@ -155,7 +155,7 @@ public class SellerPersistNewRentServlet extends HttpServlet {
                 final MailRequestPayload employerPayload = MailRequestPayload.builder()
                     .messageResponder(loggedEmployer.getFullName())
                     .subject(emailTopic)
-                    .templateName("add-new-rent-employer.template.ftl")
+                    .template(MailTemplate.ADD_NEW_RENT_EMPLOYER)
                     .templateVars(templateVars)
                     .attachmentsPaths(Set.of(rentPdfDocument.getPath()))
                     .build();
@@ -167,7 +167,7 @@ public class SellerPersistNewRentServlet extends HttpServlet {
 
                 final MailRequestPayload ownerPayload = MailRequestPayload.builder()
                     .subject(emailTopic)
-                    .templateName("add-new-rent-owner.template.ftl")
+                    .template(MailTemplate.ADD_NEW_RENT_OWNER)
                     .templateVars(ownerTemplateVars)
                     .attachmentsPaths(Set.of(rentPdfDocument.getPath()))
                     .build();

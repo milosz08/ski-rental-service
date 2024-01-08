@@ -22,6 +22,7 @@ import pl.polsl.skirentalservice.core.ValidatorSingleton;
 import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
 import pl.polsl.skirentalservice.core.mail.MailRequestPayload;
 import pl.polsl.skirentalservice.core.mail.MailSocketSingleton;
+import pl.polsl.skirentalservice.core.mail.MailTemplate;
 import pl.polsl.skirentalservice.dao.EmployerDao;
 import pl.polsl.skirentalservice.dao.UserDetailsDao;
 import pl.polsl.skirentalservice.dao.hibernate.EmployerDaoHib;
@@ -137,14 +138,14 @@ public class OwnerAddEmployerServlet extends HttpServlet {
 
                 final MailRequestPayload creatorPayload = MailRequestPayload.builder()
                     .messageResponder(adminDetails.getFullName())
-                    .subject("SkiRent Service | Dodanie nowego pracownika " + employerMailDetails.getFullName())
-                    .templateName("add-new-employer-creator.template.ftl")
+                    .subject("Dodanie nowego pracownika " + employerMailDetails.getFullName())
+                    .template(MailTemplate.ADD_NEW_EMPLOYER_CREATOR)
                     .templateVars(Map.of("employer", employerMailDetails))
                     .build();
                 final MailRequestPayload requesterPayload = MailRequestPayload.builder()
                     .messageResponder(employerMailDetails.getFullName())
-                    .subject("SkiRent Service | Witamy w systemie ")
-                    .templateName("add-new-employer-requester.template.ftl")
+                    .subject("Witamy w systemie ")
+                    .template(MailTemplate.ADD_NEW_EMPLOYER_REQUESTER)
                     .templateVars(Map.of("employerLogin", login, "employerPassword", passwordRaw))
                     .build();
 
