@@ -11,7 +11,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.hibernate.Session;
 import org.slf4j.Logger;
-import pl.polsl.skirentalservice.core.ValidatorSingleton;
+import pl.polsl.skirentalservice.core.ValidatorBean;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.attribute.AttributeModalReqDto;
 import pl.polsl.skirentalservice.dto.attribute.AttributeModalResDto;
@@ -59,7 +59,7 @@ public class Utils {
     }
 
     public static AttributeValidatorPayloadDto validateEquipmentAttribute(
-        HttpServletRequest req, ValidatorSingleton validator
+        HttpServletRequest req, ValidatorBean validator
     ) {
         final AlertTupleDto alert = new AlertTupleDto();
         final AttributeModalReqDto reqDto = new AttributeModalReqDto(req);

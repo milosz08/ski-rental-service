@@ -6,7 +6,7 @@ package pl.polsl.skirentalservice.dto.rent;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pl.polsl.skirentalservice.core.ValidatorSingleton;
+import pl.polsl.skirentalservice.core.ValidatorBean;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
 
@@ -20,7 +20,7 @@ public class AddEditEquipmentCartResDto {
     private String immediatelyShow;
     private String eqId;
 
-    public AddEditEquipmentCartResDto(ValidatorSingleton validator, AddEditEquipmentCartReqDto reqDto) {
+    public AddEditEquipmentCartResDto(ValidatorBean validator, AddEditEquipmentCartReqDto reqDto) {
         this.count = validator.validateField(reqDto, "count", reqDto.getCount());
         this.depositPrice = validator.validateField(reqDto, "depositPrice", reqDto.getDepositPrice());
         this.description = validator.validateField(reqDto, "description", reqDto.getDescription());

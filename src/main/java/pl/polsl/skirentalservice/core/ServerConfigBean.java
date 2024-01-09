@@ -4,6 +4,8 @@
  */
 package pl.polsl.skirentalservice.core;
 
+import jakarta.ejb.Singleton;
+import jakarta.ejb.Startup;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,17 +13,18 @@ import java.util.Properties;
 
 @Slf4j
 @Getter
-public class ConfigSingleton {
+@Singleton
+@Startup
+public class ServerConfigBean {
+    private static final String SERVER_CFG = "/server.cfg.xml";
+
     private final AppEnvironment environment;
     private final String serverHome;
     private final String systemVersion;
     private final String titlePageTag;
     private final int maturityAge;
 
-    private static volatile ConfigSingleton instance;
-    private static final String SERVER_CFG = "/server.cfg.xml";
-
-    private ConfigSingleton() {
+    public ServerConfigBean() {
         environment = AppEnvironment.loadEnviroment();
         log.info("Successful loaded app environment: {}", environment);
 
@@ -32,12 +35,5 @@ public class ConfigSingleton {
         systemVersion = properties.getProperty("ski.system-version");
         titlePageTag = properties.getProperty("ski.title-page-tag");
         maturityAge = Integer.parseInt(properties.getProperty("ski.maturity-age"));
-    }
-
-    public static synchronized ConfigSingleton getInstance() {
-        if (instance == null) {
-            instance = new ConfigSingleton();
-        }
-        return instance;
     }
 }

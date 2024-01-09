@@ -9,6 +9,8 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import jakarta.activation.DataHandler;
 import jakarta.activation.DataSource;
+import jakarta.ejb.Singleton;
+import jakarta.inject.Inject;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;
@@ -17,7 +19,7 @@ import jakarta.mail.internet.MimeMultipart;
 import jakarta.mail.util.ByteArrayDataSource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import pl.polsl.skirentalservice.core.ConfigSingleton;
+import pl.polsl.skirentalservice.core.ServerConfigBean;
 import pl.polsl.skirentalservice.core.XMLConfigLoader;
 
 import java.io.IOException;
@@ -30,8 +32,9 @@ import java.util.*;
 import static pl.polsl.skirentalservice.exception.ServletException.UnableToSendEmailException;
 
 @Slf4j
-public class MailSocketSingleton {
-    private static final ConfigSingleton config = ConfigSingleton.getInstance();
+@Singleton
+public class MailServiceBean {
+    private final ServerConfigBean serverConfigBean;
 
     private static final String MAIL_CFG = "/mail/mail.cfg.xml";
     private static final String MAIL_CFG_DEV = "/mail/mail.cfg.dev.xml";
@@ -41,10 +44,10 @@ public class MailSocketSingleton {
     private final Configuration freemarkerConfig;
     private final Properties configProperties;
 
-    private static volatile MailSocketSingleton instance;
-
-    private MailSocketSingleton() {
-        final String configFile = config.getEnvironment().isDevOrDocker() ? MAIL_CFG_DEV : MAIL_CFG;
+    @Inject
+    public MailServiceBean(ServerConfigBean serverConfigBean) {
+        this.serverConfigBean = serverConfigBean;
+        final String configFile = serverConfigBean.getEnvironment().isDevOrDocker() ? MAIL_CFG_DEV : MAIL_CFG;
         final XMLConfigLoader<XMLMailConfig> xmlConfigLoader = new XMLConfigLoader<>(configFile, XMLMailConfig.class);
         final Properties allConfigProperties = xmlConfigLoader.loadConfig();
 
@@ -59,7 +62,7 @@ public class MailSocketSingleton {
             propertiesContainer.put(property.getKey(), property.getValue());
         }
         freemarkerConfig = new Configuration(Configuration.VERSION_2_3_22);
-        freemarkerConfig.setClassForTemplateLoading(MailSocketSingleton.class, FREEMARKER_PATH);
+        freemarkerConfig.setClassForTemplateLoading(MailServiceBean.class, FREEMARKER_PATH);
         log.info("Successful loaded freemarker template engine cache path. Cache path: {}", FREEMARKER_PATH);
 
         final Authenticator authenticator = new JakartaMailAuthenticator(authConfigProperties);
@@ -82,7 +85,7 @@ public class MailSocketSingleton {
             addtlnPayloadProps.put("serverUtcTime", Instant.now().toString());
             addtlnPayloadProps.put("baseServletPath", getBaseReqPath(req));
             addtlnPayloadProps.put("currentYear", String.valueOf(LocalDate.now().getYear()));
-            addtlnPayloadProps.put("systemVersion", config.getSystemVersion());
+            addtlnPayloadProps.put("systemVersion", serverConfigBean.getSystemVersion());
             bodyTemplate.process(addtlnPayloadProps, outWriter);
 
             final Address[] sendToAddresses = new Address[sendTo.size()];
@@ -90,7 +93,7 @@ public class MailSocketSingleton {
                 sendToAddresses[i] = new InternetAddress(sendTo.get(i));
             }
             message.setFrom(new InternetAddress("noreply@" + configProperties.getProperty("mail.smtp.domain"),
-                config.getTitlePageTag()));
+                serverConfigBean.getTitlePageTag()));
             message.setRecipients(Message.RecipientType.TO, sendToAddresses);
 
             if (payload.getAttachments() != null) {
@@ -112,7 +115,7 @@ public class MailSocketSingleton {
             } else {
                 message.setContent(outWriter.toString(), "text/html;charset=UTF-8");
             }
-            message.setSubject(config.getTitlePageTag() + " | " + payload.getSubject());
+            message.setSubject(serverConfigBean.getTitlePageTag() + " | " + payload.getSubject());
             message.setSentDate(new Date());
 
             Transport.send(message);
@@ -137,12 +140,5 @@ public class MailSocketSingleton {
         final boolean isHttp = req.getScheme().equals("http") && req.getServerPort() == 80;
         final boolean isHttps = req.getScheme().equals("https") && req.getServerPort() == 443;
         return req.getScheme() + "://" + req.getServerName() + (isHttp || isHttps ? "" : ":" + req.getServerPort());
-    }
-
-    public static synchronized MailSocketSingleton getInstance() {
-        if (instance == null) {
-            instance = new MailSocketSingleton();
-        }
-        return instance;
     }
 }

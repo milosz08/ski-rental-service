@@ -6,7 +6,7 @@ package pl.polsl.skirentalservice.dto.attribute;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pl.polsl.skirentalservice.core.ValidatorSingleton;
+import pl.polsl.skirentalservice.core.ValidatorBean;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
 
@@ -19,7 +19,7 @@ public class AttributeModalResDto {
     private NavCanvasState activeFirstPage = new NavCanvasState(true);
     private NavCanvasState activeSecondPage = new NavCanvasState(false);
 
-    public AttributeModalResDto(ValidatorSingleton validator, AttributeModalReqDto reqDto, AlertTupleDto alert) {
+    public AttributeModalResDto(ValidatorBean validator, AttributeModalReqDto reqDto, AlertTupleDto alert) {
         this.name = validator.validateField(reqDto, "name", reqDto.getName());
         this.alert = alert;
     }

@@ -6,7 +6,7 @@ package pl.polsl.skirentalservice.dto.rent;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pl.polsl.skirentalservice.core.ValidatorSingleton;
+import pl.polsl.skirentalservice.core.ValidatorBean;
 import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
 import pl.polsl.skirentalservice.util.DateParser;
 import pl.polsl.skirentalservice.util.RentStatus;
@@ -24,7 +24,7 @@ public class NewRentDetailsResDto {
     private FormValueInfoTupleDto tax = new FormValueInfoTupleDto();
     private FormValueInfoTupleDto description = new FormValueInfoTupleDto();
 
-    public NewRentDetailsResDto(ValidatorSingleton validator, NewRentDetailsReqDto reqDto) {
+    public NewRentDetailsResDto(ValidatorBean validator, NewRentDetailsReqDto reqDto) {
         this.rentDateTime = validator.validateField(reqDto, "rentDateTime", reqDto.getRentDateTime());
         this.returnDateTime = validator.validateField(reqDto, "returnDateTime", reqDto.getReturnDateTime());
         this.tax = validator.validateField(reqDto, "tax", reqDto.getTax());

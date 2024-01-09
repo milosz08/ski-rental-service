@@ -15,6 +15,8 @@ import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.util.IOUtils;
+import jakarta.ejb.Singleton;
+import jakarta.ejb.Startup;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
 import pl.polsl.skirentalservice.core.XMLConfigLoader;
@@ -26,14 +28,15 @@ import java.util.List;
 import java.util.Properties;
 
 @Slf4j
-public class S3ClientSigleton {
+@Singleton
+@Startup
+public class S3ClientBean {
     private static final String S3_CFG = "/s3/s3.cfg.xml";
-    private static volatile S3ClientSigleton instance;
 
     private final Properties s3Properties;
     private final AmazonS3 client;
 
-    private S3ClientSigleton() {
+    public S3ClientBean() {
         final XMLConfigLoader<XMLS3Config> xmlConfigLoader = new XMLConfigLoader<>(S3_CFG, XMLS3Config.class);
         s3Properties = xmlConfigLoader.loadConfig();
         client = createClientInstance();
@@ -105,12 +108,5 @@ public class S3ClientSigleton {
             log.error("Unable to connect with S3 service. Cause: {}", ex.getMessage());
         }
         return amazonS3;
-    }
-
-    public static synchronized S3ClientSigleton getInstance() {
-        if (instance == null) {
-            instance = new S3ClientSigleton();
-        }
-        return instance;
     }
 }

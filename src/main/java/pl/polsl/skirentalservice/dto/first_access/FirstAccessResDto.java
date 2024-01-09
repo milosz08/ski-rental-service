@@ -6,7 +6,7 @@ package pl.polsl.skirentalservice.dto.first_access;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pl.polsl.skirentalservice.core.ValidatorSingleton;
+import pl.polsl.skirentalservice.core.ValidatorBean;
 import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
 
 @Data
@@ -17,7 +17,7 @@ public class FirstAccessResDto {
     private FormValueInfoTupleDto emailPassword;
     private FormValueInfoTupleDto emailPasswordRep;
 
-    public FirstAccessResDto(ValidatorSingleton validator, FirstAccessReqDto reqDto) {
+    public FirstAccessResDto(ValidatorBean validator, FirstAccessReqDto reqDto) {
         this.password = validator.validateField(reqDto, "password", reqDto.getPassword());
         this.passwordRep = validator.validateField(reqDto, "passwordRep", reqDto.getPasswordRep());
         this.emailPassword = validator.validateField(reqDto, "emailPassword", reqDto.getEmailPassword());

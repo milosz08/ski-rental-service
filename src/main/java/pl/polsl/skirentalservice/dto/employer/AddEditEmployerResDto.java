@@ -6,7 +6,7 @@ package pl.polsl.skirentalservice.dto.employer;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pl.polsl.skirentalservice.core.ValidatorSingleton;
+import pl.polsl.skirentalservice.core.ValidatorBean;
 import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
 import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
 import pl.polsl.skirentalservice.util.Gender;
@@ -29,7 +29,7 @@ public class AddEditEmployerResDto {
     private FormValueInfoTupleDto postalCode;
     private List<FormSelectTupleDto> genders = Gender.getGenders();
 
-    public AddEditEmployerResDto(ValidatorSingleton validator, AddEditEmployerReqDto reqDto) {
+    public AddEditEmployerResDto(ValidatorBean validator, AddEditEmployerReqDto reqDto) {
         this.firstName = validator.validateField(reqDto, "firstName", reqDto.getFirstName());
         this.lastName = validator.validateField(reqDto, "lastName", reqDto.getLastName());
         this.pesel = validator.validateField(reqDto, "pesel", reqDto.getPesel());

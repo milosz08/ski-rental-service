@@ -6,7 +6,7 @@ package pl.polsl.skirentalservice.dto.login;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pl.polsl.skirentalservice.core.ValidatorSingleton;
+import pl.polsl.skirentalservice.core.ValidatorBean;
 import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
 
 @Data
@@ -15,7 +15,7 @@ public class LoginFormResDto {
     private FormValueInfoTupleDto loginOrEmail;
     private FormValueInfoTupleDto password;
 
-    public LoginFormResDto(ValidatorSingleton validator, LoginFormReqDto reqDto) {
+    public LoginFormResDto(ValidatorBean validator, LoginFormReqDto reqDto) {
         this.loginOrEmail = validator.validateField(reqDto, "loginOrEmail", reqDto.getLoginOrEmail());
         this.password = validator.validateField(reqDto, "password", reqDto.getPassword());
     }

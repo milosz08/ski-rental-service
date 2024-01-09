@@ -6,6 +6,8 @@ package pl.polsl.skirentalservice.core.ssh;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
+import jakarta.ejb.Singleton;
+import jakarta.ejb.Startup;
 import lombok.extern.slf4j.Slf4j;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.IOUtils;
@@ -21,15 +23,16 @@ import java.util.Properties;
 import java.util.function.Function;
 
 @Slf4j
-public class SshSocketSingleton {
+@Singleton
+@Startup
+public class SshSocketBean {
     private static final String SSH_CFG = "/ssh/ssh.cfg.xml";
-    private static volatile SshSocketSingleton instance;
 
     private final XMLSshCommands sshCommands;
     private final Properties sshProperties;
     private final Gson gson;
 
-    private SshSocketSingleton() {
+    public SshSocketBean() {
         final XMLConfigLoader<XMLSshConfig> configLoader = new XMLConfigLoader<>(SSH_CFG, XMLSshConfig.class);
         sshProperties = configLoader.loadConfig();
         sshCommands = configLoader.getConfigDatalist().getCommands();
@@ -60,12 +63,5 @@ public class SshSocketSingleton {
             throw new RuntimeException(ex.getMessage());
         }
         return mappedTo;
-    }
-
-    public static synchronized SshSocketSingleton getInstance() {
-        if (instance == null) {
-            instance = new SshSocketSingleton();
-        }
-        return instance;
     }
 }

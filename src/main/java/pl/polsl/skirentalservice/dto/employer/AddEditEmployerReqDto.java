@@ -11,8 +11,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.pl.PESEL;
-import pl.polsl.skirentalservice.core.ConfigSingleton;
 import pl.polsl.skirentalservice.core.ReqValidatePojo;
+import pl.polsl.skirentalservice.core.ServerConfigBean;
 import pl.polsl.skirentalservice.exception.DateException;
 import pl.polsl.skirentalservice.util.DateParser;
 import pl.polsl.skirentalservice.util.Gender;
@@ -102,7 +102,7 @@ public class AddEditEmployerReqDto implements ReqValidatePojo {
             city);
     }
 
-    public void validateDates(ConfigSingleton config) {
+    public void validateDates(ServerConfigBean config) {
         if (getParsedBornDate().isAfter(LocalDate.now().minusYears(config.getMaturityAge()))) {
             throw new DateException.DateInFutureException("data urodzenia", config.getMaturityAge());
         }

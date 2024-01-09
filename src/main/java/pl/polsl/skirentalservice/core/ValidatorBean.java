@@ -4,6 +4,8 @@
  */
 package pl.polsl.skirentalservice.core;
 
+import jakarta.ejb.Singleton;
+import jakarta.ejb.Startup;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -14,12 +16,13 @@ import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
 
 import java.util.Set;
 
-public class ValidatorSingleton {
+@Singleton
+@Startup
+public class ValidatorBean {
     @Getter
     private final Validator validator;
-    private static volatile ValidatorSingleton instance;
 
-    private ValidatorSingleton() {
+    public ValidatorBean() {
         final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
         this.validator = validatorFactory.getValidator();
     }
@@ -49,12 +52,5 @@ public class ValidatorSingleton {
     public <T extends ReqValidatePojo> boolean someFieldsAreInvalid(T req) {
         final Set<ConstraintViolation<T>> constraints = validator.validate(req);
         return !constraints.isEmpty();
-    }
-
-    public static synchronized ValidatorSingleton getInstance() {
-        if (instance == null) {
-            instance = new ValidatorSingleton();
-        }
-        return instance;
     }
 }
