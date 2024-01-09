@@ -46,7 +46,7 @@ public class SshSocketSingleton {
             sshClient.loadKnownHosts(new File(sshProperties.getProperty("ssh.known-hosts.path")));
             sshClient.connect(sshProperties.getProperty("ssh.host"));
             sshClient.authPublickey(sshProperties.getProperty("ssh.login"),
-                sshProperties.getProperty("ssh.public-key.path"));
+                sshProperties.getProperty("ssh.private-key.path"));
             final Session session = sshClient.startSession();
             final Session.Command sessionCommand = session.exec(substitutor.replace(command));
             final String response = IOUtils.readFully(sessionCommand.getInputStream()).toString();

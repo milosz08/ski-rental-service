@@ -78,7 +78,7 @@ services:
       - 'SKI_S3_SECRET_KEY=${SKI_DEV_S3_PASSWORD}'
       - 'SKI_SSH_HOST=${SKI_DEV_SSH_HOST}'
       - 'SKI_SSH_LOGIN=${SKI_DEV_SSH_LOGIN}'
-      - 'SKI_SSH_PUBLIC_KEY_PATH=/ssh-keys/id_rsa'
+      - 'SKI_SSH_PRIVATE_KEY_PATH=/ssh-keys/id_rsa'
       - 'SKI_SSH_KNOWN_HOSTS_PATH=/ssh-keys/known_hosts.dat'
       - 'SKI_SERVER_HOME=http://localhost:${SKI_DEV_RENTAL_APP_PORT}'
     depends_on:

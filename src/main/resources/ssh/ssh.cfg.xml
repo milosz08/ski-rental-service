@@ -6,7 +6,7 @@
 <ssh-configuration>
   <property name="ssh.host">${SKI_SSH_HOST}</property>
   <property name="ssh.login">${SKI_SSH_LOGIN}</property>
-  <property name="ssh.public-key.path">${SKI_SSH_PRIVATE_KEY_PATH}</property>
+  <property name="ssh.private-key.path">${SKI_SSH_PRIVATE_KEY_PATH}</property>
   <property name="ssh.known-hosts.path">${SKI_SSH_KNOWN_HOSTS_PATH}</property>
   <commands>
     <create-mailbox>

@@ -132,7 +132,7 @@
         <option name="IS_PREDEFINED" value="false" />
       </EnvironmentVariables>
       <EnvironmentVariables>
-        <option name="NAME" value="SKI_SSH_PUBLIC_KEY_PATH" />
+        <option name="NAME" value="SKI_SSH_PRIVATE_KEY_PATH" />
         <option name="VALUE" value="D:\programming-projects\ski-rental-service\.volumes\ssh\id_rsa" />
         <option name="IS_PREDEFINED" value="false" />
       </EnvironmentVariables>
@@ -252,7 +252,7 @@
         <option name="IS_PREDEFINED" value="false" />
       </EnvironmentVariables>
       <EnvironmentVariables>
-        <option name="NAME" value="SKI_SSH_PUBLIC_KEY_PATH" />
+        <option name="NAME" value="SKI_SSH_PRIVATE_KEY_PATH" />
         <option name="VALUE" value="D:\programming-projects\ski-rental-service\.volumes\ssh\id_rsa" />
         <option name="IS_PREDEFINED" value="false" />
       </EnvironmentVariables>
