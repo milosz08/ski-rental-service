@@ -16,16 +16,6 @@ public class NotFoundException {
             super("Użytkownik z podanym ID <strong>#" + userId + "</strong> nie istnieje w systemie.");
         }
 
-        public UserNotFoundException(RequestToChangePasswordReqDto reqDto) {
-            super("Użytkownik z podanymi danymi logowania nie istnieje w systemie.");
-            log.warn("Attempt to change password for non existing account. Login data: {}", reqDto);
-        }
-
-        public UserNotFoundException(LoginFormReqDto reqDto) {
-            super("Użytkownik z podanymi danymi logowania nie istnieje w systemie.");
-            log.warn("Attempt to login on non existing account. Login data: {}", reqDto);
-        }
-
         public UserNotFoundException(UserRole role) {
             super(StringUtils.capitalize(role.getName()) + " nie istnieje w systemie.");
         }
