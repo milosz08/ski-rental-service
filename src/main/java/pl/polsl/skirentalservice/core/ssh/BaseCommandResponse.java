@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
  * Silesian University of Technology
  */
-package pl.polsl.skirentalservice.ssh;
+package pl.polsl.skirentalservice.core.ssh;
 
 import lombok.Data;
 

@@ -5,6 +5,7 @@
 package pl.polsl.skirentalservice.dao.hibernate;
 
 import org.hibernate.Session;
+import pl.polsl.skirentalservice.core.servlet.pageable.FilterDataDto;
 import pl.polsl.skirentalservice.dao.CustomerDao;
 import pl.polsl.skirentalservice.dao.core.AbstractHibernateDao;
 import pl.polsl.skirentalservice.dto.PageableDto;
@@ -12,7 +13,6 @@ import pl.polsl.skirentalservice.dto.customer.AddEditCustomerReqDto;
 import pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto;
 import pl.polsl.skirentalservice.dto.customer.CustomerRecordResDto;
 import pl.polsl.skirentalservice.dto.deliv_return.CustomerDetailsReturnResDto;
-import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
 import pl.polsl.skirentalservice.util.RentStatus;
 
 import java.util.List;

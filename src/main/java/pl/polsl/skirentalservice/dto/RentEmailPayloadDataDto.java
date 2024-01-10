@@ -13,7 +13,7 @@ import java.util.Set;
 
 @Data
 @NoArgsConstructor
-public class RentReturnEmailPayloadDataDto {
+public class RentEmailPayloadDataDto {
     private String fullName;
     private String pesel;
     private String phoneNumber;

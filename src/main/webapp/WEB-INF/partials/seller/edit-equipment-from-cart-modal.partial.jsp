@@ -2,7 +2,7 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<jsp:useBean id="pagesData" type="pl.polsl.skirentalservice.paging.pagination.ServletPagination" scope="request"/>
+<jsp:useBean id="pagesData" type="pl.polsl.skirentalservice.core.servlet.pageable.ServletPagination" scope="request"/>
 <jsp:useBean id="cartEq" type="pl.polsl.skirentalservice.dto.rent.CartSingleEquipmentDataDto" scope="request"/>
 
 <div class="modal fade eq-modals" id="editEquipment${cartEq.id}" tabindex="-1" aria-hidden="true"

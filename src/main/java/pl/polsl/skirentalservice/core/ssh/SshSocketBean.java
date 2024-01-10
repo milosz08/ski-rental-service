@@ -64,4 +64,10 @@ public class SshSocketBean {
         }
         return mappedTo;
     }
+
+    public BaseCommandResponse executeCommand(
+        Function<XMLSshCommands, String> commandCallback, Map<String, String> entries
+    ) throws RuntimeException {
+        return executeCommand(commandCallback, entries, BaseCommandResponse.class);
+    }
 }

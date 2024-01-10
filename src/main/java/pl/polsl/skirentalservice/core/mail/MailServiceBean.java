@@ -17,10 +17,10 @@ import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
 import jakarta.mail.util.ByteArrayDataSource;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import pl.polsl.skirentalservice.core.ServerConfigBean;
 import pl.polsl.skirentalservice.core.XMLConfigLoader;
+import pl.polsl.skirentalservice.core.servlet.WebServletRequest;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -70,11 +70,11 @@ public class MailServiceBean {
         log.info("Successful loaded JavaMail API properties with authentication. Props: {}", configProperties);
     }
 
-    public void sendMessage(String sendTo, MailRequestPayload payload, HttpServletRequest req) {
+    public void sendMessage(String sendTo, MailRequestPayload payload, WebServletRequest req) {
         sendMessage(List.of(sendTo), payload, req);
     }
 
-    public void sendMessage(List<String> sendTo, MailRequestPayload payload, HttpServletRequest req) {
+    public void sendMessage(List<String> sendTo, MailRequestPayload payload, WebServletRequest req) {
         try {
             final Message message = new MimeMessage(mailSession);
             final Template bodyTemplate = freemarkerConfig.getTemplate(payload.getTemplate().getFullName());
@@ -83,7 +83,7 @@ public class MailServiceBean {
             final Map<String, Object> addtlnPayloadProps = new HashMap<>(payload.getTemplateVars());
             addtlnPayloadProps.put("messageResponder", payload.getMessageResponder());
             addtlnPayloadProps.put("serverUtcTime", Instant.now().toString());
-            addtlnPayloadProps.put("baseServletPath", getBaseReqPath(req));
+            addtlnPayloadProps.put("baseServletPath", req.getBaseRequestPath());
             addtlnPayloadProps.put("currentYear", String.valueOf(LocalDate.now().getYear()));
             addtlnPayloadProps.put("systemVersion", serverConfigBean.getSystemVersion());
             bodyTemplate.process(addtlnPayloadProps, outWriter);
@@ -134,11 +134,5 @@ public class MailServiceBean {
 
     public String getDomain() {
         return "@" + configProperties.getProperty("mail.smtp.domain");
-    }
-
-    private String getBaseReqPath(HttpServletRequest req) {
-        final boolean isHttp = req.getScheme().equals("http") && req.getServerPort() == 80;
-        final boolean isHttps = req.getScheme().equals("https") && req.getServerPort() == 443;
-        return req.getScheme() + "://" + req.getServerName() + (isHttp || isHttps ? "" : ":" + req.getServerPort());
     }
 }

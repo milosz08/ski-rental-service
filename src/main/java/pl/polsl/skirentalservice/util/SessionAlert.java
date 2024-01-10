@@ -6,10 +6,11 @@ package pl.polsl.skirentalservice.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import pl.polsl.skirentalservice.core.servlet.session.Attribute;
 
 @Getter
 @AllArgsConstructor
-public enum SessionAlert {
+public enum SessionAlert implements Attribute {
     LOGIN_PAGE_ALERT("login-page-alert"),
     FORGOT_PASSWORD_PAGE_ALERT("forgot-password-page-alert"),
     CHANGE_FORGOTTEN_PASSWORD_PAGE_ALERT("change-forgotten-password-page-alert"),
@@ -35,5 +36,5 @@ public enum SessionAlert {
     COMMON_RETURNS_PAGE_ALERT("common-returns-page-alert"),
     ;
 
-    private final String name;
+    private final String attributeName;
 }

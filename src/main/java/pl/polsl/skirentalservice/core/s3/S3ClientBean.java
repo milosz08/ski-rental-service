@@ -20,6 +20,7 @@ import jakarta.ejb.Startup;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
 import pl.polsl.skirentalservice.core.XMLConfigLoader;
+import pl.polsl.skirentalservice.core.mail.Attachment;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -78,6 +79,10 @@ public class S3ClientBean {
             log.info("Unable to persist object in bucket: {} with key: {}", bucket, key);
             throw new RuntimeException(ex);
         }
+    }
+
+    public void putObject(S3Bucket bucket, Attachment attachment) {
+        putObject(bucket, attachment.name(), attachment.data(), attachment.type());
     }
 
     public void deleteObject(S3Bucket bucket, String key) {

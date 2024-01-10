@@ -2,7 +2,7 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 
 <jsp:useBean id="sorterData"
-             type="java.util.Map<java.lang.String, pl.polsl.skirentalservice.paging.sorter.ServletSorterField>"
+             type="java.util.Map<java.lang.String, pl.polsl.skirentalservice.core.servlet.pageable.ServletSorterField>"
              scope="request"/>
 
 <thead>

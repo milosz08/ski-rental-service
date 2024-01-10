@@ -6,6 +6,7 @@ package pl.polsl.skirentalservice.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import pl.polsl.skirentalservice.core.ServerConfigBean;
 
 @Getter
 @AllArgsConstructor
@@ -48,7 +49,7 @@ public enum PageTitle {
 
     private final String name;
 
-    public String getName() {
-        return name + " | SkiRent System";
+    public String getName(ServerConfigBean serverConfigBean) {
+        return name + " | " + serverConfigBean.getTitlePageTag();
     }
 }

@@ -5,6 +5,7 @@
 package pl.polsl.skirentalservice.dao.hibernate;
 
 import org.hibernate.Session;
+import pl.polsl.skirentalservice.core.servlet.pageable.FilterDataDto;
 import pl.polsl.skirentalservice.dao.RentDao;
 import pl.polsl.skirentalservice.dao.core.AbstractHibernateDao;
 import pl.polsl.skirentalservice.dto.PageableDto;
@@ -13,7 +14,6 @@ import pl.polsl.skirentalservice.dto.rent.OwnerRentRecordResDto;
 import pl.polsl.skirentalservice.dto.rent.RentDetailsResDto;
 import pl.polsl.skirentalservice.dto.rent.SellerRentRecordResDto;
 import pl.polsl.skirentalservice.entity.RentEntity;
-import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
 import pl.polsl.skirentalservice.util.RentStatus;
 
 import java.util.List;
@@ -114,7 +114,7 @@ public class RentDaoHib extends AbstractHibernateDao implements RentDao {
     }
 
     @Override
-    public Long findAllRentsFromEmployerCount(FilterDataDto filterData, Long employerId) {
+    public Long findAllRentsFromEmployerCount(FilterDataDto filterData, Object employerId) {
         String jpqlTotalRentsCount = """
                 SELECT COUNT(r.id) FROM RentEntity r
                 LEFT OUTER JOIN r.employer e LEFT OUTER JOIN r.customer c LEFT OUTER JOIN c.userDetails d

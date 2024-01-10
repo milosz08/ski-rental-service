@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
  * Silesian University of Technology
  */
-package pl.polsl.skirentalservice.paging.filter;
+package pl.polsl.skirentalservice.core.servlet.pageable;
 
 import lombok.Getter;
 import pl.polsl.skirentalservice.dto.FormSelectTupleDto;

@@ -4,11 +4,11 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
-<jsp:useBean id="filterData" type="pl.polsl.skirentalservice.paging.filter.FilterDataDto" scope="request"/>
+<jsp:useBean id="filterData" type="pl.polsl.skirentalservice.core.servlet.pageable.FilterDataDto" scope="request"/>
 <jsp:useBean id="employersData" type="java.util.List<pl.polsl.skirentalservice.dto.employer.EmployerRecordResDto>"
              scope="request"/>
 <jsp:useBean id="sorterData"
-             type="java.util.Map<java.lang.String, pl.polsl.skirentalservice.paging.sorter.ServletSorterField>"
+             type="java.util.Map<java.lang.String, pl.polsl.skirentalservice.core.servlet.pageable.ServletSorterField>"
              scope="request"/>
 
 <p:generic-owner.wrapper>

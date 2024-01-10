@@ -4,12 +4,12 @@
  */
 package pl.polsl.skirentalservice.dao;
 
+import pl.polsl.skirentalservice.core.servlet.pageable.FilterDataDto;
 import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.dto.deliv_return.OwnerRentReturnRecordResDto;
 import pl.polsl.skirentalservice.dto.deliv_return.ReturnAlreadyExistPayloadDto;
 import pl.polsl.skirentalservice.dto.deliv_return.ReturnRentDetailsResDto;
 import pl.polsl.skirentalservice.dto.deliv_return.SellerRentReturnRecordResDto;
-import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
 
 import java.util.List;
 import java.util.Optional;

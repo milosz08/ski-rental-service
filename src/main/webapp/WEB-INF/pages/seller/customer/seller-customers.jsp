@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
-<jsp:useBean id="filterData" type="pl.polsl.skirentalservice.paging.filter.FilterDataDto" scope="request"/>
+<jsp:useBean id="filterData" type="pl.polsl.skirentalservice.core.servlet.pageable.FilterDataDto" scope="request"/>
 <jsp:useBean id="customersData" type="java.util.List<pl.polsl.skirentalservice.dto.customer.CustomerRecordResDto>"
              scope="request"/>
 

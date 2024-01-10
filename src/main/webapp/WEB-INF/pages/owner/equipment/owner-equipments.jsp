@@ -4,7 +4,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="p" tagdir="/WEB-INF/tags" %>
 
-<jsp:useBean id="filterData" type="pl.polsl.skirentalservice.paging.filter.FilterDataDto" scope="request"/>
+<jsp:useBean id="filterData" type="pl.polsl.skirentalservice.core.servlet.pageable.FilterDataDto" scope="request"/>
 <jsp:useBean id="equipmentsData" type="java.util.List<pl.polsl.skirentalservice.dto.equipment.EquipmentRecordResDto>"
              scope="request"/>
 

@@ -6,10 +6,11 @@ package pl.polsl.skirentalservice.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import pl.polsl.skirentalservice.core.servlet.session.Attribute;
 
 @Getter
 @AllArgsConstructor
-public enum SessionAttribute {
+public enum SessionAttribute implements Attribute {
     EMPLOYERS_LIST_SORTER("employers-list-sorter"),
     EMPLOYERS_LIST_FILTER("employers-list-filter"),
     CUSTOMERS_LIST_SORTER("customers-list-sorter"),
@@ -30,9 +31,9 @@ public enum SessionAttribute {
     EQ_EDIT_CART_MODAL_DATA("equipmentEditCartModalData"),
 
     LOGGED_USER_DETAILS("loggedUserDetails"),
-    INMEMORY_NEW_RENT_DATA("inmemoryNewRentData"),
+    IN_MEMORY_NEW_RENT_DATA("inmemoryNewRentData"),
     LOGOUT_MODAL("logout-modal"),
     ;
 
-    private final String name;
+    private final String attributeName;
 }
