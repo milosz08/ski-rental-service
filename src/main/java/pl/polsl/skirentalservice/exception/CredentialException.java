@@ -4,12 +4,13 @@
  */
 package pl.polsl.skirentalservice.exception;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import pl.polsl.skirentalservice.core.AbstractAppException;
+import pl.polsl.skirentalservice.core.servlet.WebServletRequest;
 import pl.polsl.skirentalservice.dto.login.LoginFormReqDto;
 
 public class CredentialException {
-    public static class PasswordMismatchException extends RuntimeException {
+    public static class PasswordMismatchException extends AbstractAppException {
         public PasswordMismatchException(String firstField, String secondField) {
             super("Hasła w polach <strong>" + firstField + "</strong> oraz <strong>" + secondField + "</strong> " +
                 "muszą być takie same.");
@@ -17,8 +18,8 @@ public class CredentialException {
     }
 
     @Slf4j
-    public static class OtaTokenNotFoundException extends RuntimeException {
-        public OtaTokenNotFoundException(HttpServletRequest req, String token) {
+    public static class OtaTokenNotFoundException extends AbstractAppException {
+        public OtaTokenNotFoundException(WebServletRequest req, String token) {
             super("Podany token nie istnieje, został już wykorzystany lub uległ przedawnieniu. Przejdź " +
                 "<a class='alert-link' href='" + req.getContextPath() + "/forgot-password-request'>tutaj</a>, " +
                 "aby wygenerować nowy token.");
@@ -27,9 +28,9 @@ public class CredentialException {
     }
 
     @Slf4j
-    public static class InvalidCredentialsException extends RuntimeException {
+    public static class InvalidCredentialsException extends AbstractAppException {
         public InvalidCredentialsException(LoginFormReqDto reqDto) {
-            super("Nieprawidłowe hasło. Spróbuj ponownie podając inne hasło.");
+            super("Podany login i/lub hasło jest nieprawidłowe. Spróbuj ponownie podając inne dane.");
             log.warn("Attempt to login with invalid credentials. Login/email data: {}", reqDto.getLoginOrEmail());
         }
     }
