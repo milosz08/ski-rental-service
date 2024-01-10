@@ -21,4 +21,6 @@ public interface ReturnDao {
     Long findAllReturnsFromEmployerCount(FilterDataDto filterData, Object employerId);
     List<OwnerRentReturnRecordResDto> findAllPageableReturnsRecords(PageableDto pageableDto);
     List<SellerRentReturnRecordResDto> findAllPageableReturnsFromEmployerRecords(PageableDto pageableDto, Object employerId);
+    boolean checkIfReturnExist(Object returnId);
+    boolean checkIfReturnIsFromEmployer(Object returnId, Object employerId);
 }

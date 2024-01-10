@@ -28,6 +28,7 @@ public interface EmployerDao {
     void updateEmployerPassword(String newPassword, Object employerId);
     boolean checkIfLoginAlreadyExist(String login);
     boolean checkIfEmployerHasOpenedRents(Object employerId);
+    boolean checkIfEmployerExist(Object employerId);
     List<OwnerMailPayloadDto> findAllEmployersMailSenders();
     Long findAllEmployersCount(FilterDataDto filterData);
     List<EmployerRecordResDto> findAllPageableEmployersRecords(PageableDto pageableDto);

@@ -162,6 +162,14 @@ public class EmployerDaoHib extends AbstractHibernateDao implements EmployerDao 
     }
 
     @Override
+    public boolean checkIfEmployerExist(Object employerId) {
+        final String jpqlCheckIfExist = "SELECT COUNT(e.id) > 0 FROM EmployerEntity e WHERE e.id = :eid";
+        return session.createQuery(jpqlCheckIfExist, Boolean.class)
+            .setParameter("eid", employerId)
+            .getSingleResult();
+    }
+
+    @Override
     public Long findAllEmployersCount(FilterDataDto filterData) {
         String jpqlTotalEmployersCount = """
                 SELECT COUNT(e.id) FROM EmployerEntity e

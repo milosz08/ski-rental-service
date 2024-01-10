@@ -52,4 +52,12 @@ public class OtaTokenDaoHib extends AbstractHibernateDao implements OtaTokenDao 
             .setParameter("tokenId", id)
             .executeUpdate();
     }
+
+    @Override
+    public boolean checkIfTokenExist(String token) {
+        final String jpqlCheckToken = "SELECT COUNT(t.id) > 0 FROM OtaTokenEntity t WHERE t.otaToken = :token";
+        return session.createQuery(jpqlCheckToken, Boolean.class)
+            .setParameter("token", token)
+            .getSingleResultOrNull();
+    }
 }

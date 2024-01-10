@@ -13,4 +13,5 @@ public interface OtaTokenDao {
     Optional<ChangePasswordEmployerDetailsDto> findTokenRelatedToEmployer(String token);
     Optional<TokenDetailsDto> findTokenDetails(String token);
     void manuallyExpiredOtaToken(Object id);
+    boolean checkIfTokenExist(String token);
 }

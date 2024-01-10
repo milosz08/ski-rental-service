@@ -135,4 +135,25 @@ public class ReturnDaoHib extends AbstractHibernateDao implements ReturnDao {
             .setMaxResults(pageableDto.total())
             .getResultList();
     }
+
+    @Override
+    public boolean checkIfReturnExist(Object returnId) {
+        final String jpqlReturnExist = "SELECT COUNT(r.id) > 0 FROM RentReturnEntity r WHERE r.id = :rid";
+        return session.createQuery(jpqlReturnExist, Boolean.class)
+            .setParameter("rid", returnId)
+            .getSingleResult();
+    }
+
+    @Override
+    public boolean checkIfReturnIsFromEmployer(Object returnId, Object employerId) {
+        final String jpqlFindRentEmployer = """
+                SELECT COUNT(r.id) > 0 FROM RentReturnEntity r
+                INNER JOIN r.rent re INNER JOIN re.employer e
+                WHERE e.id = :eid AND r.id = :rid
+            """;
+        return session.createQuery(jpqlFindRentEmployer, Boolean.class)
+            .setParameter("eid", employerId)
+            .setParameter("rid", returnId)
+            .getSingleResult();
+    }
 }

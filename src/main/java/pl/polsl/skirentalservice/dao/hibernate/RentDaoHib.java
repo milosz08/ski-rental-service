@@ -70,6 +70,15 @@ public class RentDaoHib extends AbstractHibernateDao implements RentDao {
     }
 
     @Override
+    public boolean checkIfRentExist(Object rentId) {
+        final String jpqlFindRent = "SELECT COUNT(r.id) > 0 FROM RentEntity r WHERE r.id = :rid";
+        return session.createQuery(jpqlFindRent, Boolean.class)
+            .setParameter("rid", rentId)
+            .getSingleResult();
+
+    }
+
+    @Override
     public boolean checkIfRentIsFromEmployer(Object rentId, Object employerId) {
         final String jpqlFindRentEmployer = """
                 SELECT COUNT(r.id) > 0 FROM RentEntity r INNER JOIN r.employer e WHERE e.id = :eid AND r.id = :rid
@@ -79,9 +88,9 @@ public class RentDaoHib extends AbstractHibernateDao implements RentDao {
             .setParameter("rid", rentId)
             .getSingleResult();
     }
-
+    
     @Override
-    public boolean checkIfIssuerExist(Object issuer) {
+    public boolean checkIfIssuerExist(String issuer) {
         final String jpqlFindExistingIssuer = """
                 SELECT COUNT(r.id) > 0 FROM RentEntity r WHERE SUBSTRING(r.issuedIdentifier, 4, 4) = :issuer
             """;
