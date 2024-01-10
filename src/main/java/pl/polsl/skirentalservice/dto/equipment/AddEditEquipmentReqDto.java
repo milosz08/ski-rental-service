@@ -4,7 +4,6 @@
  */
 package pl.polsl.skirentalservice.dto.equipment;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -12,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import pl.polsl.skirentalservice.core.ReqValidatePojo;
+import pl.polsl.skirentalservice.core.servlet.WebServletRequest;
 import pl.polsl.skirentalservice.util.Gender;
 import pl.polsl.skirentalservice.util.Regex;
 
@@ -63,7 +63,7 @@ public class AddEditEquipmentReqDto implements ReqValidatePojo {
 
     private Gender gender;
 
-    public AddEditEquipmentReqDto(HttpServletRequest req) {
+    public AddEditEquipmentReqDto(WebServletRequest req) {
         this.name = StringUtils.trimToEmpty(req.getParameter("name"));
         this.model = StringUtils.trimToEmpty(req.getParameter("model"));
         this.description = StringUtils.trimToNull(req.getParameter("description"));

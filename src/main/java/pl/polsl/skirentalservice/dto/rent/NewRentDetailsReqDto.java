@@ -4,13 +4,13 @@
  */
 package pl.polsl.skirentalservice.dto.rent;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import pl.polsl.skirentalservice.core.ReqValidatePojo;
+import pl.polsl.skirentalservice.core.servlet.WebServletRequest;
 import pl.polsl.skirentalservice.util.DateParser;
 import pl.polsl.skirentalservice.util.Regex;
 
@@ -33,7 +33,7 @@ public class NewRentDetailsReqDto implements ReqValidatePojo {
     @Size(max = 200, message = "Pole dodatkowych uwag do składanego wypożyczenia może mieć maksymalnie 200 znaków.")
     private String description;
 
-    public NewRentDetailsReqDto(HttpServletRequest req) {
+    public NewRentDetailsReqDto(WebServletRequest req) {
         this.rentDateTime = StringUtils.trimToEmpty(req.getParameter("rentDateTime"));
         this.returnDateTime = StringUtils.trimToEmpty(req.getParameter("returnDateTime"));
         this.tax = StringUtils.trimToEmpty(req.getParameter("tax")).replace(',', '.');

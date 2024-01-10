@@ -4,7 +4,6 @@
  */
 package pl.polsl.skirentalservice.dto.employer;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -13,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.pl.PESEL;
 import pl.polsl.skirentalservice.core.ReqValidatePojo;
 import pl.polsl.skirentalservice.core.ServerConfigBean;
+import pl.polsl.skirentalservice.core.servlet.WebServletRequest;
 import pl.polsl.skirentalservice.exception.DateException;
 import pl.polsl.skirentalservice.util.DateParser;
 import pl.polsl.skirentalservice.util.Gender;
@@ -68,7 +68,7 @@ public class AddEditEmployerReqDto implements ReqValidatePojo {
 
     private Gender gender;
 
-    public AddEditEmployerReqDto(HttpServletRequest req) {
+    public AddEditEmployerReqDto(WebServletRequest req) {
         this.firstName = StringUtils.trimToEmpty(req.getParameter("firstName"));
         this.lastName = StringUtils.trimToEmpty(req.getParameter("lastName"));
         this.pesel = StringUtils.trimToEmpty(req.getParameter("pesel"));

@@ -4,12 +4,12 @@
  */
 package pl.polsl.skirentalservice.dto.first_access;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import pl.polsl.skirentalservice.core.ReqValidatePojo;
+import pl.polsl.skirentalservice.core.servlet.WebServletRequest;
 import pl.polsl.skirentalservice.util.Regex;
 
 @Data
@@ -32,7 +32,7 @@ public class FirstAccessReqDto implements ReqValidatePojo {
     @NotEmpty(message = "Pole powtórzonego hasła nie może być puste.")
     private String emailPasswordRep;
 
-    public FirstAccessReqDto(HttpServletRequest req) {
+    public FirstAccessReqDto(WebServletRequest req) {
         this.password = StringUtils.trimToEmpty(req.getParameter("password"));
         this.passwordRep = StringUtils.trimToEmpty(req.getParameter("passwordRep"));
         this.emailPassword = StringUtils.trimToEmpty(req.getParameter("emailPassword"));

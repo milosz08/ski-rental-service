@@ -4,12 +4,12 @@
  */
 package pl.polsl.skirentalservice.dto.change_password;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import pl.polsl.skirentalservice.core.ReqValidatePojo;
+import pl.polsl.skirentalservice.core.servlet.WebServletRequest;
 import pl.polsl.skirentalservice.util.Regex;
 
 @Data
@@ -22,7 +22,7 @@ public class ChangeForgottenPasswordReqDto implements ReqValidatePojo {
     @Pattern(regexp = Regex.PASSWORD_REQ, message = "Nieprawidłowa wartość/wartości w polu powtórzonego hasła.")
     private String passwordRepeat;
 
-    public ChangeForgottenPasswordReqDto(HttpServletRequest req) {
+    public ChangeForgottenPasswordReqDto(WebServletRequest req) {
         this.password = StringUtils.trimToEmpty(req.getParameter("password"));
         this.passwordRepeat = StringUtils.trimToEmpty(req.getParameter("passwordRepeat"));
     }
