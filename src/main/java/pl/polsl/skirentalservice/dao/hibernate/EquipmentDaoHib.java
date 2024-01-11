@@ -211,7 +211,7 @@ public class EquipmentDaoHib extends AbstractHibernateDao implements EquipmentDa
     @Override
     public Long findAllEquipmentsCount(FilterDataDto filterData) {
         String jpqlFindAll = """
-                SELECT COUNT(e.id) FROM EquipmentEntity e WHERE :searchColumn LIKE :search
+                SELECT COUNT(e.id) FROM EquipmentEntity e INNER JOIN e.type t WHERE :searchColumn LIKE :search
             """;
         jpqlFindAll = jpqlFindAll.replace(":searchColumn", filterData.getSearchColumn());
         return session.createQuery(jpqlFindAll, Long.class)

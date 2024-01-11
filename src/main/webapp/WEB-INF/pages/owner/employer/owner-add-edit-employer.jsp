@@ -102,22 +102,22 @@
               <div class="invalid-feedback lh-sm">${addEditEmployerData.street.message}</div>
             </div>
             <div class="col-xl-6 mb-3">
-              <label for="buildingNr" class="form-label mb-1 text-secondary micro-font">Nr budynku:</label>
-              <input type="text" class="form-control form-control-sm ${addEditEmployerData.buildingNr.errorStyle}"
-                     id="buildingNr" value="${addEditEmployerData.buildingNr.value}" name="buildingNr"
+              <label for="buildingNo" class="form-label mb-1 text-secondary micro-font">Nr budynku:</label>
+              <input type="text" class="form-control form-control-sm ${addEditEmployerData.buildingNo.errorStyle}"
+                     id="buildingNo" value="${addEditEmployerData.buildingNo.value}" name="buildingNo"
                      placeholder="np. 43c"
                      maxlength="5">
-              <div class="invalid-feedback lh-sm">${addEditEmployerData.buildingNr.message}</div>
+              <div class="invalid-feedback lh-sm">${addEditEmployerData.buildingNo.message}</div>
             </div>
             <div class="col-xl-6 mb-3">
-              <label for="apartmentNr" class="form-label mb-1 text-secondary micro-font">
+              <label for="apartmentNo" class="form-label mb-1 text-secondary micro-font">
                 Nr mieszkania (opcjonalnie):
               </label>
-              <input type="text" class="form-control form-control-sm ${addEditEmployerData.apartmentNr.errorStyle}"
-                     id="apartmentNr" value="${addEditEmployerData.apartmentNr.value}" name="apartmentNr"
+              <input type="text" class="form-control form-control-sm ${addEditEmployerData.apartmentNo.errorStyle}"
+                     id="apartmentNo" value="${addEditEmployerData.apartmentNo.value}" name="apartmentNo"
                      placeholder="np. 12"
                      maxlength="5">
-              <div class="invalid-feedback lh-sm">${addEditEmployerData.apartmentNr.message}</div>
+              <div class="invalid-feedback lh-sm">${addEditEmployerData.apartmentNo.message}</div>
             </div>
             <div class="col-xl-6 mb-3">
               <label for="city" class="form-label mb-1 text-secondary micro-font">Miasto zamieszkania:</label>

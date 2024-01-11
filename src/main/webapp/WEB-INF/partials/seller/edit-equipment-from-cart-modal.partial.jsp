@@ -23,8 +23,8 @@
               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
           </c:if>
-          <input type="hidden" name="equipmentId" value="${cartEq.id}">
-          <input type="hidden" name="redirPag" value="?page=${pagesData.page}&total=${pagesData.totalPerPage}">
+          <input type="hidden" name="id" value="${cartEq.id}">
+          <input type="hidden" name="redirect" value="?page=${pagesData.page}&total=${pagesData.totalPerPage}">
           <div class="container-fluid">
             <div class="row">
               <div class="col-md-6 mb-3">

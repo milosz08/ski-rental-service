@@ -14,7 +14,7 @@ import pl.polsl.skirentalservice.core.ReqValidatePojo;
 import pl.polsl.skirentalservice.core.ServerConfigBean;
 import pl.polsl.skirentalservice.core.servlet.WebServletRequest;
 import pl.polsl.skirentalservice.exception.DateException;
-import pl.polsl.skirentalservice.util.DateParser;
+import pl.polsl.skirentalservice.util.DateUtils;
 import pl.polsl.skirentalservice.util.Gender;
 import pl.polsl.skirentalservice.util.Regex;
 
@@ -52,11 +52,11 @@ public class AddEditEmployerReqDto implements ReqValidatePojo {
     private String street;
 
     @NotEmpty(message = "Pole nr budynku zamieszkania nie może być puste.")
-    @Pattern(regexp = Regex.BUILDING_NR, message = "Nieprawidłowa wartość/wartości w polu nr budynku.")
-    private String buildingNr;
+    @Pattern(regexp = Regex.BUILDING_NO, message = "Nieprawidłowa wartość/wartości w polu nr budynku.")
+    private String buildingNo;
 
-    @Pattern(regexp = Regex.APARTMENT_NR, message = "Nieprawidłowa wartość/wartości w polu nr mieszkania.")
-    private String apartmentNr;
+    @Pattern(regexp = Regex.APARTMENT_NO, message = "Nieprawidłowa wartość/wartości w polu nr mieszkania.")
+    private String apartmentNo;
 
     @NotEmpty(message = "Pole miasto zamieszkania nie może być puste.")
     @Pattern(regexp = Regex.CITY, message = "Nieprawidłowa wartość/wartości w polu miasto zamieszkania.")
@@ -76,19 +76,19 @@ public class AddEditEmployerReqDto implements ReqValidatePojo {
         this.bornDate = StringUtils.trimToEmpty(req.getParameter("bornDate"));
         this.hiredDate = StringUtils.trimToEmpty(req.getParameter("hiredDate"));
         this.street = StringUtils.trimToEmpty(req.getParameter("street"));
-        this.buildingNr = StringUtils.trimToEmpty(req.getParameter("buildingNr")).toLowerCase();
-        this.apartmentNr = StringUtils.toRootLowerCase(StringUtils.trimToNull(req.getParameter("apartmentNr")));
+        this.buildingNo = StringUtils.trimToEmpty(req.getParameter("buildingNo")).toLowerCase();
+        this.apartmentNo = StringUtils.toRootLowerCase(StringUtils.trimToNull(req.getParameter("apartmentNo")));
         this.city = StringUtils.trimToEmpty(req.getParameter("city"));
         this.postalCode = StringUtils.trimToEmpty(req.getParameter("postalCode"));
         this.gender = Gender.findByAlias(req.getParameter("gender"));
     }
 
     public LocalDate getParsedBornDate() {
-        return DateParser.parseToDateOnly(bornDate);
+        return DateUtils.parseToDateOnly(bornDate);
     }
 
     public LocalDate getParsedHiredDate() {
-        return DateParser.parseToDateOnly(hiredDate);
+        return DateUtils.parseToDateOnly(hiredDate);
     }
 
     public String getFullAddress() {
@@ -96,8 +96,8 @@ public class AddEditEmployerReqDto implements ReqValidatePojo {
             StringUtils.SPACE,
             "ul.",
             street,
-            buildingNr,
-            StringUtils.isBlank(apartmentNr) ? StringUtils.EMPTY : "/" + apartmentNr,
+            buildingNo,
+            StringUtils.isBlank(apartmentNo) ? StringUtils.EMPTY : "/" + apartmentNo,
             postalCode,
             city);
     }
@@ -124,8 +124,8 @@ public class AddEditEmployerReqDto implements ReqValidatePojo {
             ", bornDate=" + bornDate +
             ", hiredDate=" + hiredDate +
             ", street=" + street +
-            ", buildingNr=" + buildingNr +
-            ", apartmentNr=" + apartmentNr +
+            ", buildingNo=" + buildingNo +
+            ", apartmentNo=" + apartmentNo +
             ", city=" + city +
             ", postalCode=" + postalCode +
             ", gender=" + gender +

@@ -11,7 +11,7 @@ import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import pl.polsl.skirentalservice.core.ReqValidatePojo;
 import pl.polsl.skirentalservice.core.servlet.WebServletRequest;
-import pl.polsl.skirentalservice.util.DateParser;
+import pl.polsl.skirentalservice.util.DateUtils;
 import pl.polsl.skirentalservice.util.Regex;
 
 import java.time.LocalDateTime;
@@ -41,11 +41,11 @@ public class NewRentDetailsReqDto implements ReqValidatePojo {
     }
 
     public LocalDateTime getParsedRentDateTime() {
-        return DateParser.parse(rentDateTime);
+        return DateUtils.parse(rentDateTime);
     }
 
     public LocalDateTime getParsedReturnDateTime() {
-        return DateParser.parse(returnDateTime);
+        return DateUtils.parse(returnDateTime);
     }
 
     @Override

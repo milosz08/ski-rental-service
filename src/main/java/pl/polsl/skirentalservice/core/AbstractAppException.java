@@ -8,8 +8,4 @@ public abstract class AbstractAppException extends RuntimeException {
     public AbstractAppException(String message) {
         super(message);
     }
-
-    public AbstractAppException(Throwable cause) {
-        super(cause);
-    }
 }

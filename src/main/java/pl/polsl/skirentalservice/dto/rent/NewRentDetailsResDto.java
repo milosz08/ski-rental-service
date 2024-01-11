@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import pl.polsl.skirentalservice.core.ValidatorBean;
 import pl.polsl.skirentalservice.dto.FormValueInfoTupleDto;
-import pl.polsl.skirentalservice.util.DateParser;
+import pl.polsl.skirentalservice.util.DateUtils;
 import pl.polsl.skirentalservice.util.RentStatus;
 
 import java.time.LocalDateTime;
@@ -32,7 +32,7 @@ public class NewRentDetailsResDto {
     }
 
     public LocalDateTime getParsedIssuedDateTime() {
-        return DateParser.parse(issuedDateTime);
+        return DateUtils.parse(issuedDateTime);
     }
 
     @Override

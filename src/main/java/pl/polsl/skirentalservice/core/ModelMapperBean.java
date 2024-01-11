@@ -21,6 +21,7 @@ public class ModelMapperBean {
     public ModelMapperBean() {
         modelMapper = new ModelMapper();
         modelMapper.getConfiguration()
+            .setPropertyCondition(Conditions.isNotNull())
             .setMatchingStrategy(MatchingStrategies.STANDARD)
             .setFieldMatchingEnabled(true)
             .setFieldAccessLevel(Configuration.AccessLevel.PRIVATE)

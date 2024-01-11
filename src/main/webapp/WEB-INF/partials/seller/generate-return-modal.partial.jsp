@@ -15,7 +15,7 @@
           Data zwrotu zostanie ustawiona na aktualną, a ceny zawartych sprzętów zostaną automatycznie
           ponownie przeliczone.
         </p>
-        <input type="hidden" name="rentId" value="${param.id}"/>
+        <input type="hidden" name="id" value="${param.id}"/>
         <div>
           <label for="description" class="form-label mb-1 text-secondary micro-font">
             Dodatkowy opis (uwagi do generowanego zwrotu):

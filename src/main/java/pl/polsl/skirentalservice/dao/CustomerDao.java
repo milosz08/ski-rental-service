@@ -15,7 +15,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CustomerDao {
-    boolean checkIfCustomerExist(Object rentId);
+    boolean checkIfCustomerExist(Object customerId);
+    boolean checkIfCustomerByRentIdExist(Object rentId);
     boolean checkIfCustomerHasAnyActiveRents(Object customerId);
     Optional<CustomerDetailsResDto> findCustomerDetails(Object customerId);
     Optional<CustomerDetailsReturnResDto> findCustomerDetailsForReturnDocument(Object rentId);

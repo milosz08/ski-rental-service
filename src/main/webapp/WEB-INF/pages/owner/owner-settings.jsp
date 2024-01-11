@@ -88,22 +88,22 @@
               <div class="invalid-feedback lh-sm">${addEditOwnerData.street.message}</div>
             </div>
             <div class="col-xl-6 mb-3">
-              <label for="buildingNr" class="form-label mb-1 text-secondary micro-font">Nr budynku:</label>
-              <input type="text" class="form-control form-control-sm ${addEditOwnerData.buildingNr.errorStyle}"
-                     id="buildingNr" value="${addEditOwnerData.buildingNr.value}" name="buildingNr"
+              <label for="buildingNo" class="form-label mb-1 text-secondary micro-font">Nr budynku:</label>
+              <input type="text" class="form-control form-control-sm ${addEditOwnerData.buildingNo.errorStyle}"
+                     id="buildingNo" value="${addEditOwnerData.buildingNo.value}" name="buildingNo"
                      placeholder="np. 43c"
                      maxlength="5">
-              <div class="invalid-feedback lh-sm">${addEditOwnerData.buildingNr.message}</div>
+              <div class="invalid-feedback lh-sm">${addEditOwnerData.buildingNo.message}</div>
             </div>
             <div class="col-xl-6 mb-3">
-              <label for="apartmentNr" class="form-label mb-1 text-secondary micro-font">
+              <label for="apartmentNo" class="form-label mb-1 text-secondary micro-font">
                 Nr mieszkania (opcjonalnie):
               </label>
-              <input type="text" class="form-control form-control-sm ${addEditOwnerData.apartmentNr.errorStyle}"
-                     id="apartmentNr" value="${addEditOwnerData.apartmentNr.value}" name="apartmentNr"
+              <input type="text" class="form-control form-control-sm ${addEditOwnerData.apartmentNo.errorStyle}"
+                     id="apartmentNo" value="${addEditOwnerData.apartmentNo.value}" name="apartmentNo"
                      placeholder="np. 12"
                      maxlength="5">
-              <div class="invalid-feedback lh-sm">${addEditOwnerData.apartmentNr.message}</div>
+              <div class="invalid-feedback lh-sm">${addEditOwnerData.apartmentNo.message}</div>
             </div>
             <div class="col-xl-6 mb-3">
               <label for="city" class="form-label mb-1 text-secondary micro-font">Miasto zamieszkania:</label>

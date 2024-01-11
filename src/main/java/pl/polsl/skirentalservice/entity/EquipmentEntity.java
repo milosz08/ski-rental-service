@@ -116,7 +116,7 @@ public class EquipmentEntity extends AuditableEntity implements Serializable {
         this.countInStore = countInStore;
     }
 
-    Integer getAvailableCount() {
+    public Integer getAvailableCount() {
         return availableCount;
     }
 

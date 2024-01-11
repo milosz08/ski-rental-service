@@ -12,8 +12,10 @@ import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.pl.PESEL;
 import pl.polsl.skirentalservice.core.ReqValidatePojo;
+import pl.polsl.skirentalservice.core.ServerConfigBean;
 import pl.polsl.skirentalservice.core.servlet.WebServletRequest;
-import pl.polsl.skirentalservice.util.DateParser;
+import pl.polsl.skirentalservice.exception.DateException;
+import pl.polsl.skirentalservice.util.DateUtils;
 import pl.polsl.skirentalservice.util.Gender;
 import pl.polsl.skirentalservice.util.Regex;
 
@@ -51,11 +53,11 @@ public class AddEditCustomerReqDto implements ReqValidatePojo {
     private String street;
 
     @NotEmpty(message = "Pole nr budynku zamieszkania nie może być puste.")
-    @Pattern(regexp = Regex.BUILDING_NR, message = "Nieprawidłowa wartość/wartości w polu nr budynku.")
-    private String buildingNr;
+    @Pattern(regexp = Regex.BUILDING_NO, message = "Nieprawidłowa wartość/wartości w polu nr budynku.")
+    private String buildingNo;
 
-    @Pattern(regexp = Regex.APARTMENT_NR, message = "Nieprawidłowa wartość/wartości w polu nr mieszkania.")
-    private String apartmentNr;
+    @Pattern(regexp = Regex.APARTMENT_NO, message = "Nieprawidłowa wartość/wartości w polu nr mieszkania.")
+    private String apartmentNo;
 
     @NotEmpty(message = "Pole miasto zamieszkania nie może być puste.")
     @Pattern(regexp = Regex.CITY, message = "Nieprawidłowa wartość/wartości w polu miasto zamieszkania.")
@@ -75,15 +77,21 @@ public class AddEditCustomerReqDto implements ReqValidatePojo {
         this.bornDate = StringUtils.trimToEmpty(req.getParameter("bornDate"));
         this.emailAddress = StringUtils.trimToEmpty(req.getParameter("emailAddress"));
         this.street = StringUtils.trimToEmpty(req.getParameter("street"));
-        this.buildingNr = StringUtils.trimToEmpty(req.getParameter("buildingNr")).toLowerCase();
-        this.apartmentNr = StringUtils.toRootLowerCase(StringUtils.trimToNull(req.getParameter("apartmentNr")));
+        this.buildingNo = StringUtils.trimToEmpty(req.getParameter("buildingNo")).toLowerCase();
+        this.apartmentNo = StringUtils.toRootLowerCase(StringUtils.trimToNull(req.getParameter("apartmentNo")));
         this.city = StringUtils.trimToEmpty(req.getParameter("city"));
         this.postalCode = StringUtils.trimToEmpty(req.getParameter("postalCode"));
         this.gender = Gender.findByAlias(req.getParameter("gender"));
     }
 
     public LocalDate getParsedBornDate() {
-        return DateParser.parseToDateOnly(bornDate);
+        return DateUtils.parseToDateOnly(bornDate);
+    }
+
+    public void validateMaturityAge(ServerConfigBean serverConfigBean) {
+        if (getParsedBornDate().isAfter(LocalDate.now().minusYears(serverConfigBean.getMaturityAge()))) {
+            throw new DateException.DateInFutureException("data urodzenia", serverConfigBean.getMaturityAge());
+        }
     }
 
     @Override
@@ -96,8 +104,8 @@ public class AddEditCustomerReqDto implements ReqValidatePojo {
             ", bornDate=" + bornDate +
             ", emailAddress=" + emailAddress +
             ", street=" + street +
-            ", buildingNr=" + buildingNr +
-            ", apartmentNr=" + apartmentNr +
+            ", buildingNo=" + buildingNo +
+            ", apartmentNo=" + apartmentNo +
             ", city=" + city +
             ", postalCode=" + postalCode +
             '}';

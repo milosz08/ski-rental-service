@@ -7,7 +7,7 @@ package pl.polsl.skirentalservice.dto.rent;
 import lombok.Data;
 import pl.polsl.skirentalservice.dto.PriceUnitsDto;
 import pl.polsl.skirentalservice.dto.customer.CustomerDetailsResDto;
-import pl.polsl.skirentalservice.util.DateParser;
+import pl.polsl.skirentalservice.util.DateUtils;
 import pl.polsl.skirentalservice.util.RentStatus;
 
 import java.time.LocalDateTime;
@@ -43,11 +43,11 @@ public class InMemoryRentDataDto {
     }
 
     public LocalDateTime getParsedRentDateTime() {
-        return DateParser.parse(rentDateTime);
+        return DateUtils.parse(rentDateTime);
     }
 
     public LocalDateTime getParsedReturnDateTime() {
-        return DateParser.parse(returnDateTime);
+        return DateUtils.parse(returnDateTime);
     }
 
     @Override

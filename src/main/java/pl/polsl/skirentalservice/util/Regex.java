@@ -16,8 +16,8 @@ public class Regex {
     public static final String PHONE_NUMBER = "^[0-9]{3}( |)[0-9]{3}( |)[0-9]{3}$";
     public static final String DATE = "^[0-9]{4}\\-(0[1-9]|1[012])\\-(0[1-9]|[12][0-9]|3[01])$";
     public static final String STREET = "^[a-zA-Z0-9ąćęłńóśźżĄĆĘŁŃÓŚŹŻ\\- ]{2,50}$";
-    public static final String BUILDING_NR = "^([0-9]+(?:[a-z]{0,1})){1,5}$";
-    public static final String APARTMENT_NR = "^([0-9]+(?:[a-z]{0,1})){0,5}$";
+    public static final String BUILDING_NO = "^([0-9]+(?:[a-z]{0,1})){1,5}$";
+    public static final String APARTMENT_NO = "^([0-9]+(?:[a-z]{0,1})){0,5}$";
     public static final String CITY = "^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ\\- ]{2,70}$";
     public static final String POSTAL_CODE = "^[0-9]{2}-[0-9]{3}$";
     public static final String DEF_SELECT_VALUE = "\\b(?!none\\b)\\w+";

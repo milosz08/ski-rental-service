@@ -24,11 +24,19 @@ public class CustomerDaoHib extends AbstractHibernateDao implements CustomerDao 
     }
 
     @Override
-    public boolean checkIfCustomerExist(Object rentId) {
-        final String jpqlFindCustomerExist = """
-                SELECT COUNT(c.id) > 0 FROM RentEntity r INNER JOIN r.customer c WHERE r.id = :rid
+    public boolean checkIfCustomerExist(Object customerId) {
+        final String jpqlCheckIfCustomerExist = "SELECT COUNT(c.id) > 0 FROM CustomerEntity c WHERE c.id = :cid";
+        return session.createQuery(jpqlCheckIfCustomerExist, Boolean.class)
+            .setParameter("cid", customerId)
+            .getSingleResult();
+    }
+
+    @Override
+    public boolean checkIfCustomerByRentIdExist(Object rentId) {
+        final String jpqlCheckIfCustomerExist = """
+            SELECT COUNT(c) > 0 FROM RentEntity r INNER JOIN r.customer c WHERE r.id = :rid AND c.id <> NULL
             """;
-        return session.createQuery(jpqlFindCustomerExist, Boolean.class)
+        return session.createQuery(jpqlCheckIfCustomerExist, Boolean.class)
             .setParameter("rid", rentId)
             .getSingleResult();
     }

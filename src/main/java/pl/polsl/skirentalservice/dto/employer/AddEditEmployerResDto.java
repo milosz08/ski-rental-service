@@ -23,8 +23,8 @@ public class AddEditEmployerResDto {
     private FormValueInfoTupleDto bornDate;
     private FormValueInfoTupleDto hiredDate;
     private FormValueInfoTupleDto street;
-    private FormValueInfoTupleDto buildingNr;
-    private FormValueInfoTupleDto apartmentNr;
+    private FormValueInfoTupleDto buildingNo;
+    private FormValueInfoTupleDto apartmentNo;
     private FormValueInfoTupleDto city;
     private FormValueInfoTupleDto postalCode;
     private List<FormSelectTupleDto> genders = Gender.getGenders();
@@ -37,8 +37,8 @@ public class AddEditEmployerResDto {
         this.bornDate = validator.validateField(reqDto, "bornDate", reqDto.getBornDate());
         this.hiredDate = validator.validateField(reqDto, "hiredDate", reqDto.getHiredDate());
         this.street = validator.validateField(reqDto, "street", reqDto.getStreet());
-        this.buildingNr = validator.validateField(reqDto, "buildingNr", reqDto.getBuildingNr());
-        this.apartmentNr = validator.validateField(reqDto, "apartmentNr", reqDto.getApartmentNr());
+        this.buildingNo = validator.validateField(reqDto, "buildingNo", reqDto.getBuildingNo());
+        this.apartmentNo = validator.validateField(reqDto, "apartmentNo", reqDto.getApartmentNo());
         this.city = validator.validateField(reqDto, "city", reqDto.getCity());
         this.postalCode = validator.validateField(reqDto, "postalCode", reqDto.getPostalCode());
         this.genders = Gender.getSelectedGender(reqDto.getGender());
@@ -54,8 +54,8 @@ public class AddEditEmployerResDto {
             ", bornDate=" + bornDate +
             ", hiredDate=" + hiredDate +
             ", street=" + street +
-            ", buildingNr=" + buildingNr +
-            ", localeNr=" + apartmentNr +
+            ", buildingNo=" + buildingNo +
+            ", localeNo=" + apartmentNo +
             ", city=" + city +
             ", postalCode=" + postalCode +
             '}';

@@ -130,7 +130,7 @@ public class RentEntity extends AuditableEntity implements Serializable {
         this.totalDepositPrice = totalDepositPrice;
     }
 
-    CustomerEntity getCustomer() {
+    public CustomerEntity getCustomer() {
         return customer;
     }
 
