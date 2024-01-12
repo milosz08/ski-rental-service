@@ -8,12 +8,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.annotation.WebInitParam;
-import jakarta.servlet.http.HttpFilter;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import pl.polsl.skirentalservice.core.servlet.AbstractWebFilter;
+import pl.polsl.skirentalservice.core.servlet.WebServletRequest;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
-import pl.polsl.skirentalservice.util.SessionAttribute;
 
 import java.io.IOException;
 
@@ -22,17 +19,14 @@ import java.io.IOException;
     "/forgot-password-request",
     "/change-forgotten-password/*",
 }, initParams = @WebInitParam(name = "mood", value = "awake"))
-public class RedirectNonProtectedRoutesFilter extends HttpFilter {
+public class RedirectNonProtectedRoutesFilter extends AbstractWebFilter {
     @Override
-    protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
-        throws IOException, ServletException {
-        final HttpSession httpSession = req.getSession();
-        final var loggedUserDetailsDto = (LoggedUserDataDto) httpSession
-            .getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
-        if (loggedUserDetailsDto != null) {
-            res.sendRedirect("/" + loggedUserDetailsDto.getRoleEng() + "/dashboard");
+    protected void doWebFilter(WebServletRequest req, FilterChain chain) throws IOException, ServletException {
+        final LoggedUserDataDto loggedUser = req.getLoggedUser();
+        if (loggedUser != null) {
+            req.sendRedirect("/" + loggedUser.getRoleEng() + "/dashboard");
             return;
         }
-        chain.doFilter(req, res);
+        continueRequest(req, chain);
     }
 }
