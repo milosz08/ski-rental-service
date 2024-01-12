@@ -4,77 +4,67 @@
  */
 package pl.polsl.skirentalservice.domain.owner.attribute;
 
-import jakarta.servlet.ServletException;
+import jakarta.inject.Inject;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import pl.polsl.skirentalservice.core.ValidatorSingleton;
-import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.EquipmentColorDao;
-import pl.polsl.skirentalservice.dao.hibernate.EquipmentColorDaoHib;
+import pl.polsl.skirentalservice.core.AbstractAppException;
+import pl.polsl.skirentalservice.core.ServerConfigBean;
+import pl.polsl.skirentalservice.core.servlet.*;
+import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.attribute.AttributeModalResDto;
 import pl.polsl.skirentalservice.dto.attribute.AttributeValidatorPayloadDto;
-import pl.polsl.skirentalservice.entity.EquipmentColorEntity;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import pl.polsl.skirentalservice.service.EquipmentAttributeService;
 import pl.polsl.skirentalservice.util.AlertType;
 import pl.polsl.skirentalservice.util.SessionAttribute;
-import pl.polsl.skirentalservice.util.Utils;
-
-import java.io.IOException;
-
-import static pl.polsl.skirentalservice.exception.AlreadyExistException.EquipmentColorAlreadyExistException;
 
 @Slf4j
 @WebServlet("/owner/add-equipment-color")
-public class OwnerAddEquipmentColorServlet extends HttpServlet {
-    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
-    private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
+public class OwnerAddEquipmentColorServlet extends AbstractWebServlet {
+    private final EquipmentAttributeService equipmentAttributeService;
+
+    @Inject
+    public OwnerAddEquipmentColorServlet(
+        EquipmentAttributeService equipmentAttributeService,
+        ServerConfigBean serverConfigBean
+    ) {
+        super(serverConfigBean);
+        this.equipmentAttributeService = equipmentAttributeService;
+    }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final AttributeValidatorPayloadDto payload = Utils.validateEquipmentAttribute(req, validator);
-        final String loggedUser = Utils.getLoggedUserLogin(req);
-        final HttpSession httpSession = req.getSession();
+    protected WebServletResponse httpPostCall(WebServletRequest req) {
+        final String redirectUrl = req.getParameter("redirect", "/owner/add-equipment");
+        final LoggedUserDataDto loggedUser = req.getLoggedUser();
+
+        final AttributeValidatorPayloadDto payload = equipmentAttributeService.validateEquipmentAttribute(req);
         if (payload.isInvalid()) {
-            httpSession.setAttribute(SessionAttribute.EQ_COLORS_MODAL_DATA.getName(), payload.resDto());
-            res.sendRedirect(StringUtils.defaultIfBlank(req.getParameter("redirect"), "/owner/add-equipment"));
-            return;
+            req.setSessionAttribute(SessionAttribute.EQ_COLORS_MODAL_DATA, payload.resDto());
+            throw new WebServletRedirectException(redirectUrl);
         }
-        try (final Session session = sessionFactory.openSession()) {
-            try {
-                session.beginTransaction();
-                final EquipmentColorDao equipmentDetailsDao = new EquipmentColorDaoHib(session);
-
-                if (equipmentDetailsDao.checkIfEquipmentColorExistByName(payload.reqDto().getName())) {
-                    throw new EquipmentColorAlreadyExistException();
-                }
-                final EquipmentColorEntity colorEntity = new EquipmentColorEntity(payload.reqDto().getName());
-                session.persist(colorEntity);
-
-                payload.alert().setType(AlertType.INFO);
-                payload.alert().setMessage(
-                    "Nastąpiło pomyślne dodanie nowego koloru sprzętu narciarskiego: <strong>" +
-                        payload.reqDto().getName() + "</strong>."
-                );
-                session.getTransaction().commit();
-                log.info("Successful added new equipment color by: {}. Color: {}", loggedUser,
-                    payload.reqDto().getName());
-            } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, log, ex);
-            }
-        } catch (RuntimeException ex) {
-            payload.alert().setMessage(ex.getMessage());
-            log.error("Failure add new equipment color by: {}. Cause: {}", loggedUser, ex.getMessage());
+        final AttributeModalResDto res = payload.resDto();
+        final AlertTupleDto alert = payload.alert();
+        try {
+            equipmentAttributeService.createNewEquipmentColor(payload.reqDto().getName(), loggedUser);
+            alert.setType(AlertType.INFO);
+            alert.setMessage(
+                "Nastąpiło pomyślne dodanie nowego koloru sprzętu narciarskiego: <strong>" +
+                    payload.reqDto().getName() + "</strong>."
+            );
+        } catch (AbstractAppException ex) {
+            alert.setMessage(ex.getMessage());
+            log.error("Failure add new equipment color by: {}. Cause: {}", loggedUser.getLogin(), ex.getMessage());
         }
-        payload.alert().setActive(true);
-        payload.resDto().setAlert(payload.alert());
-        payload.resDto().setModalImmediatelyOpen(true);
-        payload.resDto().getName().setValue(StringUtils.EMPTY);
-        httpSession.setAttribute(SessionAttribute.EQ_COLORS_MODAL_DATA.getName(), payload.resDto());
-        res.sendRedirect(StringUtils.defaultIfBlank(req.getParameter("redirect"), "/owner/add-equipment"));
+        alert.setActive(true);
+        res.setAlert(alert);
+        res.setModalImmediatelyOpen(true);
+        res.getName().setValue(StringUtils.EMPTY);
+
+        req.setSessionAttribute(SessionAttribute.EQ_COLORS_MODAL_DATA, payload.resDto());
+        return WebServletResponse.builder()
+            .mode(HttpMethodMode.REDIRECT)
+            .pageOrRedirectTo(redirectUrl)
+            .build();
     }
 }

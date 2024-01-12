@@ -4,29 +4,33 @@
  */
 package pl.polsl.skirentalservice.domain;
 
+import jakarta.inject.Inject;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
-import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import pl.polsl.skirentalservice.core.ServerConfigBean;
+import pl.polsl.skirentalservice.core.servlet.AbstractWebServlet;
+import pl.polsl.skirentalservice.core.servlet.HttpMethodMode;
+import pl.polsl.skirentalservice.core.servlet.WebServletRequest;
+import pl.polsl.skirentalservice.core.servlet.WebServletResponse;
 import pl.polsl.skirentalservice.dto.logout.LogoutModalDto;
 import pl.polsl.skirentalservice.util.SessionAttribute;
 
-import java.io.IOException;
-
 @Slf4j
 @WebServlet("/logout")
-public class LogoutServlet extends HttpServlet {
+public class LogoutServlet extends AbstractWebServlet {
+    @Inject
+    public LogoutServlet(ServerConfigBean serverConfigBean) {
+        super(serverConfigBean);
+    }
+
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
-        final HttpSession httpSession = req.getSession(false);
-        final var detailsDto = (LoggedUserDataDto) httpSession
-            .getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
-        httpSession.removeAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
-        httpSession.setAttribute(SessionAttribute.LOGOUT_MODAL.getName(), new LogoutModalDto(true));
-        log.info("Successful logout from user account. Account data: {}", detailsDto);
-        res.sendRedirect("/login");
+    protected WebServletResponse httpGetCall(WebServletRequest req) {
+        req.deleteSessionAttribute(SessionAttribute.LOGGED_USER_DETAILS);
+        req.setSessionAttribute(SessionAttribute.LOGOUT_MODAL, new LogoutModalDto(true));
+        log.info("Successful logout from user account. Account data: '{}'.", req.getLoggedUser());
+        return WebServletResponse.builder()
+            .mode(HttpMethodMode.REDIRECT)
+            .pageOrRedirectTo("login")
+            .build();
     }
 }

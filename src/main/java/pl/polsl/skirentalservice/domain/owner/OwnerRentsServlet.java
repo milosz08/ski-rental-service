@@ -4,106 +4,97 @@
  */
 package pl.polsl.skirentalservice.domain.owner;
 
-import jakarta.servlet.ServletException;
+import jakarta.inject.Inject;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.RentDao;
-import pl.polsl.skirentalservice.dao.hibernate.RentDaoHib;
+import pl.polsl.skirentalservice.core.AbstractAppException;
+import pl.polsl.skirentalservice.core.ServerConfigBean;
+import pl.polsl.skirentalservice.core.servlet.HttpMethodMode;
+import pl.polsl.skirentalservice.core.servlet.WebServletRequest;
+import pl.polsl.skirentalservice.core.servlet.WebServletResponse;
+import pl.polsl.skirentalservice.core.servlet.pageable.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.dto.rent.OwnerRentRecordResDto;
-import pl.polsl.skirentalservice.paging.filter.FilterColumn;
-import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
-import pl.polsl.skirentalservice.paging.filter.ServletFilter;
-import pl.polsl.skirentalservice.paging.pagination.ServletPagination;
-import pl.polsl.skirentalservice.paging.sorter.ServletSorter;
-import pl.polsl.skirentalservice.paging.sorter.ServletSorterField;
-import pl.polsl.skirentalservice.paging.sorter.SorterDataDto;
-import pl.polsl.skirentalservice.util.*;
+import pl.polsl.skirentalservice.service.RentService;
+import pl.polsl.skirentalservice.util.AlertType;
+import pl.polsl.skirentalservice.util.PageTitle;
+import pl.polsl.skirentalservice.util.SessionAlert;
+import pl.polsl.skirentalservice.util.SessionAttribute;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @WebServlet("/owner/rents")
-public class OwnerRentsServlet extends HttpServlet {
-    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
+public class OwnerRentsServlet extends AbstractPageableWebServlet {
+    private final RentService rentService;
 
-    private final Map<String, ServletSorterField> sorterFieldMap = new HashMap<>();
-    private final List<FilterColumn> filterFieldMap = new ArrayList<>();
-
-    @Override
-    public void init() {
-        sorterFieldMap.put("identity", new ServletSorterField("r.id"));
-        sorterFieldMap.put("issuedIdentifier", new ServletSorterField("r.issuedIdentifier"));
-        sorterFieldMap.put("issuedDateTime", new ServletSorterField("r.issuedDateTime"));
-        sorterFieldMap.put("status", new ServletSorterField("r.status"));
-        sorterFieldMap.put("totalPriceNetto", new ServletSorterField("r.totalPrice"));
-        sorterFieldMap.put("totalPriceBrutto", new ServletSorterField("(r.tax / 100) * r.totalPrice + r.totalPrice"));
-        sorterFieldMap.put("client", new ServletSorterField("CONCAT(d.firstName, ' ', d.lastName)"));
-        sorterFieldMap.put("employer", new ServletSorterField("CONCAT(ed.firstName, ' ', ed.lastName)"));
-        filterFieldMap.add(new FilterColumn("issuedIdentifier", "Numerze wypożyczenia", "r.issuedIdentifier"));
-        filterFieldMap.add(new FilterColumn("issuedDateTime", "Dacie stworzenia wypożyczenia", "CAST(r.issuedDateTime AS string)"));
-        filterFieldMap.add(new FilterColumn("status", "Statusie wypożyczenia", "CAST(r.status AS string)"));
-        filterFieldMap.add(new FilterColumn("client", "Po imieniu i nazwisku klienta", "CONCAT(d.firstName, ' ', d.lastName)"));
-        filterFieldMap.add(new FilterColumn("employer", "Po imieniu i nazwisku pracownika", "CONCAT(ed.firstName, ' ', ed.lastName)"));
+    @Inject
+    public OwnerRentsServlet(
+        RentService rentService,
+        ServerConfigBean serverConfigBean
+    ) {
+        super(serverConfigBean);
+        this.rentService = rentService;
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final int page = NumberUtils.toInt(Objects.requireNonNullElse(req.getParameter("page"), "1"), 1);
-        final int total = NumberUtils.toInt(Objects.requireNonNullElse(req.getParameter("total"), "10"), 10);
-
-        final ServletSorter servletSorter = new ServletSorter(req, "r.id", sorterFieldMap);
-        final SorterDataDto sorterData = servletSorter.generateSortingJPQuery(SessionAttribute.RENTS_LIST_SORTER);
-        final ServletFilter servletFilter = new ServletFilter(req, filterFieldMap);
-        final FilterDataDto filterData = servletFilter.generateFilterJPQuery(SessionAttribute.RENTS_LIST_FILTER);
-
-        final AlertTupleDto alert = Utils.getAndDestroySessionAlert(req, SessionAlert.COMMON_RENTS_PAGE_ALERT);
-        try (final Session session = sessionFactory.openSession()) {
-            try {
-                session.beginTransaction();
-                final RentDao rentDao = new RentDaoHib(session);
-
-                final Long totalRents = rentDao.findAllRentsCount(filterData);
-                final ServletPagination pagination = new ServletPagination(page, total, totalRents);
-                if (pagination.checkIfIsInvalid()) throw new RuntimeException();
-
-                final List<OwnerRentRecordResDto> rentsList = rentDao
-                    .findAllPageableRents(new PageableDto(filterData, sorterData, page, total));
-
-                session.getTransaction().commit();
-                req.setAttribute("pagesData", pagination);
-                req.setAttribute("rentsData", rentsList);
-            } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, log, ex);
-            }
-        } catch (RuntimeException ex) {
+    protected WebServletResponse onFetchPageableData(WebServletRequest req, PageableDto pageable) {
+        final AlertTupleDto alert = req.getAlertAndDestroy(SessionAlert.COMMON_RENTS_PAGE_ALERT);
+        try {
+            final Slice<OwnerRentRecordResDto> pageableRents = rentService.getPageableOwnerRents(pageable);
+            req.addAttribute("pagesData", pageableRents.pagination());
+            req.addAttribute("rentsData", pageableRents.elements());
+        } catch (AbstractAppException ex) {
             alert.setType(AlertType.ERROR);
             alert.setMessage(ex.getMessage());
         }
-        req.setAttribute("alertData", alert);
-        req.setAttribute("sorterData", sorterFieldMap);
-        req.setAttribute("filterData", filterData);
-        req.setAttribute("title", PageTitle.COMMON_RENTS_PAGE.getName());
-        req.getRequestDispatcher("/WEB-INF/pages/owner/rent/owner-rents.jsp").forward(req, res);
+        req.addAttribute("alertData", alert);
+        return WebServletResponse.builder()
+            .mode(HttpMethodMode.JSP_GENERATOR)
+            .pageTitle(PageTitle.COMMON_RENTS_PAGE)
+            .pageOrRedirectTo("owner/rent/owner-rents")
+            .build();
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final int page = NumberUtils.toInt(Objects.requireNonNullElse(req.getParameter("page"), "1"), 1);
-        final int total = NumberUtils.toInt(Objects.requireNonNullElse(req.getParameter("total"), "10"), 10);
-        final ServletSorter servletSorter = new ServletSorter(req, "r.id", sorterFieldMap);
-        servletSorter.generateSortingJPQuery(SessionAttribute.RENTS_LIST_SORTER);
-        final ServletFilter servletFilter = new ServletFilter(req, filterFieldMap);
-        servletFilter.generateFilterJPQuery(SessionAttribute.RENTS_LIST_FILTER);
-        res.sendRedirect("/owner/rents?page=" + page + "&total=" + total);
+    protected Map<String, ServletSorterField> configureServletSorterFields() {
+        return Map.of(
+            "identity", new ServletSorterField("r.id"),
+            "issuedIdentifier", new ServletSorterField("r.issuedIdentifier"),
+            "issuedDateTime", new ServletSorterField("r.issuedDateTime"),
+            "status", new ServletSorterField("r.status"),
+            "totalPriceNetto", new ServletSorterField("r.totalPrice"),
+            "totalPriceBrutto", new ServletSorterField("(r.tax / 100) * r.totalPrice + r.totalPrice"),
+            "client", new ServletSorterField("CONCAT(d.firstName, ' ', d.lastName)"),
+            "employer", new ServletSorterField("CONCAT(ed.firstName, ' ', ed.lastName)")
+        );
+    }
+
+    @Override
+    protected List<FilterColumn> configureServletFilterFields() {
+        return List.of(
+            new FilterColumn("issuedIdentifier", "Numerze wypożyczenia", "r.issuedIdentifier"),
+            new FilterColumn("issuedDateTime", "Dacie stworzenia wypożyczenia", "CAST(r.issuedDateTime AS string)"),
+            new FilterColumn("status", "Statusie wypożyczenia", "CAST(r.status AS string)"),
+            new FilterColumn("client", "Po imieniu i nazwisku klienta", "CONCAT(d.firstName, ' ', d.lastName)"),
+            new FilterColumn("employer", "Po imieniu i nazwisku pracownika", "CONCAT(ed.firstName, ' ', ed.lastName)")
+        );
+    }
+
+    @Override
+    protected String defaultSorterColumn() {
+        return "r.id";
+    }
+
+    @Override
+    protected PageableAttributes setPageableAttributes() {
+        return new PageableAttributes(SessionAttribute.RENTS_LIST_SORTER, SessionAttribute.RENTS_LIST_FILTER);
+    }
+
+    @Override
+    protected String setRedirectOnPostCall(WebServletRequest req) {
+        return "owner/rents";
     }
 }

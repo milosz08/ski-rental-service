@@ -4,69 +4,53 @@
  */
 package pl.polsl.skirentalservice.domain.owner.employer;
 
-import jakarta.servlet.ServletException;
+import jakarta.inject.Inject;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.EmployerDao;
-import pl.polsl.skirentalservice.dao.hibernate.EmployerDaoHib;
+import pl.polsl.skirentalservice.core.AbstractAppException;
+import pl.polsl.skirentalservice.core.ServerConfigBean;
+import pl.polsl.skirentalservice.core.servlet.AbstractWebServlet;
+import pl.polsl.skirentalservice.core.servlet.HttpMethodMode;
+import pl.polsl.skirentalservice.core.servlet.WebServletRequest;
+import pl.polsl.skirentalservice.core.servlet.WebServletResponse;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.ssh.ExecCommand;
-import pl.polsl.skirentalservice.ssh.ExecCommandPerformer;
+import pl.polsl.skirentalservice.service.OwnerEmployerService;
 import pl.polsl.skirentalservice.util.AlertType;
 import pl.polsl.skirentalservice.util.SessionAlert;
-import pl.polsl.skirentalservice.util.Utils;
-
-import java.io.IOException;
-
-import static pl.polsl.skirentalservice.exception.AlreadyExistException.EmployerHasOpenedRentsException;
-import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
 
 @Slf4j
 @WebServlet("/owner/delete-employer")
-public class OwnerDeleteEmployerServlet extends HttpServlet {
-    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
+public class OwnerDeleteEmployerServlet extends AbstractWebServlet {
+    private final OwnerEmployerService ownerEmployerService;
+
+    @Inject
+    public OwnerDeleteEmployerServlet(
+        OwnerEmployerService ownerEmployerService,
+        ServerConfigBean serverConfigBean
+    ) {
+        super(serverConfigBean);
+        this.ownerEmployerService = ownerEmployerService;
+    }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final String userId = req.getParameter("id");
+    protected WebServletResponse httpGetCall(WebServletRequest req) {
+        final Long employerId = req.getAttribute("employerId", Long.class);
         final AlertTupleDto alert = new AlertTupleDto(true);
-
-        final HttpSession httpSession = req.getSession();
-        try (final Session session = sessionFactory.openSession()) {
-            try {
-                session.beginTransaction();
-                final EmployerDao employerDao = new EmployerDaoHib(session);
-
-                final var deletingEmployer = employerDao.findEmployerBasedId(userId)
-                    .orElseThrow(() -> new UserNotFoundException(userId));
-                if (employerDao.checkIfEmployerHasOpenedRents(userId)) throw new EmployerHasOpenedRentsException();
-
-                final ExecCommand commandPerformer = new ExecCommandPerformer();
-                commandPerformer.deleteMailbox(deletingEmployer.getEmailAddress());
-                session.remove(deletingEmployer);
-
-                alert.setType(AlertType.INFO);
-                alert.setMessage(
-                    "Pomyślnie usunięto pracownika z ID <strong>#" + userId + "</strong> z systemu wraz z " +
-                        "jego skrzynką pocztową."
-                );
-                session.getTransaction().commit();
-                log.info("Employer with id: {} was succesfuly removed from system.", userId);
-            } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, log, ex);
-            }
-        } catch (Exception ex) {
+        try {
+            ownerEmployerService.deleteEmployer(employerId);
+            alert.setType(AlertType.INFO);
+            alert.setMessage(
+                "Pomyślnie usunięto pracownika z ID <strong>#" + employerId + "</strong> z systemu wraz z " +
+                    "jego skrzynką pocztową."
+            );
+        } catch (AbstractAppException ex) {
             alert.setMessage(ex.getMessage());
-            log.error("Unable to remove employer with id: {}. Cause: {}", userId, ex.getMessage());
+            log.error("Unable to remove employer with id: {}. Cause: {}", employerId, ex.getMessage());
         }
-        httpSession.setAttribute(SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT.getName(), alert);
-        res.sendRedirect("/owner/employers");
+        req.setSessionAttribute(SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT, alert);
+        return WebServletResponse.builder()
+            .mode(HttpMethodMode.REDIRECT)
+            .pageOrRedirectTo("owner/employers")
+            .build();
     }
 }

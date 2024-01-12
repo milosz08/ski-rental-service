@@ -4,170 +4,112 @@
  */
 package pl.polsl.skirentalservice.domain.owner.equipment;
 
-import jakarta.servlet.ServletException;
+import jakarta.inject.Inject;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.http.entity.ContentType;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.krysalis.barcode4j.impl.upcean.EAN13Bean;
-import org.krysalis.barcode4j.output.bitmap.BitmapCanvasProvider;
-import org.modelmapper.ModelMapper;
-import pl.polsl.skirentalservice.core.ModelMapperGenerator;
-import pl.polsl.skirentalservice.core.ValidatorSingleton;
-import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.core.s3.S3Bucket;
-import pl.polsl.skirentalservice.core.s3.S3ClientSigleton;
-import pl.polsl.skirentalservice.dao.EquipmentBrandDao;
-import pl.polsl.skirentalservice.dao.EquipmentColorDao;
-import pl.polsl.skirentalservice.dao.EquipmentDao;
-import pl.polsl.skirentalservice.dao.EquipmentTypeDao;
-import pl.polsl.skirentalservice.dao.hibernate.EquipmentBrandDaoHib;
-import pl.polsl.skirentalservice.dao.hibernate.EquipmentColorDaoHib;
-import pl.polsl.skirentalservice.dao.hibernate.EquipmentDaoHib;
-import pl.polsl.skirentalservice.dao.hibernate.EquipmentTypeDaoHib;
+import pl.polsl.skirentalservice.core.AbstractAppException;
+import pl.polsl.skirentalservice.core.ServerConfigBean;
+import pl.polsl.skirentalservice.core.ValidatorBean;
+import pl.polsl.skirentalservice.core.servlet.*;
+import pl.polsl.skirentalservice.core.servlet.session.Attribute;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
 import pl.polsl.skirentalservice.dto.equipment.AddEditEquipmentReqDto;
 import pl.polsl.skirentalservice.dto.equipment.AddEditEquipmentResDto;
-import pl.polsl.skirentalservice.entity.EquipmentBrandEntity;
-import pl.polsl.skirentalservice.entity.EquipmentColorEntity;
-import pl.polsl.skirentalservice.entity.EquipmentEntity;
-import pl.polsl.skirentalservice.entity.EquipmentTypeEntity;
-import pl.polsl.skirentalservice.util.*;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import pl.polsl.skirentalservice.service.EquipmentAttributeService;
+import pl.polsl.skirentalservice.service.EquipmentService;
+import pl.polsl.skirentalservice.util.AlertType;
+import pl.polsl.skirentalservice.util.PageTitle;
+import pl.polsl.skirentalservice.util.SessionAlert;
+import pl.polsl.skirentalservice.util.SessionAttribute;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
-import static pl.polsl.skirentalservice.exception.AlreadyExistException.EquipmentAlreadyExistException;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @WebServlet("/owner/add-equipment")
-public class OwnerAddEquipmentServlet extends HttpServlet {
-    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
-    private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
-    private final S3ClientSigleton s3Client = S3ClientSigleton.getInstance();
+public class OwnerAddEquipmentServlet extends AbstractWebServlet implements Attribute {
+    private final EquipmentAttributeService equipmentAttributeService;
+    private final EquipmentService equipmentService;
+    private final ValidatorBean validatorBean;
 
-    private final ModelMapper modelMapper = ModelMapperGenerator.getModelMapper();
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final AlertTupleDto alert = Utils.getAndDestroySessionAlert(req, SessionAlert.OWNER_ADD_EQUIPMENT_PAGE_ALERT);
-        var resDto = Utils.getFromSessionAndDestroy(req, getClass().getName(), AddEditEquipmentResDto.class);
-        if (resDto == null) {
-            resDto = new AddEditEquipmentResDto();
-        }
-        try (final Session session = sessionFactory.openSession()) {
-            try {
-                session.beginTransaction();
-
-                final EquipmentTypeDao equipmentTypeDao = new EquipmentTypeDaoHib(session);
-                final EquipmentBrandDao equipmentBrandDao = new EquipmentBrandDaoHib(session);
-                final EquipmentColorDao equipmentColorDao = new EquipmentColorDaoHib(session);
-
-                resDto.insertTypesSelects(equipmentTypeDao.findAllEquipmentTypes());
-                resDto.insertBrandsSelects(equipmentBrandDao.findAllEquipmentBrands());
-                resDto.insertColorsSelects(equipmentColorDao.findAllEquipmentColors());
-
-                session.getTransaction().commit();
-            } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, log, ex);
-            }
-        } catch (RuntimeException ex) {
-            alert.setActive(true);
-            alert.setMessage(ex.getMessage());
-        }
-        req.setAttribute("alertData", alert);
-        req.setAttribute("addEditEquipmentData", resDto);
-        req.setAttribute("addEditText", "Dodaj");
-        req.setAttribute(SessionAttribute.EQ_TYPES_MODAL_DATA.getName(),
-            Utils.getAndDestroySessionModalData(req, SessionAttribute.EQ_TYPES_MODAL_DATA));
-        req.setAttribute(SessionAttribute.EQ_BRANDS_MODAL_DATA.getName(),
-            Utils.getAndDestroySessionModalData(req, SessionAttribute.EQ_BRANDS_MODAL_DATA));
-        req.setAttribute(SessionAttribute.EQ_COLORS_MODAL_DATA.getName(),
-            Utils.getAndDestroySessionModalData(req, SessionAttribute.EQ_COLORS_MODAL_DATA));
-        req.setAttribute("title", PageTitle.OWNER_ADD_EQUIPMENT_PAGE.getName());
-        req.getRequestDispatcher("/WEB-INF/pages/owner/equipment/owner-add-edit-equipment.jsp").forward(req, res);
+    @Inject
+    public OwnerAddEquipmentServlet(
+        EquipmentAttributeService equipmentAttributeService,
+        EquipmentService equipmentService,
+        ValidatorBean validatorBean,
+        ServerConfigBean serverConfigBean
+    ) {
+        super(serverConfigBean);
+        this.equipmentAttributeService = equipmentAttributeService;
+        this.equipmentService = equipmentService;
+        this.validatorBean = validatorBean;
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final HttpSession httpSession = req.getSession();
+    protected WebServletResponse httpGetCall(WebServletRequest req) {
+        final AlertTupleDto alert = req.getAlertAndDestroy(SessionAlert.OWNER_ADD_EQUIPMENT_PAGE_ALERT);
+        final AddEditEquipmentResDto resDto = req.getFromSessionOrCreate(this, AddEditEquipmentResDto.class);
+        try {
+            final var mergedAttributes = equipmentAttributeService.getMergedEquipmentAttributes();
+
+            resDto.insertTypesSelects(mergedAttributes.get(SessionAttribute.EQ_TYPES_MODAL_DATA));
+            resDto.insertBrandsSelects(mergedAttributes.get(SessionAttribute.EQ_BRANDS_MODAL_DATA));
+            resDto.insertColorsSelects(mergedAttributes.get(SessionAttribute.EQ_COLORS_MODAL_DATA));
+
+            for (final Map.Entry<SessionAttribute, List<FormSelectTupleDto>> entry : mergedAttributes.entrySet()) {
+                req.addAttribute(entry.getKey().getAttributeName(), req.getModalAndDestroy(entry.getKey()));
+            }
+        } catch (AbstractAppException ex) {
+            alert.setActive(true);
+            alert.setMessage(ex.getMessage());
+        }
+        req.addAttribute("alertData", alert);
+        req.addAttribute("addEditEquipmentData", resDto);
+        req.addAttribute("addEditText", "Dodaj");
+
+        return WebServletResponse.builder()
+            .mode(HttpMethodMode.JSP_GENERATOR)
+            .pageTitle(PageTitle.OWNER_ADD_EQUIPMENT_PAGE)
+            .pageOrRedirectTo("owner/equipment/owner-add-edit-equipment")
+            .build();
+    }
+
+    @Override
+    protected WebServletResponse httpPostCall(WebServletRequest req) {
+        final LoggedUserDataDto loggedUser = req.getLoggedUser();
         final AlertTupleDto alert = new AlertTupleDto(true);
-        final String loggedUser = Utils.getLoggedUserLogin(req);
 
         final AddEditEquipmentReqDto reqDto = new AddEditEquipmentReqDto(req);
-        final AddEditEquipmentResDto resDto = new AddEditEquipmentResDto(validator, reqDto);
-        if (validator.someFieldsAreInvalid(reqDto)) {
-            httpSession.setAttribute(getClass().getName(), resDto);
-            res.sendRedirect("/owner/add-equipment");
-            return;
+        final AddEditEquipmentResDto resDto = new AddEditEquipmentResDto(validatorBean, reqDto);
+        if (validatorBean.someFieldsAreInvalid(reqDto)) {
+            throw new WebServletRedirectException("owner/add-equipment", this, resDto);
         }
-        try (final Session session = sessionFactory.openSession()) {
-            try {
-                session.beginTransaction();
-                final EquipmentDao equipmentDao = new EquipmentDaoHib(session);
-
-                if (equipmentDao.checkIfEquipmentModelExist(reqDto.getModel(), null)) {
-                    throw new EquipmentAlreadyExistException();
-                }
-                final EquipmentEntity persistNewEquipment = modelMapper.map(reqDto, EquipmentEntity.class);
-                persistNewEquipment.setType(session.get(EquipmentTypeEntity.class, reqDto.getType()));
-                persistNewEquipment.setBrand(session.get(EquipmentBrandEntity.class, reqDto.getBrand()));
-                persistNewEquipment.setColor(session.get(EquipmentColorEntity.class, reqDto.getColor()));
-                persistNewEquipment.setAvailableCount(Integer.parseInt(reqDto.getCountInStore()));
-
-                boolean barcodeExist;
-                String generatedBarcode;
-                do {
-                    generatedBarcode = Utils.getBarcodeChecksum(RandomStringUtils.randomNumeric(12));
-                    barcodeExist = equipmentDao.checkIfBarCodeExist(generatedBarcode);
-                } while (barcodeExist);
-
-                final EAN13Bean barcodeGenerator = new EAN13Bean();
-                final var canvas = new BitmapCanvasProvider(250, BufferedImage.TYPE_BYTE_BINARY, true, 0);
-                barcodeGenerator.generateBarcode(canvas, generatedBarcode);
-                final BufferedImage barcodeBufferedImage = canvas.getBufferedImage();
-
-                final String fileName = generatedBarcode + ".png";
-                final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                ImageIO.write(barcodeBufferedImage, "png", outputStream);
-
-                final byte[] contentArray = outputStream.toByteArray();
-                final ByteArrayInputStream inputStream = new ByteArrayInputStream(contentArray);
-                s3Client.putObject(S3Bucket.BARCODES, fileName, inputStream, ContentType.IMAGE_PNG, contentArray.length);
-
-                inputStream.close();
-                outputStream.close();
-
-                persistNewEquipment.setBarcode(generatedBarcode);
-                session.persist(persistNewEquipment);
-                session.getTransaction().commit();
-                alert.setType(AlertType.INFO);
-                alert.setMessage(
-                    "Nastąpiło pomyślne zapisanie nowego sprzętu oraz wygenerowanie dla niego kodu kreskowego."
-                );
-                httpSession.setAttribute(SessionAlert.COMMON_EQUIPMENTS_PAGE_ALERT.getName(), alert);
-                httpSession.removeAttribute(getClass().getName());
-                log.info("Successful created new equipment with bar code image by: {}. Equipment data: {}",
-                    loggedUser, reqDto);
-                res.sendRedirect("/owner/equipments");
-            } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, log, ex);
-            }
-        } catch (RuntimeException ex) {
+        String redirectUrl = "owner/add-equipment";
+        try {
+            equipmentService.createNewEquipment(reqDto, loggedUser);
+            alert.setType(AlertType.INFO);
+            alert.setMessage(
+                "Nastąpiło pomyślne zapisanie nowego sprzętu oraz wygenerowanie dla niego kodu kreskowego."
+            );
+            req.setSessionAttribute(SessionAlert.COMMON_EQUIPMENTS_PAGE_ALERT, alert);
+            req.deleteSessionAttribute(this);
+            redirectUrl = "owner/equipments";
+        } catch (AbstractAppException ex) {
             alert.setMessage(ex.getMessage());
-            httpSession.setAttribute(getClass().getName(), resDto);
-            httpSession.setAttribute(SessionAlert.OWNER_ADD_EQUIPMENT_PAGE_ALERT.getName(), alert);
+            req.setSessionAttribute(this, resDto);
+            req.setSessionAttribute(SessionAlert.OWNER_ADD_EQUIPMENT_PAGE_ALERT, alert);
             log.error("Unable to create new equipment. Cause: {}", ex.getMessage());
-            res.sendRedirect("/owner/add-equipment");
         }
+        return WebServletResponse.builder()
+            .mode(HttpMethodMode.REDIRECT)
+            .pageOrRedirectTo(redirectUrl)
+            .build();
+    }
+
+    @Override
+    public String getAttributeName() {
+        return getClass().getName();
     }
 }

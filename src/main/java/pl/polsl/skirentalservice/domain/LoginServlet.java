@@ -4,89 +4,88 @@
  */
 package pl.polsl.skirentalservice.domain;
 
-import at.favre.lib.crypto.bcrypt.BCrypt;
-import jakarta.servlet.ServletException;
+import jakarta.inject.Inject;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import pl.polsl.skirentalservice.core.ValidatorSingleton;
-import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.EmployerDao;
-import pl.polsl.skirentalservice.dao.hibernate.EmployerDaoHib;
+import pl.polsl.skirentalservice.core.AbstractAppException;
+import pl.polsl.skirentalservice.core.ServerConfigBean;
+import pl.polsl.skirentalservice.core.ValidatorBean;
+import pl.polsl.skirentalservice.core.servlet.*;
+import pl.polsl.skirentalservice.core.servlet.session.Attribute;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.dto.login.LoginFormReqDto;
 import pl.polsl.skirentalservice.dto.login.LoginFormResDto;
 import pl.polsl.skirentalservice.dto.logout.LogoutModalDto;
-import pl.polsl.skirentalservice.util.*;
-
-import java.io.IOException;
-
-import static pl.polsl.skirentalservice.exception.CredentialException.InvalidCredentialsException;
-import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
+import pl.polsl.skirentalservice.service.AuthService;
+import pl.polsl.skirentalservice.util.PageTitle;
+import pl.polsl.skirentalservice.util.SessionAlert;
+import pl.polsl.skirentalservice.util.SessionAttribute;
 
 @Slf4j
 @WebServlet("/login")
-public class LoginServlet extends HttpServlet {
-    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
-    private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
+public class LoginServlet extends AbstractWebServlet implements Attribute {
+    private final ValidatorBean validatorBean;
+    private final AuthService authService;
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final LogoutModalDto logoutModal = Utils.getFromSessionAndDestroy(req, SessionAttribute.LOGOUT_MODAL.getName(),
-            LogoutModalDto.class);
-        req.setAttribute("logoutModal", logoutModal);
-        req.setAttribute("alertData", Utils.getAndDestroySessionAlert(req, SessionAlert.LOGIN_PAGE_ALERT));
-        req.setAttribute("loginData", Utils.getFromSessionAndDestroy(req, getClass().getName(), LoginFormResDto.class));
-        req.setAttribute("title", PageTitle.LOGIN_PAGE.getName());
-        req.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(req, res);
+    @Inject
+    public LoginServlet(
+        ValidatorBean validatorBean,
+        AuthService authService,
+        ServerConfigBean serverConfigBean
+    ) {
+        super(serverConfigBean);
+        this.validatorBean = validatorBean;
+        this.authService = authService;
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+    public WebServletResponse httpGetCall(WebServletRequest req) {
+        req.addAttribute("logoutModal", req.getFromSession(SessionAttribute.LOGOUT_MODAL, LogoutModalDto.class));
+        req.addAttribute("alertData", req.getAlertAndDestroy(SessionAlert.LOGIN_PAGE_ALERT));
+        req.addAttribute("loginData", req.getFromSessionAndDestroy(this, LoginFormResDto.class));
+        return WebServletResponse.builder()
+            .mode(HttpMethodMode.JSP_GENERATOR)
+            .pageTitle(PageTitle.LOGIN_PAGE)
+            .pageOrRedirectTo("login")
+            .build();
+    }
+
+    @Override
+    public WebServletResponse httpPostCall(WebServletRequest req) {
+        final String redirectPath = req.getParameter("redirect");
         final AlertTupleDto alert = new AlertTupleDto(true);
-        final HttpSession httpSession = req.getSession();
 
         final LoginFormReqDto reqDto = new LoginFormReqDto(req);
-        final LoginFormResDto resDto = new LoginFormResDto(validator, reqDto);
-        if (validator.someFieldsAreInvalid(reqDto)) {
-            httpSession.setAttribute(getClass().getName(), resDto);
-            res.sendRedirect("/login");
-            return;
-        }
-        try (final Session session = sessionFactory.openSession()) {
-            try {
-                session.beginTransaction();
-                final EmployerDao employerDao = new EmployerDaoHib(session);
+        final LoginFormResDto resDto = new LoginFormResDto(validatorBean, reqDto);
 
-                final String password = employerDao.findEmployerPassword(reqDto.getLoginOrEmail())
-                    .orElseThrow(() -> new UserNotFoundException(reqDto));
-                if (!(BCrypt.verifyer().verify(reqDto.getPassword().toCharArray(), password).verified)) {
-                    throw new InvalidCredentialsException(reqDto);
-                }
-                final var employer = employerDao.findLoggedEmployerDetails(reqDto.getLoginOrEmail())
-                    .orElseThrow(() -> new UserNotFoundException(reqDto));
-                session.getTransaction().commit();
-                httpSession.setAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName(), employer);
-                httpSession.removeAttribute(getClass().getName());
-                log.info("Successful logged on {} account. Account data: {}", employer.getRoleEng(), employer);
-                if (employer.getIsFirstAccess() && employer.getRoleAlias().equals(UserRole.SELLER.getAlias())) {
-                    res.sendRedirect("/first-access");
-                    return;
-                }
-                res.sendRedirect("/" + employer.getRoleEng() + "/dashboard");
-            } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, log, ex);
-            }
-        } catch (RuntimeException ex) {
-            alert.setMessage(ex.getMessage());
-            httpSession.setAttribute(getClass().getName(), resDto);
-            httpSession.setAttribute(SessionAlert.LOGIN_PAGE_ALERT.getName(), alert);
-            res.sendRedirect("/login");
+        if (validatorBean.someFieldsAreInvalid(reqDto)) {
+            throw new WebServletRedirectException("login", this, resDto);
         }
+        String redirectUrl;
+        try {
+            final LoggedUserDataDto employer = authService.loginUser(reqDto);
+
+            req.setSessionAttribute(SessionAttribute.LOGGED_USER_DETAILS, employer);
+            req.deleteSessionAttribute(this);
+
+            redirectUrl = authService.isFirstAccessOrIsSellerAccount(employer)
+                ? "first-access"
+                : redirectPath == null ? employer.getRoleEng() + "/dashboard" : redirectPath;
+        } catch (AbstractAppException ex) {
+            redirectUrl = "login";
+            alert.setMessage(ex.getMessage());
+            req.setSessionAttribute(this, resDto);
+            req.setSessionAttribute(SessionAlert.LOGIN_PAGE_ALERT, alert);
+        }
+        return WebServletResponse.builder()
+            .mode(HttpMethodMode.REDIRECT)
+            .pageOrRedirectTo(redirectUrl)
+            .build();
+    }
+
+    @Override
+    public String getAttributeName() {
+        return getClass().getName();
     }
 }

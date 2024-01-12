@@ -4,62 +4,61 @@
  */
 package pl.polsl.skirentalservice.domain.common;
 
-import jakarta.servlet.ServletException;
+import jakarta.inject.Inject;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.EmployerDao;
-import pl.polsl.skirentalservice.dao.hibernate.EmployerDaoHib;
+import pl.polsl.skirentalservice.core.AbstractAppException;
+import pl.polsl.skirentalservice.core.ServerConfigBean;
+import pl.polsl.skirentalservice.core.servlet.AbstractWebServlet;
+import pl.polsl.skirentalservice.core.servlet.HttpMethodMode;
+import pl.polsl.skirentalservice.core.servlet.WebServletRequest;
+import pl.polsl.skirentalservice.core.servlet.WebServletResponse;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import pl.polsl.skirentalservice.service.OwnerEmployerService;
 import pl.polsl.skirentalservice.util.PageTitle;
 import pl.polsl.skirentalservice.util.SessionAlert;
-import pl.polsl.skirentalservice.util.SessionAttribute;
-import pl.polsl.skirentalservice.util.Utils;
 
-import java.io.IOException;
-
-import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
+import java.util.StringJoiner;
 
 @Slf4j
 @WebServlet(urlPatterns = { "/seller/profile", "/owner/profile" })
-public class CommonProfileServlet extends HttpServlet {
-    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
+public class CommonProfileServlet extends AbstractWebServlet {
+    private final OwnerEmployerService ownerEmployerService;
+
+    @Inject
+    public CommonProfileServlet(
+        OwnerEmployerService ownerEmployerService,
+        ServerConfigBean serverConfigBean
+    ) {
+        super(serverConfigBean);
+        this.ownerEmployerService = ownerEmployerService;
+    }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final AlertTupleDto alert = Utils.getAndDestroySessionAlert(req, SessionAlert.COMMON_PROFILE_PAGE_ALERT);
-        final HttpSession httpSession = req.getSession();
-        final var userDataDto = (LoggedUserDataDto) httpSession.getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
+    protected WebServletResponse httpGetCall(WebServletRequest req) {
+        final AlertTupleDto alert = req.getAlertAndDestroy(SessionAlert.COMMON_PROFILE_PAGE_ALERT);
+        final LoggedUserDataDto loggedUser = req.getLoggedUser();
 
-        try (final Session session = sessionFactory.openSession()) {
-            try {
-                session.beginTransaction();
-                final EmployerDao employerDao = new EmployerDaoHib(session);
+        String redirectOrViewName = loggedUser.getRoleEng() + "/dashboard";
+        HttpMethodMode mode = HttpMethodMode.REDIRECT;
+        try {
+            req.addAttribute("employerData", ownerEmployerService.getEmployerFullDetails(loggedUser.getId()));
 
-                final var employerDetails = employerDao.findEmployerPageDetails(userDataDto.getId())
-                    .orElseThrow(() -> new UserNotFoundException(String.valueOf(userDataDto.getId())));
-
-                session.getTransaction().commit();
-                req.setAttribute("alertData", alert);
-                req.setAttribute("employerData", employerDetails);
-                req.setAttribute("title", PageTitle.SELLER_PROFILE_PAGE.getName());
-                req.getRequestDispatcher("/WEB-INF/pages/" + userDataDto.getRoleEng() + "/" + userDataDto.getRoleEng() +
-                    "-profile.jsp").forward(req, res);
-            } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, log, ex);
-            }
-        } catch (RuntimeException ex) {
+            mode = HttpMethodMode.JSP_GENERATOR;
+            redirectOrViewName = new StringJoiner("/")
+                .add(loggedUser.getRoleEng())
+                .add(loggedUser.getRoleEng() + "-profile")
+                .toString();
+        } catch (AbstractAppException ex) {
             alert.setActive(true);
             alert.setMessage(ex.getMessage());
-            httpSession.setAttribute(SessionAlert.SELLER_DASHBOARD_PAGE_ALERT.getName(), alert);
-            res.sendRedirect("/" + userDataDto.getRoleEng() + "/dashboard");
+            req.setSessionAttribute(SessionAlert.SELLER_DASHBOARD_PAGE_ALERT, alert);
         }
+        return WebServletResponse.builder()
+            .mode(mode)
+            .pageTitle(PageTitle.SELLER_PROFILE_PAGE)
+            .pageOrRedirectTo(redirectOrViewName)
+            .build();
     }
 }

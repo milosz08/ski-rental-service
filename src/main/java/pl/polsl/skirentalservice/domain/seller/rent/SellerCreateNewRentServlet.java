@@ -4,175 +4,141 @@
  */
 package pl.polsl.skirentalservice.domain.seller.rent;
 
-import jakarta.servlet.ServletException;
+import jakarta.inject.Inject;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import pl.polsl.skirentalservice.core.ValidatorSingleton;
-import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.CustomerDao;
-import pl.polsl.skirentalservice.dao.EmployerDao;
-import pl.polsl.skirentalservice.dao.EquipmentDao;
-import pl.polsl.skirentalservice.dao.RentDao;
-import pl.polsl.skirentalservice.dao.hibernate.CustomerDaoHib;
-import pl.polsl.skirentalservice.dao.hibernate.EmployerDaoHib;
-import pl.polsl.skirentalservice.dao.hibernate.EquipmentDaoHib;
-import pl.polsl.skirentalservice.dao.hibernate.RentDaoHib;
+import pl.polsl.skirentalservice.core.AbstractAppException;
+import pl.polsl.skirentalservice.core.ServerConfigBean;
+import pl.polsl.skirentalservice.core.ValidatorBean;
+import pl.polsl.skirentalservice.core.servlet.*;
+import pl.polsl.skirentalservice.core.servlet.session.Attribute;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
+import pl.polsl.skirentalservice.dto.UpdatedInMemoryRentData;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.dto.rent.InMemoryRentDataDto;
 import pl.polsl.skirentalservice.dto.rent.NewRentDetailsReqDto;
 import pl.polsl.skirentalservice.dto.rent.NewRentDetailsResDto;
-import pl.polsl.skirentalservice.util.*;
+import pl.polsl.skirentalservice.service.RentService;
+import pl.polsl.skirentalservice.util.AlertType;
+import pl.polsl.skirentalservice.util.PageTitle;
+import pl.polsl.skirentalservice.util.SessionAlert;
+import pl.polsl.skirentalservice.util.SessionAttribute;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-
-import static pl.polsl.skirentalservice.exception.DateException.RentDateBeforeIssuedDateException;
-import static pl.polsl.skirentalservice.exception.DateException.ReturnDateBeforeRentDateException;
-import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
+import java.util.Objects;
 
 @Slf4j
 @WebServlet("/seller/create-new-rent")
-public class SellerCreateNewRentServlet extends HttpServlet {
-    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
-    private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
+public class SellerCreateNewRentServlet extends AbstractWebServlet implements Attribute {
+    private final RentService rentService;
+    private final ValidatorBean validatorBean;
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final Long customerId = NumberUtils.toLong(req.getParameter("id"));
-        final HttpSession httpSession = req.getSession();
-
-        var alert = Utils.getAndDestroySessionAlert(req, SessionAlert.SELLER_CREATE_NEW_RENT_PAGE_ALERT);
-        var resDto = Utils.getFromSessionAndDestroy(req, getClass().getName(), NewRentDetailsResDto.class);
-
-        var inMemoryRentData = (InMemoryRentDataDto) httpSession.getAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName());
-        var loggedUser = (LoggedUserDataDto) httpSession.getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
-
-        if (inMemoryRentData != null && !inMemoryRentData.getCustomerId().equals(customerId)) {
-            alert.setActive(true);
-            alert.setMessage(
-                "W pamięci systemu istnieje już otwarte zgłoszenie wypożyczenia dla klienta " +
-                    "<a href='" + req.getContextPath() + "/seller/create-new-rent?id=" + inMemoryRentData.getCustomerId() +
-                    "' class='alert-link'>" + inMemoryRentData.getCustomerFullName() + "</a>. Aby stworzyć nowe wypożyczenie, " +
-                    "zamknij poprzednie lub usuń z pamięci systemu."
-            );
-            httpSession.setAttribute(SessionAlert.COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
-            res.sendRedirect("/seller/customers");
-            return;
-        }
-        try (final Session session = sessionFactory.openSession()) {
-            try {
-                session.beginTransaction();
-
-                final CustomerDao customerDao = new CustomerDaoHib(session);
-                final EmployerDao employerDao = new EmployerDaoHib(session);
-                final EquipmentDao equipmentDao = new EquipmentDaoHib(session);
-                final RentDao rentDao = new RentDaoHib(session);
-
-                final Long isSomeEquipmentsAvaialble = equipmentDao.getCountIfSomeEquipmentsAreAvailable();
-                if (isSomeEquipmentsAvaialble == null || isSomeEquipmentsAvaialble < 0) {
-                    alert.setActive(true);
-                    alert.setMessage("Aby stworzyć wypożyczenie musi być dostępny przynajmniej jeden sprzęt w " +
-                        "ilości jednej sztuki na stanie.");
-                    httpSession.setAttribute(SessionAlert.COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
-                    res.sendRedirect("/seller/customers");
-                    return;
-                }
-                final var customerDetails = customerDao.findCustomerDetails(customerId)
-                    .orElseThrow(() -> new UserNotFoundException(UserRole.USER));
-                req.setAttribute("customerData", customerDetails);
-
-                final var employerDetails = employerDao.findEmployerPageDetails(loggedUser.getId())
-                    .orElseThrow(() -> new UserNotFoundException(UserRole.SELLER));
-                req.setAttribute("employerData", employerDetails);
-
-                if (inMemoryRentData == null) {
-                    inMemoryRentData = new InMemoryRentDataDto(customerId, customerDetails.fullName());
-                    final LocalDateTime now = LocalDateTime.now();
-                    final String issuerStaticPart = "WY/" + now.getYear() + "/" + now.getMonth().getValue() + "/";
-                    final String issuerUsers = "/" + employerDetails.id() + "/" + customerId;
-                    while (true) {
-                        final String randomizer = RandomStringUtils.randomNumeric(4);
-                        inMemoryRentData.setIssuedIdentifier(issuerStaticPart + randomizer + issuerUsers);
-                        if (!rentDao.checkIfIssuerExist(randomizer)) break;
-                    }
-                    httpSession.setAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName(), inMemoryRentData);
-                }
-                inMemoryRentData.setAllGood(false);
-                inMemoryRentData.setCustomerDetails(customerDetails);
-
-                if (resDto == null) {
-                    resDto = new NewRentDetailsResDto();
-                    resDto.getTax().setValue(inMemoryRentData.getTax());
-                    resDto.getRentDateTime().setValue(inMemoryRentData.getRentDateTime());
-                    resDto.getReturnDateTime().setValue(inMemoryRentData.getReturnDateTime());
-                    resDto.getDescription().setValue(inMemoryRentData.getDescription());
-                }
-                resDto.setIssuedIdentifier(inMemoryRentData.getIssuedIdentifier());
-                resDto.setIssuedDateTime(inMemoryRentData.getIssuedDateTime());
-                resDto.setRentStatus(inMemoryRentData.getRentStatus());
-                session.getTransaction().commit();
-            } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, log, ex);
-            }
-        } catch (RuntimeException ex) {
-            alert.setActive(true);
-            alert.setMessage(ex.getMessage());
-        }
-        req.setAttribute("alertData", alert);
-        req.setAttribute("rentDetails", resDto);
-        req.setAttribute("title", PageTitle.SELLER_CREATE_NEW_RENT_PAGE.getName());
-        req.getRequestDispatcher("/WEB-INF/pages/seller/rent/seller-create-new-rent.jsp").forward(req, res);
+    @Inject
+    public SellerCreateNewRentServlet(
+        ServerConfigBean serverConfigBean,
+        RentService rentService,
+        ValidatorBean validatorBean
+    ) {
+        super(serverConfigBean);
+        this.rentService = rentService;
+        this.validatorBean = validatorBean;
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final String customerId = req.getParameter("id");
-        final AlertTupleDto alert = new AlertTupleDto(true);
-        final HttpSession httpSession = req.getSession();
+    protected WebServletResponse httpGetCall(WebServletRequest req) {
+        final Long customerId = req.getAttribute("customerId", Long.class);
+        final LoggedUserDataDto loggedUser = req.getLoggedUser();
 
-        var inMemoryRentData = (InMemoryRentDataDto) httpSession.getAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName());
-        final NewRentDetailsReqDto reqDto = new NewRentDetailsReqDto(req);
-        final NewRentDetailsResDto resDto = new NewRentDetailsResDto(validator, reqDto);
+        NewRentDetailsResDto resDto = req.getFromSessionAndDestroy(this, NewRentDetailsResDto.class);
+        var rentData = req.getFromSession(SessionAttribute.IN_MEMORY_NEW_RENT_DATA, InMemoryRentDataDto.class);
+
+        final AlertTupleDto alert = req.getAlertAndDestroy(SessionAlert.SELLER_CREATE_NEW_RENT_PAGE_ALERT);
+        if (rentData != null && !Objects.equals(rentData.getCustomerId(), customerId)) {
+            persistAlertAndSendRedirect(req, alert, "W pamięci systemu istnieje już otwarte zgłoszenie wypożyczenia " +
+                "dla klienta <a href='" + req.getContextPath() + "/seller/create-new-rent?id=" +
+                rentData.getCustomerId() + "' class='alert-link'>" + rentData.getCustomerFullName() + "</a>. Aby " +
+                "stworzyć nowe wypożyczenie, zamknij poprzednie lub usuń z pamięci systemu.");
+        }
         try {
-            if (validator.someFieldsAreInvalid(reqDto)) {
-                httpSession.setAttribute(getClass().getName(), resDto);
-                res.sendRedirect("/seller/create-new-rent?id=" + customerId);
-                return;
+            final UpdatedInMemoryRentData data = rentService.updateAndGetInMemoryRentData(customerId, loggedUser);
+            if (data.hasEmptyEquipments()) {
+                persistAlertAndSendRedirect(req, alert, "Aby stworzyć wypożyczenie musi być dostępny przynajmniej " +
+                    "jeden sprzęt w ilości jednej sztuki na stanie.");
             }
-            resDto.setIssuedDateTime(inMemoryRentData.getIssuedDateTime());
-            if (reqDto.getParsedRentDateTime().isBefore(resDto.getParsedIssuedDateTime())) {
-                throw new RentDateBeforeIssuedDateException();
+            if (rentData == null) {
+                rentData = new InMemoryRentDataDto(customerId, data.customerDetails().fullName());
+                rentData.setIssuedIdentifier(rentService.generateIssuedIdentifier(customerId, loggedUser.getId()));
+                req.setSessionAttribute(SessionAttribute.IN_MEMORY_NEW_RENT_DATA, rentData);
             }
-            if (reqDto.getParsedReturnDateTime().isBefore(reqDto.getParsedRentDateTime())) {
-                throw new ReturnDateBeforeRentDateException();
+            rentData.setAllGood(false);
+            rentData.setCustomerDetails(data.customerDetails());
+            if (resDto == null) {
+                resDto = new NewRentDetailsResDto();
+                resDto.getTax().setValue(rentData.getTax());
+                resDto.getRentDateTime().setValue(rentData.getRentDateTime());
+                resDto.getReturnDateTime().setValue(rentData.getReturnDateTime());
+                resDto.getDescription().setValue(rentData.getDescription());
             }
-            inMemoryRentData.setRentDateTime(reqDto.getRentDateTime().replace('T', ' '));
-            inMemoryRentData.setReturnDateTime(reqDto.getReturnDateTime().replace('T', ' '));
-            inMemoryRentData.setTax(reqDto.getTax());
-            inMemoryRentData.setDescription(reqDto.getDescription());
-            inMemoryRentData.setAllGood(true);
+            resDto.setIssuedIdentifier(rentData.getIssuedIdentifier());
+            resDto.setIssuedDateTime(rentData.getIssuedDateTime());
+            resDto.setRentStatus(rentData.getRentStatus());
 
-            resDto.setIssuedIdentifier(inMemoryRentData.getIssuedIdentifier());
-            resDto.setRentStatus(inMemoryRentData.getRentStatus());
+            req.addAttribute("customerData", data.customerDetails());
+            req.addAttribute("employerData", data.employerDetails());
+        } catch (AbstractAppException ex) {
+            alert.setActive(true);
+            alert.setMessage(ex.getMessage());
+        }
+        req.addAttribute("alertData", alert);
+        req.addAttribute("rentDetails", resDto);
+        return WebServletResponse.builder()
+            .mode(HttpMethodMode.JSP_GENERATOR)
+            .pageTitle(PageTitle.SELLER_CREATE_NEW_RENT_PAGE)
+            .pageOrRedirectTo("seller/rent/seller-create-new-rent")
+            .build();
+    }
+
+    @Override
+    protected WebServletResponse httpPostCall(WebServletRequest req) {
+        final Long customerId = req.getAttribute("customerId", Long.class);
+        final var rentData = req.getFromSession(SessionAttribute.IN_MEMORY_NEW_RENT_DATA, InMemoryRentDataDto.class);
+
+        final NewRentDetailsReqDto reqDto = new NewRentDetailsReqDto(req);
+        final NewRentDetailsResDto resDto = new NewRentDetailsResDto(validatorBean, reqDto);
+        if (validatorBean.someFieldsAreInvalid(reqDto)) {
+            req.setSessionAttribute(this, resDto);
+            throw new WebServletRedirectException("seller/create-new-rent?id=" + customerId);
+        }
+        final AlertTupleDto alert = new AlertTupleDto(true);
+        String redirectUrl = "seller/create-new-rent?id=" + customerId;
+        try {
+            rentService.persistFirstStageRentForm(reqDto, resDto, rentData, req.getLoggedUser(), customerId);
 
             alert.setType(AlertType.INFO);
             alert.setMessage("Podstawowe ustawienia nowego wypożyczenia zostały zapisane.");
-            httpSession.setAttribute(SessionAlert.SELLER_COMPLETE_RENT_PAGE_ALERT.getName(), alert);
-            res.sendRedirect("/seller/complete-rent-equipments");
-        } catch (RuntimeException ex) {
+
+            req.setSessionAttribute(SessionAlert.SELLER_COMPLETE_RENT_PAGE_ALERT, alert);
+            redirectUrl = "seller/complete-rent-equipments";
+        } catch (AbstractAppException ex) {
             alert.setMessage(ex.getMessage());
-            httpSession.setAttribute(SessionAlert.SELLER_CREATE_NEW_RENT_PAGE_ALERT.getName(), alert);
-            httpSession.setAttribute(getClass().getName(), resDto);
-            res.sendRedirect("/seller/create-new-rent?id=" + customerId);
+            req.setSessionAttribute(SessionAlert.SELLER_CREATE_NEW_RENT_PAGE_ALERT, alert);
+            req.setSessionAttribute(this, resDto);
+            log.error("Unable to persist first stage rent form. Cause: {}", ex.getMessage());
         }
+        return WebServletResponse.builder()
+            .mode(HttpMethodMode.REDIRECT)
+            .pageOrRedirectTo(redirectUrl)
+            .build();
+    }
+
+    private void persistAlertAndSendRedirect(WebServletRequest req, AlertTupleDto alert, String content) {
+        alert.setActive(true);
+        alert.setMessage(content);
+        req.setSessionAttribute(SessionAlert.COMMON_CUSTOMERS_PAGE_ALERT, alert);
+        throw new WebServletRedirectException("seller/customers");
+    }
+
+    @Override
+    public String getAttributeName() {
+        return getClass().getName();
     }
 }

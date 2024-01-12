@@ -4,20 +4,28 @@
  */
 package pl.polsl.skirentalservice.domain.error;
 
-import jakarta.servlet.ServletException;
+import jakarta.inject.Inject;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import pl.polsl.skirentalservice.core.ServerConfigBean;
+import pl.polsl.skirentalservice.core.servlet.AbstractWebServlet;
+import pl.polsl.skirentalservice.core.servlet.HttpMethodMode;
+import pl.polsl.skirentalservice.core.servlet.WebServletRequest;
+import pl.polsl.skirentalservice.core.servlet.WebServletResponse;
 import pl.polsl.skirentalservice.util.PageTitle;
 
-import java.io.IOException;
-
 @WebServlet("/404")
-public class NotFoundServlet extends HttpServlet {
+public class NotFoundServlet extends AbstractWebServlet {
+    @Inject
+    public NotFoundServlet(ServerConfigBean serverConfigBean) {
+        super(serverConfigBean);
+    }
+
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        req.setAttribute("title", PageTitle.NOT_FOUND_4O4_PAGE.getName());
-        req.getRequestDispatcher("/WEB-INF/pages/_not-found.jsp").forward(req, res);
+    protected WebServletResponse httpGetCall(WebServletRequest req) {
+        return WebServletResponse.builder()
+            .mode(HttpMethodMode.JSP_GENERATOR)
+            .pageTitle(PageTitle.NOT_FOUND_4O4_PAGE)
+            .pageOrRedirectTo("_not-found")
+            .build();
     }
 }

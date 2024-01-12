@@ -4,20 +4,28 @@
  */
 package pl.polsl.skirentalservice.domain.owner;
 
-import jakarta.servlet.ServletException;
+import jakarta.inject.Inject;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import pl.polsl.skirentalservice.core.ServerConfigBean;
+import pl.polsl.skirentalservice.core.servlet.AbstractWebServlet;
+import pl.polsl.skirentalservice.core.servlet.HttpMethodMode;
+import pl.polsl.skirentalservice.core.servlet.WebServletRequest;
+import pl.polsl.skirentalservice.core.servlet.WebServletResponse;
 import pl.polsl.skirentalservice.util.PageTitle;
 
-import java.io.IOException;
-
 @WebServlet("/owner/dashboard")
-public class OwnerDashboardServlet extends HttpServlet {
+public class OwnerDashboardServlet extends AbstractWebServlet {
+    @Inject
+    public OwnerDashboardServlet(ServerConfigBean serverConfigBean) {
+        super(serverConfigBean);
+    }
+
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        req.setAttribute("title", PageTitle.OWNER_DASHBOARD_PAGE.getName());
-        req.getRequestDispatcher("/WEB-INF/pages/owner/owner-dashboard.jsp").forward(req, res);
+    protected WebServletResponse httpGetCall(WebServletRequest req) {
+        return WebServletResponse.builder()
+            .mode(HttpMethodMode.JSP_GENERATOR)
+            .pageTitle(PageTitle.OWNER_DASHBOARD_PAGE)
+            .pageOrRedirectTo("owner/owner-dashboard")
+            .build();
     }
 }

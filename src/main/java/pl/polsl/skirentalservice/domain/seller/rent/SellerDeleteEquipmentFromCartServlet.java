@@ -4,80 +4,57 @@
  */
 package pl.polsl.skirentalservice.domain.seller.rent;
 
-import jakarta.servlet.ServletException;
+import jakarta.inject.Inject;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.EquipmentDao;
-import pl.polsl.skirentalservice.dao.hibernate.EquipmentDaoHib;
+import pl.polsl.skirentalservice.core.AbstractAppException;
+import pl.polsl.skirentalservice.core.ServerConfigBean;
+import pl.polsl.skirentalservice.core.servlet.AbstractWebServlet;
+import pl.polsl.skirentalservice.core.servlet.HttpMethodMode;
+import pl.polsl.skirentalservice.core.servlet.WebServletRequest;
+import pl.polsl.skirentalservice.core.servlet.WebServletResponse;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.dto.rent.CartSingleEquipmentDataDto;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 import pl.polsl.skirentalservice.dto.rent.InMemoryRentDataDto;
+import pl.polsl.skirentalservice.service.CartEquipmentService;
 import pl.polsl.skirentalservice.util.AlertType;
 import pl.polsl.skirentalservice.util.SessionAlert;
-import pl.polsl.skirentalservice.util.SessionAttribute;
-import pl.polsl.skirentalservice.util.Utils;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static pl.polsl.skirentalservice.exception.NotFoundException.EquipmentInCartNotFoundException;
-import static pl.polsl.skirentalservice.exception.NotFoundException.EquipmentNotFoundException;
 
 @Slf4j
 @WebServlet("/seller/delete-equipment-from-cart")
-public class SellerDeleteEquipmentFromCartServlet extends HttpServlet {
-    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
+public class SellerDeleteEquipmentFromCartServlet extends AbstractWebServlet {
+    private final CartEquipmentService cartEquipmentService;
+
+    @Inject
+    public SellerDeleteEquipmentFromCartServlet(
+        ServerConfigBean serverConfigBean,
+        CartEquipmentService cartEquipmentService
+    ) {
+        super(serverConfigBean);
+        this.cartEquipmentService = cartEquipmentService;
+    }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final HttpSession httpSession = req.getSession();
-        final var rentData = (InMemoryRentDataDto) httpSession.getAttribute(SessionAttribute.INMEMORY_NEW_RENT_DATA.getName());
-        if (rentData == null) {
-            res.sendRedirect("/seller/customers");
-            return;
-        }
-        final String equipmentId = req.getParameter("id");
-        if (equipmentId == null) {
-            res.sendRedirect("/seller/complete-rent-equipments");
-            return;
-        }
+    protected WebServletResponse httpGetCall(WebServletRequest req) {
+        final Long equipmentId = req.getAttribute("equipmentId", Long.class);
+        final InMemoryRentDataDto rentData = req.getAttribute("rentData", InMemoryRentDataDto.class);
+
+        final LoggedUserDataDto loggedUser = req.getLoggedUser();
         final AlertTupleDto alert = new AlertTupleDto(true);
-        final String loggedUser = Utils.getLoggedUserLogin(req);
-        try (final Session session = sessionFactory.openSession()) {
-            try {
-                final EquipmentDao equipmentDao = new EquipmentDaoHib(session);
-                if (!equipmentDao.checkIfEquipmentExist(equipmentId)) throw new EquipmentNotFoundException(equipmentId);
+        try {
+            cartEquipmentService.deleteEquipmentFromCart(rentData, equipmentId, loggedUser);
 
-                final CartSingleEquipmentDataDto cartData = rentData.getEquipments().stream()
-                    .filter(e -> e.getId().toString().equals(equipmentId)).findFirst()
-                    .orElseThrow(EquipmentInCartNotFoundException::new);
-
-                final List<CartSingleEquipmentDataDto> equipmentsWithoutSelected = rentData.getEquipments().stream()
-                    .filter(e -> !e.getId().equals(Long.parseLong(equipmentId)))
-                    .collect(Collectors.toList());
-
-                rentData.setEquipments(equipmentsWithoutSelected);
-                alert.setType(AlertType.INFO);
-                alert.setMessage("Pomyślnie usunięto pozycję z listy zestawienia sprzętów kreatora wypożyczania.");
-                log.info("Successfuly deleted equipment from memory-persist data container by: {}. Data: {}",
-                    loggedUser, cartData);
-            } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, log, ex);
-            }
-        } catch (RuntimeException ex) {
+            alert.setType(AlertType.INFO);
+            alert.setMessage("Pomyślnie usunięto pozycję z listy zestawienia sprzętów kreatora wypożyczania.");
+        } catch (AbstractAppException ex) {
             alert.setMessage(ex.getMessage());
             log.error("Failure delete equipment from memory-persist data container by: {}. Cause: {}", loggedUser,
                 ex.getMessage());
         }
-        httpSession.setAttribute(SessionAlert.SELLER_COMPLETE_RENT_PAGE_ALERT.getName(), alert);
-        res.sendRedirect("/seller/complete-rent-equipments");
+        req.setSessionAttribute(SessionAlert.SELLER_COMPLETE_RENT_PAGE_ALERT, alert);
+        return WebServletResponse.builder()
+            .mode(HttpMethodMode.REDIRECT)
+            .pageOrRedirectTo("seller/complete-rent-equipments")
+            .build();
     }
 }

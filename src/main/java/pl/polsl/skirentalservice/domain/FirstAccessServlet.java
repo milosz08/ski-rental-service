@@ -4,91 +4,84 @@
  */
 package pl.polsl.skirentalservice.domain;
 
-import jakarta.servlet.ServletException;
+import jakarta.inject.Inject;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import pl.polsl.skirentalservice.core.ValidatorSingleton;
-import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.EmployerDao;
-import pl.polsl.skirentalservice.dao.hibernate.EmployerDaoHib;
+import pl.polsl.skirentalservice.core.AbstractAppException;
+import pl.polsl.skirentalservice.core.ServerConfigBean;
+import pl.polsl.skirentalservice.core.ValidatorBean;
+import pl.polsl.skirentalservice.core.servlet.*;
+import pl.polsl.skirentalservice.core.servlet.session.Attribute;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.first_access.FirstAccessReqDto;
 import pl.polsl.skirentalservice.dto.first_access.FirstAccessResDto;
-import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
-import pl.polsl.skirentalservice.ssh.ExecCommand;
-import pl.polsl.skirentalservice.ssh.ExecCommandPerformer;
-import pl.polsl.skirentalservice.util.*;
-
-import java.io.IOException;
-
-import static pl.polsl.skirentalservice.exception.CredentialException.PasswordMismatchException;
+import pl.polsl.skirentalservice.service.AuthService;
+import pl.polsl.skirentalservice.util.AlertType;
+import pl.polsl.skirentalservice.util.PageTitle;
+import pl.polsl.skirentalservice.util.SessionAlert;
 
 @Slf4j
 @WebServlet("/first-access")
-public class FirstAccessServlet extends HttpServlet {
-    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
-    private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
+public class FirstAccessServlet extends AbstractWebServlet implements Attribute {
+    private final ValidatorBean validatorBean;
+    private final AuthService authService;
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        req.setAttribute("alertData", Utils.getAndDestroySessionAlert(req, SessionAlert.FIRST_ACCESS_PAGE_ALERT));
-        req.setAttribute("firstAccessData", Utils.getFromSessionAndDestroy(req, getClass().getName(), FirstAccessResDto.class));
-        req.setAttribute("title", PageTitle.FIRST_ACCESS_PAGE.getName());
-        req.getRequestDispatcher("/WEB-INF/pages/first-access.jsp").forward(req, res);
+    @Inject
+    public FirstAccessServlet(
+        ValidatorBean validatorBean,
+        AuthService authService,
+        ServerConfigBean serverConfigBean
+    ) {
+        super(serverConfigBean);
+        this.validatorBean = validatorBean;
+        this.authService = authService;
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+    protected WebServletResponse httpGetCall(WebServletRequest req) {
+        req.addAttribute("alertData", req.getAlertAndDestroy(SessionAlert.FIRST_ACCESS_PAGE_ALERT));
+        req.addAttribute("firstAccessData", req.getFromSessionAndDestroy(this, FirstAccessResDto.class));
+        return WebServletResponse.builder()
+            .mode(HttpMethodMode.JSP_GENERATOR)
+            .pageTitle(PageTitle.FIRST_ACCESS_PAGE)
+            .pageOrRedirectTo("first-access")
+            .build();
+    }
+
+    @Override
+    protected WebServletResponse httpPostCall(WebServletRequest req) {
         final AlertTupleDto alert = new AlertTupleDto(true);
 
-        final HttpSession httpSession = req.getSession();
-        final var userDataDto = (LoggedUserDataDto) httpSession.getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
-
         final FirstAccessReqDto reqDto = new FirstAccessReqDto(req);
-        final FirstAccessResDto resDto = new FirstAccessResDto(validator, reqDto);
-        if (validator.someFieldsAreInvalid(reqDto)) {
-            httpSession.setAttribute(getClass().getName(), resDto);
-            res.sendRedirect("/first-access");
-            return;
+        final FirstAccessResDto resDto = new FirstAccessResDto(validatorBean, reqDto);
+        if (validatorBean.someFieldsAreInvalid(reqDto)) {
+            throw new WebServletRedirectException("first-access", this, resDto);
         }
-        try (final Session session = sessionFactory.openSession()) {
-            if (!reqDto.getPassword().equals(reqDto.getPasswordRep())) {
-                throw new PasswordMismatchException("nowe hasło do konta", "powtórz nowe hasło do konta");
-            }
-            if (!reqDto.getEmailPassword().equals(reqDto.getEmailPasswordRep())) {
-                throw new PasswordMismatchException("nowe hasło do poczty", "powtórz nowe hasło do poczty");
-            }
-            try {
-                session.beginTransaction();
+        String redirectUrl = "first-access";
+        try {
+            reqDto.validatePasswordsMatching();
+            authService.prepareEmployerAccount(reqDto, req.getLoggedUser());
 
-                final EmployerDao employerDao = new EmployerDaoHib(session);
-                employerDao.updateEmployerFirstAccessPassword(Utils.generateHash(reqDto.getPassword()), userDataDto.getId());
+            alert.setType(AlertType.INFO);
+            alert.setMessage("Twoje nowe hasło do konta oraz do poczty zostało pomyślnie ustawione.");
 
-                final ExecCommand commandPerformer = new ExecCommandPerformer();
-                commandPerformer.updateMailboxPassword(userDataDto.getEmailAddress(), reqDto.getEmailPassword());
+            req.setSessionAttribute(SessionAlert.SELLER_DASHBOARD_PAGE_ALERT, alert);
+            req.deleteSessionAttribute(this);
 
-                alert.setType(AlertType.INFO);
-                alert.setMessage("Twoje nowe hasło do konta oraz do poczty zostało pomyślnie ustawione.");
-                userDataDto.setIsFirstAccess(false);
-                httpSession.setAttribute(SessionAlert.SELLER_DASHBOARD_PAGE_ALERT.getName(), alert);
-                log.info("Successful changed default account password and mailbox password for user: {}", userDataDto);
-                session.getTransaction().commit();
-                httpSession.removeAttribute(getClass().getName());
-                res.sendRedirect("/seller/dashboard");
-            } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, log, ex);
-            }
-        } catch (RuntimeException ex) {
+            redirectUrl = "seller/dashboard";
+        } catch (AbstractAppException ex) {
             alert.setMessage(ex.getMessage());
-            httpSession.setAttribute(getClass().getName(), resDto);
-            httpSession.setAttribute(SessionAlert.FIRST_ACCESS_PAGE_ALERT.getName(), alert);
-            res.sendRedirect("/first-access");
+            req.setSessionAttribute(this, resDto);
+            req.setSessionAttribute(SessionAlert.FIRST_ACCESS_PAGE_ALERT, alert);
         }
+        return WebServletResponse.builder()
+            .mode(HttpMethodMode.REDIRECT)
+            .pageOrRedirectTo(redirectUrl)
+            .build();
+    }
+
+    @Override
+    public String getAttributeName() {
+        return getClass().getName();
     }
 }

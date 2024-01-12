@@ -4,90 +4,55 @@
  */
 package pl.polsl.skirentalservice.domain.seller.deliv_return;
 
-import jakarta.servlet.ServletException;
+import jakarta.inject.Inject;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.core.s3.S3Bucket;
-import pl.polsl.skirentalservice.core.s3.S3ClientSigleton;
-import pl.polsl.skirentalservice.dao.EquipmentDao;
-import pl.polsl.skirentalservice.dao.RentDao;
-import pl.polsl.skirentalservice.dao.hibernate.EquipmentDaoHib;
-import pl.polsl.skirentalservice.dao.hibernate.RentDaoHib;
+import pl.polsl.skirentalservice.core.AbstractAppException;
+import pl.polsl.skirentalservice.core.ServerConfigBean;
+import pl.polsl.skirentalservice.core.servlet.AbstractWebServlet;
+import pl.polsl.skirentalservice.core.servlet.HttpMethodMode;
+import pl.polsl.skirentalservice.core.servlet.WebServletRequest;
+import pl.polsl.skirentalservice.core.servlet.WebServletResponse;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
-import pl.polsl.skirentalservice.entity.RentEquipmentEntity;
-import pl.polsl.skirentalservice.entity.RentReturnEntity;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import pl.polsl.skirentalservice.service.ReturnService;
 import pl.polsl.skirentalservice.util.AlertType;
-import pl.polsl.skirentalservice.util.RentStatus;
 import pl.polsl.skirentalservice.util.SessionAlert;
-import pl.polsl.skirentalservice.util.Utils;
-
-import java.io.IOException;
-
-import static pl.polsl.skirentalservice.exception.NotFoundException.ReturnNotFoundException;
 
 @Slf4j
 @WebServlet("/seller/delete-return")
-public class SellerDeleteReturnServlet extends HttpServlet {
-    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
-    private final S3ClientSigleton s3Client = S3ClientSigleton.getInstance();
+public class SellerDeleteReturnServlet extends AbstractWebServlet {
+    private final ReturnService returnService;
+
+    @Inject
+    public SellerDeleteReturnServlet(
+        ReturnService returnService,
+        ServerConfigBean serverConfigBean
+    ) {
+        super(serverConfigBean);
+        this.returnService = returnService;
+    }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final String returnId = StringUtils.trimToNull(req.getParameter("id"));
-        if (returnId == null) {
-            res.sendRedirect("/seller/returns");
-            return;
-        }
+    protected WebServletResponse httpGetCall(WebServletRequest req) {
+        final Long returnId = req.getAttribute("returnId", Long.class);
+        final LoggedUserDataDto loggedUser = req.getLoggedUser();
+
         final AlertTupleDto alert = new AlertTupleDto(true);
-        final String userLogin = Utils.getLoggedUserLogin(req);
-        final HttpSession httpSession = req.getSession();
-
-        try (final Session session = sessionFactory.openSession()) {
-            try {
-                session.beginTransaction();
-
-                final EquipmentDao equipmentDao = new EquipmentDaoHib(session);
-                final RentDao rentDao = new RentDaoHib(session);
-
-                final RentReturnEntity rentReturn = session.getReference(RentReturnEntity.class, returnId);
-                if (rentReturn == null) {
-                    throw new ReturnNotFoundException();
-                }
-                rentDao.updateRentStatus(RentStatus.RENTED, rentReturn.getRent().getId());
-                for (final RentEquipmentEntity equipment : rentReturn.getRent().getEquipments()) {
-                    if (equipment.getEquipment() == null) {
-                        continue;
-                    }
-                    equipmentDao.decreaseAvailableSelectedEquipmentCount(equipment.getEquipment().getId(),
-                        equipment.getCount());
-                }
-                final String fileName = rentReturn.getIssuedIdentifier().replaceAll("/", "-") + ".pdf";
-                s3Client.deleteObject(S3Bucket.RETURNS, fileName);
-
-                alert.setType(AlertType.INFO);
-                alert.setMessage(
-                    "Usunięcie zwrotu wypożyczenia o numerze <strong>" + rentReturn.getIssuedIdentifier() +
-                        "</strong> zakończone pomyślnie."
-                );
-                session.remove(rentReturn);
-                session.getTransaction().commit();
-                log.info("Rent return with id: {} was succesfuly removed from system by {}. Rent data: {}", returnId,
-                    userLogin, rentReturn);
-            } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, log, ex);
-            }
-        } catch (RuntimeException ex) {
+        try {
+            final String returnIdentifier = returnService.deleteReturn(returnId, loggedUser);
+            alert.setType(AlertType.INFO);
+            alert.setMessage(
+                "Usunięcie zwrotu wypożyczenia o numerze <strong>" + returnIdentifier +
+                    "</strong> zakończone pomyślnie."
+            );
+        } catch (AbstractAppException ex) {
             alert.setMessage(ex.getMessage());
         }
-        httpSession.setAttribute(SessionAlert.COMMON_RETURNS_PAGE_ALERT.getName(), alert);
-        res.sendRedirect("/seller/returns");
+        req.setSessionAttribute(SessionAlert.COMMON_RETURNS_PAGE_ALERT, alert);
+        return WebServletResponse.builder()
+            .mode(HttpMethodMode.REDIRECT)
+            .pageOrRedirectTo("seller/returns")
+            .build();
     }
 }

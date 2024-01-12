@@ -4,138 +4,106 @@
  */
 package pl.polsl.skirentalservice.domain.seller.customer;
 
-import jakarta.servlet.ServletException;
+import jakarta.inject.Inject;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.modelmapper.ModelMapper;
-import pl.polsl.skirentalservice.core.ConfigSingleton;
-import pl.polsl.skirentalservice.core.ModelMapperGenerator;
-import pl.polsl.skirentalservice.core.ValidatorSingleton;
-import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.CustomerDao;
-import pl.polsl.skirentalservice.dao.UserDetailsDao;
-import pl.polsl.skirentalservice.dao.hibernate.CustomerDaoHib;
-import pl.polsl.skirentalservice.dao.hibernate.UserDetailsDaoHib;
+import pl.polsl.skirentalservice.core.AbstractAppException;
+import pl.polsl.skirentalservice.core.ServerConfigBean;
+import pl.polsl.skirentalservice.core.ValidatorBean;
+import pl.polsl.skirentalservice.core.servlet.*;
+import pl.polsl.skirentalservice.core.servlet.session.Attribute;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.customer.AddEditCustomerReqDto;
 import pl.polsl.skirentalservice.dto.customer.AddEditCustomerResDto;
-import pl.polsl.skirentalservice.entity.CustomerEntity;
-import pl.polsl.skirentalservice.util.*;
-
-import java.io.IOException;
-import java.time.LocalDate;
-
-import static pl.polsl.skirentalservice.exception.AlreadyExistException.*;
-import static pl.polsl.skirentalservice.exception.DateException.DateInFutureException;
-import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
+import pl.polsl.skirentalservice.service.CustomerService;
+import pl.polsl.skirentalservice.util.AlertType;
+import pl.polsl.skirentalservice.util.PageTitle;
+import pl.polsl.skirentalservice.util.SessionAlert;
 
 @Slf4j
 @WebServlet("/seller/edit-customer")
-public class SellerEditCustomerServlet extends HttpServlet {
-    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
-    private final ValidatorSingleton validator = ValidatorSingleton.getInstance();
-    private final ConfigSingleton config = ConfigSingleton.getInstance();
+public class SellerEditCustomerServlet extends AbstractWebServlet implements Attribute {
+    private final CustomerService customerService;
+    private final ServerConfigBean serverConfigBean;
+    private final ValidatorBean validatorBean;
 
-    private final ModelMapper modelMapper = ModelMapperGenerator.getModelMapper();
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final String customerId = req.getParameter("id");
-        final HttpSession httpSession = req.getSession();
-
-        final AlertTupleDto alert = Utils.getAndDestroySessionAlert(req, SessionAlert.SELLER_EDIT_CUSTOMER_PAGE_ALERT);
-        var resDto = (AddEditCustomerResDto) httpSession.getAttribute(getClass().getName());
-
-        if (resDto == null) {
-            try (final Session session = sessionFactory.openSession()) {
-                try {
-                    session.beginTransaction();
-                    final CustomerDao customerDao = new CustomerDaoHib(session);
-
-                    final var customerDetails = customerDao.findCustomerEditPageDetails(customerId)
-                        .orElseThrow(() -> new UserNotFoundException(customerId));
-
-                    resDto = new AddEditCustomerResDto(validator, customerDetails);
-                    session.getTransaction().commit();
-                } catch (RuntimeException ex) {
-                    Utils.onHibernateException(session, log, ex);
-                }
-            } catch (RuntimeException ex) {
-                alert.setMessage(ex.getMessage());
-                httpSession.setAttribute(SessionAlert.COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
-                res.sendRedirect("/seller/customers");
-            }
-        }
-        req.setAttribute("alertData", alert);
-        req.setAttribute("addEditCustomerData", resDto);
-        req.setAttribute("addEditText", "Edytuj");
-        req.setAttribute("title", PageTitle.SELLER_EDIT_CUSTOMER_PAGE.getName());
-        req.getRequestDispatcher("/WEB-INF/pages/seller/customer/seller-add-edit-customer.jsp").forward(req, res);
+    @Inject
+    public SellerEditCustomerServlet(
+        CustomerService customerService,
+        ServerConfigBean serverConfigBean,
+        ValidatorBean validatorBean
+    ) {
+        super(serverConfigBean);
+        this.customerService = customerService;
+        this.serverConfigBean = serverConfigBean;
+        this.validatorBean = validatorBean;
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final String customerId = req.getParameter("id");
-        final AlertTupleDto alert = new AlertTupleDto(true);
-        final HttpSession httpSession = req.getSession();
+    protected WebServletResponse httpGetCall(WebServletRequest req) {
+        final Long customerId = req.getAttribute("customerId", Long.class);
+
+        final AlertTupleDto alert = req.getAlertAndDestroy(SessionAlert.SELLER_EDIT_CUSTOMER_PAGE_ALERT);
+        AddEditCustomerResDto resDto = req.getFromSession(this, AddEditCustomerResDto.class);
+
+        String redirectOrViewName = "seller/customers";
+        HttpMethodMode mode = HttpMethodMode.REDIRECT;
+        try {
+            if (resDto == null) {
+                resDto = new AddEditCustomerResDto(validatorBean, customerService.getCustomerDetails(customerId));
+            }
+            mode = HttpMethodMode.JSP_GENERATOR;
+            redirectOrViewName = "seller/customer/seller-add-edit-customer";
+        } catch (AbstractAppException ex) {
+            alert.setMessage(ex.getMessage());
+            req.setSessionAttribute(SessionAlert.COMMON_CUSTOMERS_PAGE_ALERT, alert);
+        }
+        req.addAttribute("addEditCustomerData", resDto);
+        req.addAttribute("alertData", alert);
+        req.addAttribute("addEditText", "Edytuj");
+        return WebServletResponse.builder()
+            .mode(mode)
+            .pageTitle(PageTitle.SELLER_EDIT_CUSTOMER_PAGE)
+            .pageOrRedirectTo(redirectOrViewName)
+            .build();
+    }
+
+    @Override
+    protected WebServletResponse httpPostCall(WebServletRequest req) {
+        final Long customerId = req.getAttribute("customerId", Long.class);
 
         final AddEditCustomerReqDto reqDto = new AddEditCustomerReqDto(req);
-        final AddEditCustomerResDto resDto = new AddEditCustomerResDto(validator, reqDto);
-        if (validator.someFieldsAreInvalid(reqDto)) {
-            httpSession.setAttribute(getClass().getName(), resDto);
-            res.sendRedirect("/seller/edit-customer?id=" + customerId);
-            return;
+        final AddEditCustomerResDto resDto = new AddEditCustomerResDto(validatorBean, reqDto);
+        if (validatorBean.someFieldsAreInvalid(reqDto)) {
+            throw new WebServletRedirectException("seller/edit-customer?id=" + customerId, this, resDto);
         }
-        try (final Session session = sessionFactory.openSession()) {
-            if (reqDto.getParsedBornDate().isAfter(LocalDate.now().minusYears(config.getMaturityAge()))) {
-                throw new DateInFutureException("data zatrudnienia", config.getMaturityAge());
-            }
-            try {
-                session.beginTransaction();
-                final UserDetailsDao userDetailsDao = new UserDetailsDaoHib(session);
+        final AlertTupleDto alert = new AlertTupleDto(true);
+        String redirectUrl = "seller/edit-customer?id=" + customerId;
+        try {
+            reqDto.validateMaturityAge(serverConfigBean);
+            customerService.editCustomerDetails(reqDto, customerId);
 
-                final CustomerEntity updatableCustomer = session.get(CustomerEntity.class, customerId);
-                if (updatableCustomer == null) {
-                    throw new UserNotFoundException(customerId);
-                }
-                if (userDetailsDao.checkIfCustomerWithSamePeselExist(reqDto.getPesel(), customerId)) {
-                    throw new PeselAlreadyExistException(reqDto.getPesel(), UserRole.USER);
-                }
-                if (userDetailsDao.checkIfCustomerWithSamePhoneNumberExist(reqDto.getPhoneNumber(), customerId)) {
-                    throw new PhoneNumberAlreadyExistException(reqDto.getPhoneNumber(), UserRole.USER);
-                }
-                if (userDetailsDao.checkIfCustomerWithSameEmailExist(reqDto.getEmailAddress(), customerId)) {
-                    throw new EmailAddressAlreadyExistException(reqDto.getEmailAddress(), UserRole.USER);
-                }
-
-                ModelMapperGenerator.onUpdateNullableTransactTurnOn();
-                modelMapper.map(reqDto, updatableCustomer.getUserDetails());
-                modelMapper.map(reqDto, updatableCustomer.getLocationAddress());
-                ModelMapperGenerator.onUpdateNullableTransactTurnOff();
-
-                session.getTransaction().commit();
-
-                alert.setType(AlertType.INFO);
-                alert.setMessage("Dane klienta z ID <strong>#" + customerId + "</strong> zostały pomyślnie zaktualizowane.");
-                httpSession.setAttribute(SessionAlert.COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
-                httpSession.removeAttribute(getClass().getName());
-                log.info("Customer with id: {} was successfuly updated. Data: {}", customerId, reqDto);
-                res.sendRedirect("/seller/customers");
-            } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, log, ex);
-            }
-        } catch (RuntimeException ex) {
+            alert.setType(AlertType.INFO);
+            alert.setMessage(
+                "Dane klienta z ID <strong>#" + customerId + "</strong> zostały pomyślnie zaktualizowane."
+            );
+            req.deleteSessionAttribute(this);
+            req.setSessionAttribute(SessionAlert.COMMON_CUSTOMERS_PAGE_ALERT, alert);
+            redirectUrl = "seller/customers";
+        } catch (AbstractAppException ex) {
             alert.setMessage(ex.getMessage());
-            httpSession.setAttribute(getClass().getName(), resDto);
-            httpSession.setAttribute(SessionAlert.SELLER_EDIT_CUSTOMER_PAGE_ALERT.getName(), alert);
+            req.setSessionAttribute(this, resDto);
+            req.setSessionAttribute(SessionAlert.SELLER_EDIT_CUSTOMER_PAGE_ALERT, alert);
             log.error("Unable to edit existing customer with id: {}. Cause: {}", customerId, ex.getMessage());
-            res.sendRedirect("/seller/edit-customer?id=" + customerId);
         }
+        return WebServletResponse.builder()
+            .mode(HttpMethodMode.REDIRECT)
+            .pageOrRedirectTo(redirectUrl)
+            .build();
+    }
+
+    @Override
+    public String getAttributeName() {
+        return getClass().getName();
     }
 }

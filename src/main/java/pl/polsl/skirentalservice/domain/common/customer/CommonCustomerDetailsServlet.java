@@ -4,62 +4,62 @@
  */
 package pl.polsl.skirentalservice.domain.common.customer;
 
-import jakarta.servlet.ServletException;
+import jakarta.inject.Inject;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.CustomerDao;
-import pl.polsl.skirentalservice.dao.hibernate.CustomerDaoHib;
+import pl.polsl.skirentalservice.core.AbstractAppException;
+import pl.polsl.skirentalservice.core.ServerConfigBean;
+import pl.polsl.skirentalservice.core.servlet.AbstractWebServlet;
+import pl.polsl.skirentalservice.core.servlet.HttpMethodMode;
+import pl.polsl.skirentalservice.core.servlet.WebServletRequest;
+import pl.polsl.skirentalservice.core.servlet.WebServletResponse;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import pl.polsl.skirentalservice.service.CustomerService;
 import pl.polsl.skirentalservice.util.PageTitle;
 import pl.polsl.skirentalservice.util.SessionAlert;
-import pl.polsl.skirentalservice.util.SessionAttribute;
-import pl.polsl.skirentalservice.util.Utils;
 
-import java.io.IOException;
-
-import static pl.polsl.skirentalservice.exception.NotFoundException.UserNotFoundException;
+import java.util.StringJoiner;
 
 @Slf4j
 @WebServlet(urlPatterns = { "/seller/customer-details", "/owner/customer-details" })
-public class CommonCustomerDetailsServlet extends HttpServlet {
-    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
+public class CommonCustomerDetailsServlet extends AbstractWebServlet {
+    private final CustomerService customerService;
+
+    @Inject
+    public CommonCustomerDetailsServlet(
+        CustomerService customerService,
+        ServerConfigBean serverConfigBean
+    ) {
+        super(serverConfigBean);
+        this.customerService = customerService;
+    }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final String userId = req.getParameter("id");
-        final HttpSession httpSession = req.getSession();
-        final var userDataDto = (LoggedUserDataDto) httpSession.getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName());
+    protected WebServletResponse httpGetCall(WebServletRequest req) {
+        final Long customerId = req.getAttribute("customerId", Long.class);
+        final LoggedUserDataDto loggedUser = req.getLoggedUser();
 
         final AlertTupleDto alert = new AlertTupleDto(true);
-        try (final Session session = sessionFactory.openSession()) {
-            try {
-                session.beginTransaction();
-                final CustomerDao customerDao = new CustomerDaoHib(session);
 
-                final var customerDetails = customerDao.findCustomerDetails(userId)
-                    .orElseThrow(() -> new UserNotFoundException(userId));
-
-                session.getTransaction().commit();
-                req.setAttribute("customerData", customerDetails);
-                req.setAttribute("title", PageTitle.COMMON_CUSTOMER_DETAILS_PAGE.getName());
-
-                req.getRequestDispatcher("/WEB-INF/pages/" + userDataDto.getRoleEng() + "/customer/" +
-                    userDataDto.getRoleEng() + "-customer-details.jsp").forward(req, res);
-            } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, log, ex);
-            }
-        } catch (RuntimeException ex) {
+        String redirectOrViewName = loggedUser.getRoleEng() + "/customers";
+        HttpMethodMode mode = HttpMethodMode.REDIRECT;
+        try {
+            req.addAttribute("customerData", customerService.getCustomerFullDetails(customerId));
+            mode = HttpMethodMode.JSP_GENERATOR;
+            redirectOrViewName = new StringJoiner("/")
+                .add(loggedUser.getRoleEng())
+                .add("customer")
+                .add(loggedUser.getRoleEng() + "-customer-details")
+                .toString();
+        } catch (AbstractAppException ex) {
             alert.setMessage(ex.getMessage());
-            httpSession.setAttribute(SessionAlert.COMMON_CUSTOMERS_PAGE_ALERT.getName(), alert);
-            res.sendRedirect("/" + userDataDto.getRoleEng() + "/customers");
+            req.setSessionAttribute(SessionAlert.COMMON_CUSTOMERS_PAGE_ALERT, alert);
         }
+        return WebServletResponse.builder()
+            .mode(mode)
+            .pageTitle(PageTitle.COMMON_CUSTOMER_DETAILS_PAGE)
+            .pageOrRedirectTo(redirectOrViewName)
+            .build();
     }
 }

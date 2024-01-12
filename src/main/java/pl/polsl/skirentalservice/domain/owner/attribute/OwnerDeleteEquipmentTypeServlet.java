@@ -4,78 +4,65 @@
  */
 package pl.polsl.skirentalservice.domain.owner.attribute;
 
-import jakarta.servlet.ServletException;
+import jakarta.inject.Inject;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.EquipmentTypeDao;
-import pl.polsl.skirentalservice.dao.hibernate.EquipmentTypeDaoHib;
+import pl.polsl.skirentalservice.core.AbstractAppException;
+import pl.polsl.skirentalservice.core.ServerConfigBean;
+import pl.polsl.skirentalservice.core.servlet.AbstractWebServlet;
+import pl.polsl.skirentalservice.core.servlet.HttpMethodMode;
+import pl.polsl.skirentalservice.core.servlet.WebServletRequest;
+import pl.polsl.skirentalservice.core.servlet.WebServletResponse;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.attribute.AttributeModalResDto;
+import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
+import pl.polsl.skirentalservice.service.EquipmentAttributeService;
 import pl.polsl.skirentalservice.util.AlertType;
 import pl.polsl.skirentalservice.util.SessionAttribute;
-import pl.polsl.skirentalservice.util.Utils;
-
-import java.io.IOException;
-
-import static pl.polsl.skirentalservice.exception.AlreadyExistException.EquipmentTypeHasConnectionsException;
-import static pl.polsl.skirentalservice.exception.NotFoundException.EquipmentTypeNotFoundException;
 
 @Slf4j
 @WebServlet("/owner/delete-equipment-type")
-public class OwnerDeleteEquipmentTypeServlet extends HttpServlet {
-    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
+public class OwnerDeleteEquipmentTypeServlet extends AbstractWebServlet {
+    private final EquipmentAttributeService equipmentAttributeService;
+
+    @Inject
+    public OwnerDeleteEquipmentTypeServlet(
+        EquipmentAttributeService equipmentAttributeService,
+        ServerConfigBean serverConfigBean
+    ) {
+        super(serverConfigBean);
+        this.equipmentAttributeService = equipmentAttributeService;
+    }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+    protected WebServletResponse httpGetCall(WebServletRequest req) {
+        final String redirectUrl = req.getParameter("redirect", "/owner/add-equipment");
         final String typeId = req.getParameter("id");
-        final String loggedUser = Utils.getLoggedUserLogin(req);
+        final LoggedUserDataDto loggedUser = req.getLoggedUser();
 
         final AlertTupleDto alert = new AlertTupleDto(true);
-        final HttpSession httpSession = req.getSession();
         final AttributeModalResDto resDto = new AttributeModalResDto();
 
         resDto.setAlert(alert);
         resDto.setModalImmediatelyOpen(true);
+        try {
+            final String deletedType = equipmentAttributeService.deleteEquipmentType(typeId, loggedUser);
+            resDto.getActiveFirstPage().setActive(false);
+            resDto.getActiveSecondPage().setActive(true);
 
-        try (final Session session = sessionFactory.openSession()) {
-            try {
-                session.beginTransaction();
-                final EquipmentTypeDao equipmentDetailsDao = new EquipmentTypeDaoHib(session);
-
-                final String deletedType = equipmentDetailsDao.getEquipmentTypeNameById(typeId)
-                    .orElseThrow(EquipmentTypeNotFoundException::new);
-
-                resDto.getActiveFirstPage().setActive(false);
-                resDto.getActiveSecondPage().setActive(true);
-
-                if (equipmentDetailsDao.checkIfEquipmentTypeHasAnyConnections(typeId)) {
-                    throw new EquipmentTypeHasConnectionsException();
-                }
-                equipmentDetailsDao.deleteEquipmentTypeById(typeId);
-
-                alert.setType(AlertType.INFO);
-                alert.setMessage(
-                    "Usuwanie typu sprzętu narciarskiego: <strong>" + deletedType + "</strong> zakończone sukcesem."
-                );
-                session.getTransaction().commit();
-                log.info("Successful deleted equipment type by: {}. Type: {}", loggedUser, deletedType);
-            } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, log, ex);
-            }
-        } catch (RuntimeException ex) {
+            alert.setType(AlertType.INFO);
+            alert.setMessage(
+                "Usuwanie typu sprzętu narciarskiego: <strong>" + deletedType + "</strong> zakończone sukcesem."
+            );
+        } catch (AbstractAppException ex) {
             alert.setActive(true);
             alert.setMessage(ex.getMessage());
-            log.error("Failure delete equipment type by: {}. Cause: {}", loggedUser, ex.getMessage());
+            log.error("Failure delete equipment type by: {}. Cause: {}", loggedUser.getLogin(), ex.getMessage());
         }
-        httpSession.setAttribute(SessionAttribute.EQ_TYPES_MODAL_DATA.getName(), resDto);
-        res.sendRedirect(StringUtils.defaultIfBlank(req.getParameter("redirect"), "/owner/add-equipment"));
+        req.setSessionAttribute(SessionAttribute.EQ_TYPES_MODAL_DATA, resDto);
+        return WebServletResponse.builder()
+            .mode(HttpMethodMode.REDIRECT)
+            .pageOrRedirectTo(redirectUrl)
+            .build();
     }
 }

@@ -4,104 +4,95 @@
  */
 package pl.polsl.skirentalservice.domain.owner.employer;
 
-import jakarta.servlet.ServletException;
+import jakarta.inject.Inject;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import pl.polsl.skirentalservice.core.db.HibernateDbSingleton;
-import pl.polsl.skirentalservice.dao.EmployerDao;
-import pl.polsl.skirentalservice.dao.hibernate.EmployerDaoHib;
+import pl.polsl.skirentalservice.core.AbstractAppException;
+import pl.polsl.skirentalservice.core.ServerConfigBean;
+import pl.polsl.skirentalservice.core.servlet.HttpMethodMode;
+import pl.polsl.skirentalservice.core.servlet.WebServletRequest;
+import pl.polsl.skirentalservice.core.servlet.WebServletResponse;
+import pl.polsl.skirentalservice.core.servlet.pageable.*;
 import pl.polsl.skirentalservice.dto.AlertTupleDto;
 import pl.polsl.skirentalservice.dto.PageableDto;
 import pl.polsl.skirentalservice.dto.employer.EmployerRecordResDto;
-import pl.polsl.skirentalservice.paging.filter.FilterColumn;
-import pl.polsl.skirentalservice.paging.filter.FilterDataDto;
-import pl.polsl.skirentalservice.paging.filter.ServletFilter;
-import pl.polsl.skirentalservice.paging.pagination.ServletPagination;
-import pl.polsl.skirentalservice.paging.sorter.ServletSorter;
-import pl.polsl.skirentalservice.paging.sorter.ServletSorterField;
-import pl.polsl.skirentalservice.paging.sorter.SorterDataDto;
-import pl.polsl.skirentalservice.util.*;
+import pl.polsl.skirentalservice.service.OwnerEmployerService;
+import pl.polsl.skirentalservice.util.AlertType;
+import pl.polsl.skirentalservice.util.PageTitle;
+import pl.polsl.skirentalservice.util.SessionAlert;
+import pl.polsl.skirentalservice.util.SessionAttribute;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @WebServlet("/owner/employers")
-public class OwnerEmployersServlet extends HttpServlet {
-    private final SessionFactory sessionFactory = HibernateDbSingleton.getInstance().getSessionFactory();
+public class OwnerEmployersServlet extends AbstractPageableWebServlet {
+    private final OwnerEmployerService ownerEmployerService;
 
-    private final Map<String, ServletSorterField> sorterFieldMap = new HashMap<>();
-    private final List<FilterColumn> filterFieldMap = new ArrayList<>();
-
-    @Override
-    public void init() {
-        sorterFieldMap.put("identity", new ServletSorterField("e.id"));
-        sorterFieldMap.put("fullName", new ServletSorterField("CONCAT(d.firstName, ' ', d.lastName)"));
-        sorterFieldMap.put("pesel", new ServletSorterField("d.pesel"));
-        sorterFieldMap.put("hiredDate", new ServletSorterField("e.hiredDate"));
-        sorterFieldMap.put("email", new ServletSorterField("d.emailAddress"));
-        sorterFieldMap.put("phoneNumber", new ServletSorterField("CONCAT('+', d.phoneAreaCode, ' ', d.phoneNumber)"));
-        sorterFieldMap.put("gender", new ServletSorterField("d.gender"));
-        filterFieldMap.add(new FilterColumn("fullName", "Imieniu i nazwisku", "CONCAT(d.firstName, ' ', d.lastName)"));
-        filterFieldMap.add(new FilterColumn("pesel", "Numerze PESEL", "d.pesel"));
-        filterFieldMap.add(new FilterColumn("emailAddress", "Adresie email", "d.emailAddress"));
-        filterFieldMap.add(new FilterColumn("phoneNumber", "Numerze telefonu", "d.phoneNumber"));
+    @Inject
+    public OwnerEmployersServlet(
+        OwnerEmployerService ownerEmployerService,
+        ServerConfigBean serverConfigBean
+    ) {
+        super(serverConfigBean);
+        this.ownerEmployerService = ownerEmployerService;
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final int page = NumberUtils.toInt(Objects.requireNonNullElse(req.getParameter("page"), "1"), 1);
-        final int total = NumberUtils.toInt(Objects.requireNonNullElse(req.getParameter("total"), "10"), 10);
-
-        final ServletSorter servletSorter = new ServletSorter(req, "e.id", sorterFieldMap);
-        final SorterDataDto sorterData = servletSorter.generateSortingJPQuery(SessionAttribute.EMPLOYERS_LIST_SORTER);
-        final ServletFilter servletFilter = new ServletFilter(req, filterFieldMap);
-        final FilterDataDto filterData = servletFilter.generateFilterJPQuery(SessionAttribute.EMPLOYERS_LIST_FILTER);
-
-        final AlertTupleDto alert = Utils.getAndDestroySessionAlert(req, SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT);
-        try (final Session session = sessionFactory.openSession()) {
-            try {
-                session.beginTransaction();
-                final EmployerDao employerDao = new EmployerDaoHib(session);
-
-                final Long totalEmployers = employerDao.findAllEmployersCount(filterData);
-                final ServletPagination pagination = new ServletPagination(page, total, totalEmployers);
-                if (pagination.checkIfIsInvalid()) throw new RuntimeException();
-
-                final List<EmployerRecordResDto> employersList = employerDao
-                    .findAllPageableEmployersRecords(new PageableDto(filterData, sorterData, page, total));
-
-                session.getTransaction().commit();
-                req.setAttribute("pagesData", pagination);
-                req.setAttribute("employersData", employersList);
-            } catch (RuntimeException ex) {
-                Utils.onHibernateException(session, log, ex);
-            }
-        } catch (RuntimeException ex) {
+    protected WebServletResponse onFetchPageableData(WebServletRequest req, PageableDto pageable) {
+        final AlertTupleDto alert = req.getAlertAndDestroy(SessionAlert.OWNER_EMPLOYERS_PAGE_ALERT);
+        try {
+            final Slice<EmployerRecordResDto> pageableEmployers = ownerEmployerService.getPageableEmployers(pageable);
+            req.addAttribute("pagesData", pageableEmployers.pagination());
+            req.addAttribute("employersData", pageableEmployers.elements());
+        } catch (AbstractAppException ex) {
             alert.setType(AlertType.ERROR);
             alert.setMessage(ex.getMessage());
         }
-        req.setAttribute("alertData", alert);
-        req.setAttribute("sorterData", sorterFieldMap);
-        req.setAttribute("filterData", filterData);
-        req.setAttribute("title", PageTitle.OWNER_EMPLOYERS_PAGE.getName());
-        req.getRequestDispatcher("/WEB-INF/pages/owner/employer/owner-employers.jsp").forward(req, res);
+        req.addAttribute("alertData", alert);
+        return WebServletResponse.builder()
+            .mode(HttpMethodMode.JSP_GENERATOR)
+            .pageTitle(PageTitle.OWNER_EMPLOYERS_PAGE)
+            .pageOrRedirectTo("owner/employer/owner-employers")
+            .build();
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        final int page = NumberUtils.toInt(Objects.requireNonNullElse(req.getParameter("page"), "1"), 1);
-        final int total = NumberUtils.toInt(Objects.requireNonNullElse(req.getParameter("total"), "10"), 10);
-        final ServletSorter servletSorter = new ServletSorter(req, "e.id", sorterFieldMap);
-        servletSorter.generateSortingJPQuery(SessionAttribute.EMPLOYERS_LIST_SORTER);
-        final ServletFilter servletFilter = new ServletFilter(req, filterFieldMap);
-        servletFilter.generateFilterJPQuery(SessionAttribute.EMPLOYERS_LIST_FILTER);
-        res.sendRedirect("/owner/employers?page=" + page + "&total=" + total);
+    protected Map<String, ServletSorterField> configureServletSorterFields() {
+        return Map.of(
+            "identity", new ServletSorterField("e.id"),
+            "fullName", new ServletSorterField("CONCAT(d.firstName, ' ', d.lastName)"),
+            "pesel", new ServletSorterField("d.pesel"),
+            "hiredDate", new ServletSorterField("e.hiredDate"),
+            "email", new ServletSorterField("d.emailAddress"),
+            "phoneNumber", new ServletSorterField("CONCAT('+', d.phoneAreaCode, ' ', d.phoneNumber)"),
+            "gender", new ServletSorterField("d.gender")
+        );
+    }
+
+    @Override
+    protected List<FilterColumn> configureServletFilterFields() {
+        return List.of(
+            new FilterColumn("fullName", "Imieniu i nazwisku", "CONCAT(d.firstName, ' ', d.lastName)"),
+            new FilterColumn("pesel", "Numerze PESEL", "d.pesel"),
+            new FilterColumn("emailAddress", "Adresie email", "d.emailAddress"),
+            new FilterColumn("phoneNumber", "Numerze telefonu", "d.phoneNumber")
+        );
+    }
+
+    @Override
+    protected String defaultSorterColumn() {
+        return "e.id";
+    }
+
+    @Override
+    protected PageableAttributes setPageableAttributes() {
+        return new PageableAttributes(SessionAttribute.EMPLOYERS_LIST_SORTER, SessionAttribute.EMPLOYERS_LIST_FILTER);
+    }
+
+    @Override
+    protected String setRedirectOnPostCall(WebServletRequest req) {
+        return "owner/employers";
     }
 }
