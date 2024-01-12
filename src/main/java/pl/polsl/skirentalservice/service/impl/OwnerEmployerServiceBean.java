@@ -173,11 +173,9 @@ public class OwnerEmployerServiceBean implements OwnerEmployerService {
                 throw new AlreadyExistException
                     .PhoneNumberAlreadyExistException(reqDto.getPhoneNumber(), role);
             }
-            modelMapperBean.onUpdateNullableTransactTurnOn();
             modelMapperBean.map(reqDto, updatableUser.getUserDetails());
             modelMapperBean.map(reqDto, updatableUser.getLocationAddress());
             modelMapperBean.map(reqDto, updatableUser);
-            modelMapperBean.onUpdateNullableTransactTurnOff();
 
             session.getTransaction().commit();
             log.info("{} with id: {} was successfuly updated. Data: {}", roleName, userId, reqDto);

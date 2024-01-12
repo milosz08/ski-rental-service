@@ -133,10 +133,8 @@ public class CustomerServiceBean implements CustomerService {
             if (userDetailsDao.checkIfCustomerWithSameEmailExist(reqDto.getEmailAddress(), customerId)) {
                 throw new AlreadyExistException.EmailAddressAlreadyExistException(reqDto.getEmailAddress(), UserRole.USER);
             }
-            modelMapperBean.onUpdateNullableTransactTurnOn();
             modelMapperBean.map(reqDto, updatableCustomer.getUserDetails());
             modelMapperBean.map(reqDto, updatableCustomer.getLocationAddress());
-            modelMapperBean.onUpdateNullableTransactTurnOff();
 
             session.getTransaction().commit();
             log.info("Customer with id: {} was successfuly updated. Data: {}", customerId, reqDto);

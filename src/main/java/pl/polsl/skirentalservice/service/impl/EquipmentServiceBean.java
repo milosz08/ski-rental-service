@@ -160,9 +160,7 @@ public class EquipmentServiceBean implements EquipmentService {
             if (equipmentDao.checkIfEquipmentModelExist(reqDto.getModel(), equipmentId)) {
                 throw new AlreadyExistException.EquipmentAlreadyExistException();
             }
-            modelMapperBean.onUpdateNullableTransactTurnOn();
             modelMapperBean.map(reqDto, equipmentEntity);
-            modelMapperBean.onUpdateNullableTransactTurnOff();
 
             equipmentEntity.setType(session.getReference(EquipmentTypeEntity.class, reqDto.getType()));
             equipmentEntity.setBrand(session.getReference(EquipmentBrandEntity.class, reqDto.getBrand()));

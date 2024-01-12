@@ -39,12 +39,4 @@ public class ModelMapperBean {
     public void map(Object data, Object destination) {
         modelMapper.map(data, destination);
     }
-
-    public void onUpdateNullableTransactTurnOn() {
-        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
-    }
-
-    public void onUpdateNullableTransactTurnOff() {
-        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNull());
-    }
 }
