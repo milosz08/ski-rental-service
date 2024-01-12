@@ -4,7 +4,7 @@
  */
 package pl.polsl.skirentalservice.domain;
 
-import jakarta.servlet.ServletException;
+import jakarta.inject.Inject;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpSession;
 import org.apache.commons.lang3.StringUtils;
 import pl.polsl.skirentalservice.core.s3.FetchedObjectData;
 import pl.polsl.skirentalservice.core.s3.S3Bucket;
-import pl.polsl.skirentalservice.core.s3.S3ClientSigleton;
+import pl.polsl.skirentalservice.core.s3.S3ClientBean;
 import pl.polsl.skirentalservice.util.SessionAttribute;
 
 import java.io.IOException;
@@ -21,12 +21,17 @@ import java.io.OutputStream;
 
 @WebServlet("/resources/*")
 public class GetStaticResourceServlet extends HttpServlet {
-    private final S3ClientSigleton s3Client = S3ClientSigleton.getInstance();
+    private final S3ClientBean s3ClientBean;
+
+    @Inject
+    public GetStaticResourceServlet(S3ClientBean s3ClientBean) {
+        this.s3ClientBean = s3ClientBean;
+    }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
         final HttpSession httpSession = req.getSession();
-        if (httpSession.getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getName()) == null) {
+        if (httpSession.getAttribute(SessionAttribute.LOGGED_USER_DETAILS.getAttributeName()) == null) {
             res.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
@@ -39,7 +44,7 @@ public class GetStaticResourceServlet extends HttpServlet {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-        final FetchedObjectData objectData = s3Client.getObject(bucket, name);
+        final FetchedObjectData objectData = s3ClientBean.getObject(bucket, name);
         if (objectData == null) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
