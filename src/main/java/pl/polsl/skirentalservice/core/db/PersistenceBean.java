@@ -24,6 +24,7 @@ import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
+import pl.polsl.skirentalservice.core.AbstractAppException;
 import pl.polsl.skirentalservice.core.XMLConfigLoader;
 
 import java.sql.SQLException;
@@ -80,14 +81,31 @@ public class PersistenceBean {
         }
     }
 
-    public <T> T wrapToTransaction(Function<Session, T> executableTransaction) {
+    public <T> T startNonTransactQuery(Function<Session, T> executableCode) {
+        T response;
+        try (final Session session = sessionFactory.openSession()) {
+            response = executableCode.apply(session);
+        } catch (Exception ex) {
+            throw new TransactionalException(ex);
+        }
+        return response;
+    }
+
+    public void startNonTransactQuery(Consumer<Session> executableCode) {
+        startTransaction(session -> {
+            executableCode.accept(session);
+            return null;
+        });
+    }
+
+    public <T> T startTransaction(Function<Session, T> executableTransaction, Runnable rollbackSideEffects) {
         T response;
         try (final Session session = sessionFactory.openSession()) {
             try {
                 session.beginTransaction();
                 response = executableTransaction.apply(session);
-                session.getTransaction().commit();
-            } catch (RuntimeException ex) {
+            } catch (AbstractAppException ex) {
+                rollbackSideEffects.run();
                 if (session.getTransaction().isActive()) {
                     log.warn("Some issues appears. Transaction rollback and revert previous state...");
                     session.getTransaction().rollback();
@@ -100,14 +118,21 @@ public class PersistenceBean {
         return response;
     }
 
-    public void wrapToTransaction(Consumer<Session> executableTransaction) {
-        wrapToTransaction(session -> {
-            executableTransaction.accept(session);
-            return null;
-        });
+    public <T> T startTransaction(Function<Session, T> executableTransaction) {
+        return startTransaction(executableTransaction, () -> { });
     }
 
-    public Session openSession() {
-        return sessionFactory.openSession();
+    public void startTransaction(Consumer<Session> executableTransaction, Runnable rollbackSideEffects) {
+        startTransaction(session -> {
+            executableTransaction.accept(session);
+            return null;
+        }, rollbackSideEffects);
+    }
+
+    public void startTransaction(Consumer<Session> executableTransaction) {
+        startTransaction(session -> {
+            executableTransaction.accept(session);
+            return null;
+        }, () -> { });
     }
 }
