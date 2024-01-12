@@ -119,7 +119,8 @@ public class EquipmentDaoHib extends AbstractHibernateDao implements EquipmentDa
     @Override
     public boolean checkIfEquipmentModelExist(String modelName, Object equipmentId) {
         final String jpqlEquipmentModelExist = """
-                SELECT COUNT(e.id) > 0 FROM EquipmentEntity e WHERE LOWER(e.model) = LOWER(:model) AND e.id <> :eid
+                SELECT COUNT(e.id) > 0 FROM EquipmentEntity e
+                WHERE LOWER(e.model) = LOWER(:model) AND (e.id <> :eid OR :eid IS NULL)
             """;
         return session.createQuery(jpqlEquipmentModelExist, Boolean.class)
             .setParameter("model", modelName)
@@ -142,7 +143,8 @@ public class EquipmentDaoHib extends AbstractHibernateDao implements EquipmentDa
                 WHERE eq.id = :eid AND r.status <> :rst
             """;
         return session.createQuery(jpqlFindHasConnections, Boolean.class)
-            .setParameter("eid", equipmentId).setParameter("rst", RentStatus.RETURNED)
+            .setParameter("eid", equipmentId)
+            .setParameter("rst", RentStatus.RETURNED)
             .getSingleResult();
     }
 

@@ -17,7 +17,7 @@ public class UserDetailsDaoHib extends AbstractHibernateDao implements UserDetai
     public boolean checkIfCustomerWithSamePeselExist(String pesel, Object customerId) {
         final String jpqlFindPesel = """
                 SELECT COUNT(c.id) > 0 FROM CustomerEntity c INNER JOIN c.userDetails d
-                WHERE d.pesel = :pesel AND c.id <> :cid
+                WHERE d.pesel = :pesel AND (c.id <> :cid OR :cid IS NULL)
             """;
         return session.createQuery(jpqlFindPesel, Boolean.class)
             .setParameter("pesel", pesel)
@@ -29,7 +29,7 @@ public class UserDetailsDaoHib extends AbstractHibernateDao implements UserDetai
     public boolean checkIfCustomerWithSameEmailExist(String email, Object customerId) {
         final String jpqlFindEmailAddress = """
                 SELECT COUNT(c.id) > 0 FROM CustomerEntity c INNER JOIN c.userDetails d
-                WHERE d.emailAddress = :emailAddress AND c.id <> :cid
+                WHERE d.emailAddress = :emailAddress AND (c.id <> :cid OR :cid IS NULL)
             """;
         return session.createQuery(jpqlFindEmailAddress, Boolean.class)
             .setParameter("emailAddress", email)
@@ -41,7 +41,7 @@ public class UserDetailsDaoHib extends AbstractHibernateDao implements UserDetai
     public boolean checkIfCustomerWithSamePhoneNumberExist(String phoneNumber, Object customerId) {
         final String jpqlFindPhoneNumber = """
                 SELECT COUNT(c.id) > 0 FROM CustomerEntity c INNER JOIN c.userDetails d
-                WHERE d.phoneNumber = :phoneNumber AND c.id <> :cid
+                WHERE d.phoneNumber = :phoneNumber AND (c.id <> :cid OR :cid IS NULL)
             """;
         return session.createQuery(jpqlFindPhoneNumber, Boolean.class)
             .setParameter("phoneNumber", phoneNumber)
@@ -53,7 +53,7 @@ public class UserDetailsDaoHib extends AbstractHibernateDao implements UserDetai
     public boolean checkIfEmployerWithSamePeselExist(String pesel, Object employerId) {
         final String jpqlFindPesel = """
                 SELECT COUNT(e.id) > 0 FROM EmployerEntity e INNER JOIN e.userDetails d
-                WHERE d.pesel = :pesel AND e.id <> :eid
+                WHERE d.pesel = :pesel AND (e.id <> :eid OR :eid IS NULL)
             """;
         return session.createQuery(jpqlFindPesel, Boolean.class)
             .setParameter("pesel", pesel)
@@ -65,7 +65,7 @@ public class UserDetailsDaoHib extends AbstractHibernateDao implements UserDetai
     public boolean checkIfEmployerWithSamePhoneNumberExist(String phoneNumber, Object employerId) {
         final String jpqlFindPhoneNumber = """
                 SELECT COUNT(e.id) > 0 FROM EmployerEntity e INNER JOIN e.userDetails d
-                WHERE d.phoneNumber = :phoneNumber AND e.id <> :eid
+                WHERE d.phoneNumber = :phoneNumber AND (e.id <> :eid OR :eid IS NULL)
             """;
         return session.createQuery(jpqlFindPhoneNumber, Boolean.class)
             .setParameter("phoneNumber", phoneNumber)
