@@ -30,6 +30,10 @@ public class AddEditEquipmentCartResDto {
         this.immediatelyShow = isImmediatelyOpen ? "open" : "close";
     }
 
+    public void setEquipmentId(Long equipmentId) {
+        eqId = String.valueOf(equipmentId);
+    }
+
     @Override
     public String toString() {
         return "{" +
