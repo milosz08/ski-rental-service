@@ -80,10 +80,10 @@
               <td class="nowrap-tb align-middle fit">
                 <button type="button" class="btn btn-sm btn-danger py-0 px-1" data-bs-toggle="modal"
                         data-bs-target="#deleteEquipment${equipment.id()}">
-                                    <span type="button" data-bs-toggle="tooltip" data-bs-placement="top"
-                                          data-bs-title="Usuń sprzęt">
-                                        <i class="bi bi-x-lg align-middle lh-sm"></i>
-                                    </span>
+                  <span type="button" data-bs-toggle="tooltip" data-bs-placement="top"
+                        data-bs-title="Usuń sprzęt">
+                      <i class="bi bi-x-lg align-middle lh-sm"></i>
+                  </span>
                 </button>
                 <a href="${pageContext.request.contextPath}/owner/equipment-details?id=${equipment.id()}"
                    class="btn btn-sm btn-dark py-0">
@@ -95,10 +95,10 @@
                 </a>
                 <button type="button" class="btn btn-sm btn-success py-0 px-1" data-bs-toggle="modal"
                         data-bs-target="#showBarcode${equipment.id()}">
-                                    <span type="button" data-bs-toggle="tooltip" data-bs-placement="left"
-                                          data-bs-title="Pokaż kod kreskowy">
-                                        <i class="bi bi-upc-scan align-middle lh-sm"></i>
-                                    </span>
+                  <span type="button" data-bs-toggle="tooltip" data-bs-placement="left"
+                        data-bs-title="Pokaż kod kreskowy">
+                    <i class="bi bi-upc-scan align-middle lh-sm"></i>
+                  </span>
                 </button>
               </td>
             </tr>

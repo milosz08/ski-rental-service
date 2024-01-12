@@ -49,28 +49,27 @@ public class OwnerEditEquipmentServlet extends AbstractWebServlet implements Att
 
     @Override
     protected WebServletResponse httpGetCall(WebServletRequest req) {
-        final Long equipmentId = req.getAttribute("id", Long.class);
+        final Long equipmentId = req.getAttribute("equipmentId", Long.class);
         final AlertTupleDto alert = req.getAlertAndDestroy(SessionAlert.OWNER_EDIT_EQUIPMENT_PAGE_ALERT);
         try {
             var resDto = req.getFromSession(this, AddEditEquipmentResDto.class);
             if (resDto == null) {
-                final var mergedAttributes = equipmentAttributeService.getMergedEquipmentAttributes();
                 resDto = new AddEditEquipmentResDto(validatorBean, equipmentService.getEquipmentDetails(equipmentId));
+            }
+            final var mergedAttributes = equipmentAttributeService.getMergedEquipmentAttributes();
+            resDto.insertTypesSelects(mergedAttributes.get(SessionAttribute.EQ_TYPES_MODAL_DATA));
+            resDto.insertBrandsSelects(mergedAttributes.get(SessionAttribute.EQ_BRANDS_MODAL_DATA));
+            resDto.insertColorsSelects(mergedAttributes.get(SessionAttribute.EQ_COLORS_MODAL_DATA));
 
-                resDto.insertTypesSelects(mergedAttributes.get(SessionAttribute.EQ_TYPES_MODAL_DATA));
-                resDto.insertBrandsSelects(mergedAttributes.get(SessionAttribute.EQ_BRANDS_MODAL_DATA));
-                resDto.insertColorsSelects(mergedAttributes.get(SessionAttribute.EQ_COLORS_MODAL_DATA));
-
-                for (final Map.Entry<SessionAttribute, List<FormSelectTupleDto>> entry : mergedAttributes.entrySet()) {
-                    req.addAttribute(entry.getKey().getAttributeName(), req.getModalAndDestroy(entry.getKey()));
-                }
+            for (final Map.Entry<SessionAttribute, List<FormSelectTupleDto>> entry : mergedAttributes.entrySet()) {
+                req.addAttribute(entry.getKey().getAttributeName(), req.getModalAndDestroy(entry.getKey()));
             }
             req.addAttribute("addEditEquipmentData", resDto);
         } catch (AbstractAppException ex) {
             alert.setMessage(ex.getMessage());
             req.setSessionAttribute(SessionAlert.OWNER_EDIT_EQUIPMENT_PAGE_ALERT, alert);
         }
-        req.addAttribute("equipmentId", equipmentId);
+        req.addAttribute("equipmentId", String.valueOf(equipmentId));
         req.addAttribute("alertData", alert);
         req.addAttribute("addEditText", "Edytuj");
 

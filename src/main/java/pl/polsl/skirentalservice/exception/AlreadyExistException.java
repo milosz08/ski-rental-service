@@ -54,7 +54,7 @@ public class AlreadyExistException {
 
     public static class EquipmentAlreadyExistException extends AbstractAppException {
         public EquipmentAlreadyExistException() {
-            super("Wybrany model sprzętu istnieje już w systemie Jeśli chcesz dodać więcej elementów, zwiększ ich ilość" +
+            super("Wybrany model sprzętu istnieje już w systemie Jeśli chcesz dodać więcej elementów, zwiększ ich ilość " +
                 "w wypożyczalni.");
         }
     }

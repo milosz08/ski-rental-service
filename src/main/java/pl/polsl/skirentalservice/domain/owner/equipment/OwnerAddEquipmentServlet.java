@@ -61,12 +61,12 @@ public class OwnerAddEquipmentServlet extends AbstractWebServlet implements Attr
             for (final Map.Entry<SessionAttribute, List<FormSelectTupleDto>> entry : mergedAttributes.entrySet()) {
                 req.addAttribute(entry.getKey().getAttributeName(), req.getModalAndDestroy(entry.getKey()));
             }
+            req.addAttribute("addEditEquipmentData", resDto);
         } catch (AbstractAppException ex) {
             alert.setActive(true);
             alert.setMessage(ex.getMessage());
         }
         req.addAttribute("alertData", alert);
-        req.addAttribute("addEditEquipmentData", resDto);
         req.addAttribute("addEditText", "Dodaj");
 
         return WebServletResponse.builder()
