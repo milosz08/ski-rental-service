@@ -36,7 +36,6 @@ public class OwnerDeleteEquipmentBrandServlet extends AbstractWebServlet {
 
     @Override
     protected WebServletResponse httpGetCall(WebServletRequest req) {
-        final String redirectUrl = req.getParameter("redirect", "/owner/add-equipment");
         final String brandId = req.getParameter("id");
         final LoggedUserDataDto loggedUser = req.getLoggedUser();
 
@@ -62,7 +61,7 @@ public class OwnerDeleteEquipmentBrandServlet extends AbstractWebServlet {
         req.setSessionAttribute(SessionAttribute.EQ_BRANDS_MODAL_DATA, resDto);
         return WebServletResponse.builder()
             .mode(HttpMethodMode.REDIRECT)
-            .pageOrRedirectTo(redirectUrl)
+            .pageOrRedirectTo(req.getParameter("redirect", "owner/add-equipment"))
             .build();
     }
 }

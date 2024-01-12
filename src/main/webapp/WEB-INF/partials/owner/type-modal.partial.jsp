@@ -44,10 +44,10 @@
                role="tabpanel" tabindex="0">
             <form action="${pageContext.request.contextPath}/owner/add-equipment-type" method="post" novalidate>
               <c:if test="${addEditText.equals('Edytuj')}">
-                <input type="hidden" name="redirect" value="/owner/edit-equipment?id=${equipmentId}"/>
+                <input type="hidden" name="redirect" value="owner/edit-equipment?id=${equipmentId}"/>
               </c:if>
               <c:if test="${not addEditText.equals('Edytuj')}">
-                <input type="hidden" name="redirect" value="/owner/add-equipment"/>
+                <input type="hidden" name="redirect" value="owner/add-equipment"/>
               </c:if>
               <label for="equipmentType" class="form-label mb-1 text-secondary micro-font">
                 Nazwa typu sprzętu:
@@ -81,7 +81,7 @@
                       <c:if test="${addEditText.equals('Edytuj')}">
                         <a
                           href="${pageContext.request.contextPath}
-                          /owner/delete-equipment-type?id=${type.value}&redirect=/owner/edit-equipment?id=${equipmentId}"
+                          /owner/delete-equipment-type?id=${type.value}&redirect=owner/edit-equipment?id=${equipmentId}"
                           class="btn btn-danger btn-sm py-0">
                           Usuń
                         </a>
@@ -89,7 +89,7 @@
                       <c:if test="${not addEditText.equals('Edytuj')}">
                         <a
                           href="${pageContext.request.contextPath}
-                          /owner/delete-equipment-type?id=${type.value}&redirect=/owner/add-equipment"
+                          /owner/delete-equipment-type?id=${type.value}&redirect=owner/add-equipment"
                           class="btn btn-danger btn-sm py-0">
                           Usuń
                         </a>

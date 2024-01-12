@@ -34,8 +34,8 @@ public class OwnerAddEquipmentBrandServlet extends AbstractWebServlet {
     }
 
     @Override
-    protected WebServletResponse httpGetCall(WebServletRequest req) {
-        final String redirectUrl = req.getParameter("redirect", "/owner/add-equipment");
+    protected WebServletResponse httpPostCall(WebServletRequest req) {
+        final String redirectUrl = req.getParameter("redirect", "owner/add-equipment");
         final LoggedUserDataDto loggedUser = req.getLoggedUser();
 
         final AttributeValidatorPayloadDto payload = equipmentAttributeService.validateEquipmentAttribute(req);
