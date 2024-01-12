@@ -10,6 +10,7 @@ import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import pl.polsl.skirentalservice.core.ReqValidatePojo;
 import pl.polsl.skirentalservice.core.servlet.WebServletRequest;
+import pl.polsl.skirentalservice.exception.CredentialException;
 import pl.polsl.skirentalservice.util.Regex;
 
 @Data
@@ -25,6 +26,12 @@ public class ChangeForgottenPasswordReqDto implements ReqValidatePojo {
     public ChangeForgottenPasswordReqDto(WebServletRequest req) {
         this.password = StringUtils.trimToEmpty(req.getParameter("password"));
         this.passwordRepeat = StringUtils.trimToEmpty(req.getParameter("passwordRepeat"));
+    }
+
+    public void validatePasswordsMatching() {
+        if (!password.equals(passwordRepeat)) {
+            throw new CredentialException.PasswordMismatchException("hasło", "powtórz hasło");
+        }
     }
 
     @Override
