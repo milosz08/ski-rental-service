@@ -1,17 +1,19 @@
 /*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+ * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
  * Silesian University of Technology
  */
 package pl.polsl.skirentalservice.pdf.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import pl.polsl.skirentalservice.dto.PriceUnitsDto;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
-public class ReturnPdfDocumentDataDto {
+@Getter
+@Setter
+public class PdfDocumentData {
     private String issuedIdentifier;
     private String fullName;
     private String pesel;
@@ -19,6 +21,7 @@ public class ReturnPdfDocumentDataDto {
     private String email;
     private String address;
     private String rentDate;
+    private String issuedDate;
     private String returnDate;
     private String rentTime;
     private String tax;
@@ -38,6 +41,7 @@ public class ReturnPdfDocumentDataDto {
             ", email=" + email +
             ", address=" + address +
             ", rentDate=" + rentDate +
+            ", issuedDate=" + issuedDate +
             ", returnDate=" + returnDate +
             ", rentTime=" + rentTime +
             ", tax=" + tax +
