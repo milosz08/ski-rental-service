@@ -16,4 +16,12 @@ public class ServletException {
             log.error("Unable to send email message to user email: {}. Message payload: {}", emailAddress, payload);
         }
     }
+
+    @Slf4j
+    public static class PdfGeneratorException extends AbstractAppException {
+        public PdfGeneratorException(Throwable ex) {
+            super("Nieudana generacja dokumentu PDF. Spróbuj ponownie.");
+            log.error("Unable to generated PDF document. Cause: {}", ex.getMessage());
+        }
+    }
 }

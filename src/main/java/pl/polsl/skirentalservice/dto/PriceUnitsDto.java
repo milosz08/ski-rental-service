@@ -29,6 +29,14 @@ public class PriceUnitsDto {
         totalDepositPriceBrutto = totalDepositPriceBrutto.add(depositBrutto);
     }
 
+    public String mergeWithDepositNettoPrice() {
+        return totalPriceNetto.add(totalDepositPriceNetto).toString();
+    }
+
+    public String mergeWithDepositBruttoPrice() {
+        return totalPriceBrutto.add(totalDepositPriceBrutto).toString();
+    }
+
     @Override
     public String toString() {
         return "{" +

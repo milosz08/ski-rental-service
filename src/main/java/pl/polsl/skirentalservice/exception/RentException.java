@@ -17,4 +17,21 @@ public class RentException {
             log.warn("Attempt to remove rent with return status. Rent data: {}", rent);
         }
     }
+
+    @Slf4j
+    public static class RentHasDeletedCustomerException extends AbstractAppException {
+        public RentHasDeletedCustomerException() {
+            super("Generowanie zwrotu wypożyczenia z usuniętym klientem jest niemożliwe.");
+            log.warn("Attempt to perform operation on rent with deleted customer.");
+        }
+    }
+
+    @Slf4j
+    public static class TooLowAvailableEquipmentsForDeleteReturnException extends AbstractAppException {
+        public TooLowAvailableEquipmentsForDeleteReturnException() {
+            super("Usunięcie zwrotu i zmiana statusu wypożyczenia nie jest możliwa ze względu na brak " +
+                "dostępności jednego ze sprzętów.");
+            log.warn("Attempt to delete return with non available some of the equipments.");
+        }
+    }
 }
