@@ -10,11 +10,9 @@
 > <br>
 > See project demo at [ski.miloszgilga.pl](https://ski.miloszgilga.pl)
 
-Simple enterprise-class application for managing a ski rental company. This project was made for a subject in college
-programming course. Created only for learning
-purposes. Jakarta EE with EJB specifications were used in the development. This application can be run on any
-application
-server that supports Java 17, Jakarta EE 9, Jakarta Servlet API 6 and EJB, such as Apache TomEE or Wildfly.
+Enterprise-class application for managing a ski rental company. Created using Jakarta EE with EJB specifications. This
+application can be run on any application server that supports Java 17, Jakarta EE 9, Jakarta Servlet API 6 and EJB,
+such as Apache TomEE or Wildfly.
 
 I realize that the specification of servlets, JSP pages and monolithic applications is no longer a standard today. This
 application was created only for learning purposes and familiarization with older "legacy" technologies.
@@ -58,7 +56,7 @@ SKI_DEV_SSH_LOGIN=<optional, for creating email addresses in production>
 
 > [!IMPORTANT]
 > If you run this project as standalone application without using Docker containers, this variables should be provided
-> as *envrionment variables*.
+> as exported *environment variables*.
 
 2. To run project via Docker technology move to root project directory and type:
 
@@ -66,7 +64,7 @@ SKI_DEV_SSH_LOGIN=<optional, for creating email addresses in production>
 $ docker-compose up -d
 ```
 
-This command should will create 4 Docker containers:
+This command will create 4 Docker containers:
 
 * **ski-mailhog-smtp** - simple mail server, for development purposes,
 * **ski-minio-s3** - Minio S3 file storage server,
