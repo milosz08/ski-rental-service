@@ -12,7 +12,7 @@
 
 Enterprise-class application for managing a ski rental company. Created using Jakarta EE with EJB specifications. This
 application can be run on any application server that supports Java 17, Jakarta EE 9, Jakarta Servlet API 6 and EJB,
-such as Apache TomEE or Wildfly.
+such as Apache TomEE, Glassfish or JBoss/Wildfly.
 
 I realize that the specification of servlets, JSP pages and monolithic applications is no longer a standard today. This
 application was created only for learning purposes and familiarization with older "legacy" technologies.
