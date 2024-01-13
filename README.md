@@ -146,13 +146,16 @@ Accessed in `src/main/resources/ssh/ssh.cfg.xml`, run commands only for `prod` e
 
 ## Tech stack
 
-* Jakarta EE
-* EJB
-* JSP/JSTL
-* Bootstrap + jQuery
-* Hibernate + C3P0 connection pool + MySQL relational database
-* Liquibase (database migrations)
-* Docker technology
+* Java (Jakarta) EE 9
+* EJB (Enterprise Java Beans)
+* MySQL relational database system
+* JSP (views) + JSTL
+* Jakarta Mail Api (mail sender) + Freemarker (templates)
+* Hibernate (ORM system) + C3P0 (connection pool) + Liquibase (database migrations)
+* Bootstrap, jQuery, PopperJS
+* Barcode4J - bar codes generator
+* iText - pdf documents generator
+* Apache TomEE application server with Docker technology
 
 <a name="author"></a>
 
