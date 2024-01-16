@@ -35,6 +35,7 @@ services:
   ski-minio-s3:
     container_name: ski-minio-s3
     image: bitnami/minio:2023.9.27
+    user: root
     ports:
       - '${SKI_DEV_S3_API_PORT}:9000'
       - '${SKI_DEV_S3_UI_PORT}:9001'
