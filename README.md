@@ -1,4 +1,4 @@
-# Ski rental Service
+# Ski Rental Service
 
 > More info about this project you will find [on my personal website](https://miloszgilga.pl/project/ski-rental-service)
 > <br>
