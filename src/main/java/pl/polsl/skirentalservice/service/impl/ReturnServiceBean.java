@@ -4,7 +4,7 @@
  */
 package pl.polsl.skirentalservice.service.impl;
 
-import jakarta.ejb.Singleton;
+import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -49,7 +49,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
-@Singleton
+@Stateless
 @SuppressWarnings("unused")
 public class ReturnServiceBean implements ReturnService {
     private final PersistenceBean persistenceBean;
