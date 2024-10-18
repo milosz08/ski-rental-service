@@ -1,8 +1,6 @@
 # Ski Rental Service
 
 > More info about this project you will find [on my personal website](https://miloszgilga.pl/project/ski-rental-service)
-> <br>
-> See project demo at [ski.miloszgilga.pl](https://ski.miloszgilga.pl)
 
 Enterprise-class application for managing a ski rental company. Created using Jakarta EE with EJB specifications. This
 application can be run on any application server that supports Java 17, Jakarta EE 9, Jakarta Servlet API 6 and EJB,
