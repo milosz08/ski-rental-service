@@ -33,6 +33,7 @@ $ git clone https://github.com/milosz08/ski-rental-service
 
 ```properties
 # required variables
+SKI_SSH_ENABLED=<determined, if SSH service is enabled/disabled>
 SKI_S3_USERNAME=<Minio S3 access key for AWS SDK>
 SKI_S3_PASSWORD=<Minio S3 secret key for AWS SDK>
 SKI_MYSQL_USERNAME=<database username>
@@ -40,7 +41,6 @@ SKI_MYSQL_PASSWORD=<database password>
 SKI_MAILHOG_USERNAME=<mailhog username, by default: mailhoguser (check .volumes/mail/mailhog-auth.txt file)>
 SKI_MAILHOG_PASSWORD=<mailhog password, by default: root (check .volumes/mail/mailhog-auth.txt file)>
 # optional variables
-SKI_SSH_ENABLED=<determined, if SSH service is enabled/disabled>
 SKI_SSH_HOST=<optional, SSH host for managing mail accounts>
 SKI_SSH_LOGIN=<optional, SSH login for managing mail accounts>
 SKI_SSH_PRIVATE_KEY_PATH=<optional, SSH private key file path for managing mail accounts>
