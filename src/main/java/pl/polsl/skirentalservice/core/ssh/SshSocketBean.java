@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.channel.direct.Session;
-import org.apache.commons.text.StringSubstitutor;
 import pl.polsl.skirentalservice.core.XMLConfigLoader;
 
 import java.io.File;
@@ -38,8 +37,10 @@ public class SshSocketBean {
     public <T> T executeCommand(
         Function<XMLSshCommands, String> commandCallback, Map<String, String> entries, Class<T> mapTo
     ) throws RuntimeException {
-        final String command = commandCallback.apply(sshCommands);
-        final StringSubstitutor substitutor = new StringSubstitutor(entries);
+        String command = commandCallback.apply(sshCommands);
+        for (final Map.Entry<String, String> entry : entries.entrySet()) {
+            command = command.replace("$[" + entry.getKey() + "]", entry.getValue());
+        }
         T mappedTo;
         try (final SSHClient sshClient = new SSHClient()) {
             sshClient.loadKnownHosts(new File(sshProperties.getProperty("ssh.known-hosts.path")));
@@ -47,7 +48,7 @@ public class SshSocketBean {
             sshClient.authPublickey(sshProperties.getProperty("ssh.login"),
                 sshProperties.getProperty("ssh.private-key.path"));
             final Session session = sshClient.startSession();
-            final Session.Command sessionCommand = session.exec(substitutor.replace(command));
+            final Session.Command sessionCommand = session.exec(command);
             final String response = IOUtils.readFully(sessionCommand.getInputStream()).toString();
             sessionCommand.join();
             session.close();

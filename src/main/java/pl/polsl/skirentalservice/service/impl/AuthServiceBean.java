@@ -149,7 +149,7 @@ public class AuthServiceBean implements AuthService {
             employerDao.updateEmployerFirstAccessPassword(Utils
                 .generateHash(reqDto.getPassword()), loggedUserDataDto.getId());
 
-            if (!serverConfigBean.getEnvironment().isDevOrDocker()) {
+            if (!serverConfigBean.isSshEnabled()) {
                 final Map<String, String> commandArgs = Map.of(
                     "email", loggedUserDataDto.getEmailAddress(),
                     "newPassword", reqDto.getEmailPassword()

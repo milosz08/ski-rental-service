@@ -5,17 +5,9 @@
   <property name="ssh.private-key.path">${SKI_SSH_PRIVATE_KEY_PATH}</property>
   <property name="ssh.known-hosts.path">${SKI_SSH_KNOWN_HOSTS_PATH}</property>
   <commands>
-    <create-mailbox>
-      echo "['--json', 'mail', 'account', 'add', '${email}', '${password}']" | nc -U /var/run/devil2.sock
-    </create-mailbox>
-    <update-mailbox-password>
-      echo "['--json', 'mail', 'passwd', '${email}', '${newPassword}']" | nc -U /var/run/devil2.sock
-    </update-mailbox-password>
-    <delete-mailbox>
-      echo "['--json', 'mail', 'account', 'del', '${email}']" | nc -U /var/run/devil2.sock
-    </delete-mailbox>
-    <set-mailbox-capacity>
-      echo "['--json', 'mail', 'quota', '${email}', '5M' ]" | nc -U /var/run/devil2.sock
-    </set-mailbox-capacity>
+    <create-mailbox>${SKI_SSH_CREATE_MAILBOX_CMD}</create-mailbox>
+    <update-mailbox-password>${SKI_SSH_UPDATE_MAILBOX_CMD}</update-mailbox-password>
+    <delete-mailbox>${SKI_SSH_DELETE_MAILBOX_CMD}</delete-mailbox>
+    <set-mailbox-capacity>${SKI_SSH_SET_MAILBOX_CAPACITY_CMD}</set-mailbox-capacity>
   </commands>
 </ssh-configuration>

@@ -145,7 +145,7 @@ public class OwnerEmployerServiceBean implements OwnerEmployerService {
             return email.get();
         }, () -> {
             final String emailValue = email.get();
-            if (!emailValue.equals(StringUtils.EMPTY) && !serverConfigBean.getEnvironment().isDevOrDocker()) {
+            if (!emailValue.equals(StringUtils.EMPTY) && !serverConfigBean.isSshEnabled()) {
                 deleteEmployerMailbox(emailValue);
             }
         });
@@ -241,7 +241,7 @@ public class OwnerEmployerServiceBean implements OwnerEmployerService {
     }
 
     private void createEmployerMailbox(AtomicReference<String> mailboxEmail, String mailboxPassword) {
-        if (serverConfigBean.getEnvironment().isDevOrDocker()) {
+        if (serverConfigBean.isSshEnabled()) {
             return;
         }
         final Map<String, String> createMailboxEntries = Map.of(

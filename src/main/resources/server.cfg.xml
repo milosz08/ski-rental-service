@@ -4,4 +4,5 @@
   <property name="ski.system-version">${SKI_SYSTEM_VERSION}</property>
   <property name="ski.title-page-tag">SkiRent System</property>
   <property name="ski.maturity-age">18</property>
+  <property name="ski.ssh-enabled">${SKI_SSH_ENABLED}</property>
 </server-configuration>
