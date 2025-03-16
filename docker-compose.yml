@@ -1,49 +1,47 @@
-version: '3.8'
-
 services:
   ski-mysql-db:
     container_name: ski-mysql-db
     image: mysql:8.0.32
     ports:
-      - '${SKI_DEV_MYSQL_PORT}:3306'
+      - '${SKI_MYSQL_PORT}:3306'
     environment:
-      - 'MYSQL_ROOT_PASSWORD=${SKI_DEV_MYSQL_PASSWORD}'
-      - 'MYSQL_DATABASE=ski_db'
+      MYSQL_ROOT_PASSWORD: ${SKI_MYSQL_PASSWORD}
+      MYSQL_DATABASE: ski_db
     volumes:
       - ./.volumes/mysql/mysql-volume:/var/lib/mysql
     healthcheck:
-      test: "mysqladmin ping -u root -p$root"
+      test: "mysqladmin ping -u root -p${SKI_MYSQL_PASSWORD}"
     networks:
-      - ski-rental-network
+      - ski-rental-service-network
 
   ski-mailhog-smtp:
     container_name: ski-mailhog-smtp
     image: mailhog/mailhog
     ports:
-      - '${SKI_DEV_MAILHOG_API_PORT}:1025'
-      - '${SKI_DEV_MAILHOG_UI_PORT}:8025'
+      - '${SKI_MAILHOG_API_PORT}:1025'
+      - '${SKI_MAILHOG_UI_PORT}:8025'
     environment:
-      - 'MH_STORAGE=maildir'
-      - 'MH_MAILDIR_PATH=/home/mailhog'
+      MH_STORAGE: maildir
+      MH_MAILDIR_PATH: /home/mailhog
     volumes:
       - ./.volumes/mail/mailhog-volume:/home/mailhog
       - ./.volumes/mail/mailhog.conf:/etc/supervisor/conf.d
       - ./.volumes/mail/mailhog-auth.txt:/etc/mailhog-auth.txt
     networks:
-      - ski-rental-network
+      - ski-rental-service-network
 
   ski-minio-s3:
     container_name: ski-minio-s3
     image: bitnami/minio:2023.9.27
     user: root
     ports:
-      - '${SKI_DEV_S3_API_PORT}:9000'
-      - '${SKI_DEV_S3_UI_PORT}:9001'
+      - '${SKI_S3_API_PORT}:9000'
+      - '${SKI_S3_UI_PORT}:9001'
     environment:
-      - 'MINIO_ROOT_USER=${SKI_DEV_S3_USERNAME}'
-      - 'MINIO_ROOT_PASSWORD=${SKI_DEV_S3_PASSWORD}'
-      - 'MINIO_DEFAULT_BUCKETS=barcodes:private,rents:private,returns:private'
-      - 'MINIO_SCHEME=http'
+      MINIO_ROOT_USER: ${SKI_S3_USERNAME}
+      MINIO_ROOT_PASSWORD: ${SKI_S3_PASSWORD}
+      MINIO_DEFAULT_BUCKETS: barcodes:private,rents:private,returns:private
+      MINIO_SCHEME: http
     volumes:
       - ./.volumes/s3/s3-volume:/bitnami/minio/data
       - ./.volumes/s3/barcodes:/barcodes
@@ -54,34 +52,41 @@ services:
       timeout: 5s
       retries: 3
     networks:
-      - ski-rental-network
+      - ski-rental-service-network
 
   ski-rental-app:
     container_name: ski-rental-app
     ports:
-      - '${SKI_DEV_RENTAL_APP_PORT}:8080'
+      - '${SKI_RENTAL_APP_PORT}:8080'
     build:
       context: .
       dockerfile: Dockerfile
     environment:
-      - 'SKI_ENVIRONMENT=docker'
-      - 'SKI_SYSTEM_VERSION=1.0-DOCKER'
-      - 'SKI_MYSQL_URL=jdbc:mysql://ski-mysql-db:3306/ski_db'
-      - 'SKI_MYSQL_USERNAME=${SKI_DEV_MYSQL_USERNAME}'
-      - 'SKI_MYSQL_PASSWORD=${SKI_DEV_MYSQL_PASSWORD}'
-      - 'SKI_SMTP_HOST=ski-mailhog-smtp'
-      - 'SKI_SMTP_PORT=1025'
-      - 'SKI_SMTP_USERNAME=${SKI_DEV_MAILHOG_USERNAME}'
-      - 'SKI_SMTP_PASSWORD=${SKI_DEV_MAILHOG_PASSWORD}'
-      - 'SKI_SMTP_DOMAIN=ski.docker.pl'
-      - 'SKI_S3_HOST=http://ski-minio-s3:9000'
-      - 'SKI_S3_ACCESS_KEY=${SKI_DEV_S3_USERNAME}'
-      - 'SKI_S3_SECRET_KEY=${SKI_DEV_S3_PASSWORD}'
-      - 'SKI_SSH_HOST=${SKI_DEV_SSH_HOST}'
-      - 'SKI_SSH_LOGIN=${SKI_DEV_SSH_LOGIN}'
-      - 'SKI_SSH_PRIVATE_KEY_PATH=/ssh-keys/id_rsa'
-      - 'SKI_SSH_KNOWN_HOSTS_PATH=/ssh-keys/known_hosts.dat'
-      - 'SKI_SERVER_HOME=http://localhost:${SKI_DEV_RENTAL_APP_PORT}'
+      SKI_ENVIRONMENT: docker
+      SKI_SYSTEM_VERSION: 1.0-DOCKER
+      SKI_SSH_ENABLED: ${SKI_SSH_ENABLED}
+      SKI_MYSQL_URL: jdbc:mysql://ski-mysql-db:3306/ski_db
+      SKI_MYSQL_USERNAME: ${SKI_MYSQL_USERNAME}
+      SKI_MYSQL_PASSWORD: ${SKI_MYSQL_PASSWORD}
+      SKI_SMTP_HOST: ski-mailhog-smtp
+      SKI_SMTP_PORT: 1025
+      SKI_SMTP_USERNAME: ${SKI_MAILHOG_USERNAME}
+      SKI_SMTP_PASSWORD: ${SKI_MAILHOG_PASSWORD}
+      SKI_SMTP_DOMAIN: ski.docker.pl
+      SKI_S3_HOST: http://ski-minio-s3:9000
+      SKI_S3_ACCESS_KEY: ${SKI_S3_USERNAME}
+      SKI_S3_SECRET_KEY: ${SKI_S3_PASSWORD}
+      SKI_S3_REGION: eu-central-1
+      SKI_S3_PATH_STYLE_ACCESS_ENABLED: true
+      SKI_SSH_HOST: ${SKI_SSH_HOST}
+      SKI_SSH_LOGIN: ${SKI_SSH_LOGIN}
+      SKI_SSH_PRIVATE_KEY_PATH: ${SKI_SSH_PRIVATE_KEY_PATH}
+      SKI_SSH_KNOWN_HOSTS_PATH: ${SKI_SSH_KNOWN_HOSTS_PATH}
+      SKI_SSH_CREATE_MAILBOX_CMD: ${SKI_SSH_CREATE_MAILBOX_CMD}
+      SKI_SSH_UPDATE_MAILBOX_CMD: ${SKI_SSH_UPDATE_MAILBOX_CMD}
+      SKI_SSH_DELETE_MAILBOX_CMD: ${SKI_SSH_DELETE_MAILBOX_CMD}
+      SKI_SSH_SET_MAILBOX_CAPACITY_CMD: ${SKI_SSH_SET_MAILBOX_CAPACITY_CMD}
+      SKI_SERVER_HOME: http://localhost:${SKI_RENTAL_APP_PORT}
     depends_on:
       - ski-mysql-db
       - ski-mailhog-smtp
@@ -89,8 +94,8 @@ services:
     volumes:
       - ./.volumes/ssh:/ssh-keys
     networks:
-      - ski-rental-network
+      - ski-rental-service-network
 
 networks:
-  ski-rental-network:
+  ski-rental-service-network:
     driver: bridge

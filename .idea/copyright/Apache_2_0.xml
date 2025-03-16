@@ -1,6 +1,0 @@
-<component name="CopyrightManager">
-  <copyright>
-    <option name="notice" value="Copyright (c) &amp;#36;originalComment.match(&quot;Copyright (\d+)&quot;, 1, &quot;-&quot;)&amp;#36;today.year by MILOSZ GILGA &lt;https://miloszgilga.pl&gt;&#10;Silesian University of Technology" />
-    <option name="myName" value="Apache 2.0" />
-  </copyright>
-</component>

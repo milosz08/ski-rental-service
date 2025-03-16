@@ -1,6 +1,7 @@
-# Ski Rental Service
+# Ski rental service
 
-> More info about this project you will find [on my personal website](https://miloszgilga.pl/project/ski-rental-service)
+[[Docker image](https://hub.docker.com/r/milosz08/ski-rental-service-app)] |
+[[About project](https://miloszgilga.pl/project/ski-rental-service)]
 
 Enterprise-class application for managing a ski rental company. Created using Jakarta EE with EJB specifications. This
 application can be run on any application server that supports Java 17, Jakarta EE 9, Jakarta Servlet API 6 and EJB,
@@ -16,39 +17,43 @@ application was created only for learning purposes and familiarization with olde
 * [Manage Mailboxes via SSH](#manage-mailboxes-via-ssh)
 * [Tech stack](#tech-stack)
 * [Author](#author)
-* [Project status](#project-status)
 * [License](#license)
-
-<a name="clone-and-install"></a>
 
 ## Clone and install
 
 To install the program on your computer, use the command below (or use the build-in GIT system in your IDE environment):
 
 ```
-$ git clone https://github.com/Milosz08/ski-rental-service
+$ git clone https://github.com/milosz08/ski-rental-service
 ```
-
-<a name="prepare-configuration-and-run"></a>
 
 ## Prepare configuration and run
 
-1. Before run project, insert application properties in `.env` file:
+1. Before run project, insert application properties into `.env` file (based on `example.env` file):
 
 ```properties
-SKI_DEV_S3_USERNAME=<Minio S3 access key for AWS SDK>
-SKI_DEV_S3_PASSWORD=<Minio S3 secret key for AWS SDK>
-SKI_DEV_MYSQL_USERNAME=<database username>
-SKI_DEV_MYSQL_PASSWORD=<database password>
-SKI_DEV_MAILHOG_USERNAME=<mailhog username, by default: mailhoguser (check .volumes/mail/mailhog-auth.txt file)>
-SKI_DEV_MAILHOG_PASSWORD=<mailhog password, by default: root (check .volumes/mail/mailhog-auth.txt file)>
-SKI_DEV_SSH_HOST=<optional, for creating email addresses in production>
-SKI_DEV_SSH_LOGIN=<optional, for creating email addresses in production>
+# required variables
+SKI_S3_USERNAME=<Minio S3 access key for AWS SDK>
+SKI_S3_PASSWORD=<Minio S3 secret key for AWS SDK>
+SKI_MYSQL_USERNAME=<database username>
+SKI_MYSQL_PASSWORD=<database password>
+SKI_MAILHOG_USERNAME=<mailhog username, by default: mailhoguser (check .volumes/mail/mailhog-auth.txt file)>
+SKI_MAILHOG_PASSWORD=<mailhog password, by default: root (check .volumes/mail/mailhog-auth.txt file)>
+# optional variables
+SKI_SSH_ENABLED=<determined, if SSH service is enabled/disabled>
+SKI_SSH_HOST=<optional, SSH host for managing mail accounts>
+SKI_SSH_LOGIN=<optional, SSH login for managing mail accounts>
+SKI_SSH_PRIVATE_KEY_PATH=<optional, SSH private key file path for managing mail accounts>
+SKI_SSH_KNOWN_HOSTS_PATH=<optional, SSH known hosts file path for managing mail accounts>
+SKI_SSH_CREATE_MAILBOX_CMD=<optional, see Manage mailboxes via SSH section>
+SKI_SSH_UPDATE_MAILBOX_CMD=<optional, see Manage mailboxes via SSH section>
+SKI_SSH_DELETE_MAILBOX_CMD=<optional, see Manage mailboxes via SSH section>
+SKI_SSH_SET_MAILBOX_CAPACITY_CMD=<optional, see Manage mailboxes via SSH section>
 ```
 
 > [!IMPORTANT]
-> If you run this project as standalone application without using Docker containers, this variables should be provided
-> as exported *environment variables*.
+> If you run this project as standalone application without using Docker containers, this variables
+> should be provided as exported *environment variables*.
 
 2. To run project via Docker technology move to root project directory and type:
 
@@ -58,111 +63,119 @@ $ docker-compose up -d
 
 This command will create 4 Docker containers:
 
-* **ski-mailhog-smtp** - simple mail server, for development purposes,
-* **ski-minio-s3** - Minio S3 file storage server,
-* **ski-mysql-db** - MySQL application database,
-* **ski-rental-app** - TomEE application server with exploded .war archive of this application
-
-Default application ports (can be changed by editing `.env` file):
 <table>
   <tr>
-    <td>Application</td>
+    <td>Container</td>
     <td>Port</td>
     <td>Description</td>
   </tr>
   <tr>
     <td rowspan="2">ski-mailhog-smtp</td>
-    <td>7591</td>
+    <td><a href="http://localhost:7591">7591</a></td>
     <td>SMTP server api port</td>
   </tr>
   <tr>
-    <td>7592</td>
+    <td><a href="http://localhost:7592">7592</a></td>
     <td>SMTP server web iterface</td>
   </tr>
   <tr>
     <td rowspan="2">ski-minio-s3</td>
-    <td>7593</td>
+    <td><a href="http://localhost:7593">7593</a></td>
     <td>Minio S3 api for AWS SDK for Java</td>
   </tr>
   <tr>
-    <td>7594</td>
+    <td><a href="http://localhost:7594">7594</a></td>
     <td>Minio S3 web interface</td>
   </tr>
   <tr>
     <td>ski-mysql-db</td>
-    <td>7590</td>
+    <td><a href="http://localhost:7590">7590</a></td>
     <td>MySQL database port</td>
   </tr>
   <tr>
     <td>ski-rental-app</td>
-    <td>7595</td>
+    <td><a href="http://localhost:7595">7595</a></td>
     <td>TomEE server with application</td>
   </tr>
 </table>
+
+Default application ports (can be changed by editing `.env` file).
+
+> [!IMPORTANT]
+> When `ski-minio-s3` container is up, go to container console and invoke `$ ./put-files` script to
+> move existing barcodes to S3 object storage.
 
 > [!NOTE]
 > Application by default run with `docker` profile. To change profile (`dev`, `docker` or `prod`),
 > change `SKI_ENVIRONMENT` environment variable.
 
-<a name="manage-mailboxes-via-ssh"></a>
-
 ## Manage mailboxes via SSH
 
-Accessed in `src/main/resources/ssh/ssh.cfg.xml`, run commands only for `prod` environment.
+Before read this section, check if you have enabled SSH:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<ssh-configuration>
-  <property name="ssh.host">${SKI_SSH_HOST}</property>
-  <property name="ssh.login">${SKI_SSH_LOGIN}</property>
-  <property name="ssh.private-key.path">${SKI_SSH_PRIVATE_KEY_PATH}</property>
-  <property name="ssh.known-hosts.path">${SKI_SSH_KNOWN_HOSTS_PATH}</property>
-  <commands>
-    <create-mailbox>
-      <!-- create mailbox command -->
-    </create-mailbox>
-    <update-mailbox-password>
-      <!-- change mailbox password command -->
-    </update-mailbox-password>
-    <delete-mailbox>
-      <!-- delete mailbox command -->
-    </delete-mailbox>
-    <set-mailbox-capacity>
-      <!-- set mailbox capacity command -->
-    </set-mailbox-capacity>
-  </commands>
-</ssh-configuration>
+```properties
+SKI_SSH_ENABLED=true
 ```
 
-<a name="tech-stack"></a>
+To manage mailboxes via SSH, you must have ssh host, login, private key (application not provided connections via
+password) and known-hosts file.
+
+```properties
+SKI_SSH_HOST=<optional, SSH host for managing mail accounts>
+SKI_SSH_LOGIN=<optional, SSH login for managing mail accounts>
+SKI_SSH_PRIVATE_KEY_PATH=<optional, SSH private key file path for managing mail accounts>
+SKI_SSH_KNOWN_HOSTS_PATH=<optional, SSH known hosts file path for managing mail accounts>
+```
+
+You must provide following commands as single string patterns. Additionally, you can use some dynamically passed
+variables inside this commands:
+
+**SKI_SSH_CREATE_MAILBOX_CMD**:
+
+* `email` - creating email account address
+* `password` - creating email account password
+
+**SKI_SSH_UPDATE_MAILBOX_CMD**:
+
+* `email` - updating email account address
+* `newPassword` - updating email account new password
+
+**SKI_SSH_DELETE_MAILBOX_CMD**:
+
+* `email` - deleting email account address
+
+**SKI_SSH_SET_MAILBOX_CAPACITY_CMD**:
+
+* `email` - email account address where capacity is set
+
+Example commands:
+
+```properties
+SKI_SSH_CREATE_MAILBOX_CMD="email create -a $[email] -p $[password]"
+SKI_SSH_UPDATE_MAILBOX_CMD="email update -a $[email] -np $[newPassword]"
+SKI_SSH_DELETE_MAILBOX_CMD="email delete -a $[email]"
+SKI_SSH_SET_MAILBOX_CAPACITY_CMD="email quota-set -a $[email] -q 5MB"
+```
+
+By default, application will not connected to SSH (if you not provided any SSH environment variables).
 
 ## Tech stack
 
-* Java (Jakarta) EE 9
-* EJB (Enterprise Java Beans)
-* MySQL relational database system
-* JSP (views) + JSTL
-* Jakarta Mail Api (mail sender) + Freemarker (templates)
-* Hibernate (ORM system) + C3P0 (connection pool) + Liquibase (database migrations)
-* Bootstrap, jQuery, PopperJS
-* Barcode4J - bar codes generator
-* iText - pdf documents generator
-* Apache TomEE application server with Docker technology
-
-<a name="author"></a>
+* Java (Jakarta) EE 9,
+* EJB (Enterprise Java Beans),
+* MySQL relational database system,
+* JSP (views) + JSTL,
+* Jakarta Mail Api (mail sender) + Freemarker (templates),
+* Hibernate (ORM system) + C3P0 (connection pool) + Liquibase (database migrations),
+* Bootstrap, jQuery, PopperJS,
+* Barcode4J - bar codes generator,
+* iText - pdf documents generator,
+* Apache TomEE application server with Docker technology.
 
 ## Author
 
 Created by Miłosz Gilga. If you have any questions about this application, send
-message: [personal@miloszgilga.pl](mailto:personal@miloszgilga.pl).
-
-<a name="project-status"></a>
-
-## Project status
-
-Project is finished.
-
-<a name="license"></a>
+message: [miloszgilga@gmail.com](mailto:miloszgilga@gmail.com).
 
 ## License
 

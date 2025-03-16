@@ -1,15 +1,6 @@
-.idea/modules.xml
-.idea/jarRepositories.xml
-.idea/compiler.xml
-.idea/libraries/
-.idea/discord.xml
-.idea/workspace.xml
-.idea/aws.xml
-
-.gradle
+.idea/
+.gradle/
 build/
 target/
-.volumes/ssh/id_rsa
-.volumes/ssh/known_hosts.dat
 .volumes/**/*volume/
 .env

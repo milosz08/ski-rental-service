@@ -1,0 +1,12 @@
+FROM tomee:9.1.2-webprofile AS run
+
+ENV BUILD_DIR=/docker
+ENV ENTRY_DIR=/usr/local/tomee/webapps
+ENV WAR_NAME=ROOT.war
+
+RUN rm -rf $ENTRY_DIR/*
+COPY /$BUILD_DIR/$WAR_NAME $ENTRY_DIR
+
+LABEL maintainer="Miłosz Gilga <miloszgilga.pl>"
+
+EXPOSE 8080
