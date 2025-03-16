@@ -1,0 +1,272 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run on TomEE (:8080)" type="TomeeConfiguration" factoryName="Local" APPLICATION_SERVER_NAME="TomEE 10.0.27" ALTERNATIVE_JRE_ENABLED="true" ALTERNATIVE_JRE_PATH="17">
+    <option name="OPEN_IN_BROWSER" value="false" />
+    <option name="COMMON_VM_ARGUMENTS" value="-Duser.language=pl -Duser.country=PL -Dfile.encoding=UTF-8" />
+    <option name="UPDATING_POLICY" value="restart-server" />
+    <deployment>
+      <artifact name="Gradle : ROOT.war (exploded)">
+        <settings>
+          <option name="CONTEXT_PATH" value="/" />
+        </settings>
+      </artifact>
+    </deployment>
+    <server-settings>
+      <option name="BASE_DIRECTORY_NAME" value="9099415b-6213-4c02-b34d-b4f82a78d3e2" />
+      <option name="JNDI_PORT" value="8081" />
+    </server-settings>
+    <predefined_log_file enabled="true" id="Tomcat" />
+    <predefined_log_file enabled="true" id="Tomcat Catalina" />
+    <predefined_log_file id="Tomcat Manager" />
+    <predefined_log_file id="Tomcat Host Manager" />
+    <predefined_log_file id="Tomcat Localhost Access" />
+    <RunnerSettings RunnerId="Debug">
+      <option name="DEBUG_PORT" value="1358" />
+    </RunnerSettings>
+    <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Cover">
+      <option name="USE_ENV_VARIABLES" value="true" />
+      <STARTUP>
+        <option name="USE_DEFAULT" value="true" />
+        <option name="SCRIPT" value="" />
+        <option name="VM_PARAMETERS" value="" />
+        <option name="PROGRAM_PARAMETERS" value="" />
+      </STARTUP>
+      <SHUTDOWN>
+        <option name="USE_DEFAULT" value="true" />
+        <option name="SCRIPT" value="" />
+        <option name="VM_PARAMETERS" value="" />
+        <option name="PROGRAM_PARAMETERS" value="" />
+      </SHUTDOWN>
+    </ConfigurationWrapper>
+    <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Debug">
+      <option name="USE_ENV_VARIABLES" value="true" />
+      <STARTUP>
+        <option name="USE_DEFAULT" value="true" />
+        <option name="SCRIPT" value="" />
+        <option name="VM_PARAMETERS" value="" />
+        <option name="PROGRAM_PARAMETERS" value="" />
+      </STARTUP>
+      <SHUTDOWN>
+        <option name="USE_DEFAULT" value="true" />
+        <option name="SCRIPT" value="" />
+        <option name="VM_PARAMETERS" value="" />
+        <option name="PROGRAM_PARAMETERS" value="" />
+      </SHUTDOWN>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_ENVIRONMENT" />
+        <option name="VALUE" value="dev" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_MYSQL_PASSWORD" />
+        <option name="VALUE" value="Password123@" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_MYSQL_URL" />
+        <option name="VALUE" value="jdbc:mysql://localhost:7590/ski_db" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_MYSQL_USERNAME" />
+        <option name="VALUE" value="root" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_S3_ACCESS_KEY" />
+        <option name="VALUE" value="skidevuser" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_S3_HOST" />
+        <option name="VALUE" value="http://localhost:7593" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_S3_SECRET_KEY" />
+        <option name="VALUE" value="Password123@" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_SERVER_HOME" />
+        <option name="VALUE" value="http://localhost:8080" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_SMTP_DOMAIN" />
+        <option name="VALUE" value="ski.dev.pl" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_SMTP_HOST" />
+        <option name="VALUE" value="127.0.0.1" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_SMTP_PASSWORD" />
+        <option name="VALUE" value="root" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_SMTP_PORT" />
+        <option name="VALUE" value="7591" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_SMTP_USERNAME" />
+        <option name="VALUE" value="mailhoguser" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_SSH_HOST" />
+        <option name="VALUE" value="s1.small.pl" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_SSH_KNOWN_HOSTS_PATH" />
+        <option name="VALUE" value="D:\programming-projects\ski-rental-service\.volumes\ssh\known_hosts.dat" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_SSH_LOGIN" />
+        <option name="VALUE" value="milosz08" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_SSH_PRIVATE_KEY_PATH" />
+        <option name="VALUE" value="D:\programming-projects\ski-rental-service\.volumes\ssh\id_rsa" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_SYSTEM_VERSION" />
+        <option name="VALUE" value="1.0-DEV" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+    </ConfigurationWrapper>
+    <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Profile">
+      <option name="USE_ENV_VARIABLES" value="true" />
+      <STARTUP>
+        <option name="USE_DEFAULT" value="true" />
+        <option name="SCRIPT" value="" />
+        <option name="VM_PARAMETERS" value="" />
+        <option name="PROGRAM_PARAMETERS" value="" />
+      </STARTUP>
+      <SHUTDOWN>
+        <option name="USE_DEFAULT" value="true" />
+        <option name="SCRIPT" value="" />
+        <option name="VM_PARAMETERS" value="" />
+        <option name="PROGRAM_PARAMETERS" value="" />
+      </SHUTDOWN>
+    </ConfigurationWrapper>
+    <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Run">
+      <option name="USE_ENV_VARIABLES" value="true" />
+      <STARTUP>
+        <option name="USE_DEFAULT" value="true" />
+        <option name="SCRIPT" value="" />
+        <option name="VM_PARAMETERS" value="" />
+        <option name="PROGRAM_PARAMETERS" value="" />
+      </STARTUP>
+      <SHUTDOWN>
+        <option name="USE_DEFAULT" value="true" />
+        <option name="SCRIPT" value="" />
+        <option name="VM_PARAMETERS" value="" />
+        <option name="PROGRAM_PARAMETERS" value="" />
+      </SHUTDOWN>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_ENVIRONMENT" />
+        <option name="VALUE" value="dev" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_MYSQL_PASSWORD" />
+        <option name="VALUE" value="Password123@" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_MYSQL_URL" />
+        <option name="VALUE" value="jdbc:mysql://localhost:7590/ski_db" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_MYSQL_USERNAME" />
+        <option name="VALUE" value="root" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_S3_ACCESS_KEY" />
+        <option name="VALUE" value="skidevuser" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_S3_HOST" />
+        <option name="VALUE" value="http://localhost:7593" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_S3_SECRET_KEY" />
+        <option name="VALUE" value="Password123@" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_SERVER_HOME" />
+        <option name="VALUE" value="http://localhost:8080" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_SMTP_DOMAIN" />
+        <option name="VALUE" value="ski.dev.pl" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_SMTP_HOST" />
+        <option name="VALUE" value="127.0.0.1" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_SMTP_PASSWORD" />
+        <option name="VALUE" value="root" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_SMTP_PORT" />
+        <option name="VALUE" value="7591" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_SMTP_USERNAME" />
+        <option name="VALUE" value="mailhoguser" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_SSH_HOST" />
+        <option name="VALUE" value="s1.small.pl" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_SSH_KNOWN_HOSTS_PATH" />
+        <option name="VALUE" value="D:\programming-projects\ski-rental-service\.volumes\ssh\known_hosts.dat" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_SSH_LOGIN" />
+        <option name="VALUE" value="milosz08" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_SSH_PRIVATE_KEY_PATH" />
+        <option name="VALUE" value="D:\programming-projects\ski-rental-service\.volumes\ssh\id_rsa" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="SKI_SYSTEM_VERSION" />
+        <option name="VALUE" value="1.0-DEV" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+    </ConfigurationWrapper>
+    <method v="2">
+      <option name="Make" enabled="true" />
+      <option name="BuildArtifacts" enabled="true">
+        <artifact name="Gradle : ROOT.war (exploded)" />
+      </option>
+    </method>
+  </configuration>
+</component>
