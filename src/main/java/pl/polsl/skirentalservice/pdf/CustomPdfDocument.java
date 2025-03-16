@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.pdf;
 
 import com.itextpdf.io.font.PdfEncodings;
@@ -19,10 +15,9 @@ import com.itextpdf.layout.properties.TextAlignment;
 import java.io.IOException;
 
 public class CustomPdfDocument extends Document {
-    private static final String FONT_PATH = "./font/Cambria-Font.ttf";
-
     public static final DeviceRgb PRIMARY_COLOR = new DeviceRgb(0, 0, 0);
     public static final DeviceRgb SECONDARY_COLOR = new DeviceRgb(113, 128, 150);
+    private static final String FONT_PATH = "./font/Cambria-Font.ttf";
 
     public CustomPdfDocument(PdfDocument pdfDoc) throws IOException {
         super(pdfDoc);
@@ -45,7 +40,7 @@ public class CustomPdfDocument extends Document {
     }
 
     void addPricesDivider() {
-        final Table dividerPrice = new CustomPdfTable(new float[]{ 150f });
+        final Table dividerPrice = new CustomPdfTable(new float[]{150f});
         dividerPrice.setHorizontalAlignment(HorizontalAlignment.RIGHT);
         dividerPrice.setBorder(new SolidBorder(SECONDARY_COLOR, .2f));
         dividerPrice.setMargins(8f, 0, 8f, 0);

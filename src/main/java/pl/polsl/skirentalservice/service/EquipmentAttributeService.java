@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.service;
 
 import jakarta.ejb.Local;
@@ -17,11 +13,18 @@ import java.util.Map;
 @Local
 public interface EquipmentAttributeService {
     Map<SessionAttribute, List<FormSelectTupleDto>> getMergedEquipmentAttributes();
+
     void createNewEquipmentBrand(String brandName, LoggedUserDataDto loggedUser);
+
     void createNewEquipmentColor(String colorName, LoggedUserDataDto loggedUser);
+
     void createNewEquipmentType(String typeName, LoggedUserDataDto loggedUser);
+
     String deleteEquipmentBrand(Object brandId, LoggedUserDataDto loggedUser);
+
     String deleteEquipmentColor(Object colorId, LoggedUserDataDto loggedUser);
+
     String deleteEquipmentType(Object typeId, LoggedUserDataDto loggedUser);
+
     AttributeValidatorPayloadDto validateEquipmentAttribute(WebServletRequest req);
 }

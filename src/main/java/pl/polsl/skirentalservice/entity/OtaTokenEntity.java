@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.entity;
 
 import jakarta.persistence.*;
@@ -34,7 +30,7 @@ public class OtaTokenEntity extends AuditableEntity implements Serializable {
     private Boolean isUsed;
 
     @JoinColumn
-    @ManyToOne(cascade = { MERGE, PERSIST })
+    @ManyToOne(cascade = {MERGE, PERSIST})
     private EmployerEntity employer;
 
     public OtaTokenEntity(String otaToken, EmployerEntity employer) {

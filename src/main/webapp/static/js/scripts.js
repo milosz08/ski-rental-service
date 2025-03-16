@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
-
 function showHidePassword(selector) {
   $(selector).each(function (_, el) {
     const input = $(el).parent().find('>:first-child');

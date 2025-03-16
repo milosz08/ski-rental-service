@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~ Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
-  ~ Silesian University of Technology
-  -->
 <ssh-configuration>
   <property name="ssh.host">${SKI_SSH_HOST}</property>
   <property name="ssh.login">${SKI_SSH_LOGIN}</property>

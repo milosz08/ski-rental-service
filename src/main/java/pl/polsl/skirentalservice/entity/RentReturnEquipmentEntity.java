@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.entity;
 
 import jakarta.persistence.*;
@@ -30,15 +26,15 @@ public class RentReturnEquipmentEntity extends AuditableEntity implements Serial
     private BigDecimal depositPrice;
 
     @JoinColumn
-    @ManyToOne(cascade = { PERSIST, MERGE, REMOVE })
+    @ManyToOne(cascade = {PERSIST, MERGE, REMOVE})
     private RentReturnEntity rentReturn;
 
     @JoinColumn
-    @ManyToOne(cascade = { PERSIST, MERGE })
+    @ManyToOne(cascade = {PERSIST, MERGE})
     private EquipmentEntity equipment;
 
     @JoinColumn
-    @OneToOne(cascade = { PERSIST, MERGE })
+    @OneToOne(cascade = {PERSIST, MERGE})
     private RentEquipmentEntity rentEquipment;
 
     BigDecimal getTotalPrice() {

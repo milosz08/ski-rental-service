@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.entity;
 
 import jakarta.persistence.*;
@@ -48,14 +44,14 @@ public class RentEntity extends AuditableEntity implements Serializable {
     private RentStatus status;
 
     @JoinColumn
-    @ManyToOne(cascade = { PERSIST, MERGE })
+    @ManyToOne(cascade = {PERSIST, MERGE})
     private CustomerEntity customer;
 
     @JoinColumn
-    @ManyToOne(cascade = { PERSIST, MERGE })
+    @ManyToOne(cascade = {PERSIST, MERGE})
     private EmployerEntity employer;
 
-    @OneToMany(cascade = { PERSIST, MERGE, REMOVE }, mappedBy = "rent")
+    @OneToMany(cascade = {PERSIST, MERGE, REMOVE}, mappedBy = "rent")
     private Set<RentEquipmentEntity> equipments = new HashSet<>();
 
     public String getIssuedIdentifier() {

@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.core.servlet.pageable;
 
 import org.apache.commons.lang3.StringUtils;
@@ -127,9 +123,14 @@ public abstract class AbstractPageableWebServlet extends AbstractWebServlet {
     }
 
     protected abstract WebServletResponse onFetchPageableData(WebServletRequest req, PageableDto pageable);
+
     protected abstract Map<String, ServletSorterField> configureServletSorterFields();
+
     protected abstract List<FilterColumn> configureServletFilterFields();
+
     protected abstract String defaultSorterColumn();
+
     protected abstract PageableAttributes setPageableAttributes();
+
     protected abstract String setRedirectOnPostCall(WebServletRequest req);
 }

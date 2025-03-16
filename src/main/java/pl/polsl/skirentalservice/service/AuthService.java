@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.service;
 
 import jakarta.ejb.Local;
@@ -16,10 +12,16 @@ import pl.polsl.skirentalservice.dto.login.LoginFormReqDto;
 @Local
 public interface AuthService {
     LoggedUserDataDto loginUser(LoginFormReqDto reqDto);
+
     void checkUserAndSendToken(RequestToChangePasswordReqDto reqDto, WebServletRequest req);
+
     boolean isFirstAccessOrIsSellerAccount(LoggedUserDataDto employer);
+
     void changePassword(String token, ChangeForgottenPasswordReqDto reqDto, WebServletRequest req);
+
     ChangePasswordEmployerDetailsDto getChangePasswordEmployerDetails(String token, WebServletRequest req);
+
     void prepareEmployerAccount(FirstAccessReqDto reqDto, LoggedUserDataDto loggedUserDataDto);
+
     boolean checkIfTokenIsExist(String token);
 }

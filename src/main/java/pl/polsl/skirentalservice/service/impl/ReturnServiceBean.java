@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.service.impl;
 
 import jakarta.ejb.Stateless;
@@ -353,7 +349,8 @@ public class ReturnServiceBean implements ReturnService {
         pdfDocumentData.setTotalSumPriceBrutto(emailPayload.getTotalPriceWithDepositBrutto().toString());
 
         final List<PdfEquipmentDataDto> pdfEquipmentsData = modelMapperBean.map(emailPayload.getRentEquipments(),
-            new TypeToken<List<PdfEquipmentDataDto>>() { }.getType());
+            new TypeToken<List<PdfEquipmentDataDto>>() {
+            }.getType());
         pdfDocumentData.setEquipments(pdfEquipmentsData);
 
         final ReturnPdfDocumentGenerator returnPdfDocument = new ReturnPdfDocumentGenerator();

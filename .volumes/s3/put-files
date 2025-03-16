@@ -1,8 +1,5 @@
 #!/bin/bash
-#
-# Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
-# Silesian University of Technology
-#
+
 mc_alias="minio-temp-client"
 mc_host="http://localhost:9000"
 mc_access_key=$MINIO_ROOT_USER

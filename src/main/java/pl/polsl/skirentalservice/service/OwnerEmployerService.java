@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.service;
 
 import jakarta.ejb.Local;
@@ -18,10 +14,16 @@ import pl.polsl.skirentalservice.util.UserRole;
 @Local
 public interface OwnerEmployerService {
     Slice<EmployerRecordResDto> getPageableEmployers(PageableDto pageableDto);
+
     AddEditEmployerResDto getEmployerOrOwnerEditDetails(Long employerId);
+
     EmployerDetailsResDto getEmployerFullDetails(Long employerId);
+
     String addEmplyerByOwner(AddEditEmployerReqDto reqDto, LoggedUserDataDto loggedUserDataDto, WebServletRequest req);
+
     void editUserAccount(Long employerId, AddEditEmployerReqDto reqDto, UserRole role);
+
     void deleteEmployer(Long employerId);
+
     boolean checkIfEmployerExist(Long employerId);
 }

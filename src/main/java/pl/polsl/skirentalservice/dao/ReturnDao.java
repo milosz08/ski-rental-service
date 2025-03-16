@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.dao;
 
 import pl.polsl.skirentalservice.core.servlet.pageable.FilterDataDto;
@@ -16,11 +12,18 @@ import java.util.Optional;
 
 public interface ReturnDao {
     Optional<ReturnAlreadyExistPayloadDto> findReturnExistDocument(Object rentId);
+
     Optional<ReturnRentDetailsResDto> findReturnDetails(Object returnId, Object employerId, String roleAlias);
+
     Long findAllReturnsCount(FilterDataDto filterData);
+
     Long findAllReturnsFromEmployerCount(FilterDataDto filterData, Object employerId);
+
     List<OwnerRentReturnRecordResDto> findAllPageableReturnsRecords(PageableDto pageableDto);
+
     List<SellerRentReturnRecordResDto> findAllPageableReturnsFromEmployerRecords(PageableDto pageableDto, Object employerId);
+
     boolean checkIfReturnExist(Object returnId);
+
     boolean checkIfReturnIsFromEmployer(Object returnId, Object employerId);
 }

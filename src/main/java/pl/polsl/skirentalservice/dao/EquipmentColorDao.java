@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.dao;
 
 import pl.polsl.skirentalservice.dto.FormSelectTupleDto;
@@ -11,8 +7,12 @@ import java.util.Optional;
 
 public interface EquipmentColorDao {
     List<FormSelectTupleDto> findAllEquipmentColors();
+
     Optional<String> getEquipmentColorNameById(Object colorId);
+
     boolean checkIfEquipmentColorExistByName(String colorName);
+
     boolean checkIfEquipmentColorHasAnyConnections(Object colorId);
+
     void deleteEquipmentColorById(Object colorId);
 }

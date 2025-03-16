@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.core.servlet.pageable;
 
 import lombok.Data;
@@ -51,7 +47,7 @@ public class ServletPagination {
     }
 
     public boolean checkIfIsInvalid() {
-        final int[] pages = { 10, 20, 25, 50, 100 };
+        final int[] pages = {10, 20, 25, 50, 100};
         return ((page > allPages || page < 1) && allPages > 0) || Arrays.stream(pages).noneMatch(p -> p == totalPerPage);
     }
 }

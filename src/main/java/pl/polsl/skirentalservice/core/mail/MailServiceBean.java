@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.core.mail;
 
 import freemarker.template.Configuration;
@@ -34,12 +30,10 @@ import static pl.polsl.skirentalservice.exception.ServletException.UnableToSendE
 @Slf4j
 @Singleton
 public class MailServiceBean {
-    private final ServerConfigBean serverConfigBean;
-
     private static final String MAIL_CFG = "/mail/mail.cfg.xml";
     private static final String MAIL_CFG_DEV = "/mail/mail.cfg.dev.xml";
     private static final String FREEMARKER_PATH = "/mail/templates";
-
+    private final ServerConfigBean serverConfigBean;
     private final Session mailSession;
     private final Configuration freemarkerConfig;
     private final Properties configProperties;

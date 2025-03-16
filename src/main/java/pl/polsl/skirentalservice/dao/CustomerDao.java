@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.dao;
 
 import pl.polsl.skirentalservice.core.servlet.pageable.FilterDataDto;
@@ -16,11 +12,18 @@ import java.util.Optional;
 
 public interface CustomerDao {
     boolean checkIfCustomerExist(Object customerId);
+
     boolean checkIfCustomerByRentIdExist(Object rentId);
+
     boolean checkIfCustomerHasAnyActiveRents(Object customerId);
+
     Optional<CustomerDetailsResDto> findCustomerDetails(Object customerId);
+
     Optional<CustomerDetailsReturnResDto> findCustomerDetailsForReturnDocument(Object rentId);
+
     Optional<AddEditCustomerReqDto> findCustomerEditPageDetails(Object customerId);
+
     Long findAllCustomersCount(FilterDataDto filterData);
+
     List<CustomerRecordResDto> findAllPageableCustomers(PageableDto pageableDto, String addressColumn);
 }

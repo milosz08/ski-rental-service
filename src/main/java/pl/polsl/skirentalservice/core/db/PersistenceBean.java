@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.core.db;
 
 import jakarta.ejb.Singleton;
@@ -119,7 +115,8 @@ public class PersistenceBean {
     }
 
     public <T> T startTransaction(Function<Session, T> executableTransaction) {
-        return startTransaction(executableTransaction, () -> { });
+        return startTransaction(executableTransaction, () -> {
+        });
     }
 
     public void startTransaction(Consumer<Session> executableTransaction, Runnable rollbackSideEffects) {
@@ -133,6 +130,7 @@ public class PersistenceBean {
         startTransaction(session -> {
             executableTransaction.accept(session);
             return null;
-        }, () -> { });
+        }, () -> {
+        });
     }
 }

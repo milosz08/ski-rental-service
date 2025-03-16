@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.core;
 
 import jakarta.xml.bind.JAXBContext;
@@ -22,6 +18,21 @@ public class XMLConfigLoader<T extends AbstractXMLProperties> {
     @Getter
     private T configDatalist;
 
+    public static void replaceAllPlaceholders(Properties allProperties) {
+        for (final Map.Entry<Object, Object> property : allProperties.entrySet()) {
+            final String name = (String) property.getKey();
+            final String value = (String) property.getValue();
+            if (!value.startsWith("${") || !value.endsWith("}")) {
+                continue;
+            }
+            final String envValue = System.getenv(StringUtils.substringBetween(value, "${", "}"));
+            if (envValue == null) {
+                throw new IllegalStateException("Missing " + name + " required environment variable");
+            }
+            property.setValue(envValue);
+        }
+    }
+
     public Properties loadConfig() {
         Properties properties = new Properties();
         try {
@@ -37,20 +48,5 @@ public class XMLConfigLoader<T extends AbstractXMLProperties> {
             log.error("Unable to load XML config from config file: {}", configFile);
         }
         return properties;
-    }
-
-    public static void replaceAllPlaceholders(Properties allProperties) {
-        for (final Map.Entry<Object, Object> property : allProperties.entrySet()) {
-            final String name = (String) property.getKey();
-            final String value = (String) property.getValue();
-            if (!value.startsWith("${") || !value.endsWith("}")) {
-                continue;
-            }
-            final String envValue = System.getenv(StringUtils.substringBetween(value, "${", "}"));
-            if (envValue == null) {
-                throw new IllegalStateException("Missing " + name + " required environment variable");
-            }
-            property.setValue(envValue);
-        }
     }
 }

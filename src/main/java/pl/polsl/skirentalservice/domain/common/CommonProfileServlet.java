@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.domain.common;
 
 import jakarta.inject.Inject;
@@ -22,7 +18,7 @@ import pl.polsl.skirentalservice.util.SessionAlert;
 import java.util.StringJoiner;
 
 @Slf4j
-@WebServlet(urlPatterns = { "/seller/profile", "/owner/profile" })
+@WebServlet(urlPatterns = {"/seller/profile", "/owner/profile"})
 public class CommonProfileServlet extends AbstractWebServlet {
     private final OwnerEmployerService ownerEmployerService;
 

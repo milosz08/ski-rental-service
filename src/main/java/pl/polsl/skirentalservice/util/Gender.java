@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.util;
 
 import lombok.AllArgsConstructor;
@@ -22,10 +18,6 @@ public enum Gender {
 
     private final String name;
     private final char alias;
-
-    public FormSelectTupleDto convertToTuple(Gender gender) {
-        return new FormSelectTupleDto(name.equals(gender.name), String.valueOf(alias), name);
-    }
 
     public static Gender findByAlias(String alias) {
         return Arrays.stream(Gender.values()).filter(g -> g.alias == alias.charAt(0)).findFirst().orElse(Gender.MALE);
@@ -50,5 +42,9 @@ public enum Gender {
         final List<FormSelectTupleDto> genders = new ArrayList<>(getGenders());
         genders.add(new FormSelectTupleDto(false, String.valueOf(UNISEX.alias), UNISEX.name));
         return genders;
+    }
+
+    public FormSelectTupleDto convertToTuple(Gender gender) {
+        return new FormSelectTupleDto(name.equals(gender.name), String.valueOf(alias), name);
     }
 }

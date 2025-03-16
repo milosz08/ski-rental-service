@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.pdf;
 
 import com.itextpdf.kernel.geom.PageSize;
@@ -23,16 +19,14 @@ import java.util.Map;
 
 @Slf4j
 public abstract class AbstractPdfGenerator {
-    private final String headerText;
-    private final String contentText;
-
-    protected final Map<String, String> leftComponents;
-    protected final Map<String, String> rightComponents;
-
     private static final ContentType APPLICATION_PDF = ContentType.create("application/pdf");
     private static final String[] TABLE_HEADERS = {
         "Nazwa sprzętu", "Ilość", "Cena netto", "Cena brutto", "Kaucja netto", "Kaucja brutto",
     };
+    protected final Map<String, String> leftComponents;
+    protected final Map<String, String> rightComponents;
+    private final String headerText;
+    private final String contentText;
 
     AbstractPdfGenerator(String headerText, String contentText) {
         this.headerText = headerText;
@@ -55,7 +49,7 @@ public abstract class AbstractPdfGenerator {
             appendToRightComponents(pdfData);
 
             // header
-            final CustomPdfTable headerTable = new CustomPdfTable(new float[]{ 60, 40 });
+            final CustomPdfTable headerTable = new CustomPdfTable(new float[]{60, 40});
             headerTable.addCell(CustomPdfCell.createHeaderTableCell(headerText));
 
             final CustomPdfTable headerRightContentTable = new CustomPdfTable(2);
@@ -133,5 +127,6 @@ public abstract class AbstractPdfGenerator {
     }
 
     protected abstract String setHeaderDate(PdfDocumentData pdfDocumentData);
+
     protected abstract void appendToRightComponents(PdfDocumentData pdfDocumentData);
 }

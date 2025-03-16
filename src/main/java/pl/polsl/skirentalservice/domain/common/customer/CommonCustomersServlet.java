@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.domain.common.customer;
 
 import jakarta.inject.Inject;
@@ -28,7 +24,7 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 @Slf4j
-@WebServlet(urlPatterns = { "/seller/customers", "/owner/customers" })
+@WebServlet(urlPatterns = {"/seller/customers", "/owner/customers"})
 public class CommonCustomersServlet extends AbstractPageableWebServlet {
     private final CustomerService customerService;
 

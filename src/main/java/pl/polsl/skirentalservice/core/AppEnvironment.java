@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.core;
 
 import lombok.Getter;
@@ -17,10 +13,6 @@ public enum AppEnvironment {
 
     private final String environment;
 
-    public boolean isDevOrDocker() {
-        return equals(DEV) || equals(DOCKER);
-    }
-
     public static AppEnvironment loadEnviroment() {
         AppEnvironment current;
         try {
@@ -29,5 +21,9 @@ public enum AppEnvironment {
             current = AppEnvironment.DEV;
         }
         return current;
+    }
+
+    public boolean isDevOrDocker() {
+        return equals(DEV) || equals(DOCKER);
     }
 }

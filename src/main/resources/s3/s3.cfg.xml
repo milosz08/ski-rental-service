@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~ Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
-  ~ Silesian University of Technology
-  -->
 <s3-configuration>
   <property name="s3.host">${SKI_S3_HOST}</property>
   <property name="s3.region">eu-central-1</property>

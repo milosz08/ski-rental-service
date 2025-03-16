@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.entity;
 
 import jakarta.persistence.Entity;
@@ -35,11 +31,11 @@ public class RentEquipmentEntity extends AuditableEntity implements Serializable
     private BigDecimal depositPrice;
 
     @JoinColumn
-    @ManyToOne(cascade = { PERSIST, MERGE, REMOVE })
+    @ManyToOne(cascade = {PERSIST, MERGE, REMOVE})
     private RentEntity rent;
 
     @JoinColumn
-    @ManyToOne(cascade = { PERSIST, MERGE })
+    @ManyToOne(cascade = {PERSIST, MERGE})
     private EquipmentEntity equipment;
 
     public Integer getCount() {

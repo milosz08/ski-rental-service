@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.dao;
 
 import pl.polsl.skirentalservice.core.servlet.pageable.FilterDataDto;
@@ -18,14 +14,24 @@ import java.util.Optional;
 
 public interface RentDao {
     Optional<RentReturnDetailsResDto> findRentReturnDetails(Object rentId, Object employerId);
+
     Optional<RentDetailsResDto> findRentDetails(Object rentId, Object employerId, String roleAlias);
+
     boolean checkIfRentExist(Object rentId);
+
     boolean checkIfRentIsFromEmployer(Object rentId, Object employerId);
+
     boolean checkIfIssuerExist(String issuer);
+
     void updateRentStatus(RentStatus rentStatus, Object rentId);
+
     Long findAllRentsCount(FilterDataDto filterData);
+
     Long findAllRentsFromEmployerCount(FilterDataDto filterData, Object employerId);
+
     List<RentEntity> findAllRentsBaseCustomerId(Object customerId);
+
     List<OwnerRentRecordResDto> findAllPageableRents(PageableDto pageableDto);
+
     List<SellerRentRecordResDto> findAllPageableRentsFromEmployer(PageableDto pageableDto, Object employerId);
 }

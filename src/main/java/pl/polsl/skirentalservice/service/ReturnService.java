@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2024 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.service;
 
 import jakarta.ejb.Local;
@@ -18,10 +14,16 @@ import pl.polsl.skirentalservice.dto.login.LoggedUserDataDto;
 @Local
 public interface ReturnService {
     Slice<OwnerRentReturnRecordResDto> getPageableOwnerReturns(PageableDto pageableDto);
+
     Slice<SellerRentReturnRecordResDto> getPageableEmployerReturns(PageableDto pageableDto, Long employerId);
+
     MultipleEquipmentsDataDto<ReturnRentDetailsResDto> getReturnDetails(Long returnId, LoggedUserDataDto loggedUser);
+
     GeneratedReturnData generateReturn(Long rentId, String description, LoggedUserDataDto loggedUser, WebServletRequest req);
+
     String deleteReturn(Long returnId, LoggedUserDataDto loggedUser);
+
     boolean checkIfReturnExist(Long returnId);
+
     boolean checkIfReturnIsFromEmployer(Long returnId, Long employerId);
 }

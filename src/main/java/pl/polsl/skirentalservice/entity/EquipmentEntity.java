@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.entity;
 
 import jakarta.persistence.*;
@@ -54,18 +50,18 @@ public class EquipmentEntity extends AuditableEntity implements Serializable {
     private Gender gender;
 
     @JoinColumn
-    @ManyToOne(cascade = { PERSIST, MERGE })
+    @ManyToOne(cascade = {PERSIST, MERGE})
     private EquipmentTypeEntity type;
 
     @JoinColumn
-    @ManyToOne(cascade = { PERSIST, MERGE })
+    @ManyToOne(cascade = {PERSIST, MERGE})
     private EquipmentBrandEntity brand;
 
     @JoinColumn
-    @ManyToOne(cascade = { PERSIST, MERGE })
+    @ManyToOne(cascade = {PERSIST, MERGE})
     private EquipmentColorEntity color;
 
-    @OneToMany(cascade = { PERSIST, MERGE }, mappedBy = "equipment")
+    @OneToMany(cascade = {PERSIST, MERGE}, mappedBy = "equipment")
     private Set<RentEquipmentEntity> rentsEquipments = new HashSet<>();
 
     public String getName() {

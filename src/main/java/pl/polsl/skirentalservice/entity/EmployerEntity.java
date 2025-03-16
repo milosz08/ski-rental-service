@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
- * Silesian University of Technology
- */
 package pl.polsl.skirentalservice.entity;
 
 import jakarta.persistence.*;
@@ -37,15 +33,15 @@ public class EmployerEntity extends AuditableEntity implements Serializable {
     private Boolean firstAccess;
 
     @JoinColumn
-    @OneToOne(cascade = { PERSIST, MERGE, REMOVE })
+    @OneToOne(cascade = {PERSIST, MERGE, REMOVE})
     private UserDetailsEntity userDetails;
 
     @JoinColumn
-    @OneToOne(cascade = { PERSIST, MERGE, REMOVE })
+    @OneToOne(cascade = {PERSIST, MERGE, REMOVE})
     private LocationAddressEntity locationAddress;
 
     @JoinColumn
-    @OneToOne(cascade = { PERSIST, MERGE })
+    @OneToOne(cascade = {PERSIST, MERGE})
     private RoleEntity role;
 
     public EmployerEntity(LocalDate hiredDate, UserDetailsEntity userDetails, LocationAddressEntity locationAddress) {
