@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <s3-configuration>
   <property name="s3.host">${SKI_S3_HOST}</property>
-  <property name="s3.region">eu-central-1</property>
+  <property name="s3.region">${SKI_S3_REGION}</property>
   <property name="s3.access-key">${SKI_S3_ACCESS_KEY}</property>
   <property name="s3.secret-key">${SKI_S3_SECRET_KEY}</property>
-  <property name="s3.path-style-access-enabled">true</property>
+  <property name="s3.path-style-access-enabled">${SKI_S3_PATH_STYLE_ACCESS_ENABLED}</property>
 </s3-configuration>
